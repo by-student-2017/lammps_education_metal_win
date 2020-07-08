@@ -38,21 +38,53 @@ Lammps Metal for education (windows 10 (64 bit))
 
 □ 他の系（他の元素の組み合わせ）で計算したい場合
   例えば、ポテンシャルを”Fe-Cr-W”用から”Fe-Ni-Cr”用に変更するには以下のようにします。＃以降はコメントになります。”Fe-Cr-W”に関する行を＃を付けてコメントにし、コメントにされていた”Fe-Ni-Cr”の＃を除いて計算するようにします。加えて”# ----- Output setting -----”などでの元素記号は使用するポテンシャルの順番に書き換えてください。元素の書き換えが必要なファイルは”in.lmp”と”plot_msd.gpl”の2つです。
+
+
 #----------(before)----------
+
+
 # -----(Fe-Ni-Cr) (FCC)
+
+
 #pair_style      eam/fs
+
+
 #pair_coeff      * * ./eam/Fe-Ni-Cr_fcc.eam.fs Fe Ni Cr
+
+
 # -----(Fe-Cr-W)
+
+
 pair_style      hybrid/overlay eam/alloy eam/fs
+
+
 pair_coeff      * * eam/alloy ./eam/FeCrW_d.eam.alloy Fe Cr W
+
+
 pair_coeff      * * eam/fs    ./eam/FeCrW_s.eam.fs Fe Cr W
+
+
 #----------(after)----------
+
+
 # -----(Fe-Ni-Cr) (FCC)
+
+
 pair_style      eam/fs
+
+
 pair_coeff      * * ./eam/Fe-Ni-Cr_fcc.eam.fs Fe Ni Cr
+
+
 # -----(Fe-Cr-W)
+
+
 #pair_style      hybrid/overlay eam/alloy eam/fs
+
+
 #pair_coeff      * * eam/alloy ./eam/FeCrW_d.eam.alloy Fe Cr W
+
+
 #pair_coeff      * * eam/fs    ./eam/FeCrW_s.eam.fs Fe Cr W
 
 
@@ -108,23 +140,57 @@ pair_coeff      * * ./eam/Fe-Ni-Cr_fcc.eam.fs Fe Ni Cr
 ■ units and potential
   上記の入力ファイルはすべて"units metal"であるため、下に示すポテンシャルが利用可能です。一方、"units real"や"units lj"を用いる場合は上記の入力ファイルを大幅に書き換えないと正しい結果を得ることができません。
 
+
 □ units metal
+
+
 ・Stillinger-Weber
+
+
 ・Tersoff
+
+
 ・EAM, FS
+
+
 ・MEAM
+
+
 ・REBO, AIREBO
+
+
 ・COMB
+
+
 ・EIM
+
+
 ・adiabatic core/shell model
+
+
 ・Streitz-Mintmire
+
+
 ・vashishta
 
+
+
+
 □ units real
+
+
 ・OPLS
+
+
 ・OPLS & Amber (https://github.com/agiliopadua/ilff)
+
+
 ・CHARMM(charmm22)
+
+
 ・dreiding
+
+
 ・ReaxFF
 
 
