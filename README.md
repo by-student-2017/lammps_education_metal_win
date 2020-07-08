@@ -144,32 +144,24 @@ pair_coeff      * * ./eam/Fe-Ni-Cr_fcc.eam.fs Fe Ni Cr
 □ units metal
 
 
-・Stillinger-Weber
-
+・Stillinger-Weber (SW)
 
 ・Tersoff
-
 
 ・EAM, FS
 
 
 ・MEAM
 
-
 ・REBO, AIREBO
-
 
 ・COMB
 
-
 ・EIM
-
 
 ・adiabatic core/shell model
 
-
 ・Streitz-Mintmire
-
 
 ・vashishta
 
@@ -181,15 +173,11 @@ pair_coeff      * * ./eam/Fe-Ni-Cr_fcc.eam.fs Fe Ni Cr
 
 ・OPLS
 
-
 ・OPLS & Amber (https://github.com/agiliopadua/ilff)
-
 
 ・CHARMM(charmm22)
 
-
 ・dreiding
-
 
 ・ReaxFF
 
