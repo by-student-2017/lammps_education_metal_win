@@ -89,7 +89,7 @@ pair_coeff      * * ./eam/Fe-Ni-Cr_fcc.eam.fs Fe Ni Cr
 
 
 □ tutorial_1_Monte_Carlo
-  モンテカルロ法を用いて、入力ファイルで指定した温度に対して熱力学的（ボルツマン分布的）に許される原子配置を計算します。LammpsのExampleにある2次元のMCを書き換えて3次元にしてあります（書き換えに誤りがありましたらすみません）。"time-stamped force-bias Monte"という手法のモンテカルロ法は"tutorial_1_time-stamped_force-bias_Monte_Carlo"のファイルになります。swapは異なる２つの原子の入れ替えを行うタイプ（正しく動作しているかは不明）。
+  モンテカルロ法を用いて、入力ファイルで指定した温度に対して熱力学的（ボルツマン分布的）に許される原子配置を計算します。LammpsのExampleにある2次元のMCを書き換えて3次元にしてあります（書き換えに誤りがありましたらすみません）。"time-stamped force-bias Monte"という手法のモンテカルロ法は"tutorial_1_time-stamped_force-bias_Monte_Carlo"のファイルになります。swapは２つの原子の入れ替えを行うタイプ（正しく動作しているかは不明）。
 
 
 □ tutorial_2_MSD_and_RDF
