@@ -1,0 +1,238 @@
+# Monte Carlo relaxation of perturbed 3d lattice
+clear
+
+# ----- set these parameters ----- 
+# make sure neigh skin > 2*deltamove
+
+# ----- condition settings -----
+variable        temp         index 298.0 # K
+
+# -----other settings -----
+variable        iter         loop  3000   # number of Monte Carlo moves
+variable        deltaperturb equal 0.2    # max size of initial perturbation per dim
+variable        deltamove    equal 0.1    # max size of MC move in one dimension
+variable        kT           equal 0.00088620689*${temp} # effective T in Boltzmann factor, 25.7/1000 [eV] at 298 K
+variable        seed         equal 582783 # RNG seed
+variable        nswap        equal 100    # invoke this fix every N steps
+
+# problem setup
+
+# ----- Structure settings -----
+units           metal
+atom_style      atomic
+atom_modify     map array sort 0 0.0
+dimension       3
+boundary        p p p
+read_data       data.in
+replicate       4 4 4
+
+# ----- Potential settings (MEAM)-----
+# -----HEA (Co-Ni-Cr-Fe-Mn)
+#pair_style      meam/c
+#pair_coeff      * * ./meam/CoNiCrFeMn.HEA.library.meam Co Ni Cr Fe Mn ./meam/CoNiCrFeMn.HEA.meam Co Ni Cr Fe
+# -----(Al-Si-Mg-Cu-Fe)
+#pair_style      meam/c
+#pair_coeff      * * ./meam/Jelinek_2012_meamf AlS SiS MgS CuS FeS ./meam/Jelinek_2012_meam.alsimgcufe AlS SiS MgS CuS
+# -----(Fe-Mn-Si-C)
+#pair_style      meam/c
+#pair_coeff      * * ./meam/CFeMnSi.library.meam Fe Mn Si C ./meam/CFeMnSi.meam Fe Mn Si C
+# -----(Mg-Al-Zn)
+#pair_style      meam/c
+#pair_coeff      * * ./meam/MgAlZn.library.meam Mg Al Zn ./meam/MgAlZn.parameter.meam Mg Al Zn
+# -----(Fe-Ti-C)
+#pair_style      meam/c
+#pair_coeff      * * ./meam/FeTiC.library.meam Fe Ti C ./meam/FeTiC.meam Fe Ti C
+# -----(V-Ni-Ti)
+#pair_style      meam/c
+#pair_coeff      * * ./meam/VNiTi.library.meam V Ni Ti ./meam/VNiTi.meam V Ni Ti
+# -----(AgTaO3)
+#pair_style      meam/c
+#pair_coeff      * * ./meam/AgTaO3.library.meam Ag Ta O ./meam/AgTaO3.meam Ag Ta O
+
+# ----- Potential settings (EAM)-----
+#pair_style      eam/alloy
+#pair_coeff      * * ./eam/FeNiCrCoCu-heafixed.setfl Co Ni Cr Fe
+# -----(Cu-Ag-Au)
+#pair_style      eam/alloy
+#pair_coeff      * * ./eam/CuAgAu_Zhou04.eam.alloy Cu Ag Au
+# -----(Fe-Cu-Ni)
+#pair_style      eam/alloy
+#pair_coeff      * * ./eam/FeCuNi.eam.alloy Fe Cu Ni
+# -----(Al-Mn-Pd)
+#pair_style      eam/alloy
+#pair_coeff      * * ./eam/AlMnPd_Schopf_2012.lammps.EAM_CORRECT Al Mn Pd
+# -----(Ni-Al-Co)
+#pair_style      eam/alloy
+#pair_coeff      * * ./eam/Mishin_updated-Ni-Al-Co-2013.eam.alloy Ni Al Co
+# -----(Nb-Ti-Al)
+#pair_style      eam/alloy
+#pair_coeff      * * ./eam/Farkas_Nb-Ti-Al_1996.eam.alloy Nb Ti Al
+# -----(Ni-Al-H)
+#pair_style      eam/alloy
+#pair_coeff      * * ./eam/NiAlH_jea.eam.alloy Ni Al H
+# -----(Pd-Ag-H)
+pair_style      eam/alloy
+pair_coeff      * * ./eam/PdAgH_HybridPd3Ag.eam.alloy Pd Ag H
+# -----(W-H-He)
+pair_style      eam/alloy
+pair_coeff      * * ./eam/potential-WHHe-EAM1.eam.alloy W H He
+# -----(Fe-Ni-Cr) (FCC)
+#pair_style      eam/fs
+#pair_coeff      * * ./eam/Fe-Ni-Cr_fcc.eam.fs Fe Ni Cr
+# -----(Fe-Cr-W)
+pair_style      hybrid/overlay eam/alloy eam/fs
+pair_coeff      * * eam/alloy ./eam/FeCrW_d.eam.alloy Fe Cr W
+pair_coeff      * * eam/fs    ./eam/FeCrW_s.eam.fs Fe Cr W
+
+# ----- Potential settings (ADP)-----
+#pair_style      adp
+#pair_coeff      * * ./adp/Si_Au_Al.adp.txt Si Au Al
+
+# ----- Potential settings (COMB)-----
+#pair_style      eam/alloy
+#pair_coeff      * * ./comb3/ffield.comb3.NiAlO Ni Al O
+
+# ----- Potential settings (BOP)-----
+#pair_style      bop
+#pair_coeff      * * ./bop/CdZnTe_v2.bop.table Cd Zn Te
+
+# ----- Potential settings (SW)-----
+#pair_style      sw
+#pair_coeff      * * ./sw/InGaN.psw In Ga N
+# -----(Cd-Te-Zn-Se-Hg-S)
+#pair_style      sw
+#pair_coeff      * * ./sw/CdTeZnSeHgS0.sw Cd Te Zn
+
+# ----- Potential settings (tersoff)-----
+#pair_style      tersoff
+#pair_coeff      * * ./tersoff/BNC.tersoff B N C
+
+
+neighbor        0.3 bin
+neigh_modify    delay 0 every 1 check yes
+
+variable        e equal pe
+
+# ----- Calculation -----
+# run 0 to get energy of perfect lattice
+# emin = minimum energy
+run             0
+variable        emin equal $e
+
+# disorder the system
+# estart = initial energy
+
+variable        x atom x+v_deltaperturb*random(-1.0,1.0,${seed})
+variable        y atom y+v_deltaperturb*random(-1.0,1.0,${seed})
+variable        z atom z+v_deltaperturb*random(-1.0,1.0,${seed})
+
+set             group all x v_x
+set             group all y v_y
+set             group all z v_z
+
+# ----- Output setting -----
+dump            d1 all cfg 100 cfg/run.*.cfg mass type xs ys zs id type
+dump_modify     d1 element Fe Cr W
+#dump_modify     d1 element Co Ni Cr Fe # Co-Ni-Cr-Fe-Mn
+#dump_modify     d1 element Al Si Mg Cu   # Al-Si-Mg-Cu-Fe
+#dump_modify     d1 element Fe Mn Si C   # Fe-Mn-Si-C
+
+#dump           1 all atom 25 dump.mc
+
+#dump           2 all image 25 image.*.jpg type type &
+#               zoom 1.6 adiam 1.0
+#dump_modify    2 pad 5
+
+#dump           3 all movie 25 movie.mpg type type &
+#               zoom 1.6 adiam 1.0
+#dump_modify    3 pad 5
+
+variable        elast equal $e
+thermo_style    custom step v_emin v_elast pe
+
+run             0
+
+variable        estart equal $e
+variable        elast equal $e
+
+# ----- loop over Monte Carlo moves ----- 
+
+variable        naccept equal 0
+variable        increment equal v_naccept+1
+variable        irandom equal floor(atoms*random(0.0,1.0,${seed})+1)
+variable        jrandom equal floor(atoms*random(0.0,1.0,${seed})+1)
+variable        rn equal random(0.0,1.0,${seed})
+variable        boltzfactor equal "exp(atoms*(v_elast - v_e) / v_kT)"
+variable        xnew equal x[v_i]+v_deltamove*random(-1.0,1.0,${seed})
+variable        ynew equal y[v_i]+v_deltamove*random(-1.0,1.0,${seed})
+variable        znew equal z[v_i]+v_deltamove*random(-1.0,1.0,${seed})
+variable        xi equal x[v_i]
+variable        yi equal y[v_i]
+variable        zi equal z[v_i]
+
+variable        xj equal x[v_j]
+variable        yj equal y[v_j]
+variable        zj equal z[v_j]
+
+label           loop
+
+variable        i equal ${irandom}
+
+variable        j equal ${jrandom}
+
+variable        x0 equal ${xi}
+variable        y0 equal ${yi}
+variable        z0 equal ${zi}
+
+variable        xn equal ${xj}
+variable        yn equal ${yj}
+variable        zn equal ${zj}
+
+set             atom $i x ${xnew}
+set             atom $i y ${ynew}
+set             atom $i z ${znew}
+
+variable        swapflag equal ${iter}%${nswap}
+if "${swapflag} == 0" then &
+  "set atom $i x ${xn}" &
+  "set atom $i y ${yn}" &
+  "set atom $i z ${zn}" &
+  "set atom $j x ${x0}" &
+  "set atom $j y ${y0}" &
+  "set atom $j z ${z0}"
+
+run             1 pre no post no
+
+if "$e <= ${elast}" then &
+  "variable elast equal $e" &
+  "variable naccept equal ${increment}" &
+elif "${rn} <= ${boltzfactor}" &
+  "variable elast equal $e" &
+  "variable naccept equal ${increment}" &
+else &
+  "set atom $i x ${x0}" &
+  "set atom $i y ${y0}" &
+  "set atom $i z ${z0}" &
+  "set atom $j x ${xn}" &
+  "set atom $j y ${yn}" &
+  "set atom $j z ${zn}"
+
+next            iter
+jump            SELF loop
+
+# ----- final energy and stats ----- 
+
+variable        nb equal nbuild
+variable        nbuild equal ${nb}
+
+run             0
+
+print           "MC stats:"
+print           "  starting energy = ${estart} [eV]"
+print           "  final energy = $e [eV]"
+print           "  minimum energy of perfect lattice = ${emin} [eV]"
+print           "  accepted MC moves = ${naccept}"
+print           "  neighbor list rebuilds = ${nbuild}"
+
+# ----- Output restart data -----
+write_data data.in.restart
