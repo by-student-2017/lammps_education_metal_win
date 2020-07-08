@@ -107,11 +107,6 @@ pair_coeff      * * eam/fs    ./eam/FeCrW_s.eam.fs Fe Cr W
 neighbor        0.3 bin
 neigh_modify    delay 0 every 1 check yes
 
-variable        e equal pe
-
-run             0
-variable        estart equal $e
-
 # ----- Output setting -----
 thermo_style    custom step etotal temp lx vol press
 thermo          100
@@ -124,30 +119,12 @@ dump_modify     d1 element Fe Cr W
 #dump_modify     d1 element Al Si Mg Cu   # Al-Si-Mg-Cu-Fe
 #dump_modify     d1 element Fe Mn Si C   # Fe-Mn-Si-C
 
-#dump           1 all atom 25 dump.mc
-
-#dump           2 all image 25 image.*.jpg type type &
-#               zoom 1.6 adiam 1.0
-#dump_modify    2 pad 5
-
-#dump           3 all movie 25 movie.mpg type type &
-#               zoom 1.6 adiam 1.0
-#dump_modify    3 pad 5
-
 # ----- tfMC calculation ----- 
 velocity        all create ${temp} ${seed}
 fix             f1 all tfmc ${deltamove} ${temp} ${seed} com 1 1 1 rot
 run             ${iter}
 unfix           f1
 unfix           fout1
-
-# ----- final energy and stats ----- 
-
-run             0
-
-print           "time-stamped force-bias Monte Carlo (tfMC) algorithm stats:"
-print           "  starting energy = ${estart} [eV]"
-print           "  final energy = $e [eV]"
 
 # ----- Output restart data -----
 write_data data.in.restart
