@@ -1,4 +1,4 @@
-lammps_education_metal_win
+# lammps_education_metal_win
 
 Lammps Metal for education (windows 10 (64 bit))
 
@@ -38,58 +38,26 @@ Lammps Metal for education (windows 10 (64 bit))
 
 □ 他の系（他の元素の組み合わせ）で計算したい場合
   例えば、ポテンシャルを”Fe-Cr-W”用から”Fe-Ni-Cr”用に変更するには以下のようにします。＃以降はコメントになります。”Fe-Cr-W”に関する行を＃を付けてコメントにし、コメントにされていた”Fe-Ni-Cr”の＃を除いて計算するようにします。加えて”# ----- Output setting -----”などでの元素記号は使用するポテンシャルの順番に書き換えてください。元素の書き換えが必要なファイルは”in.lmp”と”plot_msd.gpl”の2つです。
-
-
 #----------(before)----------
-
-
-#-----(Fe-Ni-Cr) (FCC)
-
-
+# -----(Fe-Ni-Cr) (FCC)
 #pair_style      eam/fs
-
-
 #pair_coeff      * * ./eam/Fe-Ni-Cr_fcc.eam.fs Fe Ni Cr
-
-
-#-----(Fe-Cr-W)
-
-
+# -----(Fe-Cr-W)
 pair_style      hybrid/overlay eam/alloy eam/fs
-
-
 pair_coeff      * * eam/alloy ./eam/FeCrW_d.eam.alloy Fe Cr W
-
-
 pair_coeff      * * eam/fs    ./eam/FeCrW_s.eam.fs Fe Cr W
-
-
 #----------(after)----------
-
-
-#-----(Fe-Ni-Cr) (FCC)
-
-
+# -----(Fe-Ni-Cr) (FCC)
 pair_style      eam/fs
-
-
 pair_coeff      * * ./eam/Fe-Ni-Cr_fcc.eam.fs Fe Ni Cr
-
-
-#-----(Fe-Cr-W)
-
-
+# -----(Fe-Cr-W)
 #pair_style      hybrid/overlay eam/alloy eam/fs
-
-
 #pair_coeff      * * eam/alloy ./eam/FeCrW_d.eam.alloy Fe Cr W
-
-
 #pair_coeff      * * eam/fs    ./eam/FeCrW_s.eam.fs Fe Cr W
 
 
 □ tutorial_1_Monte_Carlo
-  モンテカルロ法を用いて、入力ファイルで指定した温度に対して熱力学的（ボルツマン分布的）に許される原子配置を計算します。LammpsのExampleにある2次元のMCを書き換えて3次元にしてあります（書き換えに誤りがありましたらすみません）。"time-stamped force-bias Monte"という手法のモンテカルロ法は"tutorial_1_time-stamped_force-bias_Monte_Carlo"のファイルになります。swapは２つの原子の入れ替えを行うタイプ（正しく動作しているかは不明）。
+  モンテカルロ法を用いて、入力ファイルで指定した温度に対して熱力学的（ボルツマン分布的）に許される原子配置を計算します。LammpsのExampleにある2次元のMCを書き換えて3次元にしてあります（書き換えに誤りがありましたらすみません）。"time-stamped force-bias Monte"という手法のモンテカルロ法は"tutorial_1_time-stamped_force-bias_Monte_Carlo"のファイルになります。swapは２つの原子の入れ替えを行うタイプ（正しく動作しているかは不明。SQSを得るために作りました）。
 
 
 □ tutorial_2_MSD_and_RDF
@@ -138,49 +106,29 @@ pair_coeff      * * ./eam/Fe-Ni-Cr_fcc.eam.fs Fe Ni Cr
 
 ------------------------------------------------------------------------------
 ■ units and potential
-
-
-  上記の入力ファイルはすべて"units metal"であるため、下に示すポテンシャルが利用可能です。一方、"units real"や"units lj"を用いる場合は上記の入力ファイルを大幅に書き換えないと正しい結果を得ることができません。
-
+  上記の入力ファイルはすべて"units metal"であるため、下に示すポテンシャルが利用可能です。
 
 □ units metal
-
-
-・Stillinger-Weber (SW)
-
+・Stillinger-Weber
 ・Tersoff
-
 ・EAM, FS
-
-
 ・MEAM
-
 ・REBO, AIREBO
-
 ・COMB
-
 ・EIM
-
 ・adiabatic core/shell model
-
 ・Streitz-Mintmire
-
 ・vashishta
 
 
+  下に示す"units real"や"units lj"を用いる場合は上記の入力ファイルを大幅に書き換えないと正しい結果を得ることができません。
 
 
 □ units real
-
-
 ・OPLS
-
 ・OPLS & Amber (https://github.com/agiliopadua/ilff)
-
 ・CHARMM(charmm22)
-
 ・dreiding
-
 ・ReaxFF
 
 
@@ -189,8 +137,6 @@ pair_coeff      * * ./eam/Fe-Ni-Cr_fcc.eam.fs Fe Ni Cr
 
 ------------------------------------------------------------------------------
 ■ potential files
-
-
   上記の入力ファイルの例にあるポテンシャル以外にも、以下のサイトからポテンシャルを用いて利用することができます。利用するポテンシャルの論文やポテンシャルのファイルの中身を読んだり、実験や半経験的量子化学計算や第一原理計算などの結果と比較して定性的に結果が合うかどうかを確認してから本格的な研究に利用します。
 
 
@@ -253,6 +199,43 @@ pair_coeff      * * ./eam/Fe-Ni-Cr_fcc.eam.fs Fe Ni Cr
 
 [14] KIST Integrated Force Field Platform
   http://kiff.vfab.org/
+
+
+------------------------------------------------------------------------------
+■ References
+
+[MC1] Monte Carlo simulations with LAMMPS
+  https://lammps.sandia.gov/workshops/Aug15/PDF/talk_Thompson1.pdf
+
+
+[MC2] fix tfmc command (amorphous -> crystal)
+  https://lammps.sandia.gov/doc/fix_tfmc.html
+  https://lammps.sandia.gov/threads/msg69314.html
+  https://lammps.sandia.gov/threads/msg69318.html
+  https://lammps.sandia.gov/threads/msg69323.html
+  https://lammps.sandia.gov/threads/msg69348.html
+  https://lammps.sandia.gov/threads/msg69352.html
+
+
+[SGC1] vcsgc-lammps (semi-grandcanonical) (pair_style eam/cd, eam/alloy or  eam/fs)
+  https://vcsgc-lammps.materialsmodeling.org/
+
+
+[GCMC1] fix gcmc command
+  https://lammps.sandia.gov/doc/fix_gcmc.html
+
+
+[GCMC2] Grand canonical Monte Carlo simulations of gas uptake in microporous materials using LAMMPS
+  https://www.osti.gov/servlets/purl/1120653
+
+
+[GCMC3] pysimm
+  https://www.sciencedirect.com/science/article/pii/S2352711018300141 (paper)
+  https://pysimm.org/ (code)
+
+
+[R1] Nanofluidics An Introduction
+  https://books.google.co.jp/books?id=VwqWDwAAQBAJ
 
 
 ------------------------------------------------------------------------------ 
