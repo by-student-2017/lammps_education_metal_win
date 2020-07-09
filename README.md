@@ -41,20 +41,20 @@ Lammps Metal for education (windows 10 (64 bit))
 
 
 #----------(before)----------
-# -----(Fe-Ni-Cr) (FCC)
+#-----(Fe-Ni-Cr) (FCC)
 #pair_style      eam/fs
 #pair_coeff      * * ./eam/Fe-Ni-Cr_fcc.eam.fs Fe Ni Cr
-# -----(Fe-Cr-W)
+#-----(Fe-Cr-W)
 pair_style      hybrid/overlay eam/alloy eam/fs
 pair_coeff      * * eam/alloy ./eam/FeCrW_d.eam.alloy Fe Cr W
 pair_coeff      * * eam/fs    ./eam/FeCrW_s.eam.fs Fe Cr W
 
 
 #----------(after)----------
-# -----(Fe-Ni-Cr) (FCC)
+#-----(Fe-Ni-Cr) (FCC)
 pair_style      eam/fs
 pair_coeff      * * ./eam/Fe-Ni-Cr_fcc.eam.fs Fe Ni Cr
-# -----(Fe-Cr-W)
+#-----(Fe-Cr-W)
 #pair_style      hybrid/overlay eam/alloy eam/fs
 #pair_coeff      * * eam/alloy ./eam/FeCrW_d.eam.alloy Fe Cr W
 #pair_coeff      * * eam/fs    ./eam/FeCrW_s.eam.fs Fe Cr W
