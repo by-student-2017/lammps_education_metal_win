@@ -60,6 +60,8 @@ pair_coeff      * * eam/alloy ./eam/FeCrW_d.eam.alloy Fe Cr W
 pair_coeff      * * eam/fs    ./eam/FeCrW_s.eam.fs Fe Cr W
 
 
+#---------------------------
+
 #----------(after)----------
 
 #-----(Fe-Ni-Cr) (FCC)
@@ -77,6 +79,8 @@ pair_coeff      * * ./eam/Fe-Ni-Cr_fcc.eam.fs Fe Ni Cr
 #pair_coeff      * * eam/alloy ./eam/FeCrW_d.eam.alloy Fe Cr W
 
 #pair_coeff      * * eam/fs    ./eam/FeCrW_s.eam.fs Fe Cr W
+
+#---------------------------
 
 
 Å† tutorial_1_Monte_Carlo
