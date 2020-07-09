@@ -38,6 +38,8 @@ Lammps Metal for education (windows 10 (64 bit))
 
 □ 他の系（他の元素の組み合わせ）で計算したい場合
   例えば、ポテンシャルを”Fe-Cr-W”用から”Fe-Ni-Cr”用に変更するには以下のようにします。＃以降はコメントになります。”Fe-Cr-W”に関する行を＃を付けてコメントにし、コメントにされていた”Fe-Ni-Cr”の＃を除いて計算するようにします。加えて”# ----- Output setting -----”などでの元素記号は使用するポテンシャルの順番に書き換えてください。元素の書き換えが必要なファイルは”in.lmp”と”plot_msd.gpl”の2つです。
+
+
 #----------(before)----------
 # -----(Fe-Ni-Cr) (FCC)
 #pair_style      eam/fs
@@ -46,6 +48,8 @@ Lammps Metal for education (windows 10 (64 bit))
 pair_style      hybrid/overlay eam/alloy eam/fs
 pair_coeff      * * eam/alloy ./eam/FeCrW_d.eam.alloy Fe Cr W
 pair_coeff      * * eam/fs    ./eam/FeCrW_s.eam.fs Fe Cr W
+
+
 #----------(after)----------
 # -----(Fe-Ni-Cr) (FCC)
 pair_style      eam/fs
