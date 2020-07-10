@@ -1,0 +1,184 @@
+#LAMMPS Input file
+# Title
+clear
+
+# ----- condition settings -----
+
+variable        tempm  index  2673.0 # K (heat)
+
+variable        temph  index  1273.0 # K (cool No.1)
+
+variable        tempc  index   673.0 # K (cool No.2)
+
+variable        pres   index   0.001 # 0.0001 MPa (bar units)
+
+variable        Erate  index    0.00 # 1/(1.0 fs), if Erate < 0.0 (compress)
+
+variable        fs     index  0.0010 # 1.0 fs
+variable        ps     index      20 # 20 ps
+
+# -----other settings -----
+variable        nstep  equal ${ps}/${fs}
+variable        nsteph equal ${ps}/${fs}
+variable        nstepc equal ${ps}/${fs}
+variable        tdamp  equal ${fs}*100
+variable        pdamp  equal ${fs}*1000
+
+# ----- Structure settings -----
+units           metal
+atom_style      atomic
+dimension       3
+boundary        p p p
+read_data       data.in
+replicate       3 4 4
+timestep        ${fs}
+
+# ----- Potential settings (MEAM)-----
+# -----HEA (Co-Ni-Cr-Fe-Mn)
+pair_style      meam/c
+pair_coeff      * * ./meam/CoNiCrFeMn.HEA.library.meam Co Ni Cr Fe Mn ./meam/CoNiCrFeMn.HEA.meam Co Ni Cr
+# -----(Al-Si-Mg-Cu-Fe)
+#pair_style      meam/c
+#pair_coeff      * * ./meam/Jelinek_2012_meamf AlS SiS MgS CuS FeS ./meam/Jelinek_2012_meam.alsimgcufe AlS SiS MgS CuS
+# -----(Fe-Mn-Si-C)
+#pair_style      meam/c
+#pair_coeff      * * ./meam/CFeMnSi.library.meam Fe Mn Si C ./meam/CFeMnSi.meam Fe Mn Si C
+# -----(Mg-Al-Zn)
+#pair_style      meam/c
+#pair_coeff      * * ./meam/MgAlZn.library.meam Mg Al Zn ./meam/MgAlZn.parameter.meam Mg Al Zn
+# -----(Fe-Ti-C)
+#pair_style      meam/c
+#pair_coeff      * * ./meam/FeTiC.library.meam Fe Ti C ./meam/FeTiC.meam Fe Ti C
+# -----(V-Ni-Ti)
+#pair_style      meam/c
+#pair_coeff      * * ./meam/VNiTi.library.meam V Ni Ti ./meam/VNiTi.meam V Ni Ti
+# -----(AgTaO3)
+#pair_style      meam/c
+#pair_coeff      * * ./meam/AgTaO3.library.meam Ag Ta O ./meam/AgTaO3.meam Ag Ta O
+
+# ----- Potential settings (EAM)-----
+#pair_style      eam/alloy
+#pair_coeff      * * ./eam/FeNiCrCoCu-heafixed.setfl Co Ni Cr Fe
+# -----(Cu-Ag-Au)
+#pair_style      eam/alloy
+#pair_coeff      * * ./eam/CuAgAu_Zhou04.eam.alloy Cu Ag Au
+# -----(Fe-Cu-Ni)
+#pair_style      eam/alloy
+#pair_coeff      * * ./eam/FeCuNi.eam.alloy Fe Cu Ni
+# -----(Al-Mn-Pd)
+#pair_style      eam/alloy
+#pair_coeff      * * ./eam/AlMnPd_Schopf_2012.lammps.EAM_CORRECT Al Mn Pd
+# -----(Ni-Al-Co)
+#pair_style      eam/alloy
+#pair_coeff      * * ./eam/Mishin_updated-Ni-Al-Co-2013.eam.alloy Ni Al Co
+# -----(Nb-Ti-Al)
+#pair_style      eam/alloy
+#pair_coeff      * * ./eam/Farkas_Nb-Ti-Al_1996.eam.alloy Nb Ti Al
+# -----(Ni-Al-H)
+#pair_style      eam/alloy
+#pair_coeff      * * ./eam/NiAlH_jea.eam.alloy Ni Al H
+# -----(Pd-Ag-H)
+#pair_style      eam/alloy
+#pair_coeff      * * ./eam/PdAgH_HybridPd3Ag.eam.alloy Pd Ag H
+# -----(W-H-He)
+#pair_style      eam/alloy
+#pair_coeff      * * ./eam/potential-WHHe-EAM1.eam.alloy W H He
+# -----(Fe-Ni-Cr) (FCC)
+#pair_style      eam/fs
+#pair_coeff      * * ./eam/Fe-Ni-Cr_fcc.eam.fs Fe Ni Cr
+# -----(Fe-Cr-W)
+#pair_style      hybrid/overlay eam/alloy eam/fs
+#pair_coeff      * * eam/alloy ./eam/FeCrW_d.eam.alloy Fe Cr W
+#pair_coeff      * * eam/fs    ./eam/FeCrW_s.eam.fs Fe Cr W
+
+# ----- Potential settings (ADP)-----
+#pair_style      adp
+#pair_coeff      * * ./adp/Si_Au_Al.adp.txt Si Au Al
+
+# ----- Potential settings (COMB)-----
+#pair_style      eam/alloy
+#pair_coeff      * * ./comb3/ffield.comb3.NiAlO Ni Al O
+
+# ----- Potential settings (BOP)-----
+#pair_style      bop
+#pair_coeff      * * ./bop/CdZnTe_v2.bop.table Cd Zn Te
+
+# ----- Potential settings (SW)-----
+#pair_style      sw
+#pair_coeff      * * ./sw/InGaN.psw In Ga N
+# -----(Cd-Te-Zn-Se-Hg-S)
+#pair_style      sw
+#pair_coeff      * * ./sw/CdTeZnSeHgS0.sw Cd Te Zn
+
+# ----- Potential settings (tersoff)-----
+#pair_style      tersoff
+#pair_coeff      * * ./tersoff/BNC.tersoff B N C
+
+# ----- Relax calculation (0 K) -----
+thermo_style    custom step etotal temp lx vol press pxx pyy pxy
+thermo          10
+
+fix             f1 all box/relax iso 0.0
+minimize        1.0e-10 0.0 1000 100000
+unfix           f1
+
+# ----- Output setting -----
+dump            d1 all cfg 100 cfg/run.*.cfg mass type xs ys zs id type
+dump_modify     d1 element Co Ni Cr
+#dump_modify     d1 element Al Si Mg Cu   # Al-Si-Mg-Cu-Fe
+#dump_modify     d1 element Fe Mn Si C   # Fe-Mn-Si-C
+
+# ----- Check equilibriation setting -----
+variable        energy equal etotal
+variable        temperature equal temp
+fix             fout1 all ave/time 1 100 100 v_energy v_temperature file out_energy.txt
+
+# ----- Equilibriation (heat)-----
+velocity        all create 10.0 123456
+fix             f1 all npt temp 10.0 ${tempm} ${tdamp} iso 0.0 ${pres} ${pdamp}
+run             ${nstep} # 20 ps
+unfix           f1
+
+# ----- Calculation (cool No.1)-----
+fix             f1 all nvt temp ${tempm} ${temph} ${tdamp}
+run             ${nsteph} # 20 ps
+unfix           f1
+
+# ----- Calculation (cool No.2)-----
+fix             f1 all nvt temp ${temph} ${tempc} ${tdamp}
+run             ${nstepc} # 20 ps
+unfix           f1
+
+# ----- Calculation -----
+fix             f1 all deform 1 x erate ${Erate} remap x
+fix             f2 all nvt temp ${tempc} ${tempc} ${tdamp}
+run             ${nstep} # 20 ps
+unfix           f1
+unfix           f2
+
+# ----- Radial Distribution Function -----
+#comm_modify     cutoff 14
+compute         distribution all rdf 240
+fix             f1 all ave/time 1 1000 3000 c_distribution[*] file out_rdf.txt mode vector
+
+# ----- Mean Square Displacement -----
+group           Co type 1
+compute         Comsd Co msd
+fix             f2 all ave/time 1 1 5 c_Comsd[*] file out_Co_msd.txt
+# -----
+group           Ni type 2
+compute         Nimsd Ni msd
+fix             f3 all ave/time 1 1 5 c_Nimsd[*] file out_Ni_msd.txt
+# -----
+group           Cr type 3
+compute         Crmsd Cr msd
+fix             f4 all ave/time 1 1 5 c_Crmsd[*] file out_Cr_msd.txt
+# -----
+compute         allmsd all msd
+fix             f5 all ave/time 1 1 5 c_allmsd[*] file out_all_msd.txt
+
+fix             f6 all nvt temp ${tempc} ${tempc} ${tdamp}
+run             3000
+
+# ----- Output restart data -----
+write_data data.in.restart
