@@ -90,7 +90,7 @@ pair_coeff      * * ./eam/Fe-Ni-Cr_fcc.eam.fs Fe Ni Cr
 
 □ tutorial_2_MSD_and_RDF
   平均自乗変位と動径分布関数を計算します
-  入力ファイルを理解するには[https://amorphous.tf.chiba-u.jp/lecture.files/ms-workshop/molten.html]を参照すると良いでしょう
+  入力ファイルを理解するには[ https://amorphous.tf.chiba-u.jp/lecture.files/ms-workshop/molten.html ]を参照すると良いでしょう
 
 
 □ tutorial_3_temp_and_press
