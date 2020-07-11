@@ -139,24 +139,38 @@ pair_coeff      * * ./eam/Fe-Ni-Cr_fcc.eam.fs Fe Ni Cr
 
 
 □ tutorial_9_elastic_temp
-  0Kでの弾性定数の計算。計算後、python3が使える場合は下記のコマンドで弾性定数の一覧が表示されます。
+  有限温度での弾性定数の計算。計算後、python3が使える場合は下記のコマンドで弾性定数の一覧が表示されます。
   [Shift+右クリック] > [Linuxシェルをここに開く] > python3 compliance_python3.py
-  異なった元素で計算する場合は、data.inで構造、init.modで質量、potential.modでポテンシャルの指定を書き換えてください
+  異なった元素で計算する場合は、data.inで構造、init.modで質量と温度、potential.modでポテンシャルの指定を書き換えてください
 
 ------------------------------------------------------------------------------
 ■ units and potential
   上記の入力ファイルはすべて"units metal"であるため、下に示すポテンシャルが利用可能です。
 
 □ units metal
-・Stillinger-Weber
+
+・Stillinger-Weber (SW)
+
 ・Tersoff
+
 ・EAM, FS
+
 ・MEAM
+
+・ADP
+
 ・REBO, AIREBO
+
 ・COMB
+
 ・EIM
+
+・BOP
+
 ・adiabatic core/shell model
+
 ・Streitz-Mintmire
+
 ・vashishta
 
 
@@ -164,10 +178,15 @@ pair_coeff      * * ./eam/Fe-Ni-Cr_fcc.eam.fs Fe Ni Cr
 
 
 □ units real
+
 ・OPLS
+
 ・OPLS & Amber (https://github.com/agiliopadua/ilff)
+
 ・CHARMM(charmm22)
+
 ・dreiding
+
 ・ReaxFF
 
 
