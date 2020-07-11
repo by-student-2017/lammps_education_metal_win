@@ -19,11 +19,11 @@ variable        nswap        equal 100    # invoke this fix every N steps
 
 # ----- Structure settings -----
 units           metal
-atom_style      atomic
+atom_style      atomic  # "atom_style charge" for COMB3
 atom_modify     map array sort 0 0.0
 dimension       3
 boundary        p p p
-read_data       data.in
+read_data       data.in # "read_data data_comb3.in" for COMB3
 replicate       3 4 4
 
 # ----- Potential settings (MEAM)-----
@@ -89,12 +89,18 @@ pair_coeff      * * eam/fs    ./eam/FeCrW_s.eam.fs Fe Cr W
 #pair_coeff      * * ./adp/Si_Au_Al.adp.txt Si Au Al
 
 # ----- Potential settings (COMB)-----
-#pair_style      eam/alloy
+#pair_style      comb3 polar_off
 #pair_coeff      * * ./comb3/ffield.comb3.NiAlO Ni Al O
+#fix             q2 all qeq/comb 10 1.0e-3 # file fq.out
+# -----(OCuNCHTiZnZr)-----
+#pair_style      comb3 polar_off
+#pair_coeff      * * ./comb3/ffield.comb3.OCuNCHTiZnZr Cu Zn O
+#fix             q2 all qeq/comb 10 1.0e-3 # file fq.out
 
 # ----- Potential settings (BOP)-----
 #pair_style      bop
 #pair_coeff      * * ./bop/CdZnTe_v2.bop.table Cd Zn Te
+#comm_modify cutoff 14.70
 
 # ----- Potential settings (SW)-----
 #pair_style      sw
@@ -106,6 +112,11 @@ pair_coeff      * * eam/fs    ./eam/FeCrW_s.eam.fs Fe Cr W
 # ----- Potential settings (tersoff)-----
 #pair_style      tersoff
 #pair_coeff      * * ./tersoff/BNC.tersoff B N C
+
+# Need to set mass to something, just to satisfy LAMMPS (COMB, BOP, SW or tersoff)
+#mass 1 58.933 # Co
+#mass 2 58.690 # Ni
+#mass 3 51.960 # Cr
 
 neighbor        0.3 bin
 neigh_modify    delay 0 every 1 check yes
