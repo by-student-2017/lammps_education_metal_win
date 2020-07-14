@@ -1,0 +1,118 @@
+EAM database tool
+Xiaowang Zhou (Sandia), xzhou at sandia.gov
+
+based on this paper:
+
+X. W. Zhou, R. A. Johnson, and H. N. G. Wadley, Phys. Rev. B, 69,
+144113 (2004).
+
+This tool can be used to create an DYNAMO-formatted EAM
+setfl file for alloy systems, using any combination 
+of the elements discussed in the paper and listed in
+the EAM_code file, namely:
+
+Cu, Ag, Au, Ni, Pd, Pt, Al, Pb, Fe, Mo, Ta, W, Mg, Co, Ti, Zr
+
+Steps:
+
+1) compile create.f -> a.out  (e.g. gfortran create.f)
+2) edit the input file EAM.input to list 2 or more desired elements to include
+3) a.out < EAM.input will create an EAM *.set file
+4) in DYNAMO or LAMMPS lingo, this is a setfl file
+   that can be used with the LAMMPS pair_style eam/alloy command
+
+------------------------------------------------------------------------------
+EAM_code
+
+Line  1 : element : W
+Line  2 : re      : 2.74084
+Line  3 : fe      : 3.48734
+Line  4 : rhoe    : 37.234847
+Line  5 : ???     : 37.234847 (almost same value as rhoe)
+Line  6 : alpha   : 8.900114
+Line  7 : beta    : 4.746728
+Line  8 : A       : 0.882435
+Line  9 : B       : 1.394592
+Line 10 : kappa   : 0.139209
+Line 11 : lambda  : 0.278417
+Line 12 : Fn0     : -4.946281
+Line 13 : Fn1     : -0.148818
+Line 14 : Fn2     : 0.365057
+Line 15 : Fn3     : -4.432406
+Line 16 : F0      : -4.96
+Line 17 : F1      : 0.00 (fix value ?)
+Line 18 : F2      : 0.661935
+Line 19 : F3      : 0.348147
+Line 20 : eta     : -0.582714
+Line 21 : Fe      : -4.961306
+Line 22 : atomic number : 74
+Line 23 : atomic mass   : 183.84
+Line 24 : F3?     : 0.348147
+Line 25 : beta?   : 4.746728
+Line 26 : lambda? : 0.278417
+Line 27 : ???     : 0.85 (fix value ?)
+Line 28 : ???     : 1.15 (fix value ?)
+------------------------------------------------------------------------------
+[1] https://zrflanl.wordpress.com/category/eam/
+
+There are two format for EAM potential used in DYNAMO 86
+
+gsetflg  format:
+
+Line 1 - 3 : comments
+Line 4     : ntypes
+Line 5     : nrho     drho     nr   dr   rcutoff
+Line 6     : ielem(i)   amass(i)     blat(i)    lat(i)
+Line 7     : embedding function
+c
+Line x     : ielem(j)   amass(j)     blat(j)    lat(j)
+Line x+1   : embedding function
+c
+Line y     : electron density
+c
+Line p1    : pair potential between type1 and type1
+c
+Line p2    : pair potential between type2 and type1
+c
+Line p3    : pair potential between type2 and type 2
+c
+
+Note:
+ntypes     : number of element types in the potential
+nrho       : number of points for the electron density
+drho       : increment of electron density
+nr         : number of points for the pair potential
+dr         : increment of inter-atomic distance
+rcutoff    : cut-off distance
+ielem(i)   : atomic number for element(i)
+amass(i)   : atomic mass for element(i)
+blat(i)    : lattice constant for elemnent(i)
+lat(i)     : lattice type for element(i)
+
+---------------------------
+gfuncflg  format:
+
+Line 1     : comments
+Line 2     : ielem   amass     blat    lat
+Line 3     : nrho   drho   nr   dr    rcutoff
+Line 4     : embedding function
+c
+Line xf   : pair potential
+c
+Line yf   : electron density
+c
+
+Note:
+nrho       : number of points for the electron density
+drho       : increment of electron density
+nr         : number of points for the pair potential
+dr         : increment of inter-atomic distance
+rcutoff    : cut-off distance
+ielem      : atomic number for this element
+amass      : atomic mass for this element
+blat       : lattice constant for this elemnent
+lat        : lattice type for this element
+
+  The pair potential is in the format of rp(r), where, 
+r is inter-atomic distance, p(r) is the real pair potential. 
+  This format is chosen for computational purpose when using code like DYNAMO. 

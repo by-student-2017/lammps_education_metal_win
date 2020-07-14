@@ -1,0 +1,1 @@
+type EAM.input | .\code_cygwin\geam.exe
