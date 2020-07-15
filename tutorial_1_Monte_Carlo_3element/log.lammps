@@ -1,0 +1,1377 @@
+LAMMPS (18 Jun 2019)
+OMP_NUM_THREADS environment is not set. Defaulting to 1 thread. (../comm.cpp:88)
+  using 1 OpenMP thread(s) per MPI task
+# Monte Carlo relaxation of perturbed 3d lattice
+clear
+OMP_NUM_THREADS environment is not set. Defaulting to 1 thread. (../comm.cpp:88)
+  using 1 OpenMP thread(s) per MPI task
+
+# ----- set these parameters -----
+# make sure neigh skin > 2*deltamove
+
+# ----- condition settings -----
+variable        temp         index 298.0 # K
+
+# -----other settings -----
+variable        iter         loop  3000   # number of Monte Carlo moves
+variable        deltaperturb equal 0.2    # max size of initial perturbation per dim
+variable        deltamove    equal 0.1    # max size of MC move in one dimension
+variable        kT           equal 25.7/1000.0/298.0*${temp} # effective T in Boltzmann factor, 25.7/1000 [eV] at 298 K
+variable        kT           equal 25.7/1000.0/298.0*298.0 
+variable        seed         equal 582783 # RNG seed
+
+# problem setup
+
+# ----- Structure settings -----
+units           metal
+atom_style      atomic  # "atom_style charge" for COMB3
+atom_modify     map array sort 0 0.0
+dimension       3
+boundary        p p p
+read_data       data.in # "read_data data_comb3.in" for COMB3
+  orthogonal box = (0 0 0) to (3.62126 3.62126 3.62126)
+  1 by 1 by 1 MPI processor grid
+  reading atoms ...
+  4 atoms
+  read_data CPU = 0.00797701 secs
+replicate       3 4 4
+  orthogonal box = (0 0 0) to (10.8638 14.485 14.485)
+  1 by 1 by 1 MPI processor grid
+  192 atoms
+  replicate CPU = 0.00398993 secs
+
+# ----- Potential settings (MEAM)-----
+# -----HEA (Co-Ni-Cr-Fe-Mn)
+#pair_style      meam/c
+#pair_coeff      * * ./meam/CoNiCrFeMn.HEA.library.meam Co Ni Cr Fe Mn ./meam/CoNiCrFeMn.HEA.meam Co Ni Cr Fe
+# -----(Al-Si-Mg-Cu-Fe)
+#pair_style      meam/c
+#pair_coeff      * * ./meam/Jelinek_2012_meamf AlS SiS MgS CuS FeS ./meam/Jelinek_2012_meam.alsimgcufe AlS SiS MgS CuS
+# -----(Fe-Mn-Si-C)
+#pair_style      meam/c
+#pair_coeff      * * ./meam/CFeMnSi.library.meam Fe Mn Si C ./meam/CFeMnSi.meam Fe Mn Si C
+# -----(Mg-Al-Zn)
+#pair_style      meam/c
+#pair_coeff      * * ./meam/MgAlZn.library.meam Mg Al Zn ./meam/MgAlZn.parameter.meam Mg Al Zn
+# -----(Fe-Ti-C)
+#pair_style      meam/c
+#pair_coeff      * * ./meam/FeTiC.library.meam Fe Ti C ./meam/FeTiC.meam Fe Ti C
+# -----(V-Ni-Ti)
+#pair_style      meam/c
+#pair_coeff      * * ./meam/VNiTi.library.meam V Ni Ti ./meam/VNiTi.meam V Ni Ti
+# -----(AgTaO3)
+#pair_style      meam/c
+#pair_coeff      * * ./meam/AgTaO3.library.meam Ag Ta O ./meam/AgTaO3.meam Ag Ta O
+
+# ----- Potential settings (EAM)-----
+#pair_style      eam/alloy
+#pair_coeff      * * ./eam/FeNiCrCoCu-heafixed.setfl Co Ni Cr Fe
+# -----(Cu-Ag-Au)
+#pair_style      eam/alloy
+#pair_coeff      * * ./eam/CuAgAu_Zhou04.eam.alloy Cu Ag Au
+# -----(Fe-Cu-Ni)
+#pair_style      eam/alloy
+#pair_coeff      * * ./eam/FeCuNi.eam.alloy Fe Cu Ni
+# -----(Al-Mn-Pd)
+#pair_style      eam/alloy
+#pair_coeff      * * ./eam/AlMnPd_Schopf_2012.lammps.EAM_CORRECT Al Mn Pd
+# -----(Ni-Al-Co)
+#pair_style      eam/alloy
+#pair_coeff      * * ./eam/Mishin_updated-Ni-Al-Co-2013.eam.alloy Ni Al Co
+# -----(Nb-Ti-Al)
+#pair_style      eam/alloy
+#pair_coeff      * * ./eam/Farkas_Nb-Ti-Al_1996.eam.alloy Nb Ti Al
+# -----(Ni-Al-H)
+#pair_style      eam/alloy
+#pair_coeff      * * ./eam/NiAlH_jea.eam.alloy Ni Al H
+# -----(Pd-Ag-H)
+#pair_style      eam/alloy
+#pair_coeff      * * ./eam/PdAgH_HybridPd3Ag.eam.alloy Pd Ag H
+# -----(W-H-He)
+#pair_style      eam/alloy
+#pair_coeff      * * ./eam/potential-WHHe-EAM1.eam.alloy W H He
+# -----(Fe-Ni-Cr) (FCC)
+#pair_style      eam/fs
+#pair_coeff      * * ./eam/Fe-Ni-Cr_fcc.eam.fs Fe Ni Cr
+# -----(EAM potentials - Google Sites)
+pair_style      eam/fs
+pair_coeff      * * ./eam/Google_Sites/Cu.lammps.eam Cu Cu Cu
+# -----(Fe-Cr-W)
+#pair_style      hybrid/overlay eam/alloy eam/fs
+#pair_coeff      * * eam/alloy ./eam/FeCrW_d.eam.alloy Fe Cr W
+#pair_coeff      * * eam/fs    ./eam/FeCrW_s.eam.fs Fe Cr W
+# -----(Ag-Au-Cu-Ni-Pd-Pt)
+#pair_style      eam
+#pair_coeff      1 * ./eam/DYNAMO/cuu6.txt
+#pair_coeff      2 * ./eam/DYNAMO/agu6.txt
+#pair_coeff      3 * ./eam/DYNAMO/auu6.txt
+
+# ----- Potential settings (ADP)-----
+#pair_style      adp
+#pair_coeff      * * ./adp/Si_Au_Al.adp.txt Si Au Al
+
+# ----- Potential settings (EIM)-----
+#pair_style      eim
+#pair_coeff      * * Li Na K Rb Cs F Cl Br Id ./eim/BrClCsFIKLiNaRb.ffield.eim F Li Na
+
+# ----- Potential settings (COMB)-----
+#pair_style      comb3 polar_off
+#pair_coeff      * * ./comb3/ffield.comb3.NiAlO Ni Al O
+#fix             q2 all qeq/comb 10 1.0e-3 # file fq.out
+# -----(OCuNCHTiZnZr)
+#pair_style      comb3 polar_off
+#pair_coeff      * * ./comb3/ffield.comb3.OCuNCHTiZnZr Cu Zn O
+#fix             q2 all qeq/comb 10 1.0e-3 # file fq.out
+
+# ----- Potential settings (BOP)-----
+#pair_style      bop
+#pair_coeff      * * ./bop/CdZnTe_v2.bop.table Cd Zn Te
+#comm_modify cutoff 14.70
+
+# ----- Potential settings (SW)-----
+#pair_style      sw
+#pair_coeff      * * ./sw/InGaN.psw In Ga N
+# -----(Cd-Te-Zn-Se-Hg-S)
+#pair_style      sw
+#pair_coeff      * * ./sw/CdTeZnSeHgS0.sw Cd Te Zn
+
+# ----- Potential settings (tersoff)-----
+#pair_style      tersoff
+#pair_coeff      * * ./tersoff/BNC.tersoff B N C
+
+# Need to set mass to something, just to satisfy LAMMPS (COMB, BOP, SW or tersoff)
+#mass 1 58.933 # Co
+#mass 2 58.690 # Ni
+#mass 3 51.960 # Cr
+
+neighbor        0.3 bin
+neigh_modify    delay 0 every 1 check yes
+
+variable        e equal pe
+
+# ----- Calculation -----
+# run 0 to get energy of perfect lattice
+# emin = minimum energy
+run             0
+WARNING: No fixes defined, atoms won't move (../verlet.cpp:55)
+Neighbor list info ...
+  update every 1 steps, delay 0 steps, check yes
+  max neighbors/atom: 2000, page size: 100000
+  master list distance cutoff = 6.8
+  ghost atom cutoff = 6.8
+  binsize = 3.4, bins = 4 5 5
+  1 neighbor lists, perpetual/occasional/extra = 1 0 0
+  (1) pair eam/fs, perpetual
+      attributes: half, newton on
+      pair build: half/bin/atomonly/newton
+      stencil: half/bin/3d/newton
+      bin: standard
+Per MPI rank memory allocation (min/avg/max) = 2.996 | 2.996 | 2.996 Mbytes
+Step Temp E_pair E_mol TotEng Press 
+       0            0   -679.49658            0   -679.49658   -29182.948 
+Loop time of 0 on 1 procs for 0 steps with 192 atoms
+
+0.0% CPU use with 1 MPI tasks x 1 OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 0          | 0          | 0          |   0.0 |  0.00
+Neigh   | 0          | 0          | 0          |   0.0 |  0.00
+Comm    | 0          | 0          | 0          |   0.0 |  0.00
+Output  | 0          | 0          | 0          |   0.0 |  0.00
+Modify  | 0          | 0          | 0          |   0.0 |  0.00
+Other   |            | 0          |            |       |  0.00
+
+Nlocal:    192 ave 192 max 192 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Nghost:    1270 ave 1270 max 1270 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Neighs:    12864 ave 12864 max 12864 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+
+Total # of neighbors = 12864
+Ave neighs/atom = 67
+Neighbor list builds = 0
+Dangerous builds = 0
+variable        emin equal $e
+variable        emin equal -679.49658483715
+
+# disorder the system
+# estart = initial energy
+
+variable        x atom x+v_deltaperturb*random(-1.0,1.0,${seed})
+variable        x atom x+v_deltaperturb*random(-1.0,1.0,582783)
+variable        y atom y+v_deltaperturb*random(-1.0,1.0,${seed})
+variable        y atom y+v_deltaperturb*random(-1.0,1.0,582783)
+variable        z atom z+v_deltaperturb*random(-1.0,1.0,${seed})
+variable        z atom z+v_deltaperturb*random(-1.0,1.0,582783)
+
+set             group all x v_x
+  192 settings made for x
+set             group all y v_y
+  192 settings made for y
+set             group all z v_z
+  192 settings made for z
+
+# ----- Output setting -----
+dump            d1 all cfg 100 cfg/run.*.cfg mass type xs ys zs id type
+dump_modify     d1 element Fe Cr W
+#dump_modify     d1 element Co Ni Cr Fe # Co-Ni-Cr-Fe-Mn
+#dump_modify     d1 element Al Si Mg Cu   # Al-Si-Mg-Cu-Fe
+#dump_modify     d1 element Fe Mn Si C   # Fe-Mn-Si-C
+
+#dump           1 all atom 25 dump.mc
+
+#dump           2 all image 25 image.*.jpg type type #               zoom 1.6 adiam 1.0
+#dump_modify    2 pad 5
+
+#dump           3 all movie 25 movie.mpg type type #               zoom 1.6 adiam 1.0
+#dump_modify    3 pad 5
+
+variable        elast equal $e
+variable        elast equal -679.49658483715
+thermo_style    custom step v_emin v_elast pe
+
+run             0
+WARNING: No fixes defined, atoms won't move (../verlet.cpp:55)
+Per MPI rank memory allocation (min/avg/max) = 4.256 | 4.256 | 4.256 Mbytes
+Step v_emin v_elast PotEng 
+       0   -679.49658   -679.49658   -652.91311 
+Loop time of 0 on 1 procs for 0 steps with 192 atoms
+
+0.0% CPU use with 1 MPI tasks x 1 OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 0          | 0          | 0          |   0.0 |  0.00
+Neigh   | 0          | 0          | 0          |   0.0 |  0.00
+Comm    | 0          | 0          | 0          |   0.0 |  0.00
+Output  | 0          | 0          | 0          |   0.0 |  0.00
+Modify  | 0          | 0          | 0          |   0.0 |  0.00
+Other   |            | 0          |            |       |  0.00
+
+Nlocal:    192 ave 192 max 192 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Nghost:    1270 ave 1270 max 1270 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Neighs:    10805 ave 10805 max 10805 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+
+Total # of neighbors = 10805
+Ave neighs/atom = 56.276
+Neighbor list builds = 0
+Dangerous builds = 0
+
+variable        estart equal $e
+variable        estart equal -652.913113226604
+variable        elast equal $e
+variable        elast equal -652.913113226604
+
+# ----- loop over Monte Carlo moves -----
+
+variable        naccept equal 0
+variable        increment equal v_naccept+1
+variable        irandom equal floor(atoms*random(0.0,1.0,${seed})+1)
+variable        irandom equal floor(atoms*random(0.0,1.0,582783)+1)
+variable        rn equal random(0.0,1.0,${seed})
+variable        rn equal random(0.0,1.0,582783)
+variable        boltzfactor equal "exp(atoms*(v_elast - v_e) / v_kT)"
+variable        xnew equal x[v_i]+v_deltamove*random(-1.0,1.0,${seed})
+variable        xnew equal x[v_i]+v_deltamove*random(-1.0,1.0,582783)
+variable        ynew equal y[v_i]+v_deltamove*random(-1.0,1.0,${seed})
+variable        ynew equal y[v_i]+v_deltamove*random(-1.0,1.0,582783)
+variable        znew equal z[v_i]+v_deltamove*random(-1.0,1.0,${seed})
+variable        znew equal z[v_i]+v_deltamove*random(-1.0,1.0,582783)
+variable        xi equal x[v_i]
+variable        yi equal y[v_i]
+variable        zi equal z[v_i]
+
+label           loop
+
+variable        i equal ${irandom}
+variable        i equal 128
+
+variable        x0 equal ${xi}
+variable        x0 equal 5.6307220679906
+variable        y0 equal ${yi}
+variable        y0 equal 7.42778908808136
+variable        z0 equal ${zi}
+variable        z0 equal 8.85446400268298
+
+set             atom $i x ${xnew}
+set             atom 128 x ${xnew}
+set             atom 128 x 5.66089869562656
+  1 settings made for x
+set             atom $i y ${ynew}
+set             atom 128 y ${ynew}
+set             atom 128 y 7.34034211237335
+  1 settings made for y
+set             atom $i z ${znew}
+set             atom 128 z ${znew}
+set             atom 128 z 8.92286833150607
+  1 settings made for z
+
+run             1 pre no post no
+Step v_emin v_elast PotEng 
+       0   -679.49658   -652.91311   -652.91311 
+       1   -679.49658   -652.91311   -652.95018 
+Loop time of 0.00398898 on 1 procs for 1 steps with 192 atoms
+
+
+if "$e <= ${elast}" then   "variable elast equal $e"   "variable naccept equal ${increment}" elif "${rn} <= ${boltzfactor}"   "variable elast equal $e"   "variable naccept equal ${increment}" else   "set atom $i x ${x0}"   "set atom $i y ${y0}"   "set atom $i z ${z0}"
+variable elast equal $e
+variable elast equal -652.95017776145
+variable naccept equal ${increment}
+variable naccept equal 1
+
+next            iter
+jump            SELF loop
+
+variable        i equal ${irandom}
+variable        i equal 30
+
+variable        x0 equal ${xi}
+variable        x0 equal 5.36481613937885
+variable        y0 equal ${yi}
+variable        y0 equal 8.86225521190387
+variable        z0 equal ${zi}
+variable        z0 equal 0.0146368741989136
+
+set             atom $i x ${xnew}
+set             atom 30 x ${xnew}
+set             atom 30 x 5.45852150742084
+  1 settings made for x
+set             atom $i y ${ynew}
+set             atom 30 y ${ynew}
+set             atom 30 y 8.8519356928609
+  1 settings made for y
+set             atom $i z ${znew}
+set             atom 30 z ${znew}
+set             atom 30 z -0.0429550886154175
+  1 settings made for z
+
+run             1 pre no post no
+Step v_emin v_elast PotEng 
+       1   -679.49658   -652.95018   -652.95018 
+       2   -679.49658   -652.95018   -652.92854 
+Loop time of 0.00199699 on 1 procs for 1 steps with 192 atoms
+
+
+if "$e <= ${elast}" then   "variable elast equal $e"   "variable naccept equal ${increment}" elif "${rn} <= ${boltzfactor}"   "variable elast equal $e"   "variable naccept equal ${increment}" else   "set atom $i x ${x0}"   "set atom $i y ${y0}"   "set atom $i z ${z0}"
+set atom $i x ${x0}
+set atom 30 x ${x0}
+set atom 30 x 5.36481613937885
+  1 settings made for x
+set atom $i y ${y0}
+set atom 30 y ${y0}
+set atom 30 y 8.86225521190387
+  1 settings made for y
+set atom $i z ${z0}
+set atom 30 z ${z0}
+set atom 30 z 0.0146368741989136
+  1 settings made for z
+
+next            iter
+jump            SELF loop
+
+variable        i equal ${irandom}
+variable        i equal 137
+
+variable        x0 equal ${xi}
+variable        x0 equal 3.72144651213837
+variable        y0 equal ${yi}
+variable        y0 equal 10.7213888585434
+variable        z0 equal ${zi}
+variable        z0 equal 7.09603092272186
+
+set             atom $i x ${xnew}
+set             atom 137 x ${xnew}
+set             atom 137 x 3.67363941470337
+  1 settings made for x
+set             atom $i y ${ynew}
+set             atom 137 y ${ynew}
+set             atom 137 y 10.6949139535294
+  1 settings made for y
+set             atom $i z ${znew}
+set             atom 137 z ${znew}
+set             atom 137 z 7.02941414911652
+  1 settings made for z
+
+run             1 pre no post no
+Step v_emin v_elast PotEng 
+       2   -679.49658   -652.95018   -652.92854 
+       3   -679.49658   -652.95018   -652.90825 
+Loop time of 0.00199485 on 1 procs for 1 steps with 192 atoms
+
+
+if "$e <= ${elast}" then   "variable elast equal $e"   "variable naccept equal ${increment}" elif "${rn} <= ${boltzfactor}"   "variable elast equal $e"   "variable naccept equal ${increment}" else   "set atom $i x ${x0}"   "set atom $i y ${y0}"   "set atom $i z ${z0}"
+set atom $i x ${x0}
+set atom 137 x ${x0}
+set atom 137 x 3.72144651213837
+  1 settings made for x
+set atom $i y ${y0}
+set atom 137 y ${y0}
+set atom 137 y 10.7213888585434
+  1 settings made for y
+set atom $i z ${z0}
+set atom 137 z ${z0}
+set atom 137 z 7.09603092272186
+  1 settings made for z
+
+next            iter
+jump            SELF loop
+
+variable        i equal ${irandom}
+variable        i equal 19
+
+variable        x0 equal ${xi}
+variable        x0 equal 3.46824502745819
+variable        y0 equal ${yi}
+variable        y0 equal 5.35914566341907
+variable        z0 equal ${zi}
+variable        z0 equal 1.86865797067004
+
+set             atom $i x ${xnew}
+set             atom 19 x ${xnew}
+set             atom 19 x 3.41198434630585
+  1 settings made for x
+set             atom $i y ${ynew}
+set             atom 19 y ${ynew}
+set             atom 19 y 5.33842251125842
+  1 settings made for y
+set             atom $i z ${znew}
+set             atom 19 z ${znew}
+set             atom 19 z 1.85460604453403
+  1 settings made for z
+
+run             1 pre no post no
+Step v_emin v_elast PotEng 
+       3   -679.49658   -652.95018   -652.90825 
+       4   -679.49658   -652.95018   -652.83331 
+Loop time of 0.00398779 on 1 procs for 1 steps with 192 atoms
+
+
+if "$e <= ${elast}" then   "variable elast equal $e"   "variable naccept equal ${increment}" elif "${rn} <= ${boltzfactor}"   "variable elast equal $e"   "variable naccept equal ${increment}" else   "set atom $i x ${x0}"   "set atom $i y ${y0}"   "set atom $i z ${z0}"
+set atom $i x ${x0}
+set atom 19 x ${x0}
+set atom 19 x 3.46824502745819
+  1 settings made for x
+set atom $i y ${y0}
+set atom 19 y ${y0}
+set atom 19 y 5.35914566341907
+  1 settings made for y
+set atom $i z ${z0}
+set atom 19 z ${z0}
+set atom 19 z 1.86865797067004
+  1 settings made for z
+
+next            iter
+jump            SELF loop
+
+variable        i equal ${irandom}
+variable        i equal 157
+
+variable        x0 equal ${xi}
+variable        x0 equal 10.7423334777222
+variable        y0 equal ${yi}
+variable        y0 equal 3.72680601874542
+variable        z0 equal ${zi}
+variable        z0 equal 11.0017321765289
+
+set             atom $i x ${xnew}
+set             atom 157 x ${xnew}
+set             atom 157 x 10.757816046463
+  1 settings made for x
+set             atom $i y ${ynew}
+set             atom 157 y ${ynew}
+set             atom 157 y 3.81802050868225
+  1 settings made for y
+set             atom $i z ${znew}
+set             atom 157 z ${znew}
+set             atom 157 z 11.0767333805428
+  1 settings made for z
+
+run             1 pre no post no
+Step v_emin v_elast PotEng 
+       4   -679.49658   -652.95018   -652.83331 
+       5   -679.49658   -652.95018   -652.86689 
+Loop time of 0.00371289 on 1 procs for 1 steps with 192 atoms
+
+
+if "$e <= ${elast}" then   "variable elast equal $e"   "variable naccept equal ${increment}" elif "${rn} <= ${boltzfactor}"   "variable elast equal $e"   "variable naccept equal ${increment}" else   "set atom $i x ${x0}"   "set atom $i y ${y0}"   "set atom $i z ${z0}"
+set atom $i x ${x0}
+set atom 157 x ${x0}
+set atom 157 x 10.7423334777222
+  1 settings made for x
+set atom $i y ${y0}
+set atom 157 y ${y0}
+set atom 157 y 3.72680601874542
+  1 settings made for y
+set atom $i z ${z0}
+set atom 157 z ${z0}
+set atom 157 z 11.0017321765289
+  1 settings made for z
+
+next            iter
+jump            SELF loop
+
+variable        i equal ${irandom}
+variable        i equal 93
+
+variable        x0 equal ${xi}
+variable        x0 equal 7.37712435324097
+variable        y0 equal ${yi}
+variable        y0 equal 10.9915106713638
+variable        z0 equal ${zi}
+variable        z0 equal 3.5295418242569
+
+set             atom $i x ${xnew}
+set             atom 93 x ${xnew}
+set             atom 93 x 7.41849822599793
+  1 settings made for x
+set             atom $i y ${ynew}
+set             atom 93 y ${ynew}
+set             atom 93 y 11.0560146272049
+  1 settings made for y
+set             atom $i z ${znew}
+set             atom 93 z ${znew}
+set             atom 93 z 3.51009535590363
+  1 settings made for z
+
+run             1 pre no post no
+Step v_emin v_elast PotEng 
+       5   -679.49658   -652.95018   -652.86689 
+       6   -679.49658   -652.95018   -652.70457 
+Loop time of 0.00299001 on 1 procs for 1 steps with 192 atoms
+
+
+if "$e <= ${elast}" then   "variable elast equal $e"   "variable naccept equal ${increment}" elif "${rn} <= ${boltzfactor}"   "variable elast equal $e"   "variable naccept equal ${increment}" else   "set atom $i x ${x0}"   "set atom $i y ${y0}"   "set atom $i z ${z0}"
+set atom $i x ${x0}
+set atom 93 x ${x0}
+set atom 93 x 7.37712435324097
+  1 settings made for x
+set atom $i y ${y0}
+set atom 93 y ${y0}
+set atom 93 y 10.9915106713638
+  1 settings made for y
+set atom $i z ${z0}
+set atom 93 z ${z0}
+set atom 93 z 3.5295418242569
+  1 settings made for z
+
+next            iter
+jump            SELF loop
+
+variable        i equal ${irandom}
+variable        i equal 174
+
+variable        x0 equal ${xi}
+variable        x0 equal 5.50113520447284
+variable        y0 equal ${yi}
+variable        y0 equal 9.17415632827502
+variable        z0 equal ${zi}
+variable        z0 equal 10.7992461621628
+
+set             atom $i x ${xnew}
+set             atom 174 x ${xnew}
+set             atom 174 x 5.57824756924182
+  1 settings made for x
+set             atom $i y ${ynew}
+set             atom 174 y ${ynew}
+set             atom 174 y 9.21917163951617
+  1 settings made for y
+set             atom $i z ${znew}
+set             atom 174 z ${znew}
+set             atom 174 z 10.7527417719231
+  1 settings made for z
+
+run             1 pre no post no
+Step v_emin v_elast PotEng 
+       6   -679.49658   -652.95018   -652.70457 
+       7   -679.49658   -652.95018    -652.6955 
+Loop time of 0.0029912 on 1 procs for 1 steps with 192 atoms
+
+
+if "$e <= ${elast}" then   "variable elast equal $e"   "variable naccept equal ${increment}" elif "${rn} <= ${boltzfactor}"   "variable elast equal $e"   "variable naccept equal ${increment}" else   "set atom $i x ${x0}"   "set atom $i y ${y0}"   "set atom $i z ${z0}"
+set atom $i x ${x0}
+set atom 174 x ${x0}
+set atom 174 x 5.50113520447284
+  1 settings made for x
+set atom $i y ${y0}
+set atom 174 y ${y0}
+set atom 174 y 9.17415632827502
+  1 settings made for y
+set atom $i z ${z0}
+set atom 174 z ${z0}
+set atom 174 z 10.7992461621628
+  1 settings made for z
+
+next            iter
+jump            SELF loop
+
+variable        i equal ${irandom}
+variable        i equal 45
+
+variable        x0 equal ${xi}
+variable        x0 equal 7.41438672144318
+variable        y0 equal ${yi}
+variable        y0 equal 10.7436862885818
+variable        z0 equal ${zi}
+variable        z0 equal 14.4093603054504
+
+set             atom $i x ${xnew}
+set             atom 45 x ${xnew}
+set             atom 45 x 7.35639810163879
+  1 settings made for x
+set             atom $i y ${ynew}
+set             atom 45 y ${ynew}
+set             atom 45 y 10.7344428241119
+  1 settings made for y
+set             atom $i z ${znew}
+set             atom 45 z ${znew}
+set             atom 45 z 14.5045795003395
+  1 settings made for z
+
+run             1 pre no post no
+Step v_emin v_elast PotEng 
+       7   -679.49658   -652.95018    -652.6955 
+       8   -679.49658   -652.95018   -652.99651 
+Loop time of 0.00398803 on 1 procs for 1 steps with 192 atoms
+
+
+if "$e <= ${elast}" then   "variable elast equal $e"   "variable naccept equal ${increment}" elif "${rn} <= ${boltzfactor}"   "variable elast equal $e"   "variable naccept equal ${increment}" else   "set atom $i x ${x0}"   "set atom $i y ${y0}"   "set atom $i z ${z0}"
+variable elast equal $e
+variable elast equal -652.996506961235
+variable naccept equal ${increment}
+variable naccept equal 2
+
+next            iter
+jump            SELF loop
+
+variable        i equal ${irandom}
+variable        i equal 6
+
+variable        x0 equal ${xi}
+variable        x0 equal 5.46356434647113
+variable        y0 equal ${yi}
+variable        y0 equal 1.82808704400378
+variable        z0 equal ${zi}
+variable        z0 equal 14.3986851850967
+
+set             atom $i x ${xnew}
+set             atom 6 x ${xnew}
+set             atom 6 x 5.44906074825793
+  1 settings made for x
+set             atom $i y ${ynew}
+set             atom 6 y ${ynew}
+set             atom 6 y 1.79003813290912
+  1 settings made for y
+set             atom $i z ${znew}
+set             atom 6 z ${znew}
+set             atom 6 z 14.3250072280388
+  1 settings made for z
+
+run             1 pre no post no
+Step v_emin v_elast PotEng 
+       8   -679.49658   -652.99651   -652.99651 
+       9   -679.49658   -652.99651   -652.92912 
+Loop time of 0.00398898 on 1 procs for 1 steps with 192 atoms
+
+
+if "$e <= ${elast}" then   "variable elast equal $e"   "variable naccept equal ${increment}" elif "${rn} <= ${boltzfactor}"   "variable elast equal $e"   "variable naccept equal ${increment}" else   "set atom $i x ${x0}"   "set atom $i y ${y0}"   "set atom $i z ${z0}"
+set atom $i x ${x0}
+set atom 6 x ${x0}
+set atom 6 x 5.46356434647113
+  1 settings made for x
+set atom $i y ${y0}
+set atom 6 y ${y0}
+set atom 6 y 1.82808704400378
+  1 settings made for y
+set atom $i z ${z0}
+set atom 6 z ${z0}
+set atom 6 z 14.3986851850967
+  1 settings made for z
+
+next            iter
+jump            SELF loop
+
+variable        i equal ${irandom}
+variable        i equal 142
+
+variable        x0 equal ${xi}
+variable        x0 equal 9.17837042434436
+variable        y0 equal ${yi}
+variable        y0 equal 12.5275463046926
+variable        z0 equal ${zi}
+variable        z0 equal 7.10285667974854
+
+set             atom $i x ${xnew}
+set             atom 142 x ${xnew}
+set             atom 142 x 9.17006613834125
+  1 settings made for x
+set             atom $i y ${ynew}
+set             atom 142 y ${ynew}
+set             atom 142 y 12.4522009434598
+  1 settings made for y
+set             atom $i z ${znew}
+set             atom 142 z ${znew}
+set             atom 142 z 7.06075090963745
+  1 settings made for z
+
+run             1 pre no post no
+Step v_emin v_elast PotEng 
+       9   -679.49658   -652.99651   -652.92912 
+      10   -679.49658   -652.99651   -652.83379 
+Loop time of 0.00398898 on 1 procs for 1 steps with 192 atoms
+
+
+if "$e <= ${elast}" then   "variable elast equal $e"   "variable naccept equal ${increment}" elif "${rn} <= ${boltzfactor}"   "variable elast equal $e"   "variable naccept equal ${increment}" else   "set atom $i x ${x0}"   "set atom $i y ${y0}"   "set atom $i z ${z0}"
+set atom $i x ${x0}
+set atom 142 x ${x0}
+set atom 142 x 9.17837042434436
+  1 settings made for x
+set atom $i y ${y0}
+set atom 142 y ${y0}
+set atom 142 y 12.5275463046926
+  1 settings made for y
+set atom $i z ${z0}
+set atom 142 z ${z0}
+set atom 142 z 7.10285667974854
+  1 settings made for z
+
+next            iter
+jump            SELF loop
+
+variable        i equal ${irandom}
+variable        i equal 81
+
+variable        x0 equal ${xi}
+variable        x0 equal 7.20369262297058
+variable        y0 equal ${yi}
+variable        y0 equal 7.19466566641235
+variable        z0 equal ${zi}
+variable        z0 equal 3.49220499793243
+
+set             atom $i x ${xnew}
+set             atom 81 x ${xnew}
+set             atom 81 x 7.26225795347595
+  1 settings made for x
+set             atom $i y ${ynew}
+set             atom 81 y ${ynew}
+set             atom 81 y 7.25941978294754
+  1 settings made for y
+set             atom $i z ${znew}
+set             atom 81 z ${znew}
+set             atom 81 z 3.58037234345627
+  1 settings made for z
+
+run             1 pre no post no
+Step v_emin v_elast PotEng 
+      10   -679.49658   -652.99651   -652.83379 
+      11   -679.49658   -652.99651    -653.0709 
+Loop time of 0.00299382 on 1 procs for 1 steps with 192 atoms
+
+
+if "$e <= ${elast}" then   "variable elast equal $e"   "variable naccept equal ${increment}" elif "${rn} <= ${boltzfactor}"   "variable elast equal $e"   "variable naccept equal ${increment}" else   "set atom $i x ${x0}"   "set atom $i y ${y0}"   "set atom $i z ${z0}"
+variable elast equal $e
+variable elast equal -653.070899342513
+variable naccept equal ${increment}
+variable naccept equal 3
+
+next            iter
+jump            SELF loop
+
+variable        i equal ${irandom}
+variable        i equal 32
+
+variable        x0 equal ${xi}
+variable        x0 equal 5.46361820522815
+variable        y0 equal ${yi}
+variable        y0 equal 7.41360380251312
+variable        z0 equal ${zi}
+variable        z0 equal 1.67131240392047
+
+set             atom $i x ${xnew}
+set             atom 32 x ${xnew}
+set             atom 32 x 5.49890171114474
+  1 settings made for x
+set             atom $i y ${ynew}
+set             atom 32 y ${ynew}
+set             atom 32 y 7.35792444546127
+  1 settings made for y
+set             atom $i z ${znew}
+set             atom 32 z ${znew}
+set             atom 32 z 1.71781287217456
+  1 settings made for z
+
+run             1 pre no post no
+Step v_emin v_elast PotEng 
+      11   -679.49658    -653.0709    -653.0709 
+      12   -679.49658    -653.0709   -653.22884 
+Loop time of 0.00757003 on 1 procs for 1 steps with 192 atoms
+
+
+if "$e <= ${elast}" then   "variable elast equal $e"   "variable naccept equal ${increment}" elif "${rn} <= ${boltzfactor}"   "variable elast equal $e"   "variable naccept equal ${increment}" else   "set atom $i x ${x0}"   "set atom $i y ${y0}"   "set atom $i z ${z0}"
+variable elast equal $e
+variable elast equal -653.228837568049
+variable naccept equal ${increment}
+variable naccept equal 4
+
+next            iter
+jump            SELF loop
+
+variable        i equal ${irandom}
+variable        i equal 11
+
+variable        x0 equal ${xi}
+variable        x0 equal 7.37207421858215
+variable        y0 equal ${yi}
+variable        y0 equal 1.90480458760577
+variable        z0 equal ${zi}
+variable        z0 equal 1.96241531396228
+
+set             atom $i x ${xnew}
+set             atom 11 x ${xnew}
+set             atom 11 x 7.32977870304489
+  1 settings made for x
+set             atom $i y ${ynew}
+set             atom 11 y ${ynew}
+set             atom 11 y 1.90722260499316
+  1 settings made for y
+set             atom $i z ${znew}
+set             atom 11 z ${znew}
+set             atom 11 z 2.00132435584384
+  1 settings made for z
+
+run             1 pre no post no
+Step v_emin v_elast PotEng 
+      12   -679.49658   -653.22884   -653.22884 
+      13   -679.49658   -653.22884    -653.1721 
+Loop time of 0.00299001 on 1 procs for 1 steps with 192 atoms
+
+
+if "$e <= ${elast}" then   "variable elast equal $e"   "variable naccept equal ${increment}" elif "${rn} <= ${boltzfactor}"   "variable elast equal $e"   "variable naccept equal ${increment}" else   "set atom $i x ${x0}"   "set atom $i y ${y0}"   "set atom $i z ${z0}"
+set atom $i x ${x0}
+set atom 11 x ${x0}
+set atom 11 x 7.37207421858215
+  1 settings made for x
+set atom $i y ${y0}
+set atom 11 y ${y0}
+set atom 11 y 1.90480458760577
+  1 settings made for y
+set atom $i z ${z0}
+set atom 11 z ${z0}
+set atom 11 z 1.96241531396228
+  1 settings made for z
+
+next            iter
+jump            SELF loop
+
+variable        i equal ${irandom}
+variable        i equal 170
+
+variable        x0 equal ${xi}
+variable        x0 equal 1.65994031453448
+variable        y0 equal ${yi}
+variable        y0 equal 9.0988549910329
+variable        z0 equal ${zi}
+variable        z0 equal 10.9513716399536
+
+set             atom $i x ${xnew}
+set             atom 170 x ${xnew}
+set             atom 170 x 1.63685455346423
+  1 settings made for x
+set             atom $i y ${ynew}
+set             atom 170 y ${ynew}
+set             atom 170 y 9.08997801168185
+  1 settings made for y
+set             atom $i z ${znew}
+set             atom 170 z ${znew}
+set             atom 170 z 10.9868584334717
+  1 settings made for z
+
+run             1 pre no post no
+Step v_emin v_elast PotEng 
+      13   -679.49658   -653.22884    -653.1721 
+      14   -679.49658   -653.22884   -653.16744 
+Loop time of 0.00498605 on 1 procs for 1 steps with 192 atoms
+
+
+if "$e <= ${elast}" then   "variable elast equal $e"   "variable naccept equal ${increment}" elif "${rn} <= ${boltzfactor}"   "variable elast equal $e"   "variable naccept equal ${increment}" else   "set atom $i x ${x0}"   "set atom $i y ${y0}"   "set atom $i z ${z0}"
+set atom $i x ${x0}
+set atom 170 x ${x0}
+set atom 170 x 1.65994031453448
+  1 settings made for x
+set atom $i y ${y0}
+set atom 170 y ${y0}
+set atom 170 y 9.0988549910329
+  1 settings made for y
+set atom $i z ${z0}
+set atom 170 z ${z0}
+set atom 170 z 10.9513716399536
+  1 settings made for z
+
+next            iter
+jump            SELF loop
+
+variable        i equal ${irandom}
+variable        i equal 143
+
+variable        x0 equal ${xi}
+variable        x0 equal 7.34741303522491
+variable        y0 equal ${yi}
+variable        y0 equal 12.554418820371
+variable        z0 equal ${zi}
+variable        z0 equal 8.86919064147693
+
+set             atom $i x ${xnew}
+set             atom 143 x ${xnew}
+set             atom 143 x 7.3885879834404
+  1 settings made for x
+set             atom $i y ${ynew}
+set             atom 143 y ${ynew}
+set             atom 143 y 12.6389363350766
+  1 settings made for y
+set             atom $i z ${znew}
+set             atom 143 z ${znew}
+set             atom 143 z 8.95653659923297
+  1 settings made for z
+
+run             1 pre no post no
+Step v_emin v_elast PotEng 
+      14   -679.49658   -653.22884   -653.16744 
+      15   -679.49658   -653.22884   -653.34293 
+Loop time of 0.00764799 on 1 procs for 1 steps with 192 atoms
+
+
+if "$e <= ${elast}" then   "variable elast equal $e"   "variable naccept equal ${increment}" elif "${rn} <= ${boltzfactor}"   "variable elast equal $e"   "variable naccept equal ${increment}" else   "set atom $i x ${x0}"   "set atom $i y ${y0}"   "set atom $i z ${z0}"
+variable elast equal $e
+variable elast equal -653.342933983377
+variable naccept equal ${increment}
+variable naccept equal 5
+
+next            iter
+jump            SELF loop
+
+variable        i equal ${irandom}
+variable        i equal 65
+
+variable        x0 equal ${xi}
+variable        x0 equal 3.57068691054535
+variable        y0 equal ${yi}
+variable        y0 equal 3.4912598351593
+variable        z0 equal ${zi}
+variable        z0 equal 3.63863055506897
+
+set             atom $i x ${xnew}
+set             atom 65 x ${xnew}
+set             atom 65 x 3.66434782544327
+  1 settings made for x
+set             atom $i y ${ynew}
+set             atom 65 y ${ynew}
+set             atom 65 y 3.54100737372589
+  1 settings made for y
+set             atom $i z ${znew}
+set             atom 65 z ${znew}
+set             atom 65 z 3.71948206225586
+  1 settings made for z
+
+run             1 pre no post no
+Step v_emin v_elast PotEng 
+      15   -679.49658   -653.34293   -653.34293 
+      16   -679.49658   -653.34293   -653.41307 
+Loop time of 0.00299382 on 1 procs for 1 steps with 192 atoms
+
+
+if "$e <= ${elast}" then   "variable elast equal $e"   "variable naccept equal ${increment}" elif "${rn} <= ${boltzfactor}"   "variable elast equal $e"   "variable naccept equal ${increment}" else   "set atom $i x ${x0}"   "set atom $i y ${y0}"   "set atom $i z ${z0}"
+variable elast equal $e
+variable elast equal -653.413073519275
+variable naccept equal ${increment}
+variable naccept equal 6
+
+next            iter
+jump            SELF loop
+
+variable        i equal ${irandom}
+variable        i equal 33
+
+variable        x0 equal ${xi}
+variable        x0 equal 7.10818714697266
+variable        y0 equal ${yi}
+variable        y0 equal 7.26872720320129
+variable        z0 equal ${zi}
+variable        z0 equal 14.3998120228271
+
+set             atom $i x ${xnew}
+set             atom 33 x ${xnew}
+set             atom 33 x 7.08496909935379
+  1 settings made for x
+set             atom $i y ${ynew}
+set             atom 33 y ${ynew}
+set             atom 33 y 7.23132958013916
+  1 settings made for y
+set             atom $i z ${znew}
+set             atom 33 z ${znew}
+set             atom 33 z 14.359349803112
+  1 settings made for z
+
+run             1 pre no post no
+Step v_emin v_elast PotEng 
+      16   -679.49658   -653.41307   -653.41307 
+      17   -679.49658   -653.41307   -653.37396 
+Loop time of 0.00398803 on 1 procs for 1 steps with 192 atoms
+
+
+if "$e <= ${elast}" then   "variable elast equal $e"   "variable naccept equal ${increment}" elif "${rn} <= ${boltzfactor}"   "variable elast equal $e"   "variable naccept equal ${increment}" else   "set atom $i x ${x0}"   "set atom $i y ${y0}"   "set atom $i z ${z0}"
+set atom $i x ${x0}
+set atom 33 x ${x0}
+set atom 33 x 7.10818714697266
+  1 settings made for x
+set atom $i y ${y0}
+set atom 33 y ${y0}
+set atom 33 y 7.26872720320129
+  1 settings made for y
+set atom $i z ${z0}
+set atom 33 z ${z0}
+set atom 33 z 14.3998120228271
+  1 settings made for z
+
+next            iter
+jump            SELF loop
+
+variable        i equal ${irandom}
+variable        i equal 165
+
+variable        x0 equal ${xi}
+variable        x0 equal 7.14176516134644
+variable        y0 equal ${yi}
+variable        y0 equal 3.42174737254334
+variable        z0 equal ${zi}
+variable        z0 equal 10.9986277043686
+
+set             atom $i x ${xnew}
+set             atom 165 x ${xnew}
+set             atom 165 x 7.05546748239899
+  1 settings made for x
+set             atom $i y ${ynew}
+set             atom 165 y ${ynew}
+set             atom 165 y 3.45048810044479
+  1 settings made for y
+set             atom $i z ${znew}
+set             atom 165 z ${znew}
+set             atom 165 z 10.9221192180977
+  1 settings made for z
+
+run             1 pre no post no
+Step v_emin v_elast PotEng 
+      17   -679.49658   -653.41307   -653.37396 
+      18   -679.49658   -653.41307   -653.31679 
+Loop time of 0.00398278 on 1 procs for 1 steps with 192 atoms
+
+
+if "$e <= ${elast}" then   "variable elast equal $e"   "variable naccept equal ${increment}" elif "${rn} <= ${boltzfactor}"   "variable elast equal $e"   "variable naccept equal ${increment}" else   "set atom $i x ${x0}"   "set atom $i y ${y0}"   "set atom $i z ${z0}"
+set atom $i x ${x0}
+set atom 165 x ${x0}
+set atom 165 x 7.14176516134644
+  1 settings made for x
+set atom $i y ${y0}
+set atom 165 y ${y0}
+set atom 165 y 3.42174737254334
+  1 settings made for y
+set atom $i z ${z0}
+set atom 165 z ${z0}
+set atom 165 z 10.9986277043686
+  1 settings made for z
+
+next            iter
+jump            SELF loop
+
+variable        i equal ${irandom}
+variable        i equal 72
+
+variable        x0 equal ${xi}
+variable        x0 equal 8.96557674033862
+variable        y0 equal ${yi}
+variable        y0 equal 3.67663600245667
+variable        z0 equal ${zi}
+variable        z0 equal 5.54361200157672
+
+set             atom $i x ${xnew}
+set             atom 72 x ${xnew}
+set             atom 72 x 9.05754254682284
+  1 settings made for x
+set             atom $i y ${ynew}
+set             atom 72 y ${ynew}
+set             atom 72 y 3.62110792199326
+  1 settings made for y
+set             atom $i z ${znew}
+set             atom 72 z ${znew}
+set             atom 72 z 5.58447613541156
+  1 settings made for z
+
+run             1 pre no post no
+Step v_emin v_elast PotEng 
+      18   -679.49658   -653.41307   -653.31679 
+      19   -679.49658   -653.41307   -653.42777 
+Loop time of 0.00649714 on 1 procs for 1 steps with 192 atoms
+
+
+if "$e <= ${elast}" then   "variable elast equal $e"   "variable naccept equal ${increment}" elif "${rn} <= ${boltzfactor}"   "variable elast equal $e"   "variable naccept equal ${increment}" else   "set atom $i x ${x0}"   "set atom $i y ${y0}"   "set atom $i z ${z0}"
+variable elast equal $e
+variable elast equal -653.427766797877
+variable naccept equal ${increment}
+variable naccept equal 7
+
+next            iter
+jump            SELF loop
+
+variable        i equal ${irandom}
+variable        i equal 88
+
+variable        x0 equal ${xi}
+variable        x0 equal 1.90363197350818
+variable        y0 equal ${yi}
+variable        y0 equal 10.6682490289078
+variable        z0 equal ${zi}
+variable        z0 equal 5.29517335716754
+
+set             atom $i x ${xnew}
+set             atom 88 x ${xnew}
+set             atom 88 x 1.80629036450702
+  1 settings made for x
+set             atom $i y ${ynew}
+set             atom 88 y ${ynew}
+set             atom 88 y 10.6323255956039
+  1 settings made for y
+set             atom $i z ${znew}
+set             atom 88 z ${znew}
+set             atom 88 z 5.24387990061313
+  1 settings made for z
+
+run             1 pre no post no
+Step v_emin v_elast PotEng 
+      19   -679.49658   -653.42777   -653.42777 
+      20   -679.49658   -653.42777   -653.34008 
+Loop time of 0.00538588 on 1 procs for 1 steps with 192 atoms
+
+
+if "$e <= ${elast}" then   "variable elast equal $e"   "variable naccept equal ${increment}" elif "${rn} <= ${boltzfactor}"   "variable elast equal $e"   "variable naccept equal ${increment}" else   "set atom $i x ${x0}"   "set atom $i y ${y0}"   "set atom $i z ${z0}"
+set atom $i x ${x0}
+set atom 88 x ${x0}
+set atom 88 x 1.90363197350818
+  1 settings made for x
+set atom $i y ${y0}
+set atom 88 y ${y0}
+set atom 88 y 10.6682490289078
+  1 settings made for y
+set atom $i z ${z0}
+set atom 88 z ${z0}
+set atom 88 z 5.29517335716754
+  1 settings made for z
+
+next            iter
+jump            SELF loop
+
+variable        i equal ${irandom}
+variable        i equal 146
+
+variable        x0 equal ${xi}
+variable        x0 equal 1.74123551869708
+variable        y0 equal ${yi}
+variable        y0 equal 1.95285203481036
+variable        z0 equal ${zi}
+variable        z0 equal 11.0475497424469
+
+set             atom $i x ${xnew}
+set             atom 146 x ${xnew}
+set             atom 146 x 1.74891754412967
+  1 settings made for x
+set             atom $i y ${ynew}
+set             atom 146 y ${ynew}
+set             atom 146 y 2.03330584788638
+  1 settings made for y
+set             atom $i z ${znew}
+set             atom 146 z ${znew}
+set             atom 146 z 11.0386525809631
+  1 settings made for z
+
+run             1 pre no post no
+Step v_emin v_elast PotEng 
+      20   -679.49658   -653.42777   -653.34008 
+      21   -679.49658   -653.42777   -653.32451 
+Loop time of 0.00499105 on 1 procs for 1 steps with 192 atoms
+
+
+if "$e <= ${elast}" then   "variable elast equal $e"   "variable naccept equal ${increment}" elif "${rn} <= ${boltzfactor}"   "variable elast equal $e"   "variable naccept equal ${increment}" else   "set atom $i x ${x0}"   "set atom $i y ${y0}"   "set atom $i z ${z0}"
+set atom $i x ${x0}
+set atom 146 x ${x0}
+set atom 146 x 1.74123551869708
+  1 settings made for x
+set atom $i y ${y0}
+set atom 146 y ${y0}
+set atom 146 y 1.95285203481036
+  1 settings made for y
+set atom $i z ${z0}
+set atom 146 z ${z0}
+set atom 146 z 11.0475497424469
+  1 settings made for z
+
+next            iter
+jump            SELF loop
+
+variable        i equal ${irandom}
+variable        i equal 168
+
+variable        x0 equal ${xi}
+variable        x0 equal 8.97213687522632
+variable        y0 equal ${yi}
+variable        y0 equal 3.44904210368347
+variable        z0 equal ${zi}
+variable        z0 equal 12.6572768392461
+
+set             atom $i x ${xnew}
+set             atom 168 x ${xnew}
+set             atom 168 x 8.98799945934039
+  1 settings made for x
+set             atom $i y ${ynew}
+set             atom 168 y ${ynew}
+set             atom 168 y 3.5188920239563
+  1 settings made for y
+set             atom $i z ${znew}
+set             atom 168 z ${znew}
+set             atom 168 z 12.6378759446042
+  1 settings made for z
+
+run             1 pre no post no
+Step v_emin v_elast PotEng 
+      21   -679.49658   -653.42777   -653.32451 
+      22   -679.49658   -653.42777   -653.50669 
+Loop time of 0.00299406 on 1 procs for 1 steps with 192 atoms
+
+
+if "$e <= ${elast}" then   "variable elast equal $e"   "variable naccept equal ${increment}" elif "${rn} <= ${boltzfactor}"   "variable elast equal $e"   "variable naccept equal ${increment}" else   "set atom $i x ${x0}"   "set atom $i y ${y0}"   "set atom $i z ${z0}"
+variable elast equal $e
+variable elast equal -653.506692774351
+variable naccept equal ${increment}
+variable naccept equal 8
+
+next            iter
+jump            SELF loop
+
+variable        i equal ${irandom}
+variable        i equal 127
+
+variable        x0 equal ${xi}
+variable        x0 equal 3.52422749797058
+variable        y0 equal ${yi}
+variable        y0 equal 8.91836411578876
+variable        z0 equal ${zi}
+variable        z0 equal 8.98726143462878
+
+set             atom $i x ${xnew}
+set             atom 127 x ${xnew}
+set             atom 127 x 3.46338925162506
+  1 settings made for x
+set             atom $i y ${ynew}
+set             atom 127 y ${ynew}
+set             atom 127 y 8.97471831662875
+  1 settings made for y
+set             atom $i z ${znew}
+set             atom 127 z ${znew}
+set             atom 127 z 9.03887245280963
+  1 settings made for z
+
+run             1 pre no post no
+Step v_emin v_elast PotEng 
+      22   -679.49658   -653.50669   -653.50669 
+      23   -679.49658   -653.50669    -653.5215 
+Loop time of 0.004987 on 1 procs for 1 steps with 192 atoms
+
+
+if "$e <= ${elast}" then   "variable elast equal $e"   "variable naccept equal ${increment}" elif "${rn} <= ${boltzfactor}"   "variable elast equal $e"   "variable naccept equal ${increment}" else   "set atom $i x ${x0}"   "set atom $i y ${y0}"   "set atom $i z ${z0}"
+variable elast equal $e
+variable elast equal -653.521502787501
+variable naccept equal ${increment}
+variable naccept equal 9
+
+next            iter
+jump            SELF loop
+
+variable        i equal ${irandom}
+variable        i equal 50
+
+variable        x0 equal ${xi}
+variable        x0 equal 1.99804177308398
+variable        y0 equal ${yi}
+variable        y0 equal 1.7762501480611
+variable        z0 equal ${zi}
+variable        z0 equal 3.4379705647583
+
+set             atom $i x ${xnew}
+set             atom 50 x ${xnew}
+set             atom 50 x 2.09745628857928
+  1 settings made for x
+set             atom $i y ${ynew}
+set             atom 50 y ${ynew}
+set             atom 50 y 1.74558694386798
+  1 settings made for y
+set             atom $i z ${znew}
+set             atom 50 z ${znew}
+set             atom 50 z 3.47259164849472
+  1 settings made for z
+
+run             1 pre no post no
+Step v_emin v_elast PotEng 
+      23   -679.49658    -653.5215    -653.5215 
+      24   -679.49658    -653.5215   -653.44366 
+Loop time of 0.00609779 on 1 procs for 1 steps with 192 atoms
+
+
+if "$e <= ${elast}" then   "variable elast equal $e"   "variable naccept equal ${increment}" elif "${rn} <= ${boltzfactor}"   "variable elast equal $e"   "variable naccept equal ${increment}" else   "set atom $i x ${x0}"   "set atom $i y ${y0}"   "set atom $i z ${z0}"
+set atom $i x ${x0}
+set atom 50 x ${x0}
+set atom 50 x 1.99804177308398
+  1 settings made for x
+set atom $i y ${y0}
+set atom 50 y ${y0}
+set atom 50 y 1.7762501480611
+  1 settings made for y
+set atom $i z ${z0}
+set atom 50 z ${z0}
+set atom 50 z 3.4379705647583
+  1 settings made for z
+
+next            iter
+jump            SELF loop
+
+variable        i equal ${irandom}
+variable        i equal 44
+
+variable        x0 equal ${xi}
+variable        x0 equal 5.47657255951434
+variable        y0 equal ${yi}
+variable        y0 equal 10.7129272401199
+variable        z0 equal ${zi}
+variable        z0 equal 1.95319192433673
+
+set             atom $i x ${xnew}
+set             atom 44 x ${xnew}
+set             atom 44 x 5.486056683698
+  1 settings made for x
+set             atom $i y ${ynew}
+set             atom 44 y ${ynew}
+set             atom 44 y 10.8073285400734
+  1 settings made for y
+set             atom $i z ${znew}
+set             atom 44 z ${znew}
+set             atom 44 z 2.03047266030627
+  1 settings made for z
+
+run             1 pre no post no
+Step v_emin v_elast PotEng 
+      24   -679.49658    -653.5215   -653.44366 
+      25   -679.49658    -653.5215   -653.50924 
+Loop time of 0.00398612 on 1 procs for 1 steps with 192 atoms
+

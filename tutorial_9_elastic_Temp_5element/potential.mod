@@ -7,10 +7,10 @@ reset_timestep 0
 # ----- Potential settings (MEAM)-----
 # -----HEA (Co-Ni-Cr-Fe-Mn)
 pair_style      meam/c
-pair_coeff      * * ./meam/CoNiCrFeMn.HEA.library.meam Co Ni Cr Fe Mn ./meam/CoNiCrFeMn.HEA.meam Co Ni Cr Fe
+pair_coeff      * * ./meam/CoNiCrFeMn.HEA.library.meam Co Ni Cr Fe Mn ./meam/CoNiCrFeMn.HEA.meam Co Ni Cr Fe Mn
 # -----(Al-Si-Mg-Cu-Fe)
 #pair_style      meam/c
-#pair_coeff      * * ./meam/Jelinek_2012_meamf AlS SiS MgS CuS FeS ./meam/Jelinek_2012_meam.alsimgcufe AlS SiS MgS CuS
+#pair_coeff      * * ./meam/Jelinek_2012_meamf AlS SiS MgS CuS FeS ./meam/Jelinek_2012_meam.alsimgcufe AlS SiS MgS CuS Fs
 
 # ----- Potential settings (EAM)-----
 # -----(Ag-Au-Cu-Ni-Pd-Pt)
