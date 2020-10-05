@@ -167,6 +167,26 @@ jump            SELF loop
 variable        nb equal nbuild
 variable        nbuild equal ${nb}
 
+# ----- atom count -----
+variable        type1 atom "type==1"
+variable        type2 atom "type==2"
+variable        type3 atom "type==3"
+variable        type4 atom "type==4"
+group           type1 dynamic all var type1
+group           type2 dynamic all var type2
+group           type3 dynamic all var type3
+group           type4 dynamic all var type4
+variable        na1  equal count(type1)
+variable        na2  equal count(type2)
+variable        na3  equal count(type3)
+variable        na4  equal count(type4)
+variable        c1   equal v_na1/atoms
+variable        c2   equal v_na2/atoms
+variable        c3   equal v_na3/atoms
+variable        c4   equal v_na4/atoms
+variable        entropy equal "-v_kT*(v_c1*ln(v_c1) + v_c2*ln(v_c2) + v_c3*ln(v_c3) + v_c4*ln(v_c))"
+variable        gibbs equal "v_e - v_entropy"
+
 run             0
 
 print           "MC stats:"
@@ -175,6 +195,9 @@ print           "  final energy = $e [eV]"
 print           "  minimum energy of perfect lattice = ${emin} [eV]"
 print           "  accepted MC moves = ${naccept}"
 print           "  neighbor list rebuilds = ${nbuild}"
+
+print           "  entropy, S = ${entropy} [eV] at ${temp} K"
+print           "  Gibbs free energy, G = E - T*S = ${gibbs} [eV]"
 
 # ----- Output restart data -----
 write_data data.in.restart
