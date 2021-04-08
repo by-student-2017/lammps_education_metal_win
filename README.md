@@ -21,7 +21,7 @@
 2. cfg folder > click *.cfg
 
 
-## example (other potential)
+## How to change to another potential
 
 #----------(before)----------
 
@@ -99,6 +99,7 @@ pair_coeff      * * ./eam/Fe-Ni-Cr_fcc.eam.fs Fe Ni Cr
 ## Reference_eam_database (Generalized EAM = GEAM)
 * official version: Cu, Ag, Au, Ni, Pd, Pt, Al, Pb, Fe, Mo, Ta, W, Mg, Co, Ti, Zr
 * test version: V, Ca, Na, Cr, Mn, Nb, Ir, Sr, Rh, Ru, Os, Hf, Re, Zn
+* Any combination of these is possible. Don't expect too much about the "test version".
 
 ------------------------------------------------------------------------------
 # units and potential
