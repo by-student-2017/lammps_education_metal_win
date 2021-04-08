@@ -66,36 +66,6 @@ pair_coeff      * * ./eam/Fe-Ni-Cr_fcc.eam.fs Fe Ni Cr
 #---------------------------
 
 
-## tutorial_1_Monte_Carlo
-
-
-## tutorial_2_MSD_and_RDF
-
-
-## tutorial_3_temp_and_press
-
-
-## tutorial_4_strain
-
-
-## tutorial_5_melt_and_cool
-
-
-## tutorial_6_thermal
-
-
-## tutorial_7_viscosity
-
-
-## tutorial_8_elastic
-
-
-## tutorial_9_elastic_temp
-
-
-## tutorial_10_phonon
-
-
 ## Reference_eam_database (Generalized EAM = GEAM)
 * official version: Cu, Ag, Au, Ni, Pd, Pt, Al, Pb, Fe, Mo, Ta, W, Mg, Co, Ti, Zr
 * test version: V, Ca, Na, Cr, Mn, Nb, Ir, Sr, Rh, Ru, Os, Hf, Re, Zn
