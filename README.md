@@ -17,6 +17,7 @@
 
 
 ## Usage
+* (e.g., tutorial_1_Monte_Carlo_3element_swap)
 1. click run.bat
 2. cfg folder > click *.cfg
 
@@ -64,7 +65,6 @@ pair_coeff      * * ./eam/Fe-Ni-Cr_fcc.eam.fs Fe Ni Cr
 #pair_coeff      * * eam/fs    ./eam/FeCrW_s.eam.fs Fe Cr W
 
 #---------------------------
-
 
 ## Reference_eam_database (Generalized EAM = GEAM)
 * official version: Cu, Ag, Au, Ni, Pd, Pt, Al, Pb, Fe, Mo, Ta, W, Mg, Co, Ti, Zr
