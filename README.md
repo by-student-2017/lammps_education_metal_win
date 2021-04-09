@@ -17,7 +17,6 @@
 
 
 ## Usage
-* (e.g., tutorial_1_Monte_Carlo_3element_swap)
 1. click run.bat
 2. cfg folder > click *.cfg
 
