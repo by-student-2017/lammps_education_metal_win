@@ -74,10 +74,18 @@ pair_coeff      * * ../potentials/eam/Fe-Ni-Cr_fcc.eam.fs Fe Ni Cr
 * test version: V, Ca, Na, Cr, Mn, Nb, Ir, Sr, Rh, Ru, Os, Hf, Re, Zn
 * Any combination of these is possible. Don't expect too much about the "test version".
 
-## tutorial_8_elastic and tutorial_9_elastic_Temp
+## tutorial_8_elastic
 1. gedit potential.mod
 2. run.bat
-* gedit init.mod (set mass for sw, tersoff or bop potential)
+* gedit potential.mod (set potential)
+* gedit init.mod (set masses for sw, tersoff or bop potential)
+
+## tutorial_9_elastic_Temp
+1. gedit potential.mod
+2. gedit init.mod
+3. run.bat
+* gedit potential.mod (set potential)
+* gedit init.mod (set masses)
 
 ------------------------------------------------------------------------------
 # units and potential
