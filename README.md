@@ -25,7 +25,7 @@
 
 
 ## How to change to another potential
-1. gedit in.lmp
+1. notepad in.lmp
 
 #----------(before)----------
 
@@ -75,17 +75,17 @@ pair_coeff      * * ../potentials/eam/Fe-Ni-Cr_fcc.eam.fs Fe Ni Cr
 * Any combination of these is possible. Don't expect too much about the "test version".
 
 ## tutorial_8_elastic
-1. gedit potential.mod
+1. notepad potential.mod
 2. run.bat
-* gedit potential.mod (set potential)
-* gedit init.mod (set masses for sw, tersoff or bop potential)
+* notepad potential.mod (set potential)
+* notepad init.mod (set masses for sw, tersoff or bop potential)
 
 ## tutorial_9_elastic_Temp
-1. gedit potential.mod
-2. gedit init.mod
+1. notepad potential.mod
+2. notepad init.mod
 3. run.bat
-* gedit potential.mod (set potential)
-* gedit init.mod (set masses)
+* notepad potential.mod (set potential)
+* notepad init.mod (set masses)
 
 ------------------------------------------------------------------------------
 # units and potential
