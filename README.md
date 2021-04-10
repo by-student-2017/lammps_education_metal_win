@@ -5,15 +5,15 @@
 
 
 ## Installation
-1. LAMMPS Windows Installer Repository (http://packages.lammps.org/windows.html) > "their own download area" > ”64bit"
+1. LAMMPS Windows Installer Repository (http://packages.lammps.org/windows.html) > their own download area > 64bit
   (https://rpm.lammps.org/windows/admin/64bit/index.html)
 2. LAMMPS-64bit-18Jun2019.exe (https://rpm.lammps.org/windows/admin/64bit/LAMMPS-64bit-18Jun2019.exe)
 
 
 ## gnuplot and Ovito
-* gnuplot（http://www.gnuplot.info/）
+* gnuplot (http://www.gnuplot.info/)
   http://www.yamamo10.jp/yamamoto/comp/gnuplot/inst_win/index.php
-* Ovito（https://www.ovito.org/windows-downloads/）
+* Ovito (https://www.ovito.org/windows-downloads/)
 
 
 ## Usage
