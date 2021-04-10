@@ -16,8 +16,15 @@ pair_coeff      * * ../potentials/meam/CoNiCrFeMn.HEA.library.meam Co Ni Cr Fe M
 #pair_coeff      * * ../potentials/meam/CFeMnSi.library.meam Fe Mn Si C ../potentials/meam/CFeMnSi.meam Fe Mn Si C
 
 # ----- Potential settings (EAM)-----
+# -----(Co-Ni-Cr-Fe-Cu)
 #pair_style      eam/alloy
 #pair_coeff      * * ../potentials/eam/FeNiCrCoCu-heafixed.setfl Co Ni Cr Fe
+# -----(Fe-Ni-Cr-Co-Al)
+#pair_style      eam/alloy
+#pair_coeff      * * ../potentials/eam/FeNiCrCoAl-heaweight.setfl Fe Ni Cr Co Al
+# -----(Ta-Hf-Zr-Ti)
+#pair_style      eam/fs
+#pair_coeff      * * ../potentials/eam/TaHfZrTi.eam.fs Ta Hf Zr Ti
 # -----(Ag-Au-Cu-Ni-Pd-Pt)
 #pair_style      eam
 #pair_coeff      1 * ../potentials/eam/DYNAMO/cuu6.txt
