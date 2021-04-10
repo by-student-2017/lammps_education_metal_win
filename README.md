@@ -1,7 +1,7 @@
 # lammps_education_metal_win
 
 * HEA = High Entropy Alloy
-* SQS = special quasirandom structure
+* SQS = Special Quasirandom Structure
 
 ------------------------------------------------------------------------------
 ## lammps (windows 10 (64 bit))
