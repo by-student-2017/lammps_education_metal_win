@@ -12,10 +12,11 @@
 2. LAMMPS-64bit-18Jun2019.exe (https://rpm.lammps.org/windows/admin/64bit/LAMMPS-64bit-18Jun2019.exe)
 
 
-## gnuplot and Ovito
-* gnuplot (http://www.gnuplot.info/)
+## Gnuplot, Ovito and Python3
+* Gnuplot (http://www.gnuplot.info/)
   http://www.yamamo10.jp/yamamoto/comp/gnuplot/inst_win/index.php
 * Ovito (https://www.ovito.org/windows-downloads/)
+* Python3 (Python 3.9, Python 3.8 or Python 3.7) from Microsoft Store
 
 
 ## Usage
@@ -24,6 +25,7 @@
 
 
 ## How to change to another potential
+1. gedit in.lmp
 
 #----------(before)----------
 
@@ -71,6 +73,11 @@ pair_coeff      * * ../potentials/eam/Fe-Ni-Cr_fcc.eam.fs Fe Ni Cr
 * official version: Cu, Ag, Au, Ni, Pd, Pt, Al, Pb, Fe, Mo, Ta, W, Mg, Co, Ti, Zr
 * test version: V, Ca, Na, Cr, Mn, Nb, Ir, Sr, Rh, Ru, Os, Hf, Re, Zn
 * Any combination of these is possible. Don't expect too much about the "test version".
+
+## tutorial_8_elastic and tutorial_9_elastic_Temp
+1. gedit potential.mod
+2. run.bat
+* gedit init.mod (set mass for sw, tersoff or bop potential)
 
 ------------------------------------------------------------------------------
 # units and potential

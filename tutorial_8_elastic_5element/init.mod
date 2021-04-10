@@ -44,9 +44,9 @@ replicate    1 1 1
 change_box   all triclinic
 
 # Need to set mass to something, just to satisfy LAMMPS in this case (or other case sw,tersoff, bop or lj, etc potential)
-mass 1 58.933 # Co
-mass 2 58.690 # Ni
-mass 3 51.960 # Cr
-mass 4 55.847 # Fe
-mass 5 54.940 # Mn
+#mass 1 58.933 # Co
+#mass 2 58.690 # Ni
+#mass 3 51.960 # Cr
+#mass 4 55.847 # Fe
+#mass 5 54.940 # Mn
 
