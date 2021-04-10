@@ -85,7 +85,7 @@ pair_coeff      * * ../potentials/eam/Fe-Ni-Cr_fcc.eam.fs Fe Ni Cr
 2. notepad init.mod
 3. run.bat
 * notepad potential.mod (set potential)
-* notepad init.mod (set masses)
+* notepad init.mod (set temperature and masses)
 
 ------------------------------------------------------------------------------
 # units and potential
