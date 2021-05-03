@@ -1,0 +1,51 @@
+# Appendix B: Calorimetry Code
+# https://dspace.mit.edu/bitstream/handle/1721.1/112482/1011413174-MIT.pdf?sequence=1
+
+# ------------------------ LOOP HEATING ------------------------
+
+variable   a loop 121
+label      loop
+variable   myT equal "290+10+v_a"
+
+# ------------------------ INITIALIZATION ------------------------
+echo both
+units      metal
+dimension  3
+boundary   p p p
+atom-style atomic
+
+# ------------------------ ATOM DEFINITION ------------------------
+variable   c equal $a-1
+read-data  quenched$c.data
+
+# ------------------------ FORCE FIELDS ------------------------
+pair-style eam/alloy
+pair.coeff * * CuOl.eam.alloy Cu
+neigh-modify every 1 delay 0 check yes
+
+# ------------------------ SETTINGS ------------------------
+thermo     1000  #output every 100 time steps
+thermo-style custom step dt time lx ly lz press pxx pyy pzz pe temp
+
+# ------------------------ heating ------------------------
+fix        1 all nvt temp ${myT} ${myT} 0.1
+#dump       1 all custom 10000 dump*.data id type x y z
+run        10000
+#undump     1
+unfix      1
+
+write-data quenched$a.data
+
+compute    csym  all centro/atom fcc
+compute    PE    all pe/atom
+compute    CNA   all cna/atom 3.1002
+dump       minimized all custom 1000 dump_minimized_$a_${myT}.data id type x y z c_csym c_pe c_cna
+minimize   1e-10 1e-10 10000 10000
+
+variable   e equal pe
+print      "$e" file PE_$a_${myT}.dat
+
+clear
+
+next       a
+jump       input. heating.loop loop
