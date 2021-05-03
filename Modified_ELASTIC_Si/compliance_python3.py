@@ -129,7 +129,7 @@ print ("Shear Modulus, G=(GV+GR)/2: %15.8g [GPa]" % G,  end="\n")
 print(" ", end="\n")
 
 k = G/B
-print ("Pughs modulus ratio, k: %15.8g" % k, end="\n")
+print ("Pughs modulus ratio, k=G/B: %15.8g" % k, end="\n")
 
 print(" ", end="\n")
 
