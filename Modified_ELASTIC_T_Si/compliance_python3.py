@@ -112,8 +112,8 @@ BV = (c[0][0]+c[1][1]+c[2][2])/9 + 2*(c[0][1]+c[0][2]+c[1][2])/9
 BR = 1/((s[0][0]+s[1][1]+s[2][2]) + 2*(s[0][1]+s[0][2]+s[1][2]))
 B  = (BV + BR)/2
 
-print ("BV: %15.8g " % BV, end="\n")
-print ("BR: %15.8g " % BR, end="\n")
+print ("Voigt bulk modulus, BV: %15.8g " % BV, end="\n")
+print ("Reuss bulk modulus, BR: %15.8g " % BR, end="\n")
 print ("Bulk Modulus, B=(BV+BR)/2: %15.8g [GPa]" % B,  end="\n")
 
 print(" ", end="\n")
@@ -122,14 +122,14 @@ GV = (c[0][0]+c[1][1]+c[2][2]-c[0][1]-c[0][2]-c[1][2])/15 + (c[3][3]+c[4][4]+c[5
 GR = 15/(4*(s[0][0]+s[1][1]+s[2][2]) - 4*(s[0][1]+s[0][2]+s[1][2]) + 3*(s[3][3]+s[4][4]+s[5][5]))
 G  = (GV + GR)/2
 
-print ("GV: %15.8g " % GV, end="\n")
-print ("GR: %15.8g " % GR, end="\n")
+print ("Voigt shear modulus, GV: %15.8g " % GV, end="\n")
+print ("Reuss shear modulus, GR: %15.8g " % GR, end="\n")
 print ("Shear Modulus, G=(GV+GR)/2: %15.8g [GPa]" % G,  end="\n")
 
 print(" ", end="\n")
 
 k = G/B
-print ("Pughs modulus ratio, k=G/B: %15.8g" % k, end="\n")
+print ("Pughs modulus ratio, k: %15.8g" % k, end="\n")
 
 print(" ", end="\n")
 
