@@ -114,7 +114,7 @@ B  = (BV + BR)/2
 
 print ("Voigt bulk modulus, BV: %15.8g " % BV, end="\n")
 print ("Reuss bulk modulus, BR: %15.8g " % BR, end="\n")
-print ("Bulk Modulus, B=(BV+BR)/2: %15.8g [GPa]" % B,  end="\n")
+print ("Hill bulk modulus, B=(BV+BR)/2: %15.8g [GPa]" % B,  end="\n")
 
 print(" ", end="\n")
 
@@ -124,20 +124,57 @@ G  = (GV + GR)/2
 
 print ("Voigt shear modulus, GV: %15.8g " % GV, end="\n")
 print ("Reuss shear modulus, GR: %15.8g " % GR, end="\n")
-print ("Shear Modulus, G=(GV+GR)/2: %15.8g [GPa]" % G,  end="\n")
+print ("Hill shear modulus, G=(GV+GR)/2: %15.8g [GPa]" % G,  end="\n")
 
 print(" ", end="\n")
 
 k = G/B
-print ("Pughs modulus ratio, k: %15.8g" % k, end="\n")
+print ("Pughs modulus ratio, k=G/B: %15.8g" % k, end="\n")
 
 print(" ", end="\n")
 
-HvTain = 0.92*(k**1.137)*(G**0.708)
+print("Voigt", end="\n")
+
+HvTain = 0.92*((GV/BV)**1.137)*(GV**0.708)
 print ("Vickers hardnesses (Tian  model, 2012): %15.8g [GPa]" % HvTain, end="\n")
 
-HvChen = 2.0*(k**2.0*G)**0.585-3.0
+HvChen = 2.0*((GV/BV)**2.0*GV)**0.585-3.0
+print ("Vickers hardnesses (Chen  model, 2011): %15.8g [GPa]" % HvChen, end="\n")
+
+HvTeter = 0.151*GV
+print ("Vickers hardnesses (Teter model, 1998): %15.8g [GPa]" % HvTeter, end="\n")
+
+print(" ", end="\n")
+
+print("Reuss", end="\n")
+
+HvTain = 0.92*((GR/BR)**1.137)*(GR**0.708)
+print ("Vickers hardnesses (Tian  model, 2012): %15.8g [GPa]" % HvTain, end="\n")
+
+HvChen = 2.0*((GR/BR)**2.0*GR)**0.585-3.0
+print ("Vickers hardnesses (Chen  model, 2011): %15.8g [GPa]" % HvChen, end="\n")
+
+HvTeter = 0.151*GR
+print ("Vickers hardnesses (Teter model, 1998): %15.8g [GPa]" % HvTeter, end="\n")
+
+print(" ", end="\n")
+
+print("Hill", end="\n")
+
+HvTain = 0.92*((G/B)**1.137)*(G**0.708)
+print ("Vickers hardnesses (Tian  model, 2012): %15.8g [GPa]" % HvTain, end="\n")
+
+HvChen = 2.0*((G/B)**2.0*G)**0.585-3.0
 print ("Vickers hardnesses (Chen  model, 2011): %15.8g [GPa]" % HvChen, end="\n")
 
 HvTeter = 0.151*G
 print ("Vickers hardnesses (Teter model, 1998): %15.8g [GPa]" % HvTeter, end="\n")
+
+print(" ", end="\n")
+
+print("Note (VASP case)", end="\n")
+print("Hill = Voigt-Reuss-Hill (VRH) Approximation (averages)", end="\n")
+print("covalent and ionic crystals: Root Mean Square Error (RMSE) of HvChen = 4.4", end="\n")
+print("covalent and ionic crystals: Mean Absolute Error (MAE) of HvChen = 2.1", end="\n")
+print("bulk metallic glasses: Root Mean Square Error (RMSE) of HvChen = 0.9", end="\n")
+print("bulk metallic glasses: Mean Absolute Error (MAE) of HvChen = 0.8", end="\n")
