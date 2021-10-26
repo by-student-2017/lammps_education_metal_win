@@ -1,0 +1,1 @@
+E. Lee, B.J. Lee, Modified embedded-atom method interatomic potential for the Fe-Al system, J. Phys. Condens. Matter. 22 (2010). doi:10.1088/0953-8984/22/17/175702.

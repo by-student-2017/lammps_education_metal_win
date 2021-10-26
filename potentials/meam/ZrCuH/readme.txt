@@ -1,0 +1,2 @@
+A Comparative Study on Hydrogen Diffusion in Amorphous and Crystalline Metals Using a Molecular Dynamics Simulation
+Lee B M, Lee B J. Metallurgical and Materials Transactions A, 2014, 45(6):2906-2915.

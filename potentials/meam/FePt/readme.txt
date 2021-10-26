@@ -1,0 +1,1 @@
+Kim, J., Koo, Y., & Lee, B. J. (2006). Modified embedded-atom method interactomic potential for the Fe-Pt alloy system. Journal of Materials Research, 21(1), 199-208. 

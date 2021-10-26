@@ -1,0 +1,1 @@
+Wang, J., & Lee, B. J. (2021). Second-nearest-neighbor modified embedded-atom method interatomic potential for V-M (M= Cu, Mo, Ti) binary systems. Computational Materials Science, 188, 110177.

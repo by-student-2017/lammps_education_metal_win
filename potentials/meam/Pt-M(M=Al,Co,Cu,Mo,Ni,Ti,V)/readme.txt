@@ -1,0 +1,2 @@
+Second nearest-neighbor modified embedded-atom method interatomic potentials for the Pt-M (M = Al, Co, Cu, Mo, Ni, Ti, V) binary systems
+Jin-Soo Kim, Donghyuk Seol, Joonho Ji, Hyo-Sun Jang, Yongmin Kim, Byeong-Joo Lee, CALPHAD 59, 131-141 (2017.12).

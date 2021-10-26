@@ -1,0 +1,1 @@
+J.-H. Shim, et al., (2003) J Mater. Res. 18, 1863-1867.

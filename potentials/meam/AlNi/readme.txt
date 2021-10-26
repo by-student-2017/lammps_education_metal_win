@@ -1,0 +1,2 @@
+Applications of Computational Thermodynamics - The Extension from Phase Equilibrium to Phase Transformations and other Properties
+J. Agren, M.T. Clavaguera-Mora, A. Costa e Silva, D. Djurovic, T. Gomez-Acebo, B.-J. Lee, Z.-K. Liu, P. Miodownik, H. Seifert, CALPHAD 31, 53-74 (2007).

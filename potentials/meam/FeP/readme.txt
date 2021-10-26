@@ -1,0 +1,2 @@
+"Atomistic Modeling of an impurity element and a metal-impurity system: pure P and Fe-P system"
+Won-Seok Ko, Nack. J. Kim and Byeong-Joo Lee, Journal of Physics: Condensed Matter 24, 225002 (2012.06).

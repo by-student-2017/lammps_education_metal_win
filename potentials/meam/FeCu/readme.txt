@@ -1,0 +1,1 @@
+An MEAM Interatomic Potential for the Fe-Cu Alloy System and Cascade Simulation on pure Fe and Fe-Cu Alloy Byeong-Joo Lee, Brian D. Wirth, Jae-Hyeok Shim, Junhyun Kwon, Sang Chul Kwon, Jun-Hwa Hong, Phys. Rev. B. 71, 184205 (2005).

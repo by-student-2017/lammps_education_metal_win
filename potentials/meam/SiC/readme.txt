@@ -1,0 +1,1 @@
+K.-H. Kang, et al., (2014) J Crys. Growth 389, 120-133.

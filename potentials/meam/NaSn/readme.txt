@@ -1,0 +1,2 @@
+Second nearest-neighbor modified embedded atom method interatomic potentials for the Na unary and Na-Sn binary systems
+Yongmin Kim, Won-Seok Ko, and Byeong-Joo Lee, Computational Materials Science 185, 109953 (2020).

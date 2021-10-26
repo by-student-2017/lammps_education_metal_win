@@ -1,0 +1,1 @@
+Fe-Nb & Fe-Ti Modified embedded-atom method interatomic potentials for the Fe-Nb and Fe-Ti systems Inyoung Sa and Byeong-Joo Lee, Scripta Materialia 59, 595-598 (2008).
