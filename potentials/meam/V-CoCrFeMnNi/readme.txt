@@ -1,0 +1,1 @@
+"Computational design of V-CoCrFeMnNi high-entropy alloys: An Atomistic Simulation Study," Won-Mi Choi, Jin-Soo Kim, Won-Seok Ko, Dong Geun Kim, Yong Hee Jo, Seok Su Sohn, Sunghak Lee, Byeong-Joo Lee, CALPHAD 74, 102317 (2021).
