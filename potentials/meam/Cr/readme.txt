@@ -1,1 +1,0 @@
-W.-M. Choi et al., NPJ Computational Materials 4 (2018) 1.
