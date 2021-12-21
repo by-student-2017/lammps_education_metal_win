@@ -17,3 +17,5 @@ s
 
 ## Movie
 - https://www.youtube.com/watch?v=tVBBFeJ1SE0&list=PLUEA3pjJY3dCWgiLFkzJly_nwqKq8w1_J&index=3
+- https://www.youtube.com/watch?v=tVBBFeJ1SE0&list=PLUEA3pjJY3dB6QzHmhEfwLyNvuWbKaald&index=7
+- https://www.youtube.com/watch?v=6wuPtI0j-ZE&list=PLUEA3pjJY3dB6QzHmhEfwLyNvuWbKaald&index=12

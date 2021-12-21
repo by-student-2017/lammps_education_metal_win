@@ -16,3 +16,4 @@
 ## more detail
 - https://www.youtube.com/watch?v=uRj9q2Vcgsw
 - https://github.com/NextZenStudent/Intrinsic-Stacking-Fault-Energy
+- https://www.youtube.com/watch?v=uRj9q2Vcgsw&list=PLUEA3pjJY3dB6QzHmhEfwLyNvuWbKaald&index=19

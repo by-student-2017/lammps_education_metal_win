@@ -15,6 +15,7 @@
 
 ## Original version (made by NextZenStudent)
 - https://www.youtube.com/watch?v=zE_SQEEy6Ic&list=PLUEA3pjJY3dCWgiLFkzJly_nwqKq8w1_J&index=1
+- https://www.youtube.com/watch?v=zE_SQEEy6Ic&list=PLUEA3pjJY3dB6QzHmhEfwLyNvuWbKaald&index=8
 
 
 NextZenStudent
