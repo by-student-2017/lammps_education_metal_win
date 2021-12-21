@@ -11,3 +11,7 @@
 ## check results
 	go to cfg file and click *.cfg file
 	see log.lammps file
+
+
+## Movie
+- https://www.youtube.com/watch?v=cbIrOWfHhKs&list=PLUEA3pjJY3dCWgiLFkzJly_nwqKq8w1_J&index=22
