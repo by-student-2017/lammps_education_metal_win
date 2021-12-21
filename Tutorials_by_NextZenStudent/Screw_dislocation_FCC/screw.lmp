@@ -1,0 +1,104 @@
+
+
+variable XLO equal xlo
+variable XHI equal xhi
+variable YLO equal ylo
+variable YHI equal yhi
+variable ZLO equal zlo
+variable ZHI equal zhi
+variable LC equal 3.52
+variable b equal 0.5*sqrt(2)*${LC}
+variable b2 equal $b/2
+variable PI equal 3.14159265358979
+variable dx equal sqrt(2)
+variable dy equal sqrt(3)
+variable dz equal sqrt(6)/2
+
+variable ROT equal 0 #-90 z,0 y
+
+# --------------- General Settings -----------------
+units    metal
+atom_style    atomic
+atom_modify map array #sort 0 0.0
+boundary p p p
+
+
+lattice fcc ${LC}  orient z -1 1 0 orient y 1 1 1 orient x -1 -1 2 #spacing
+region box block 0 30 0 30 0 4
+create_box 2 box
+create_atoms 1 box
+
+change_box all y delta -10 10 units box
+change_box all x delta -10 10 units box
+
+# ---------------- EAM potential ----------------------------------------
+pair_style eam/alloy
+pair_coeff * * FeNiCrCoCu-heafixed.setfl Co Ni
+neighbor        2.0 bin 
+neigh_modify    delay 5
+
+set type 1 type/fraction 2 1.0 545096
+
+compute 1 all pe/atom
+compute 2 all stress/atom NULL
+
+thermo 100
+
+
+write_dump all custom pft.out id x y z
+
+variable XC equal (${XLO}+${XHI})/2.0
+variable YC equal (${YLO}+${YHI})/2.0
+variable ZC equal (${ZLO}+${ZHI})/2.0
+
+
+variable N equal count(all)
+
+variable I loop 1 $N
+
+label LOOP
+
+variable ix equal y[$I]
+variable iy equal x[$I]
+
+variable dx equal ${ix}-${YC}
+variable dy equal ${iy}-${XC}
+
+if "${dx}==0 && ${dy}==0" then &
+    "variable theta equal 0" &
+    "variable degree equal 0.0"
+
+if "${dx}==0 && ${dy}!=0" then &
+    "variable degree equal 90.0*${dy}/abs(${dy})"
+
+if "${dx}!=0" then &
+    "variable s equal ${dy}/${dx}" &
+    "variable theta equal atan($s)" &
+    "variable degree equal ${theta}/${PI}*180.0"
+
+if "${dx}<0.0 && ${dy}>=0.0" then &
+     "variable degree equal 180.0+${degree}"
+if "${dx}<0.0 && ${dy}<0.0" then &
+     "variable degree equal -180.0+${degree}"
+
+
+if "${degree} < -180.0" then "variable degree equal ${degree}+360.0"
+
+variable dz equal ${degree}/180.0*${b2}
+
+group m id $I
+displace_atoms m move 0.0 0.0 ${dz} units box
+group m delete
+
+dump 1 all atom 1 file.$I
+run 0 
+undump 1
+
+
+next I
+jump SELF LOOP
+
+
+minimize 1e-18 1e-18 100000 100000
+write_dump all custom final.atom id x y z
+

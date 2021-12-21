@@ -1,0 +1,77 @@
+units		metal 
+boundary	s s p 
+atom_style	atomic 
+neighbor 0.3 bin
+neigh_modify delay 5
+
+
+region 1 block 0 140.8 0 105.6 0 17.6 units box 
+create_box 5 1
+
+
+lattice fcc 3.52
+create_atoms 1 region 1 units box 
+
+# Regions
+
+region 2 block INF 45.76 52.8 98.56 INF INF units box
+group leftupper region 2
+region 3 block INF 45.76 7.04 52.8 INF INF units box
+group leftlower region 3
+region 4 block INF INF INF 7.04 INF INF units box
+group lower region 4
+region 5 block INF INF 98.56 INF INF INF units box
+group upper region 5
+
+set group leftupper type 2
+set group leftlower type 3
+set group lower type 4
+set group upper type 5
+
+
+region 6 block 0 10 52 56  INF INF units box
+delete_atoms region 6
+
+
+####mass of Ni atom is 58.69 gram/mole. * indicates all atom types ie. 1 and 2
+mass * 58.69
+pair_style	eam	
+pair_coeff 	* * Ni_u3.eam
+
+####energy minimization
+minimize 1e-18 1e-18 10000 10000
+timestep  0.001
+dump dump_1 all custom 10 ./cfg/dump.min.1.cfg id type x y z ix iy iz vx vy vz 
+thermo_style  custom step time temp pe etotal press vol
+thermo 100
+
+
+variable t equal time
+run 100
+undump dump_1
+
+
+
+
+group boundary union upper lower 
+group mobile subtract all boundary
+compute new mobile temp
+
+
+velocity upper set 0.0 0.3 0.0
+velocity mobile ramp vy 0.0 0.3 y 7.04 98.56 sum yes units box
+
+fix 1 all nve 
+fix 2 boundary setforce 0.0 0.0 0.0
+
+neigh_modify exclude type 2 3
+thermo_modify temp new
+
+dump dump_1 all custom 100 ./cfg/dump.min.2.cfg id type x y z ix iy iz vx vy vz
+thermo 100 
+thermo_style  custom step time temp pe etotal press vol
+run 10000
+unfix 1
+unfix 2
+undump dump_1
+

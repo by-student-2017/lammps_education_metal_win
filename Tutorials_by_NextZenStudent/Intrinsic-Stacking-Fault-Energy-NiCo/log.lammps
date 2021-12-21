@@ -1,0 +1,65 @@
+LAMMPS (18 Jun 2019)
+OMP_NUM_THREADS environment is not set. Defaulting to 1 thread. (../comm.cpp:88)
+  using 1 OpenMP thread(s) per MPI task
+# --------------------- INITIALIZAITION ---------------------
+
+clear
+OMP_NUM_THREADS environment is not set. Defaulting to 1 thread. (../comm.cpp:88)
+  using 1 OpenMP thread(s) per MPI task
+units		metal
+dimension	3
+boundary	p p s
+atom_style	atomic
+variable latparam1 equal 3.52
+
+
+variable x_displace equal -1*(${latparam1}/sqrt(6))
+variable x_displace equal -1*(3.52/sqrt(6))
+
+
+variable xdim equal ${latparam1}*sqrt(6)/2*10
+variable xdim equal 3.52*sqrt(6)/2*10
+variable ydim equal ${latparam1}*sqrt(2)/2*10
+variable ydim equal 3.52*sqrt(2)/2*10
+variable zdim equal ${latparam1}*sqrt(3)*6
+variable zdim equal 3.52*sqrt(3)*6
+
+
+# --------------------- CRYSTAL STRUCTURE DEFINITION ---------------------
+
+lattice		fcc ${latparam1}
+lattice		fcc 3.52
+Lattice spacing in x,y,z = 3.52 3.52 3.52
+region		1 block 0 ${xdim} 0 ${ydim} 0 16.5 units box
+region		1 block 0 43.1110194729839 0 ${ydim} 0 16.5 units box
+region		1 block 0 43.1110194729839 0 24.8901586977665 0 16.5 units box
+region 		2 block 0 ${xdim} 0 ${ydim} 16.5 36.5808 units box
+region 		2 block 0 43.1110194729839 0 ${ydim} 16.5 36.5808 units box
+region 		2 block 0 43.1110194729839 0 24.8901586977665 16.5 36.5808 units box
+region		whole block 0 ${xdim} 0 ${ydim} 0 36.5808 units box
+region		whole block 0 43.1110194729839 0 ${ydim} 0 36.5808 units box
+region		whole block 0 43.1110194729839 0 24.8901586977665 0 36.5808 units box
+
+
+create_box 	2 whole
+Created orthogonal box = (0 0 0) to (43.111 24.8902 36.5808)
+  1 by 1 by 1 MPI processor grid
+lattice fcc ${latparam1} orient x 1 1 2 orient y -1 1 0 orient z -1 -1 1
+lattice fcc 3.52 orient x 1 1 2 orient y -1 1 0 orient z -1 -1 1
+Lattice spacing in x,y,z = 5.74814 4.97803 6.09682
+create_atoms	1 region 1
+Created 1785 atoms
+  create_atoms CPU = 0.00099206 secs
+lattice fcc ${latparam1} orient x 1 1 2 orient y -1 1 0 orient z -1 -1 1
+lattice fcc 3.52 orient x 1 1 2 orient y -1 1 0 orient z -1 -1 1
+Lattice spacing in x,y,z = 5.74814 4.97803 6.09682
+create_atoms 	2 region 2
+Created 1799 atoms
+  create_atoms CPU = 0 secs
+
+# --------------------- EAM POTENTIAL ---------------------
+
+pair_style	meam/c
+pair_coeff * * ../../potentials/meam/CoNiCrFeMn.HEA.library.meam Ni Co ../../potentials/meam/CoNiCrFeMn.HEA.meam Ni Co
+ERROR: MEAM library error 3 (../pair_meamc.cpp:593)
+Last command: pair_coeff * * ../../potentials/meam/CoNiCrFeMn.HEA.library.meam Ni Co ../../potentials/meam/CoNiCrFeMn.HEA.meam Ni Co

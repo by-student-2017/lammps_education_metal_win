@@ -1,0 +1,57 @@
+#----------------- supercell size, lattice constant --------------------------------------
+variable        xbox equal 70
+variable        ybox equal 70
+variable        zbox equal 70
+variable        a equal 3.52 
+
+variable        dx equal 1
+variable        dy equal 1
+variable        dz equal 1
+
+variable xlength equal ${xbox}*${dx}*$a
+variable ylength equal ${ybox}*${dy}*$a
+variable zlength equal ${zbox}*${dz}*$a
+variable zhalf equal ${zlength}/2
+variable yhalf equal ${ylength}/2
+
+# -------------- general settings --------------------------------------------------------
+dimension       3
+boundary        p p p
+units metal
+atom_style      atomic
+
+
+# -------------- creating a upper & lower regions and as well as - region & simulation box ----------------------
+
+lattice fcc ${a} orient x 1 0 0 orient y 0 1 0 orient z 0 0 1 spacing ${dx} ${dy} ${dz} origin 0.0 0.0 0.0
+region whole block 0.000000 ${xlength} 0.000000 ${ylength} 0.0 ${zlength} units box
+create_box 2 whole
+create_atoms 1 region whole
+                                                                                             
+set type 1 type/fraction 2 1.0 545096
+
+# ---------------- EAM potential ----------------------------------------
+pair_style      eam/alloy
+pair_coeff      * * FeNiCrCoCu-heafixed.eam.alloy.txt Co Ni
+
+neighbor        2.0 bin
+neigh_modify    delay 5
+
+
+# -------------------------------------------------------------------
+compute eng all pe/atom
+compute eatoms all reduce sum c_eng
+
+
+
+thermo_style custom step pe lx ly lz press pxx pyy pzz c_eatoms
+min_style cg
+minimize 1e-25 1e-25 5000 10000
+
+variable natoms equal "count(all)"
+variable teng equal "c_eatoms"
+variable length equal "lx"
+variable ecoh equal "v_teng/v_natoms"
+print "${ecoh}"
+
+                                                                                  
