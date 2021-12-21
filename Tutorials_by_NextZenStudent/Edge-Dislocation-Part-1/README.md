@@ -1,4 +1,4 @@
-# Edge Dislocation Part-2, FCC materials 
+# Edge Dislocation Part-1, FCC materials 
 - This input files gives detailed analysis on how to understand edge dislocation in FCC materials.
 - windows version
 - Original version made by NextZenStudent
