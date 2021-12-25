@@ -1,0 +1,76 @@
+#LAMMPS Input file
+# Title
+clear
+
+# ----- condition settings -----
+
+variable x_displace equal 1.00 # shift x in top side
+variable y_displace equal 0.00 # shift y in top side
+variable z_displace equal 0.00 # shift z in top side
+
+# ----- Structure settings -----
+units           metal
+atom_style      atomic
+dimension       3
+boundary        p p s
+read_data       data.in
+replicate       4 4 1
+
+# ----- Potential settings (MEAM)-----
+# -----HEA (Co-Ni-Cr-Fe-Mn)
+pair_style      meam/c
+pair_coeff      * * ../../potentials/meam/CoNiCrFeMn.HEA.library.meam Co Ni Cr Fe Mn ../../potentials/meam/CoNiCrFeMn.HEA.meam Ni Co
+
+# ----- Potential settings (EAM)-----
+#pair_style      eam/alloy
+#pair_coeff      * * ../../potentials/eam/FeNiCrCoCu-heafixed.setfl Ni Co
+# -----(Ni-Al-Co)
+#pair_style      eam/alloy
+#pair_coeff      * * ../../potentials/eam/Mishin_updated-Ni-Al-Co-2013.eam.alloy Ni Co
+# -----(Al-Ti-Fe-Co-Ni)
+#pair_style      eam/alloy
+#pair_coeff      * * ../../potentials/eam/Zhou04/AlTiFeCoNi_Zhou04.eam.alloy Ni Co
+
+# Need to set mass to something, just to satisfy LAMMPS (COMB, BOP, SW or tersoff)
+#mass 1 58.6934 # Ni
+#mass 2 58.9332 # Co
+
+# ----- setting -----
+
+compute peratom all pe/atom
+compute eatoms all reduce sum c_peratom
+
+thermo 1
+thermo_style custom step pe c_eatoms
+
+dump 1 all custom 1 ./cfg/dump.relax.1.*.cfg id type xs ys zs c_peratom
+#dump        d1 all cfg 1 cfg/run.relax.*.cfg mass type xs ys zs id type c_peratom
+#dump_modify d1 element Ni Co
+run 0
+
+variable E equal "c_eatoms"
+variable Eo equal $E
+
+group top type 1
+displace_atoms top move ${x_displace} ${y_displace} ${z_displace} units box
+
+#displace_atoms is the command neccessary to move atoms into the next stacking arrangement (ie: A -> B)
+
+fix 2 all setforce 0 0 NULL
+min_style cg
+minimize 1e-10 1e-10 1000 1000
+variable Ef equal "c_eatoms"
+variable Cf equal 1.60217657e-16
+variable A equal (lx*ly)*1e-20
+variable SFE equal ((${Ef}-${Eo})*${Cf})/${A}
+
+#variable Ef equal "c_eatoms" computes the final energy of the system after sliding is done
+#variable A is the area of the Stacking fault plane
+#variable Cf is the conversion factor of electro volts to millijoules
+#variable SFE is the stacking-fault energy of the system
+####################################
+# SIMULATION DONE
+print "All done"
+print "Initial energy of atoms = ${Eo} eV"
+print "Final energy of atoms = ${Ef} eV"
+print "Stacking-fault energy = ${SFE} mJ/m^2"
