@@ -1,6 +1,9 @@
 variable y_displace equal 0.00 # shift y in top side
 variable z_displace equal 0.00 # shift z in top side
 
+variable bottom string 'Ni'
+variable top    string 'Co'
+
 # ----- Structure settings -----
 units           metal
 atom_style      atomic
@@ -12,21 +15,21 @@ replicate       4 4 1
 # ----- Potential settings (MEAM)-----
 # -----HEA (Co-Ni-Cr-Fe-Mn)
 pair_style      meam/c
-pair_coeff      * * ../../potentials/meam/CoNiCrFeMn.HEA.library.meam Co Ni Cr Fe Mn ../../potentials/meam/CoNiCrFeMn.HEA.meam Ni Co
+pair_coeff      * * ../../potentials/meam/CoNiCrFeMn.HEA.library.meam Co Ni Cr Fe Mn ../../potentials/meam/CoNiCrFeMn.HEA.meam ${bottom} ${top}
 
 # ----- Potential settings (EAM)-----
 #pair_style      eam/alloy
-#pair_coeff      * * ../../potentials/eam/FeNiCrCoCu-heafixed.setfl Ni Co
+#pair_coeff      * * ../../potentials/eam/FeNiCrCoCu-heafixed.setfl ${bottom} ${top}
 # -----(Ni-Al-Co)
 #pair_style      eam/alloy
-#pair_coeff      * * ../../potentials/eam/Mishin_updated-Ni-Al-Co-2013.eam.alloy Ni Co
+#pair_coeff      * * ../../potentials/eam/Mishin_updated-Ni-Al-Co-2013.eam.alloy ${bottom} ${top}
 # -----(Al-Ti-Fe-Co-Ni)
 #pair_style      eam/alloy
-#pair_coeff      * * ../../potentials/eam/Zhou04/AlTiFeCoNi_Zhou04.eam.alloy Ni Co
+#pair_coeff      * * ../../potentials/eam/Zhou04/AlTiFeCoNi_Zhou04.eam.alloy ${bottom} ${top}
 
 # Need to set mass to something, just to satisfy LAMMPS (COMB, BOP, SW or tersoff)
-#mass 1 58.6934 # Ni
-#mass 2 58.9332 # Co
+#mass 1 58.6934 # Ni ${bottom}
+#mass 2 58.9332 # Co ${top}
 
 # ----- setting -----
 
@@ -36,10 +39,11 @@ compute eatoms all reduce sum c_peratom
 thermo 1
 thermo_style custom step pe c_eatoms
 
-#dump 1 all custom 1 ./cfg/dump.relax.1.*.cfg id type xs ys zs c_peratom
-#dump        d1 all cfg 1 cfg/run.relax.*.cfg mass type xs ys zs id type c_peratom
-#dump_modify d1 element Ni Co
+#dump 1 all custom 1 ./cfg/dump.init.cfg id type xs ys zs c_peratom
+dump        d1 all custom 1 cfg/run.init.cfg mass type xs ys zs id type c_peratom
+dump_modify d1 element ${bottom} ${top}
 run 0
+undump d1
 
 variable E equal "c_eatoms"
 variable Eo equal $E
@@ -69,3 +73,9 @@ print "Final energy of atoms = ${Ef} eV"
 print "Stacking-fault energy = ${SFE} mJ/m^2"
 
 print "${x_displace} ${SFE}" append displace_vs_SFenergy.txt
+
+#dump 1 all custom 1 ./cfg/dump.finish.cfg id type xs ys zs c_peratom
+dump        d1 all custom 1 cfg/run.finish.cfg mass type xs ys zs id type c_peratom
+dump_modify d1 element ${bottom} ${top}
+run 0
+undump d1

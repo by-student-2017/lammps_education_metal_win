@@ -4,6 +4,9 @@ clear
 
 # ----- condition settings -----
 
+variable bottom string 'Ni'
+variable top    string 'Co'
+
 variable x_displace equal 0.0 # shift x in top side
 variable y_displace equal 0.0 # shift y in top side
 variable z_displace equal 0.0 # shift z in top side
@@ -40,21 +43,21 @@ timestep        ${fs}
 # ----- Potential settings (MEAM)-----
 # -----HEA (Co-Ni-Cr-Fe-Mn)
 pair_style      meam/c
-pair_coeff      * * ../../potentials/meam/CoNiCrFeMn.HEA.library.meam Co Ni Cr Fe Mn ../../potentials/meam/CoNiCrFeMn.HEA.meam Ni Co
+pair_coeff      * * ../../potentials/meam/CoNiCrFeMn.HEA.library.meam Co Ni Cr Fe Mn ../../potentials/meam/CoNiCrFeMn.HEA.meam ${bottom} ${top}
 
 # ----- Potential settings (EAM)-----
 #pair_style      eam/alloy
-#pair_coeff      * * ../../potentials/eam/FeNiCrCoCu-heafixed.setfl Ni Co
+#pair_coeff      * * ../../potentials/eam/FeNiCrCoCu-heafixed.setfl ${bottom} ${top}
 # -----(Ni-Al-Co)
 #pair_style      eam/alloy
-#pair_coeff      * * ../../potentials/eam/Mishin_updated-Ni-Al-Co-2013.eam.alloy Ni Co
+#pair_coeff      * * ../../potentials/eam/Mishin_updated-Ni-Al-Co-2013.eam.alloy ${bottom} ${top}
 # -----(Al-Ti-Fe-Co-Ni)
 #pair_style      eam/alloy
-#pair_coeff      * * ../../potentials/eam/Zhou04/AlTiFeCoNi_Zhou04.eam.alloy Ni Co
+#pair_coeff      * * ../../potentials/eam/Zhou04/AlTiFeCoNi_Zhou04.eam.alloy ${bottom} ${top}
 
 # Need to set mass to something, just to satisfy LAMMPS (COMB, BOP, SW or tersoff)
-#mass 1 58.6934 # Ni
-#mass 2 58.9332 # Co
+#mass 1 58.6934 # Ni ${bottom}
+#mass 2 58.9332 # Co ${top}
 
 # ----- setting -----
 
@@ -64,9 +67,9 @@ compute eatoms all reduce sum c_peratom
 thermo 1
 thermo_style custom step pe c_eatoms
 
-dump 1 all custom 1 ./cfg/dump.relax.1.*.cfg id type xs ys zs c_peratom
-#dump        d1 all cfg 1 cfg/run.relax.*.cfg mass type xs ys zs id type c_peratom
-#dump_modify d1 element Ni Co
+#dump 1 all custom 1 ./cfg/dump.init.cfg id type xs ys zs c_peratom
+dump        d1 all custom 1 cfg/run.init.cfg mass type xs ys zs id type c_peratom
+dump_modify d1 element ${bottom} ${top}
 run 0
 
 variable E equal "c_eatoms"
@@ -106,7 +109,7 @@ thermo          10
 
 # ----- Output setting -----
 dump            d2 all cfg 100 cfg/run.temp.*.cfg mass type xs ys zs id type
-dump_modify     d2 element Ni Co
+dump_modify     d2 element ${bottom} ${top}
 
 # ----- Check equilibriation setting -----
 variable        energy equal etotal
@@ -142,13 +145,13 @@ compute         distribution all rdf 240
 fix             f1 all ave/time 1 1000 3000 c_distribution[*] file out_rdf.txt mode vector
 
 # ----- Mean Square Displacement -----
-group           Ni type 1
-compute         Nimsd Ni msd
-fix             f2 all ave/time 1 1 5 c_Nimsd[*] file out_Ni_msd.txt
+group           ${bottom} type 1
+compute         ${bottom}msd ${bottom} msd
+fix             f2 all ave/time 1 1 5 c_${bottom}msd[*] file out_${bottom}_msd.txt
 # -----
-group           Co type 2
-compute         Comsd Co msd
-fix             f3 all ave/time 1 1 5 c_Comsd[*] file out_Co_msd.txt
+group           ${top} type 2
+compute         ${top}msd ${top} msd
+fix             f3 all ave/time 1 1 5 c_${top}msd[*] file out_${top}_msd.txt
 # -----
 compute         allmsd all msd
 fix             f4 all ave/time 1 1 5 c_allmsd[*] file out_all_msd.txt
