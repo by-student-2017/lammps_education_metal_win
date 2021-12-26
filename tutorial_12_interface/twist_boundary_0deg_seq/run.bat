@@ -1,10 +1,10 @@
 mkdir cfg
 
-REM %%i/10 = 0.01 [nm] step
-for /l %%i in (0, 1, 40) do (
+REM %%i/20 = 0.005 [nm] * 2 step
+for /l %%i in (0,2,80) do (
 
   echo clear >> tmp.lmp
-  echo variable x_displace equal %%i/10 >> tmp.lmp
+  echo variable x_displace equal %%i/20 >> tmp.lmp
   
   copy /b tmp.lmp + in.p1.lmp in.lmp
 
