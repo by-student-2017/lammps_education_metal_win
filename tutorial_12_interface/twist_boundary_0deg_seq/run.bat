@@ -1,7 +1,7 @@
 mkdir cfg
 
 REM %%i/20 = 0.005 [nm] * 2 step
-for /l %%i in (0,2,80) do (
+for /l %%i in (-10,2,80) do (
 
   echo clear >> tmp.lmp
   echo variable x_displace equal %%i/20 >> tmp.lmp
