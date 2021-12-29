@@ -1,0 +1,95 @@
+#LAMMPS Input file
+# Title
+clear
+
+# ----- condition settings -----
+variable vacancy_site equal 29 # vacancy site (id in data.in)
+
+variable bottom string 'Ni'
+variable top    string 'Co'
+
+# --------------- INITIALIZATION ------------------
+units           metal
+atom_style      atomic
+dimension       3
+boundary        p p s
+# ------------------ ATOM DEFINITION -------------------
+read_data       data.in
+replicate       1 1 1
+
+# ----- Potential settings (MEAM)-----
+# -----HEA (Co-Ni-Cr-Fe-Mn)
+pair_style      meam/c
+pair_coeff      * * ../../potentials/meam/CoNiCrFeMn.HEA.library.meam Co Ni Cr Fe Mn ../../potentials/meam/CoNiCrFeMn.HEA.meam ${bottom} ${top}
+
+# ----- Potential settings (EAM)-----
+#pair_style      eam/alloy
+#pair_coeff      * * ../../potentials/eam/FeNiCrCoCu-heafixed.setfl ${bottom} ${top}
+# -----(Ni-Al-Co)
+#pair_style      eam/alloy
+#pair_coeff      * * ../../potentials/eam/Mishin_updated-Ni-Al-Co-2013.eam.alloy ${bottom} ${top}
+# -----(Al-Ti-Fe-Co-Ni)
+#pair_style      eam/alloy
+#pair_coeff      * * ../../potentials/eam/Zhou04/AlTiFeCoNi_Zhou04.eam.alloy ${bottom} ${top}
+
+# Need to set mass to something, just to satisfy LAMMPS (COMB, BOP, SW or tersoff)
+#mass 1 58.6934 # Ni ${bottom}
+#mass 2 58.9332 # Co ${top}
+#---------------------------Settings----------------------------
+compute csym all centro/atom fcc
+compute eng all pe/atom 
+compute eatoms all reduce sum c_eng
+#----------------------Run Minimization-------------------------
+reset_timestep	0
+
+thermo 10
+thermo_style custom step pe lx ly lz press pxx pyy pzz c_eatoms 
+
+dump 1 all custom 400 ./cfg/dump.relax.1.*.cfg id type xs ys zs c_csym c_eng 
+
+min_style cg
+minimize 1e-15 1e-15 5000 5000
+
+run 0
+undump 1
+
+#variable N equal count(all), counts the total number of atoms in the cell
+#the total number of atoms is stored to the variable N
+
+variable N equal count(all)
+variable No equal $N
+
+#variable Ei equal "c_eatoms" computes the initial energy of the cell system before the vacancy
+#E is needed to store the initial energy of the system to the variable Ei
+
+variable E equal "c_eatoms"
+variable Ei equal $E
+#---------------------------------------------------------------
+group select id ${vacancy_site}
+delete_atoms group select compress yes
+#---------------------------------------------------------------------
+reset_timestep	0
+
+thermo 10
+thermo_style custom step pe lx ly lz press pxx pyy pzz c_eatoms 
+
+dump 1 all custom 2 ./cfg/dump.atom.cfg id type xs ys zs c_csym c_eng 
+
+min_style cg
+minimize 1e-15 1e-15 5000 5000
+
+#variable Ef equal "c_eatoms" computes the final energy of the cell system after the vacancy
+#The final energy is stored to the variable Ef 
+
+variable Ef equal "c_eatoms"
+variable Ev equal (${Ef}-((${No}-1)/${No})*${Ei})
+
+#---------------------------------------------
+
+######################################
+# SIMULATION DONE
+print "All done"
+print "Total number of atoms = ${No}"
+print "Initial energy of atoms = ${Ei}"
+print "Final energy of atoms = ${Ef}"
+print "Vacancy formation energy = ${Ev}"
