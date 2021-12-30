@@ -1,0 +1,56 @@
+#LAMMPS Input file
+# Title
+clear
+
+# ----- condition settings -----
+
+variable bottom string 'Ni'
+variable top    string 'Co'
+
+# ----- Structure settings -----
+units           metal
+atom_style      atomic
+dimension       3
+boundary        p p s
+read_data       data.in
+replicate       6 3 1
+
+# ----- Potential settings (MEAM)-----
+# -----HEA (Co-Ni-Cr-Fe-Mn)
+pair_style      meam/c
+pair_coeff      * * ../../potentials/meam/CoNiCrFeMn.HEA.library.meam Co Ni Cr Fe Mn ../../potentials/meam/CoNiCrFeMn.HEA.meam ${bottom} ${top}
+
+# ----- Potential settings (EAM)-----
+#pair_style      eam/alloy
+#pair_coeff      * * ../../potentials/eam/FeNiCrCoCu-heafixed.setfl ${bottom} ${top}
+# -----(Ni-Al-Co)
+#pair_style      eam/alloy
+#pair_coeff      * * ../../potentials/eam/Mishin_updated-Ni-Al-Co-2013.eam.alloy ${bottom} ${top}
+# -----(Al-Ti-Fe-Co-Ni)
+#pair_style      eam/alloy
+#pair_coeff      * * ../../potentials/eam/Zhou04/AlTiFeCoNi_Zhou04.eam.alloy ${bottom} ${top}
+
+# Need to set mass to something, just to satisfy LAMMPS (COMB, BOP, SW or tersoff)
+#mass 1 58.6934 # Ni ${bottom}
+#mass 2 58.9332 # Co ${top}
+# -------------------------------------------------------------------
+neighbor        2.0 bin
+neigh_modify    delay 5
+
+#set type 1 type/fraction 2 1.0 545096
+
+compute eng all pe/atom
+compute eatoms all reduce sum c_eng
+
+dump d1 all cfg 1 cfg/run.*.cfg mass type xs ys zs id type
+dump_modify d1 element ${bottom} ${top}
+
+thermo_style custom step pe lx ly lz press pxx pyy pzz c_eatoms
+min_style cg
+minimize 1e-25 1e-25 5000 10000
+
+variable natoms equal "count(all)"
+variable teng equal "c_eatoms"
+variable length equal "lx"
+variable ecoh equal "v_teng/v_natoms"
+print "cohesive energy = ${ecoh} eV/atom"
