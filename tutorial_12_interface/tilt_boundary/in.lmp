@@ -11,11 +11,11 @@ variable x_displace equal 1.00 # shift x in top side
 variable y_displace equal 0.00 # shift y in top side
 variable z_displace equal 0.00 # shift z in top side
 
-variable        tempm  index  1073.0 # K (heat)
+variable        tempm  index   333.0 # K (heat)
 
-variable        temph  index   673.0 # K (cool No.1)
+variable        temph  index   273.0 # K (cool No.1)
 
-variable        tempc  index   273.0 # K (cool No.2)
+variable        tempc  index    77.0 # K (cool No.2)
 
 #variable        pres   index   0.001 # 0.0001 MPa (bar units)
 
@@ -35,9 +35,9 @@ variable        tdamp  equal ${fs}*100
 units           metal
 atom_style      atomic
 dimension       3
-boundary        p p s
+boundary        p p p
 read_data       data.in
-replicate       6 3 1
+replicate       3 2 1
 timestep        ${fs}
 
 # ----- Potential settings (MEAM)-----
@@ -106,9 +106,9 @@ print "Stacking-fault energy = ${SFE} mJ/m^2"
 thermo_style    custom step etotal temp lx vol press pxx pyy pxy
 thermo          10
 
-#fix             f1 all box/relax iso 0.0
-#minimize        1.0e-10 0.0 1000 100000
-#unfix           f1
+fix             f1 all box/relax iso 0.0
+minimize        1.0e-10 0.0 1000 100000
+unfix           f1
 
 # ----- Output setting -----
 dump            d2 all cfg 100 cfg/run.temp.*.cfg mass type xs ys zs id type
@@ -124,6 +124,12 @@ fix             fout1 all ave/time 1 100 100 v_energy v_temperature file out_ene
 #fix             f1 all npt temp 10.0 ${tempm} ${tdamp} iso 0.0 ${pres} ${pdamp}
 #run             ${nstep} # 20 ps
 #unfix           f1
+
+# ----- Equilibriation (heat)-----
+velocity        all create 10.0 123456
+fix             f1 all nvt temp 10.0 ${tempm} ${tdamp}
+run             ${nstep} # 20 ps
+unfix           f1
 
 # ----- Calculation (cool No.1)-----
 fix             f1 all nvt temp ${tempm} ${temph} ${tdamp}
