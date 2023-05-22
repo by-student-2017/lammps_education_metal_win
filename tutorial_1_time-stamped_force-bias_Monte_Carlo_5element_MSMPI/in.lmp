@@ -1,0 +1,112 @@
+# Monte Carlo relaxation of perturbed 3d lattice
+clear
+
+# ----- set these parameters ----- 
+# make sure neigh skin > 2*deltamove
+
+# ----- condition settings -----
+variable        temp         index 298.0 # K
+
+# -----other settings -----
+variable        iter         equal 30000  # number of Monte Carlo moves
+variable        deltamove    equal 0.1    # max size of MC move in one dimension
+variable        seed         equal 582783 # RNG seed
+
+# problem setup
+
+# ----- Structure settings -----
+units           metal
+atom_style      atomic
+atom_modify     map array sort 0 0.0
+dimension       3
+boundary        p p p
+read_data       data_5x4x4.in
+replicate       1 1 1
+
+# ----- Potential settings (MEAM)-----
+# -----HEA (Co-Ni-Cr-Fe-Mn)
+pair_style      meam/c
+pair_coeff      * * ../potentials/meam/CoNiCrFeMn.HEA.library.meam Co Ni Cr Fe Mn ../potentials/meam/CoNiCrFeMn.HEA.meam Co Ni Cr Fe Mn
+# -----(Al-Si-Mg-Cu-Fe)
+#pair_style      meam/c
+#pair_coeff      * * ../potentials/meam/Jelinek_2012_meam AlS SiS MgS CuS FeS ../potentials/meam/Jelinek_2012_meam.alsimgcufe AlS SiS MgS CuS FeS
+
+# ----- Potential settings (EAM)-----
+# -----(Fe-Ni-Cr-Co-Al): https://doi.org/10.1557/jmr.2020.294
+#pair_style      eam/alloy
+#pair_coeff      * * ../potentials/eam/FeNiCrCoAl-heaweight.setfl Fe Ni Cr Co Al
+
+# -----(Fe-Ni-Cr-Co-Cu): https://doi.org/10.1557/jmr.2018.245
+#pair_style      eam/alloy
+#pair_coeff      * * ../potentials/eam/FeNiCrCoCu-heafixed.setfl Fe Ni Cr Co Cu
+
+# -----(Ag-Au-Cu-Ni-Pd-Pt): https://doi.org/10.1557/jmr.1989.0102
+#pair_style      eam
+#pair_coeff      1 * ../potentials/eam/DYNAMO/cuu6.txt
+#pair_coeff      2 * ../potentials/eam/DYNAMO/agu6.txt
+#pair_coeff      3 * ../potentials/eam/DYNAMO/auu6.txt
+#pair_coeff      4 * ../potentials/eam/DYNAMO/niu6.txt
+#pair_coeff      5 * ../potentials/eam/DYNAMO/ptu6.txt
+
+# https://doi.org/10.1103/physrevb.69.144113
+# -----(Cr-Mn-Fe-Co-Ni), Cr and Mn are low accuracy
+#pair_style      eam/alloy
+#pair_coeff      * * ../potentials/eam/Zhou04/CrMnFeCoNi_Zhou04.eam.alloy Cr Mn Fe Co Ni
+# -----(Cr-Fe-Co-Ni-Cu), Cr is low accuracy
+#pair_style      eam/alloy
+#pair_coeff      * * ../potentials/eam/Zhou04/CrFeCoNiCu_Zhou04.eam.alloy Cr Fe Co Ni Cu
+# -----(Al-Cr-Fe-Co-Ni), Cr is low accuracy
+#pair_style      eam/alloy
+#pair_coeff      * * ../potentials/eam/Zhou04/AlCrFeCoNi_Zhou04.eam.alloy Al Cr Fe Co Ni
+# -----(Al-Ti-Fe-Co-Ni)
+#pair_style      eam/alloy
+#pair_coeff      * * ../potentials/eam/Zhou04/AlTiFeCoNi_Zhou04.eam.alloy Al Ti Fe Co Ni
+# -----(Al-Ti-V-Cr-Nb), V and Nb are low accuracy
+#pair_style      eam/alloy
+#pair_coeff      * * ../potentials/eam/Zhou04/AlTiVCrNb_Zhou04.eam.alloy Al Ti V Cr Nb
+# -----(Au-Cu-Pt-Pd-Ni)
+#pair_style      eam/alloy
+#pair_coeff      * * ../potentials/eam/Zhou04/AuCuPtPdNi_Zhou04.eam.alloy Au Cu Pt Pd Ni
+# -----(Ti-Zr-Hf-Nb-Ta), Hf and Nb are low accuracy
+#pair_style      eam/alloy
+#pair_coeff      * * ../potentials/eam/Zhou04/TiZrHfNbTa_Zhou04.eam.alloy Ti Zr Hf Nb Ta
+# -----(V-Nb-Mo-Fe-Ni), V and Nb are low accuracy
+#pair_style      eam/alloy
+#pair_coeff      * * ../potentials/eam/Zhou04/VNbMoFeNi_Zhou04.eam.alloy V Nb Mo Fe Ni
+
+# ----- Potential settings (EIM)-----
+#pair_style      eim
+#pair_coeff      * * Li Na K Rb Cs F Cl Br Id ../potentials/eim/BrClCsFIKLiNaRb.ffield.eim F K Li Na Rb
+
+neighbor        2.0 bin
+neigh_modify    delay 0 every 1 check yes
+
+# ----- Output setting -----
+thermo_style    custom step etotal temp lx vol press pxx pyy pxy
+thermo          100
+variable        energy equal etotal
+variable        temperature equal temp
+fix             fout1 all ave/time 1 100 100 v_energy v_temperature file out_energy.txt
+dump            d1 all cfg 100 cfg/run.*.cfg mass type xs ys zs id type
+dump_modify     d1 element Co Ni Cr Fe Mn # Co-Ni-Cr-Fe-Mn
+#dump_modify     d1 element Al Si Mg Cu Fe  # Al-Si-Mg-Cu-Fe
+
+#dump           1 all atom 25 dump.mc
+
+#dump           2 all image 25 image.*.jpg type type &
+#               zoom 1.6 adiam 1.0
+#dump_modify    2 pad 5
+
+#dump           3 all movie 25 movie.mpg type type &
+#               zoom 1.6 adiam 1.0
+#dump_modify    3 pad 5
+
+# ----- tfMC calculation ----- 
+velocity        all create ${temp} ${seed}
+fix             f1 all tfmc ${deltamove} ${temp} ${seed} com 1 1 1 rot
+run             ${iter}
+unfix           f1
+unfix           fout1
+
+# ----- Output restart data -----
+write_data data.in.restart

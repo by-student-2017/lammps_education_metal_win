@@ -1,0 +1,246 @@
+# Monte Carlo relaxation of perturbed 3d lattice
+clear
+
+# ----- set these parameters ----- 
+# make sure neigh skin > 2*deltamove
+
+# ----- condition settings -----
+variable        temp         index 298.0 # K
+variable        styp         equal 4.0 # FCC:4.0, BCC:2.0
+
+# -----other settings -----
+variable        iter         loop  3000   # number of Monte Carlo moves
+variable        deltaperturb equal 0.2    # max size of initial perturbation per dim
+variable        deltamove    equal 0.1    # max size of MC move in one dimension
+variable        kT           equal 25.7/1000.0/298.0*${temp} # effective T in Boltzmann factor, 25.7/1000 [eV] at 298 K
+variable        seed         equal 582783 # RNG seed
+variable        nswap        equal 100    # invoke this fix every N steps
+
+# problem setup
+
+# ----- Structure settings -----
+units           metal
+atom_style      atomic
+atom_modify     map array sort 0 0.0
+dimension       3
+boundary        p p p
+read_data       data_5x4x4.in
+replicate       1 1 1
+
+# ----- Potential settings (MEAM)-----
+# -----HEA (Co-Ni-Cr-Fe-Mn): https://doi.org/10.1038/s41524-017-0060-9
+pair_style      meam/c
+pair_coeff      * * ../potentials/meam/CoNiCrFeMn.HEA.library.meam Co Ni Cr Fe Mn ../potentials/meam/CoNiCrFeMn.HEA.meam Co Ni Cr Fe Mn
+# -----(Al-Si-Mg-Cu-Fe): https://doi.org/10.1103/physrevb.85.245102
+#pair_style      meam/c
+#pair_coeff      * * ../potentials/meam/Jelinek_2012_meam AlS SiS MgS CuS FeS ../potentials/meam/Jelinek_2012_meam.alsimgcufe AlS SiS MgS CuS FeS
+
+# ----- Potential settings (EAM)-----
+# -----(Fe-Ni-Cr-Co-Al): https://doi.org/10.1557/jmr.2020.294
+#pair_style      eam/alloy
+#pair_coeff      * * ../potentials/eam/FeNiCrCoAl-heaweight.setfl Fe Ni Cr Co Al
+# -----(Fe-Ni-Cr-Co-Cu): https://doi.org/10.1557/jmr.2018.245
+#pair_style      eam/alloy
+#pair_coeff      * * ../potentials/eam/FeNiCrCoCu-heafixed.setfl Fe Ni Cr Co Cu
+# -----(Ag-Au-Cu-Ni-Pd-Pt): https://doi.org/10.1557/jmr.1989.0102
+#pair_style      eam
+#pair_coeff      1 * ../potentials/eam/DYNAMO/cuu6.txt
+#pair_coeff      2 * ../potentials/eam/DYNAMO/agu6.txt
+#pair_coeff      3 * ../potentials/eam/DYNAMO/auu6.txt
+#pair_coeff      4 * ../potentials/eam/DYNAMO/niu6.txt
+#pair_coeff      5 * ../potentials/eam/DYNAMO/ptu6.txt
+
+# https://doi.org/10.1103/physrevb.69.144113
+# -----(Cr-Mn-Fe-Co-Ni), Cr and Mn are low accuracy
+#pair_style      eam/alloy
+#pair_coeff      * * ../potentials/eam/Zhou04/CrMnFeCoNi_Zhou04.eam.alloy Cr Mn Fe Co Ni
+# -----(Cr-Fe-Co-Ni-Cu), Cr is low accuracy
+#pair_style      eam/alloy
+#pair_coeff      * * ../potentials/eam/Zhou04/CrFeCoNiCu_Zhou04.eam.alloy Cr Fe Co Ni Cu
+# -----(Al-Cr-Fe-Co-Ni), Cr is low accuracy
+#pair_style      eam/alloy
+#pair_coeff      * * ../potentials/eam/Zhou04/AlCrFeCoNi_Zhou04.eam.alloy Al Cr Fe Co Ni
+# -----(Al-Ti-Fe-Co-Ni)
+#pair_style      eam/alloy
+#pair_coeff      * * ../potentials/eam/Zhou04/AlTiFeCoNi_Zhou04.eam.alloy Al Ti Fe Co Ni
+# -----(Al-Ti-V-Cr-Nb), V and Nb are low accuracy
+#pair_style      eam/alloy
+#pair_coeff      * * ../potentials/eam/Zhou04/AlTiVCrNb_Zhou04.eam.alloy Al Ti V Cr Nb
+# -----(Au-Cu-Pt-Pd-Ni)
+#pair_style      eam/alloy
+#pair_coeff      * * ../potentials/eam/Zhou04/AuCuPtPdNi_Zhou04.eam.alloy Au Cu Pt Pd Ni
+# -----(Ti-Zr-Hf-Nb-Ta), Hf and Nb are low accuracy
+#pair_style      eam/alloy
+#pair_coeff      * * ../potentials/eam/Zhou04/TiZrHfNbTa_Zhou04.eam.alloy Ti Zr Hf Nb Ta
+# -----(V-Nb-Mo-Fe-Ni), V and Nb are low accuracy
+#pair_style      eam/alloy
+#pair_coeff      * * ../potentials/eam/Zhou04/VNbMoFeNi_Zhou04.eam.alloy V Nb Mo Fe Ni
+
+# ----- Potential settings (EIM)-----
+#pair_style      eim
+#pair_coeff      * * Li Na K Rb Cs F Cl Br Id ../potentials/eim/BrClCsFIKLiNaRb.ffield.eim F K Li Na Rb
+
+neighbor        2.0 bin
+neigh_modify    delay 0 every 1 check yes
+
+variable        e equal pe
+
+# ----- Calculation -----
+# run 0 to get energy of perfect lattice
+# emin = minimum energy
+run             0
+variable        emin equal $e
+
+# disorder the system
+# estart = initial energy
+
+variable        x atom x+v_deltaperturb*random(-1.0,1.0,${seed})
+variable        y atom y+v_deltaperturb*random(-1.0,1.0,${seed})
+variable        z atom z+v_deltaperturb*random(-1.0,1.0,${seed})
+
+set             group all x v_x
+set             group all y v_y
+set             group all z v_z
+
+# ----- Output setting -----
+dump            d1 all cfg 100 cfg/run.*.cfg mass type xs ys zs id type
+dump_modify     d1 element Co Ni Cr Fe Mn
+#dump_modify     d1 element Al Si Mg Cu Fe   # Al-Si-Mg-Cu-Fe
+
+#dump           1 all atom 25 dump.mc
+
+#dump           2 all image 25 image.*.jpg type type &
+#               zoom 1.6 adiam 1.0
+#dump_modify    2 pad 5
+
+#dump           3 all movie 25 movie.mpg type type &
+#               zoom 1.6 adiam 1.0
+#dump_modify    3 pad 5
+
+variable        elast equal $e
+thermo_style    custom step v_emin v_elast pe
+
+run             0
+
+variable        estart equal $e
+variable        elast equal $e
+
+# ----- loop over Monte Carlo moves ----- 
+
+variable        naccept equal 0
+variable        increment equal v_naccept+1
+variable        irandom equal floor(atoms*random(0.0,1.0,${seed})+1)
+variable        jrandom equal floor(atoms*random(0.0,1.0,${seed})+1)
+variable        rn equal random(0.0,1.0,${seed})
+variable        boltzfactor equal "exp((v_styp/atoms)*(v_elast - v_e) / v_kT)"
+variable        xnew equal x[v_i]+v_deltamove*random(-1.0,1.0,${seed})
+variable        ynew equal y[v_i]+v_deltamove*random(-1.0,1.0,${seed})
+variable        znew equal z[v_i]+v_deltamove*random(-1.0,1.0,${seed})
+variable        xi equal x[v_i]
+variable        yi equal y[v_i]
+variable        zi equal z[v_i]
+
+variable        xj equal x[v_j]
+variable        yj equal y[v_j]
+variable        zj equal z[v_j]
+
+label           loop
+
+variable        i equal ${irandom}
+
+variable        j equal ${jrandom}
+
+variable        x0 equal ${xi}
+variable        y0 equal ${yi}
+variable        z0 equal ${zi}
+
+variable        xn equal ${xj}
+variable        yn equal ${yj}
+variable        zn equal ${zj}
+
+set             atom $i x ${xnew}
+set             atom $i y ${ynew}
+set             atom $i z ${znew}
+
+variable        swapflag equal ${iter}%${nswap}
+if "${swapflag} == 0" then &
+  "set atom $i x ${xn}" &
+  "set atom $i y ${yn}" &
+  "set atom $i z ${zn}" &
+  "set atom $j x ${x0}" &
+  "set atom $j y ${y0}" &
+  "set atom $j z ${z0}"
+
+run             1 pre no post no
+
+if "$e <= ${elast}" then &
+  "variable elast equal $e" &
+  "variable naccept equal ${increment}" &
+elif "${rn} <= ${boltzfactor}" &
+  "variable elast equal $e" &
+  "variable naccept equal ${increment}" &
+else &
+  "set atom $i x ${x0}" &
+  "set atom $i y ${y0}" &
+  "set atom $i z ${z0}" &
+  "set atom $j x ${xn}" &
+  "set atom $j y ${yn}" &
+  "set atom $j z ${zn}"
+
+next            iter
+jump            SELF loop
+
+# ----- final energy and stats ----- 
+
+variable        nb equal nbuild
+variable        nbuild equal ${nb}
+
+# ----- atom count -----
+variable        type1 atom "type==1"
+variable        type2 atom "type==2"
+variable        type3 atom "type==3"
+variable        type4 atom "type==4"
+variable        type5 atom "type==5"
+group           type1 dynamic all var type1
+group           type2 dynamic all var type2
+group           type3 dynamic all var type3
+group           type4 dynamic all var type4
+group           type5 dynamic all var type5
+variable        na1  equal count(type1)
+variable        na2  equal count(type2)
+variable        na3  equal count(type3)
+variable        na4  equal count(type4)
+variable        na5  equal count(type5)
+variable        c1   equal v_na1/atoms
+variable        c2   equal v_na2/atoms
+variable        c3   equal v_na3/atoms
+variable        c4   equal v_na4/atoms
+variable        c5   equal v_na5/atoms
+variable        entropy equal "-v_kT*(v_c1*ln(v_c1) + v_c2*ln(v_c2) + v_c3*ln(v_c3) + v_c4*ln(v_c4) + v_c5*ln(v_c5))"
+variable        enthalpy equal "v_e/atoms"
+variable        bccenthalpy equal "2*v_e/atoms"
+variable        fccenthalpy equal "4*v_e/atoms"
+variable        gibbs equal "v_enthalpy - v_entropy"
+variable        bccgibbs equal "v_bccenthalpy - v_entropy"
+variable        fccgibbs equal "v_fccenthalpy - v_entropy"
+
+run             0
+
+print           "MC stats:"
+print           "  starting energy = ${estart} [eV]"
+print           "  final energy = $e [eV]"
+print           "  minimum energy of perfect lattice = ${emin} [eV]"
+print           "  accepted MC moves = ${naccept}"
+print           "  neighbor list rebuilds = ${nbuild}"
+
+print           "  enthalpy, H = ${enthalpy} [eV/atom]"
+print           "  entropy, S = ${entropy} [eV] at ${temp} K"
+
+print           "  FCC case: enthalpy, H = ${fccenthalpy} [eV]"
+print           "   Gibbs free energy, G = H - T*S = ${fccgibbs} [eV]"
+
+print           "  BCC case: enthalpy, H = ${bccenthalpy} [eV]"
+print           "   Gibbs free energy, G = H - T*S = ${bccgibbs} [eV]"
+
+# ----- Output restart data -----
+write_data data.in.restart
