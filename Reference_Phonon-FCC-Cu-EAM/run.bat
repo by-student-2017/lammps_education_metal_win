@@ -1,4 +1,5 @@
 REM "fix phonon calculation"
+mkdir data
 cd data
 del Phonon.*
 cd ..
