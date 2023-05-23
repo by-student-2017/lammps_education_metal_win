@@ -1,0 +1,186 @@
+# NEB simulation of vacancy hopping in silicon crystal
+
+units           metal
+
+atom_style      atomic
+atom_modify     map array
+boundary        p p p
+atom_modify	sort 0 0.0
+
+# coordination number cutoff
+
+variable r equal 2.835
+
+# diamond unit cell
+
+read_data       initial.sivac
+
+# make a vacancy
+
+group Si type 1
+
+group del id 300
+delete_atoms group del compress no
+group vacneigh id 174 175 301 304 306 331 337 # related to final.sivac and initial.sivac (aroung id 300 atom)
+ 
+# choose potential
+
+# ----- Potential settings (MEAM)-----
+# -----HEA (Co-Ni-Cr-Fe-Mn)
+#pair_style      meam/c
+#pair_coeff      * * ../potentials/meam/CoNiCrFeMn.HEA.library.meam Co Ni Cr Fe Mn ../potentials/meam/CoNiCrFeMn.HEA.meam Co Ni Cr Fe
+# -----(Al-Si-Mg-Cu-Fe)
+#pair_style      meam/c
+#pair_coeff      * * ../potentials/meam/Jelinek_2012_meam AlS SiS MgS CuS FeS ../potentials/meam/Jelinek_2012_meam.alsimgcufe AlS SiS MgS CuS
+# -----(Fe-Mn-Si-C)
+#pair_style      meam/c
+#pair_coeff      * * ../potentials/meam/CFeMnSi.library.meam Fe Mn Si C ../potentials/meam/CFeMnSi.meam Si # Fe Mn Si C
+# -----(Mg-Al-Zn)
+#pair_style      meam/c
+#pair_coeff      * * ../potentials/meam/MgAlZn.library.meam Mg Al Zn ../potentials/meam/MgAlZn.parameter.meam Mg Al Zn
+# -----(Fe-Ti-C)
+#pair_style      meam/c
+#pair_coeff      * * ../potentials/meam/FeTiC.library.meam Fe Ti C ../potentials/meam/FeTiC.meam Fe Ti C
+# -----(V-Ni-Ti)
+#pair_style      meam/c
+#pair_coeff      * * ../potentials/meam/VNiTi.library.meam V Ni Ti ../potentials/meam/VNiTi.meam V Ni Ti
+# -----(AgTaO3)
+#pair_style      meam/c
+#pair_coeff      * * ../potentials/meam/AgTaO3.library.meam Ag Ta O ../potentials/meam/AgTaO3.meam Ag Ta O
+
+# ----- Potential settings (EAM)-----
+# -----(Co-Ni-Cr-Fe-Cu)
+#pair_style      eam/alloy
+#pair_coeff      * * ../potentials/eam/FeNiCrCoCu-heafixed.setfl Co Ni Cr Fe
+# -----(Fe-Ni-Cr-Co-Al)
+#pair_style      eam/alloy
+#pair_coeff      * * ../potentials/eam/FeNiCrCoAl-heaweight.setfl Fe Ni Cr Co Al
+# -----(Cu-Ag-Au)
+#pair_style      eam/alloy
+#pair_coeff      * * ../potentials/eam/CuAgAu_Zhou04.eam.alloy Cu Ag Au
+# -----(Fe-Cu-Ni)
+#pair_style      eam/alloy
+#pair_coeff      * * ../potentials/eam/FeCuNi.eam.alloy Fe Cu Ni
+# -----(Al-Mn-Pd)
+#pair_style      eam/alloy
+#pair_coeff      * * ../potentials/eam/AlMnPd_Schopf_2012.lammps.EAM_CORRECT Al Mn Pd
+# -----(Ni-Al-Co)
+#pair_style      eam/alloy
+#pair_coeff      * * ../potentials/eam/Mishin_updated-Ni-Al-Co-2013.eam.alloy Ni Al Co
+# -----(Nb-Ti-Al)
+#pair_style      eam/alloy
+#pair_coeff      * * ../potentials/eam/Farkas_Nb-Ti-Al_1996.eam.alloy Nb Ti Al
+# -----(Ni-Al-H)
+#pair_style      eam/alloy
+#pair_coeff      * * ../potentials/eam/NiAlH_jea.eam.alloy Ni Al H
+# -----(Pd-Ag-H)
+#pair_style      eam/alloy
+#pair_coeff      * * ../potentials/eam/PdAgH_HybridPd3Ag.eam.alloy Pd Ag H
+# -----(W-H-He)
+#pair_style      eam/alloy
+#pair_coeff      * * ../potentials/eam/potential-WHHe-EAM1.eam.alloy W H He
+# -----(Fe-Ni-Cr) (FCC)
+#pair_style      eam/fs
+#pair_coeff      * * ../potentials/eam/Fe-Ni-Cr_fcc.eam.fs Fe Ni Cr
+# -----(EAM potentials - Google Sites)
+#pair_style      eam/fs
+#pair_coeff      * * ../potentials/eam/Google_Sites/Cu.lammps.eam Cu Cu Cu
+# -----(Fe-Cr-W)
+#pair_style      hybrid/overlay eam/alloy eam/fs
+#pair_coeff      * * eam/alloy ../potentials/eam/FeCrW_d.eam.alloy Fe Cr W
+#pair_coeff      * * eam/fs    ../potentials/eam/FeCrW_s.eam.fs Fe Cr W
+# -----(Ag-Au-Cu-Ni-Pd-Pt)
+#pair_style      eam
+#pair_coeff      1 * ../potentials/eam/DYNAMO/cuu6.txt
+#pair_coeff      2 * ../potentials/eam/DYNAMO/agu6.txt
+#pair_coeff      3 * ../potentials/eam/DYNAMO/auu6.txt
+
+# https://doi.org/10.1103/physrevb.69.144113
+# -----(Cr-Mn-Fe-Co-Ni), Cr and Mn are low accuracy
+#pair_style      eam/alloy
+#pair_coeff      * * ../potentials/eam/Zhou04/CrMnFeCoNi_Zhou04.eam.alloy Fe Co Ni
+# -----(Cr-Fe-Co-Ni-Cu), Cr is low accuracy
+#pair_style      eam/alloy
+#pair_coeff      * * ../potentials/eam/Zhou04/CrFeCoNiCu_Zhou04.eam.alloy Co Ni Cu
+# -----(Al-Cr-Fe-Co-Ni), Cr is low accuracy
+#pair_style      eam/alloy
+#pair_coeff      * * ../potentials/eam/Zhou04/AlCrFeCoNi_Zhou04.eam.alloy Al Fe Co Ni
+# -----(Al-Ti-Fe-Co-Ni)
+#pair_style      eam/alloy
+#pair_coeff      * * ../potentials/eam/Zhou04/AlTiFeCoNi_Zhou04.eam.alloy Al Ti Fe
+# -----(Al-Ti-V-Cr-Nb), V and Nb are low accuracy
+#pair_style      eam/alloy
+#pair_coeff      * * ../potentials/eam/Zhou04/AlTiVCrNb_Zhou04.eam.alloy Al Ti V
+# -----(Au-Cu-Pt-Pd-Ni)
+#pair_style      eam/alloy
+#pair_coeff      * * ../potentials/eam/Zhou04/AuCuPtPdNi_Zhou04.eam.alloy Au Cu Pt
+# -----(Ti-Zr-Hf-Nb-Ta), Hf and Nb are low accuracy
+#pair_style      eam/alloy
+#pair_coeff      * * ../potentials/eam/Zhou04/TiZrHfNbTa_Zhou04.eam.alloy Ti Zr Ta
+# -----(V-Nb-Mo-Fe-Ni), V and Nb are low accuracy
+#pair_style      eam/alloy
+#pair_coeff      * * ../potentials/eam/Zhou04/VNbMoFeNi_Zhou04.eam.alloy Mo Fe Ni
+
+# ----- Potential settings (ADP)-----
+#pair_style      adp
+#pair_coeff      * * ../potentials/adp/Si_Au_Al.adp.txt Si Au Al
+
+# ----- Potential settings (EIM)-----
+#pair_style      eim
+#pair_coeff      * * Li Na K Rb Cs F Cl Br Id ../potentials/eim/BrClCsFIKLiNaRb.ffield.eim F Li Na
+
+# ----- Potential settings (COMB)-----
+#pair_style      comb3 polar_off
+#pair_coeff      * * ../potentials/comb3/ffield.comb3.NiAlO Ni Al O
+#fix             q2 all qeq/comb 10 1.0e-3 # file fq.out
+# -----(OCuNCHTiZnZr)
+#pair_style      comb3 polar_off
+#pair_coeff      * * ../potentials/comb3/ffield.comb3.OCuNCHTiZnZr Cu Zn O
+#fix             q2 all qeq/comb 10 1.0e-3 # file fq.out
+
+# ----- Potential settings (BOP)-----
+#pair_style      bop
+#pair_coeff      * * ../potentials/bop/CdZnTe_v2.bop.table Cd Zn Te
+#comm_modify cutoff 14.70
+
+# ----- Potential settings (SW)-----
+#pair_style      sw
+#pair_coeff      * * ../potentials/sw/InGaN.psw In Ga N
+# -----(Cd-Te-Zn-Se-Hg-S)
+#pair_style      sw
+#pair_coeff      * * ../potentials/sw/CdTeZnSeHgS0.sw Cd Te Zn
+# -----(Si)
+pair_style      sw
+pair_coeff * * ../potentials/sw/Si.sw Si
+
+# ----- Potential settings (tersoff)-----
+#pair_style      tersoff
+#pair_coeff      * * ../potentials/tersoff/BNC.tersoff B N C
+
+timestep        1.0e-3
+
+# set up neb run
+
+variable        u uloop 20
+
+# initial minimization to relax vacancy
+
+displace_atoms all random 0.1 0.1 0.1 123456
+minimize        1.0e-6 1.0e-4 1000 10000
+
+reset_timestep  0
+
+# only output atoms near vacancy
+
+dump events vacneigh custom 1000 dump.neb.sivac.$u id type x y z
+
+fix             1 all neb 1.0
+
+thermo          100
+
+# run NEB for 2000 steps or to force tolerance
+
+timestep        0.01
+min_style       quickmin
+
+neb             0.0 0.01 100 100 10 final final.sivac
