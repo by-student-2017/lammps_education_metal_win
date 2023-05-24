@@ -5,10 +5,15 @@
 
 
 ## run
-	click run.bat or lmp_serial.exe -in cohesive_energy.lmp
+	click run_msmpi.bat
+	
+	or
+	
+	mpiexec.exe -np 4 lmp.exe -in cohesive_energy.lmp
 
 
 ## check results
+	go to cfg file and click *.cfg file
 	see log.lammps file
 
 

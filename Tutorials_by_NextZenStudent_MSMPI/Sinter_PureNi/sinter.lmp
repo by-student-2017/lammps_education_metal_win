@@ -1,0 +1,130 @@
+variable name string Ni
+
+units           metal
+boundary        p p p 
+atom_style  atomic
+
+neighbor        2.0 bin
+neigh_modify    every 1 delay 2 check yes
+
+##############################################
+#       Setting up Grains/Crystallites       #
+##############################################
+
+variable latparam equal 3.52 
+variable fcc equal 3.52
+
+#dimensions can be altered from cubic by modifying below
+variable dim equal 250
+variable x equal ${dim}
+variable y equal ${dim}
+variable z equal ${dim}
+
+variable 1z1 equal 0
+variable 1z2 equal 0
+variable 1z3 equal 1
+
+variable 1y1 equal 0
+variable 1y2 equal 1
+variable 1y3 equal 0
+
+variable 1x1 equal 1
+variable 1x2 equal 0
+variable 1x3 equal 0
+
+variable xsize1 equal "sqrt(v_1x1^2 + v_1x2^2 + v_1x3^2)"
+variable ysize1 equal "sqrt(v_1y1^2 + v_1y2^2 + v_1y3^2)"
+variable zsize1 equal "sqrt(v_1z1^2 + v_1z2^2 + v_1z3^2)"
+
+variable sx equal "ceil(v_x/v_latparam/v_xsize1/2)"
+variable sy equal "ceil(v_y/v_latparam/v_ysize1/2)"
+variable sz equal "ceil(v_z/v_latparam/v_zsize1/2)"
+
+variable lsx equal "ceil(2*v_x/v_latparam/v_xsize1/2)"
+variable lsy equal "ceil(2*v_y/v_latparam/v_ysize1/2)"
+variable lsz equal "ceil(2*v_z/v_latparam/v_zsize1/2)"
+
+lattice fcc ${latparam} orient x  ${1x1} ${1x2} ${1x3} orient y  ${1y1} ${1y2} ${1y3} orient z  ${1z1} ${1z2} ${1z3} spacing ${xsize1} ${ysize1} ${zsize1}
+region box block -${lsx} ${lsx} -${lsy} ${lsy} -${lsz} ${lsz} units lattice
+
+create_box     1 box
+
+pair_style eam/alloy
+pair_coeff * * FeNiCrCoCu-heafixed.setfl Ni 
+
+###   Grain size and filling parameters here   ###
+variable grainsize equal 40    #set approximate grain size
+variable grainsig equal 10     #set some expected standard deviation of grain size
+variable occupiedvolume equal 0.365  #what fraction of space will be occupied
+
+variable expected equal v_occupiedvolume*v_sx*v_sy*v_sz*v_fcc*2*2*2
+variable grains equal 0   #initialize grain counter
+run 0
+variable counter loop 5000000   #should be more than enough except for extreme circumstances. Also used to seed the next random grain.
+
+label loop
+
+variable randomr equal "normal(v_grainsize,v_grainsig,v_counter)"
+variable holdr equal ${randomr}
+
+if "${holdr} < 0" then "jump SELF negative" #else " "  
+
+variable randomx equal "random(-v_x/2+v_holdr,v_x/2-v_holdr,v_counter)"
+variable randomy equal "random(-v_y/2+v_holdr,v_y/2-v_holdr,v_counter)"
+variable randomz equal "random(-v_z/2+v_holdr,v_z/2-v_holdr,v_counter)"
+
+variable rax1 equal "random(0,1,v_counter)"
+variable ray1 equal "random(0,1,v_counter+1)"
+variable raz1 equal "random(0,1,v_counter+2)"
+
+variable rax2 equal "random(0,1,v_counter+3)"
+variable ray2 equal "random(0,1,v_counter+4)"
+variable raz2 equal "random(0,1,v_counter+5)"
+
+variable drax equal "v_rax1-v_rax2"
+variable dray equal "v_ray1-v_ray2"
+variable draz equal "v_raz1-v_raz2"
+
+variable theta equal "random(0,62.4,v_counter)"    #~62.4 for cubic misorientations, more realistic distribution could be implemented here
+
+variable holdx equal ${randomx}
+variable holdy equal ${randomy}
+variable holdz equal ${randomz}
+
+region grain sphere ${holdx} ${holdy} ${holdz} ${holdr} units box
+group grain region grain
+
+variable overlap equal "count(grain)"      #this variable will count atoms already in this space defined by the grain region
+
+if "${overlap} > 0.5" then "jump SELF foundone" else " "   #skip grain creation if an atom is found
+
+create_atoms 1 region grain
+variable grains equal ${grains}+1   #counts how many grains/crystallites have been created
+
+group grain delete                #clear grain group and region
+group grain region grain
+
+displace_atoms grain rotate ${holdx} ${holdy} ${holdz} ${drax} ${dray} ${draz} ${theta} units box 
+
+write_data ${name}.${counter}    #data file can be written to view grain placement process
+
+label foundone
+
+variable crit equal atoms/v_expected*100
+variable current equal atoms
+print "Created ${grains} grains ; Current Atoms = ${current} ; % Complete = ${crit}"   #The process should slow down considerably as %->100%
+if "${crit} > 100" then "jump SELF after" else " "
+
+region grain delete
+group grain delete
+
+label negative
+
+print "${counter}"
+print " "
+next counter
+jump SELF loop
+
+label after
+
+print "Done making initial grains"
