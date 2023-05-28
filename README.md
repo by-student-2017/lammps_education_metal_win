@@ -87,6 +87,17 @@ pair_coeff      * * ../potentials/eam/Fe-Ni-Cr_fcc.eam.fs Fe Ni Cr
 * notepad potential.mod (set potential)
 * notepad init.mod (set temperature and masses)
 
+## tutorial_11_hybrid
+- The Example of EAM + MEAM + ADP hybrid potential
+- If you are lucky enough to have all the potentials you want to calculate, even if they are separate, you can calculate them by hybridizing them like this.
+
+## tutorial_12_interface
+- It is an example of an interface. In addition, I recommend watching ÅgTutorials_by_NextZenStudentÅh and Youtube videos.
+
+
+## tutorial_13_Machine_Learning_potential_MSMPI
+- Calculation using potential by neural network. OpenKIM is available in the Linux version, so if you want to use more potential, please try the Linux version.
+
 ------------------------------------------------------------------------------
 ## lammps (windows 11 (64 bit))
 
