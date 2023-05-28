@@ -99,7 +99,6 @@ pair_coeff      * * ../potentials/eam/Fe-Ni-Cr_fcc.eam.fs Fe Ni Cr
 ## tutorial_12_interface
 - It is an example of an interface. In addition, I recommend watching ÅgTutorials_by_NextZenStudentÅh and Youtube videos.
 
-
 ## tutorial_13_Machine_Learning_potential_MSMPI
 - Calculation using potential by neural network. OpenKIM is available in the Linux version, so if you want to use more potential, please try the Linux version.
 
