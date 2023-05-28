@@ -87,6 +87,10 @@ pair_coeff      * * ../potentials/eam/Fe-Ni-Cr_fcc.eam.fs Fe Ni Cr
 * notepad potential.mod (set potential)
 * notepad init.mod (set temperature and masses)
 
+## tutorial_10_phonon-primitive-cell
+- "Alamode+Lammps" (https://github.com/by-student-2017/alamode-example.git) may be better for phonon calculation.
+- "Alamode" is designed to be able to calculate finite temperatures efficiently, so it is a code worthy of careful consideration. I also like the official support for Lammps.
+
 ## tutorial_11_hybrid
 - The Example of EAM + MEAM + ADP hybrid potential
 - If you are lucky enough to have all the potentials you want to calculate, even if they are separate, you can calculate them by hybridizing them like this.
