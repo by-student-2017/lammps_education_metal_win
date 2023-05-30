@@ -90,7 +90,7 @@ pair_coeff      * * ../potentials/eam/Fe-Ni-Cr_fcc.eam.fs Fe Ni Cr
 ## tutorial_10_phonon-primitive-cell
 - "Alamode+Lammps" (https://github.com/by-student-2017/alamode-example.git) may be better for phonon calculation.
 - "Alamode" is designed to be able to calculate finite temperatures efficiently, so it is a code worthy of careful consideration. The interface is more suitable for intermediate and advanced users than Phonopy, but I also like the fact that it officially supports Lammps.
-- If you really want to calculate the phonons, you should consider the method of calculating 0K with "Alamode + DFTB+ & xTB potential" (https://github.com/by-student-2017/alamode-example/tree/main/Si_DFTBplus).
+- If you really want to calculate the phonons, you should consider the method of calculating 0 K with "Alamode + DFTB+ & xTB potential" (https://github.com/by-student-2017/alamode-example/tree/main/Si_DFTBplus).
 
 ## tutorial_11_hybrid
 - The Example of EAM + MEAM + ADP hybrid potential
