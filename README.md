@@ -286,6 +286,10 @@ pair_coeff      * * ../potentials/eam/Fe-Ni-Cr_fcc.eam.fs Fe Ni Cr
 
 [S2] M. Agrawal et al., J. Phys. Chem. Lett. 10 (2019) 7823-7830.
   https://doi.org/10.1021/acs.jpclett.9b03119
+
+
+[S3] R. Thyagarajan et al., Chem. Mater. 32 (2020) 8020-8033.
+  https://doi.org/10.1021/acs.chemmater.0c03057
 ------------------------------------------------------------------------------
 # References
 
