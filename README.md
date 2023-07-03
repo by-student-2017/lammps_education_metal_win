@@ -217,8 +217,75 @@ pair_coeff      * * ../potentials/eam/Fe-Ni-Cr_fcc.eam.fs Fe Ni Cr
 
 [14] KIST Integrated Force Field Platform
   http://kiff.vfab.org/
+------------------------------------------------------------------------------
+# Input file
 
 
+## Metal
+
+[IFM1] P. Malakar et al., ACS Appl. Nano Mater. 5 (2022) 16489-16499.
+  https://doi.org/10.1021/acsanm.2c03564 (lammps input file)
+
+
+[IFM2] S. K. Achar et al., J. Chem. Theory Comput. 18 (2022) 3593-3606.
+  https://doi.org/10.1021/acs.jctc.2c00010
+
+
+[IFM3] M. Qamar et al., J. Chem. Theory, Comput. XXX (2023) XXX-XXXX.
+  https://doi.org/10.1021/acs.jctc.2c01149
+
+
+## Other
+
+
+[IFO1] P. G. Boyd et al., J. Phys. Chem. Lett. 8 (2017) 357-363.
+  https://doi.org/10.1021/acs.jpclett.6b02532 (MOF)
+
+
+[IFO2] K. Banlusan et al., J. Phys. Chem. C 119 (2015) 25845-25852.
+  https://doi.org/10.1021/acs.jpcc.5b05446 (MOF)
+
+
+[IFO3] M. Witman et al., J. Phys. Chem. Lett. 10 (2019) 5929-5934.
+  https://doi.org/10.1021/acs.jpclett.9b02449 (MOF)
+
+
+[IFO4] S. Wang et al., J. Chem. Theory Comput. 17 (2021) 5198-5213.
+  https://doi.org/10.1021/acs.jctc.0c01132 (Zeolite)
+
+
+[IFO5] P. Saidi et al., J. Phys. Chem. C 124 (2020) 26864-26873.
+  https://doi.org/10.1021/acs.jpcc.0c08817 (GO)
+
+
+[IFO6] M. L. Urquiza et al., ACS Nano 15 (2021) 12945-12954.
+  https://doi.org/10.1021/acsnano.1c01466 (HfO2)
+
+
+[IFO7] M. Deffner et al., J. Chem. Theory Comput. 19 (2023) 992-1002.
+  https://doi.org/10.1021/acs.jctc.2c00648
+
+
+[IFO8] W. A. Pisani et al., Ind. Eng. Chem. Res. 60 (2021) 13604-13613.
+  https://doi.org/10.1021/acs.iecr.1c02440
+
+
+[IFO9] K. Goloviznina et al., J. Chem. Theory Comput. 17 (2021) 1606-1617.
+  https://doi.org/10.1021/acs.jctc.0c01002
+
+
+[IFO10] C. Han et al., J. Phys. Chem. C 124 (2020) 20203-20212.
+  https://doi.org/10.1021/acs.jpcc.0c05942
+------------------------------------------------------------------------------
+# Structure
+
+
+[S1] N. Sakhavand et al., ACS Appl. Mater. Interfaces 7 (2015) 18312-18319.
+  https://doi.org/10.1021/acsami.5b03967
+
+
+[S2] M. Agrawal et al., J. Phys. Chem. Lett. 10 (2019) 7823-7830.
+  https://doi.org/10.1021/acs.jpclett.9b03119
 ------------------------------------------------------------------------------
 # References
 
