@@ -245,7 +245,6 @@ pair_coeff      * * ../potentials/eam/Fe-Ni-Cr_fcc.eam.fs Fe Ni Cr
 
 ## Other
 
-
 [IFO1] P. G. Boyd et al., J. Phys. Chem. Lett. 8 (2017) 357-363.
   https://doi.org/10.1021/acs.jpclett.6b02532 (MOF)
 
@@ -351,7 +350,6 @@ pair_coeff      * * ../potentials/eam/Fe-Ni-Cr_fcc.eam.fs Fe Ni Cr
   https://doi.org/10.1021/acs.jpcc.1c01411
 ------------------------------------------------------------------------------
 # Structure
-
 
 [S1] N. Sakhavand et al., ACS Appl. Mater. Interfaces 7 (2015) 18312-18319.
   https://doi.org/10.1021/acsami.5b03967
