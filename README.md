@@ -126,6 +126,13 @@ pair_coeff      * * ../potentials/eam/Fe-Ni-Cr_fcc.eam.fs Fe Ni Cr
 ## Usage (MS-MPI version)
 1. click run_msmpi.bat
 2. cfg folder > click *.cfg
+------------------------------------------------------------------------------
+# plot the temperature of each atom
+
+- MSMPI_heat_map version file
+1. *.cfg -> Ovito -> (upper right) Add modification... 
+2. Color coding -> Input property: f_ave_tempatom
+3. (click) Adjust range
 
 ------------------------------------------------------------------------------
 # units and potential
