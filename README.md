@@ -239,6 +239,10 @@ pair_coeff      * * ../potentials/eam/Fe-Ni-Cr_fcc.eam.fs Fe Ni Cr
   https://doi.org/10.1021/acs.inorgchem.0c01923 (Transition-Metal-Doped Li2SnO3)
 
 
+[IFM5] M. Li et al., Nanomaterials 9 (2019) 347.
+  https://doi.org/10.3390/nano9030347 (Graphene, The temperature of each atom)
+
+
 ## Other
 
 
