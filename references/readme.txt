@@ -7,6 +7,7 @@ input file (metal unit, lammps)
 
 - P. Malakar et al., ACS Appl. Nano Mater. 5 (2022) 16489-16499.
   https://doi.org/10.1021/acsanm.2c03564 (lammps input file)
+  Crack folder
 
 - S. K. Achar et al., J. Chem. Theory Comput. 18 (2022) 3593-3606.
   https://doi.org/10.1021/acs.jctc.2c00010
