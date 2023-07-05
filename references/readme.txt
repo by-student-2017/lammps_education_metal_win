@@ -3,29 +3,33 @@ input file (metal unit, lammps)
 
 - G. W. J. Mclntosh et al., (2016)
   https://cradpdf.drdc-rddc.gc.ca/PDFS/unc244/p804516_A1b.pdf
-  Al and explosive folder
+  Al and Explosive
 
 - P. Malakar et al., ACS Appl. Nano Mater. 5 (2022) 16489-16499.
   https://doi.org/10.1021/acsanm.2c03564 (lammps input file)
-  Crack folder
+  Crack (It cannot be calculated unless it is a Lampps that supports the SW potential file of "MoS2".)
 
 - S. K. Achar et al., J. Chem. Theory Comput. 18 (2022) 3593-3606.
   https://doi.org/10.1021/acs.jctc.2c00010
-
-- M. Qamar et al., J. Chem. Theory, Comput. XXX (2023) XXX-XXXX.
-  https://doi.org/10.1021/acs.jctc.2c01149
+  UiO-66 (It can not be calculated unless it is a Lammps that supports deepmd.)
 
 - Y. A. Zulueta et al., Inorg. Chem. 59 (2020) 11841-11846.
   https://doi.org/10.1021/acs.inorgchem.0c01923 (Transition-Metal-Doped Li2SnO3)
+  TMD_Li2SnO3
 
 - M. Li et al., Nanomaterials 9 (2019) 347.
   https://doi.org/10.3390/nano9030347 (Graphene, The temperature of each atom)
+  Graphene
 
 - Y.- P. Zhou et al., Sci. Rep. 7 (2017) 45516.
   https://www.nature.com/articles/srep45516
+  Borophene
 
 - C. Wilkinson et al., SoftwareX 14 (2021) 100683.
   https://doi.org/10.1016/j.softx.2021.100683
+
+- M. Qamar et al., J. Chem. Theory, Comput. XXX (2023) XXX-XXXX.
+  https://doi.org/10.1021/acs.jctc.2c01149
 -------------------------------------------------------------------
 plot the temperature of each atom
 
