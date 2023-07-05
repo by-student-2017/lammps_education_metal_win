@@ -250,6 +250,10 @@ pair_coeff      * * ../potentials/eam/Fe-Ni-Cr_fcc.eam.fs Fe Ni Cr
   https://doi.org/10.3390/nano9030347 (Graphene, The temperature of each atom)
 
 
+[IFM6] Y.- P. Zhou et al., Sci. Rep. 7 (2017) 45516.
+  https://www.nature.com/articles/srep45516
+
+
 ## Other
 
 [IFO1] P. G. Boyd et al., J. Phys. Chem. Lett. 8 (2017) 357-363.
