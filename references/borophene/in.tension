@@ -1,0 +1,80 @@
+# deform borophene by tension
+#1 general
+units		metal
+dimension	3
+atom_style      atomic
+neighbor        0.3 bin
+
+#2 structure
+boundary	p p p
+read_data	lammps.dat
+mass		1 10.81
+mass		2 10.81
+mass		3 10.81
+mass		4 10.81
+mass            5 10.81
+mass            6 10.81
+mass            7 10.81
+mass            8 10.81
+
+#3 variables
+variable	temperature equal 1.0
+variable	pressure equal 0.0
+variable        tstep equal 0.001
+variable	strainmax equal 0.2
+variable	srate equal 1.e8/1.e12
+variable        tmp equal bound(all,xmax)-bound(all,xmin)
+variable        lenx equal ${tmp}
+variable	vtension equal sqrt(${srate}*${srate})*${lenx}
+variable	nstep equal ${strainmax}*${lenx}/${vtension}/${tstep}
+
+#4 potentials
+pair_style      sw
+pair_coeff      * * borophene.sw B1 B2 B3 B4 B5 B6 B7 B8
+
+#5 optimize at 0 K
+dump            1 all custom 1 dump.minimization id type x y z
+fix		1 all box/relax x 0.0 y 0.0
+min_style	cg
+minimize	0.0 1.0e-8 1000000 1000000
+undump		1
+unfix		1
+
+#6 optimize at T
+compute		peratom all pe/atom
+reset_timestep	0
+timestep	${tstep}
+velocity	all create ${temperature} 12346 mom yes rot yes
+fix             1 all npt temp ${temperature} ${temperature} 20 iso ${pressure} ${pressure} 20
+dump            1 all custom 1000 dump.optimize id type x y z c_peratom fx fy fz
+thermo		1000
+thermo_style	custom step lx ly lz press pxx pyy pzz pe temp
+neigh_modify    once yes
+run		100000
+
+variable        tmp equal lx
+variable        lx0 equal ${tmp}
+
+#7 tension by deform
+reset_timestep	0
+unfix		1
+fix		1 all npt temp ${temperature} ${temperature} 20 y ${pressure} ${pressure} 20
+fix		2 all deform 1 x erate ${srate} units box remap x
+
+variable	strain equal "(lx-v_lx0)/v_lx0"
+variable	p1 equal v_strain
+# pressure unit, 1bar=10^5Pa=10^{-4}GPa
+# for 2D materials, 1GPa=h*0.1N/m, with thickness h in the unit of angstrom
+variable	p2 equal "-(0.0001*pxx)*(lz*0.1)"
+variable	p3 equal "0.0001*pyy"
+variable	p4 equal "0.0001*pzz"
+fix		def1 all print 10 "${p1}   ${p2}   ${p3}   ${p4}" file strain.dat screen no
+undump		1
+dump		1 all custom 1000 dump.compression id type x y z c_peratom fx fy fz
+
+#8 run md
+thermo		1000
+thermo_style	custom step temp v_p1 v_p2 v_p3 v_p4 ke pe press
+run		${nstep}
+
+print		"# Job done, Sir! See you."
