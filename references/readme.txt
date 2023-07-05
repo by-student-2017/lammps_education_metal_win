@@ -3,6 +3,7 @@ input file (metal unit, lammps)
 
 - G. W. J. Mclntosh et al., (2016)
   https://cradpdf.drdc-rddc.gc.ca/PDFS/unc244/p804516_A1b.pdf
+  Al and explosive folder
 
 - P. Malakar et al., ACS Appl. Nano Mater. 5 (2022) 16489-16499.
   https://doi.org/10.1021/acsanm.2c03564 (lammps input file)
