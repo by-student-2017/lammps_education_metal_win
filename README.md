@@ -254,6 +254,14 @@ pair_coeff      * * ../potentials/eam/Fe-Ni-Cr_fcc.eam.fs Fe Ni Cr
   https://www.nature.com/articles/srep45516
 
 
+[IFM7] G. W. J. Mclntosh et al., (2016)
+  https://cradpdf.drdc-rddc.gc.ca/PDFS/unc244/p804516_A1b.pdf
+
+
+[IFM8] C. Wilkinson et al., SoftwareX 14 (2021) 100683.
+  https://doi.org/10.1016/j.softx.2021.100683
+
+
 ## Other
 
 [IFO1] P. G. Boyd et al., J. Phys. Chem. Lett. 8 (2017) 357-363.
