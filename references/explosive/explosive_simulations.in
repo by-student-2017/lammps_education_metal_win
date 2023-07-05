@@ -1,0 +1,99 @@
+#Input file for explosive simulations
+# SCRIPT MADE BY: OSCAR GUERRERO
+# modified by GMc for fcc Aluminum in Oct 2015
+
+units lj
+boundary p p p
+atom_style atomic
+
+# For PETN
+# tetragonal lattice with a 2 molecule basis unit (bc like)
+lattice custom 0.9 a1 9.38 0. 0. a2 0. 9.38 0. a3 0 0 6.71 basis 0. 0. 0. basis 0.5 0.5 0.5 
+# tmd 1.785 g/cm3 (MW 316.2, 2 molecules per unit cell volume 9.38 x 9.38 x 6.71 Angstroms3)
+
+# For RDX
+#orthrohombic lattice with 8 molecules (diamond like) 
+#lattice custom 0.9 a1 13.18 0. 0. a2 0. 11.57 0. a3 0 0 10.71 basis 0 0 0 basis 0 0.5 0.5 basis 0.5 0 0.5 basis 0.5 0.5 0 basis 0.75 0.75 0.75 basis 0.75 0.25 0.25 basis 0.25 0.75 0.25 basis 0.25 0.25 0.75
+# tmd 1.8067 g/cm3 (MW 222.13, 8 molecules per unit cell volume 13.18 x 11.57 x 10.71 Angstroms3)
+
+
+region mycell block 0.0 10.0 0.0 10.0 0.0 14.0 units lattice
+create_box 1 mycell
+mass * 1.0
+create_atoms 1 box
+
+# Using units of Rmin, so sigma = 2^-1/6 = 0.8908987 pair coeffs p. 1115 eps, sigma, r cutoff
+
+pair_style lj/cut 2.5
+pair_coeff * * 1.0 0.8908987 2.5
+
+
+# Relax box dimensions - program will squeeze/expand box to attain equilibrium with an external applied pressure
+
+
+fix 3 all box/relax iso 0. vmax 1.0e-02 nreset 10
+thermo 100
+thermo_style custom step temp pe etotal pxx pyy pzz lx ly lz press vol
+min_modify line quadratic
+minimize 0.0 1.e-06 10000 100000
+
+fix 3 all box/relax iso 500. vmax 1.0e-4 nreset 100
+
+# control frequency (in timesteps) and variables to output
+thermo 100
+thermo_style custom step temp pe etotal pxx pyy pzz lx ly lz press vol
+
+min_modify line quadratic
+minimize 0.0 0. 10000 100000
+
+# Define initial velocities (Maxwell-Boltzmann)
+
+velocity all create 0.1 87287 mom yes rot yes dist gaussian
+write_restart restart.equil
+
+# Start Run 
+
+log log.nodrag
+
+clear
+read_restart restart.equil
+
+neighbor 0.2 bin
+neigh_modify every 1 delay 0 check yes
+timestep 0.001
+reset_timestep 0
+
+# Pzz = 40.0, drag/damping term off
+
+fix myhug all nphug temp 1.0 1.0 10.0 z 60000.0 60000.0 70.0 drag 0.0 tchain 1 pchain 0 
+
+# Specify reference state from paper, times 1000 atoms
+# what are e0 and v0 ?
+
+# fix_modify myhug e0 -6334.0 p0 0.0 v0 680.73519
+
+# Add fix energy to output etotal
+
+# fix_modify myhug energy yes 
+
+# Define output
+
+variable dele equal f_myhug[1] # energy delta [temperature]
+variable us equal f_myhug[2] # shock velocity [distance/time]
+variable up equal f_myhug[3] # particle velocity [distance/time]
+variable pzz equal pzz # axial stress
+variable tau equal 0.5*(pzz-0.5*(pxx+pyy)) # shear stress
+variable time equal dt*step
+
+thermo 1000
+thermo_style custom step temp ke epair etotal pzz v_tau lz f_myhug v_dele v_up v_us press vol
+
+fix stress all print 10 "${time} ${pzz} ${tau} " screen no append stress_vs_t.dat title '#time pzz tau (no drag)'
+
+#dump id all atom 500 dump.hugoniostat
+
+dump 2 all image 500 image.*.jpg type type &
+     axes yes 0.8 0.02 view 60 -30
+dump_modify 2 pad 5
+
+run 100
