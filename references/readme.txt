@@ -25,6 +25,9 @@ input file (metal unit, lammps)
   https://www.nature.com/articles/srep45516
   Borophene
 
+- M. Valavi et al., Cem. Concr. Res. 154 (2022) 106712.
+  https://doi.org/10.1016/j.cemconres.2022.106712
+
 - C. Wilkinson et al., SoftwareX 14 (2021) 100683.
   https://doi.org/10.1016/j.softx.2021.100683
 
