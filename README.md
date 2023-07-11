@@ -262,6 +262,10 @@ pair_coeff      * * ../potentials/eam/Fe-Ni-Cr_fcc.eam.fs Fe Ni Cr
   https://doi.org/10.1016/j.softx.2021.100683
 
 
+[IFM9] Al-Cu Symmetric/Asymmetric Tilt Grain Boundary Dataset
+  https://materialsdata.nist.gov/handle/11256/358
+
+
 ## Other
 
 [IFO1] P. G. Boyd et al., J. Phys. Chem. Lett. 8 (2017) 357-363.
