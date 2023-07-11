@@ -1,0 +1,76 @@
+# Find minimum energy fcc configuration
+# Required variable latconst to be input via the command line
+# e.g., lmp_win_no-mpi < calc_fcc_ver1.in
+
+# ---------- Initialize Simulation ---
+clear
+units metal
+dimension 3
+boundary p p p
+atom_style atomic
+
+# ---------- Create Atoms ---------
+lattice fcc 3.165
+region new_region block 0 10 0 10 0 10 
+create_box 1 new_region
+lattice fcc 3.165 orient x 1 0 0 orient y 0 1 0 orient z 0 0 1
+create_atoms 1 region new_region
+replicate 1 1 1
+
+# ---------- Define Interatomic Potential ---
+pair_style eam/alloy
+pair_coeff * * FeNiCr.eam.alloy Fe
+neighbor 2.0 bin
+neigh_modify delay 0 every 10 check yes
+
+# ---------- Define Settings --------
+compute csym all centro/atom fcc
+compute eng all pe/atom
+
+# ---------- Equilibration---------
+#reset timer
+reset_timestep 0
+
+#2 fs time step
+timestep 2.0E(-15)
+
+#initial velocities
+velocity all create 300 12345 mom yes rot no
+
+#thermostat + barostat
+fix 1 all npt temp 300 300 1 iso 0 0 1 drag 1.0
+
+# instrumentation and output
+variable s1 equal "time"
+variable s2 equal "lx"
+variable s3 equal "ly"
+variable s4 equal "lz"
+variable s5 equal "vol"
+variable s6 equal "press"
+variable s7 equal "pe"
+variable s8 equal "ke"
+variable s9 equal "etotal"
+variable s10 equal "temp"
+fix writer all print 250 "${s1} ${s2} ${s3} ${s4} ${s5} ${s6} ${s7} ${s8} ${s9} ${s10}" file Fe_eq.txt screen no
+
+# thermo
+thermo 500
+thermo_style custom step time cpu cpuremain lx ly lz press pe temp
+
+#dumping trajectory
+dump 1 all atom 250 
+dump.eq.lammpstrj
+
+#24 ps MD Simulation (assuming 2 fs time step)
+run 20000
+
+#clearing fixes and dumps
+unfix 1
+undump 1
+
+saving equilibrium length for strain calculation
+
+variable tmp equal "lx"
+variable L0 equal ${tmp}
+
+print "Initial Length, L0: ${L0}"

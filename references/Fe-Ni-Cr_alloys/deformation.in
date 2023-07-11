@@ -1,0 +1,53 @@
+#------------------DEFORMATION---------
+
+#reset timer
+reset_timestep 0
+
+#2 fs time steptimestep 0.002
+# thermostat + barostat fix 1 all npt temp 300 300 1 y 0 0 1 z 0 0 1 drag 1.0
+#nonequilibrium straining in x-direction at strain 
+
+rate = 1x 10^-2/ s = 1x10^-14/ ps in units metal
+variable srate equal 1.0e10
+variable srate1 equal "v_srate / 1.0e12"
+fix 2 all deform 1 x erate ${srate1} 
+units box remap x
+
+#instrumentation and output
+#for units metal, pressure is in [bars] = 100 [MPa]= 1x10^-1/ [GPa] => p2, p3, p4, are in GPa
+variable strain equal "(lx - v_L0)/v_L0"
+variable p1 equal "v_strain"
+variable p2 equal "-pxx/10000"
+variable p3 equal "-pyy/10000"
+variable p4 equal "-pzz/10000"
+
+minimize 1e-25 1e-25 5000 10000
+
+fix writer all print 125 "${p1} ${p2} ${p3} ${p4}" file Fe.deform.txt screen no
+
+#thermothermo 500
+thermo_style custom step cpuremain v_strain v_p2 v_p3 v_p4 press pe temp 
+
+#dumping standard atom trajectrories
+dump 1 all atom 1254
+dump.deform.lammpstrj
+#dumping custom cfg files containing coords + ancillary variables
+dump 2 all cfg 125 dump.deform_*.cfg mass type xs ys zs c_csym c_eng fx fy fz
+dump_modify 2 element Fe
+
+#20 ps MD Simulation (assuming 2 fs time step)
+run 10000
+
+# clearing fixes and dumps
+unfix 1
+unfix 2
+unfix writer
+undump 1
+undump 2
+
+########################
+#Simulation done
+#
+print "Simulation is about to finish"
+
+print "All done"
