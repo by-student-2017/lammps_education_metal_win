@@ -4,10 +4,10 @@ input file (metal unit, lammps)
 - G. W. J. Mclntosh et al., (2016)
   https://cradpdf.drdc-rddc.gc.ca/PDFS/unc244/p804516_A1b.pdf
   Al and Explosive
-
-- P. Malakar et al., ACS Appl. Nano Mater. 5 (2022) 16489-16499.
-  https://doi.org/10.1021/acsanm.2c03564 (lammps input file)
-  Crack (It cannot be calculated unless it is a Lampps that supports the SW potential file of "MoS2".)
+  
+- C.N. Andoh et al., J. Appl. Sci. Tech. 22 (2017) 1-13.
+  https://www.researchgate.net/profile/Collins-Nana-Andoh/publication/327390429_MOLECULAR_DYNAMICS_SIMULATION_OF_MECHANICAL_DEFORMATION_OF_AUSTENITIC_STAINLESS_STEELS_Fe-Ni-Cr_ALLOYS_AT_SUPERCRITICAL_WATER_CONDITIONS/links/62ae336c938bee3e3f3f2253/MOLECULAR-DYNAMICS-SIMULATION-OF-MECHANICAL-DEFORMATION-OF-AUSTENITIC-STAINLESS-STEELS-Fe-Ni-Cr-ALLOYS-AT-SUPERCRITICAL-WATER-CONDITIONS.pdf
+  Fe-Ni-Cr_alloys
 
 - S. K. Achar et al., J. Chem. Theory Comput. 18 (2022) 3593-3606.
   https://doi.org/10.1021/acs.jctc.2c00010
@@ -24,6 +24,10 @@ input file (metal unit, lammps)
 - Y.- P. Zhou et al., Sci. Rep. 7 (2017) 45516.
   https://www.nature.com/articles/srep45516
   Borophene
+  
+- P. Malakar et al., ACS Appl. Nano Mater. 5 (2022) 16489-16499.
+  https://doi.org/10.1021/acsanm.2c03564 (lammps input file)
+  Crack (It cannot be calculated unless it is a Lammps that supports the SW potential file of "MoS2".)
 
 - M. Valavi et al., Cem. Concr. Res. 154 (2022) 106712.
   https://doi.org/10.1016/j.cemconres.2022.106712
@@ -33,10 +37,6 @@ input file (metal unit, lammps)
 
 - M. Qamar et al., J. Chem. Theory, Comput. XXX (2023) XXX-XXXX.
   https://doi.org/10.1021/acs.jctc.2c01149
-  
-- C.N. Andoh et al., J. Appl. Sci. Tech. 22 (2017) 1-13.
-  https://www.researchgate.net/profile/Collins-Nana-Andoh/publication/327390429_MOLECULAR_DYNAMICS_SIMULATION_OF_MECHANICAL_DEFORMATION_OF_AUSTENITIC_STAINLESS_STEELS_Fe-Ni-Cr_ALLOYS_AT_SUPERCRITICAL_WATER_CONDITIONS/links/62ae336c938bee3e3f3f2253/MOLECULAR-DYNAMICS-SIMULATION-OF-MECHANICAL-DEFORMATION-OF-AUSTENITIC-STAINLESS-STEELS-Fe-Ni-Cr-ALLOYS-AT-SUPERCRITICAL-WATER-CONDITIONS.pdf
-  Fe-Ni-Cr_alloys
 -------------------------------------------------------------------
 plot the temperature of each atom
 
