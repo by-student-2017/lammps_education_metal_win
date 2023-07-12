@@ -224,6 +224,10 @@ pair_coeff      * * ../potentials/eam/Fe-Ni-Cr_fcc.eam.fs Fe Ni Cr
 
 [14] KIST Integrated Force Field Platform
   http://kiff.vfab.org/
+
+
+[15] Molecular Dynamics (MD) Simulations Based Design and Process Optimization of Solar Cells
+  https://www.osti.gov/servlets/purl/1241668
 ------------------------------------------------------------------------------
 # Input file
 
@@ -423,6 +427,7 @@ pair_coeff      * * ../potentials/eam/Fe-Ni-Cr_fcc.eam.fs Fe Ni Cr
 
 [R1] Nanofluidics An Introduction
   https://books.google.co.jp/books?id=VwqWDwAAQBAJ
-
-
+------------------------------------------------------------------------------ 
+# How to modify LAMMPS
+  http://pure-oai.bham.ac.uk/ws/portalfiles/portal/134808148/ChemEngineering_05_00030.pdf
 ------------------------------------------------------------------------------ 

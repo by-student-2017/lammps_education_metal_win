@@ -43,6 +43,10 @@ input file (metal unit, lammps)
   
 - S. Shivpuje et al., 
   https://scholar.archive.org/work/ad7atvw33feslkudnhe2piyyhm/access/wayback/https://s3-eu-west-1.amazonaws.com/pstorage-tf-iopjsd8797887/17412845/gmos_a_1619929_sm5753.pdf
+
+- Z. Wang, J. Phys. Chem. C 124 (2020) 3851–3856.
+  https://doi.org/10.1021/acs.jpcc.9b10706
+  CNT
 -------------------------------------------------------------------
 plot the temperature of each atom
 
