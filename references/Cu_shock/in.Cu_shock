@@ -1,0 +1,133 @@
+# Impulsively shocked copper
+# James Stewart (SNL), Version: Dec 2019
+# Mitch Wood (SNL), Modified: Jun 2020
+
+# -------------- Generate restart, data, and image files for a single-crystal structure with a sinusoidal surface perturbation --- #
+dimension        3
+boundary         p p p
+units            metal
+atom_style   atomic
+
+# --------------
+
+variable         equilibrate string yes                     # Perform equilibration ('yes' or 'no')
+variable         file_tag    string Cu                      # Atomic species type
+variable         mass_1      equal  63.546                  # Mass of atomic species
+variable         latcon      equal  3.5970                  # Standard lattice constant of structure
+variable         xsize       equal  0.4*${system_size}*${latcon}      # Size of domain in x-dimension in units of Angstroms
+variable         ysize       equal  1.00*${xsize}               # Size of domain in y-dimension
+variable         zsize       equal  400.00*${system_size}*${latcon}          # Size of domain in z-dimension
+
+# -------------- Build the simulation box and crystal structure ------------------------------------------------------------------ #
+
+variable         xunits equal ${xsize}/${latcon}
+variable         yunits equal ${ysize}/${latcon}
+variable         zunits equal ${zsize}/${latcon}
+
+lattice          fcc ${latcon} orient x 1 0 0 orient y 0 1 0 orient z 0 0 1
+region           box block 0 ${xunits} 0 ${yunits} 0 ${zunits} units lattice
+create_box       1 box
+create_atoms     1 box
+
+mass             1 ${mass_1}
+change_box       all boundary p p s
+
+# -------------- Optional: structural equilibration ------------------------------------------------------------------------------ #
+
+if "${equilibrate} == no" then "jump SELF break"
+   # Equilibration variables
+   variable         cna_radius equal 2.08133
+   variable         nsteps_run equal 800000
+   variable         nsteps_out equal 1000
+   variable         nsteps_dmp equal ${nsteps_run}/10
+   variable         nsteps_rst equal ${nsteps_run}/10
+
+   # Interatomic force field, integration, and neighbor options
+   pair_style       eam/alloy
+   pair_coeff       * * Cu_mishin1.eam.alloy Cu
+   timestep         0.01
+   neighbor         1.5 bin
+   neigh_modify     every 5 delay 0 check yes
+
+   # Thermodynamic and structural calculations
+   compute          cna all cna/atom ${cna_radius}
+
+   thermo           ${nsteps_out}
+   thermo_style     custom step time temp ke pe etotal lx ly lz zlo zhi vol density press pxx pyy pzz pxy pxz pyz
+   thermo_modify    flush yes lost warn norm no
+
+   # System thermostatting options - track time average of temperature (K) and pressure (MPa)
+   variable         mytemp  equal temp
+   variable         mypres  equal press
+   variable         myrho   equal density
+   variable         lambda  equal lx
+   variable         nevery  equal ${nsteps_out}/200
+   variable         nrepeat equal ${nsteps_out}/5
+   variable         nfreq   equal ${nsteps_out}
+
+   velocity         all create ${temp_equil} 58928 dist gaussian mom yes rot yes units box
+
+   # Run part 1 of the equilibration - Big Pdamp
+   variable         rsteps1 equal ${nsteps_run}/4
+   fix              1 all npt temp ${temp_equil} ${temp_equil} $(100.0*dt) x ${press_equil} ${press_equil} $(100000.0*dt) y ${press_equil} ${press_equil} $(100000.0*dt)
+   run              ${rsteps1} pre yes post yes
+   # Run part 2 of the equilibration - Med Pdamp
+   unfix            1
+   variable         rsteps2 equal ${rsteps1}
+   fix              1 all npt temp ${temp_equil} ${temp_equil} $(100.0*dt) x ${press_equil} ${press_equil} $(10000.0*dt) y ${press_equil} ${press_equil} $(10000.0*dt)
+   run              ${rsteps2} pre yes post yes
+   # Run part 3 of the equilibration - Sml Pdamp
+   unfix            1
+   variable         rsteps3 equal ${nsteps_run}-${rsteps2}-${rsteps1}
+   fix              1 all npt temp ${temp_equil} ${temp_equil} $(100.0*dt) x ${press_equil} ${press_equil} $(1000.0*dt) y ${press_equil} ${press_equil} $(1000.0*dt)
+   run              ${rsteps3} pre yes post yes
+   write_data       RelaxedStructure_${system_size}_Cu.data
+   write_restart    RelaxedStructure_${system_size}_Cu.rst
+   unfix            1
+label break
+
+# -------------- Shock simulation variables -------------------------------------------------------------------------------------- #
+
+variable         piston_vel equal ${pistvel}
+variable         cna_radius equal 3.08133
+
+variable         nsteps_run equal 200000
+variable         nsteps_out equal 100
+variable         nsteps_img equal ${nsteps_run}/50
+variable         nsteps_dmp equal ${nsteps_run}/25
+variable         nsteps_rst equal ${nsteps_run}/10
+
+# -------------- Read in structural data and create domain ----------------------------------------------------------------------- #
+
+if "${equilibrate} == no" then "read_restart Relaxed_${system_size}_Cu_T${temp_equil}_P${press_equil}.rst"
+reset_timestep   0
+timestep         0.001
+
+# -------------- Thermodynamic and structural calculations ----------------------------------------------------------------------- #
+
+variable         deltaz equal 0.01*${zsize}
+compute          tcom all temp/com
+compute            tpartial all temp/profile 0 0 1 z 100
+compute          toteng all pe/atom
+compute          keng all ke/atom
+compute          pall all stress/atom tpartial virial
+compute          chunks_all all chunk/atom bin/1d z lower ${deltaz} units box nchunk every ids every compress no
+
+# -------------- Restart, data, and image outputting options --------------------------------------------------------------------- #
+
+thermo           ${nsteps_out}
+thermo_style     custom step time temp ke pe zlo zhi vol density press pxx pyy pzz pxy pxz pyz
+thermo_modify    flush yes lost warn norm no
+
+# -------------- Shock loading from an infinite-mass reflecting wall --------------------------------------------------- #
+
+variable         pvel equal -10.0*${piston_vel}
+velocity         all set 0.0 0.0 ${pvel} sum yes units box
+
+fix              1 all nve
+fix              2 all wall/reflect zlo EDGE units box
+fix              3 all ave/chunk 1 10 2000 chunks_all c_toteng temp density/number vx vy vz c_pall[*] density/mass c_cna c_keng file 1DSpatialAvg_Pfix.dat bias tpartial
+
+run              ${nsteps_run} pre yes post yes
+
+# -------------- End of the input file ------------------------------------------------------------------------------------------- #

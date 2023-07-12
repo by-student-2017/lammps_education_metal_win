@@ -47,6 +47,10 @@ input file (metal unit, lammps)
 - Z. Wang, J. Phys. Chem. C 124 (2020) 3851–3856.
   https://doi.org/10.1021/acs.jpcc.9b10706
   CNT
+
+- R. G. Patel et al., J. Comput. Phys. 449 (2022) 110754.
+  https://doi.org/10.1016/j.jcp.2021.110754
+  Cu_shock
 -------------------------------------------------------------------
 plot the temperature of each atom
 
