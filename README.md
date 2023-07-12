@@ -288,6 +288,9 @@ pair_coeff      * * ../potentials/eam/Fe-Ni-Cr_fcc.eam.fs Fe Ni Cr
   https://doi.org/10.1063/1.5003158
 
 
+[IFM15] A. S. Butterfield, https://www.byui.edu/documents/physics/Theses/2010-2015/Aaron-ButterfieldS13.pdf
+
+
 ## Other
 
 [IFO1] P. G. Boyd et al., J. Phys. Chem. Lett. 8 (2017) 357-363.
