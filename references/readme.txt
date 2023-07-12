@@ -51,6 +51,9 @@ input file (metal unit, lammps)
 - R. G. Patel et al., J. Comput. Phys. 449 (2022) 110754.
   https://doi.org/10.1016/j.jcp.2021.110754
   Cu_shock
+  
+- A. C. C. Dutra et al., 	Energy Adv., 2 (2023) 653-666.
+  https://doi.org/10.1039/D3YA00075C
 -------------------------------------------------------------------
 plot the temperature of each atom
 
