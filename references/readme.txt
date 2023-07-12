@@ -37,6 +37,9 @@ input file (metal unit, lammps)
 
 - M. Qamar et al., J. Chem. Theory, Comput. XXX (2023) XXX-XXXX.
   https://doi.org/10.1021/acs.jctc.2c01149
+  
+- J. A. Dawson et al., J. Phys. Chem. C 122 (2018) 23978–23984.
+  https://doi.org/10.1021/acs.jpcc.8b08208
 -------------------------------------------------------------------
 plot the temperature of each atom
 
