@@ -274,6 +274,10 @@ pair_coeff      * * ../potentials/eam/Fe-Ni-Cr_fcc.eam.fs Fe Ni Cr
   https://www.researchgate.net/profile/Collins-Nana-Andoh/publication/327390429_MOLECULAR_DYNAMICS_SIMULATION_OF_MECHANICAL_DEFORMATION_OF_AUSTENITIC_STAINLESS_STEELS_Fe-Ni-Cr_ALLOYS_AT_SUPERCRITICAL_WATER_CONDITIONS/links/62ae336c938bee3e3f3f2253/MOLECULAR-DYNAMICS-SIMULATION-OF-MECHANICAL-DEFORMATION-OF-AUSTENITIC-STAINLESS-STEELS-Fe-Ni-Cr-ALLOYS-AT-SUPERCRITICAL-WATER-CONDITIONS.pdf
 
 
+[IFM11] V. Kocevski et al., J. Nucl. Mater. 562 (2022) 153553.
+  https://doi.org/10.1016/j.jnucmat.2022.153553
+
+
 ## Other
 
 [IFO1] P. G. Boyd et al., J. Phys. Chem. Lett. 8 (2017) 357-363.
