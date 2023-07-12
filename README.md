@@ -278,6 +278,16 @@ pair_coeff      * * ../potentials/eam/Fe-Ni-Cr_fcc.eam.fs Fe Ni Cr
   https://doi.org/10.1016/j.jnucmat.2022.153553
 
 
+[IFM12] Z. Tang et al., Crystals 10 (2020) 329; https://doi.org/10.3390/cryst10040329
+
+
+[IFM13] Z. Zhang, Thesis.; https://ttu-ir.tdl.org/handle/2346/73470
+
+
+[IFM14] M. G. Muraleedharan et al., AIP Advances 7 (2017) 125022.
+  https://doi.org/10.1063/1.5003158
+
+
 ## Other
 
 [IFO1] P. G. Boyd et al., J. Phys. Chem. Lett. 8 (2017) 357-363.
