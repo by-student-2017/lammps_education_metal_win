@@ -40,6 +40,9 @@ input file (metal unit, lammps)
   
 - J. A. Dawson et al., J. Phys. Chem. C 122 (2018) 23978–23984.
   https://doi.org/10.1021/acs.jpcc.8b08208
+  
+- S. Shivpuje et al., 
+  https://scholar.archive.org/work/ad7atvw33feslkudnhe2piyyhm/access/wayback/https://s3-eu-west-1.amazonaws.com/pstorage-tf-iopjsd8797887/17412845/gmos_a_1619929_sm5753.pdf
 -------------------------------------------------------------------
 plot the temperature of each atom
 
