@@ -58,9 +58,6 @@ input file (metal unit, lammps)
 - Y. Gao et al., Membranes12 (2022) 886.; https://doi.org/10.3390/membranes12090886
   membranes
   
-- D. Chen et al., Master thesis (2011).
-  https://oaktrust.library.tamu.edu/bitstream/handle/1969.1/ETD-TAMU-2011-08-10112/CHEN-THESIS.pdf?sequence=2&isAllowed=y
-  
 - J. M. O.-Roldan et al., Proc. Math. Phys. Eng. Sci. 478 (2022).
   https://doi.org/10.1098/rspa.2022.0201
   Ordered_Nanoporous_Metals
@@ -82,10 +79,15 @@ input file (metal unit, lammps)
   IAPs
   
 - J. A. Greathouse et al., J. Phys.: Condens. Matter 32 (2020) 085401.
-  DOI 10.1088/1361-648X/ab5377
+  https://iopscience.iop.org/article/10.1088/1361-648X/ab5377
+  10.1088/1361-648X/ab5377
+  ZrW2O8
   
 - Y. Zulueta et al., Chem. Rxiv. (2020).
   10.26434/chemrxiv.12523640.v1
+  
+- D. Chen et al., Master thesis (2011).
+  https://oaktrust.library.tamu.edu/bitstream/handle/1969.1/ETD-TAMU-2011-08-10112/CHEN-THESIS.pdf?sequence=2&isAllowed=y
 -------------------------------------------------------------------
 plot the temperature of each atom
 
