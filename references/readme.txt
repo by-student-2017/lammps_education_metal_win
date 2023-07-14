@@ -57,6 +57,9 @@ input file (metal unit, lammps)
   
 - Y. Gao et al., Membranes12 (2022) 886.; https://doi.org/10.3390/membranes12090886
   membranes
+  
+- D. Chen et al., Master thesis (2011).
+  https://oaktrust.library.tamu.edu/bitstream/handle/1969.1/ETD-TAMU-2011-08-10112/CHEN-THESIS.pdf?sequence=2&isAllowed=y
 -------------------------------------------------------------------
 plot the temperature of each atom
 
