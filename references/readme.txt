@@ -15,7 +15,12 @@ input file (metal unit, lammps)
 
 - Y. A. Zulueta et al., Inorg. Chem. 59 (2020) 11841-11846.
   https://doi.org/10.1021/acs.inorgchem.0c01923 (Transition-Metal-Doped Li2SnO3)
-  TMD_Li2SnO3
+  ---------- ---------- ---------- ---------- ---------- ----------
+- Y. Zulueta et al., Chem. Rxiv. (2020).
+  https://chemrxiv.org/engage/chemrxiv/article-details/60c74cb5bb8c1a8cce3db48a
+  10.26434/chemrxiv.12523640.v1
+  ---------- ---------- ---------- ---------- ---------- ----------
+  Metal-Doped_Li2SnO3
 
 - M. Li et al., Nanomaterials 9 (2019) 347.
   https://doi.org/10.3390/nano9030347 (Graphene, The temperature of each atom)
@@ -70,11 +75,6 @@ input file (metal unit, lammps)
   https://iopscience.iop.org/article/10.1088/1361-648X/ab5377
   10.1088/1361-648X/ab5377
   ZrW2O8
-  
-- Y. Zulueta et al., Chem. Rxiv. (2020).
-  https://chemrxiv.org/engage/chemrxiv/article-details/60c74cb5bb8c1a8cce3db48a
-  10.26434/chemrxiv.12523640.v1
-  Metal-Doped_Li2SnO3
   
 - D. Chen et al., Doctor Thesis (2014).
   https://oaktrust.library.tamu.edu/handle/1969.1/154160
