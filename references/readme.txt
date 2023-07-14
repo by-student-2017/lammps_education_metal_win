@@ -70,6 +70,9 @@ input file (metal unit, lammps)
   
 - A. Fredriksson, Master Thesis (2022).
   https://lup.lub.lu.se/luur/download?func=downloadFile&recordOId=9079628&fileOId=9079859
+  
+- M. P. Hazarika, Master Thesis (2019).
+  http://dspace.cus.ac.in/jspui/bitstream/1/6333/1/Manash%20Protim%20Hazarika-Chemistry-MPhil.pdf
 -------------------------------------------------------------------
 plot the temperature of each atom
 
