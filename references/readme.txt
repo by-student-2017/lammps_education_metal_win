@@ -13,6 +13,10 @@ input file (metal unit, lammps)
   https://doi.org/10.1021/acs.jctc.2c00010
   UiO-66 (It can not be calculated unless it is a Lammps that supports deepmd.)
 
+- A. C. C. Dutra et al., Energy Adv., 2 (2023) 653-666.
+  https://doi.org/10.1039/D3YA00075C
+  Li4OCl2
+
 - Y. A. Zulueta et a., J. Phys. Chem. C 124 (2020) 4982-4988.
   https://doi.org/10.1021/acs.jpcc.9b10003
   Li2SiO3
@@ -29,6 +33,10 @@ input file (metal unit, lammps)
 - M. Li et al., Nanomaterials 9 (2019) 347.
   https://doi.org/10.3390/nano9030347 (Graphene, The temperature of each atom)
   Graphene
+  
+- Y. Gao et al., Membranes12 (2022) 886.
+  https://doi.org/10.3390/membranes12090886
+  membranes
 
 - Y.- P. Zhou et al., Sci. Rep. 7 (2017) 45516.
   https://www.nature.com/articles/srep45516
@@ -60,13 +68,6 @@ input file (metal unit, lammps)
 - R. G. Patel et al., J. Comput. Phys. 449 (2022) 110754.
   https://doi.org/10.1016/j.jcp.2021.110754
   Cu_shock
-  
-- A. C. C. Dutra et al., 	Energy Adv., 2 (2023) 653-666.
-  https://doi.org/10.1039/D3YA00075C
-  
-- Y. Gao et al., Membranes12 (2022) 886.
-  https://doi.org/10.3390/membranes12090886
-  membranes
   
 - J. M. O.-Roldan et al., Proc. Math. Phys. Eng. Sci. 478 (2022).
   https://doi.org/10.1098/rspa.2022.0201
