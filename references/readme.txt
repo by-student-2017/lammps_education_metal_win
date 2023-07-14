@@ -13,6 +13,10 @@ input file (metal unit, lammps)
   https://doi.org/10.1021/acs.jctc.2c00010
   UiO-66 (It can not be calculated unless it is a Lammps that supports deepmd.)
 
+- Y. A. Zulueta et a., J. Phys. Chem. C 124 (2020) 4982-4988.
+  https://doi.org/10.1021/acs.jpcc.9b10003
+  Li2SiO3
+
 - Y. A. Zulueta et al., Inorg. Chem. 59 (2020) 11841-11846.
   https://doi.org/10.1021/acs.inorgchem.0c01923 (Transition-Metal-Doped Li2SnO3)
   ---------- ---------- ---------- ---------- ---------- ----------
