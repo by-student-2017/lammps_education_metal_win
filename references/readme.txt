@@ -76,8 +76,13 @@ input file (metal unit, lammps)
   
 - K.-J. Carter, Bachelor Thesis (2017).
   https://dspace.mit.edu/bitstream/handle/1721.1/112482/1011413174-MIT.pdf?sequence=1&isAllowed=y
+  
+- A. Rohskopf et al., Comput. Mater. Sci. 184 (2020) 109884.
+  https://doi.org/10.1016/j.commatsci.2020.109884
+  IAPs
 -------------------------------------------------------------------
 plot the temperature of each atom
+
 
 1. *.cfg -> Ovito -> (upper right) Add modification...
 2. Color coding -> Input property: f_ave_tempatom
