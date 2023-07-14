@@ -64,7 +64,8 @@ input file (metal unit, lammps)
 - A. C. C. Dutra et al., 	Energy Adv., 2 (2023) 653-666.
   https://doi.org/10.1039/D3YA00075C
   
-- Y. Gao et al., Membranes12 (2022) 886.; https://doi.org/10.3390/membranes12090886
+- Y. Gao et al., Membranes12 (2022) 886.
+  https://doi.org/10.3390/membranes12090886
   membranes
   
 - J. M. O.-Roldan et al., Proc. Math. Phys. Eng. Sci. 478 (2022).
