@@ -60,6 +60,10 @@ input file (metal unit, lammps)
   
 - D. Chen et al., Master thesis (2011).
   https://oaktrust.library.tamu.edu/bitstream/handle/1969.1/ETD-TAMU-2011-08-10112/CHEN-THESIS.pdf?sequence=2&isAllowed=y
+  
+- J. M. O.-Roldan et al., Proc. Math. Phys. Eng. Sci. 478 (2022).
+  https://doi.org/10.1098/rspa.2022.0201
+  Ordered_Nanoporous_Metals
 -------------------------------------------------------------------
 plot the temperature of each atom
 

@@ -1,0 +1,117 @@
+####### insercion de metaxileno en caja
+
+####### preambulo
+units		metal
+atom_style      full
+boundary        p p p 
+
+####### introducir estructura foam
+kspace_style    pppm 1.0e-4
+
+bond_style      harmonic
+angle_style     harmonic
+dihedral_style  opls
+
+read_data       cri_st3_ag_foam_35_metaxylenes.data
+
+pair_style      hybrid eam/alloy morse 10 lj/cut/coul/long 10.0
+pair_modify     tail yes
+pair_coeff      * * eam/alloy Ag.Sheng.lammps.eam NULL NULL NULL NULL Ag
+pair_coeff      1 1 lj/cut/coul/long 0.00301 3.5500
+pair_coeff      1 2 lj/cut/coul/long 0.00197 2.9850
+pair_coeff      1 3 lj/cut/coul/long 0.00292 3.5250
+pair_coeff      1 4 lj/cut/coul/long 0.00129 3.0250
+pair_coeff      2 2 lj/cut/coul/long 0.00129 2.4200
+pair_coeff      2 3 lj/cut/coul/long 0.00191 2.9600
+pair_coeff      2 4 lj/cut/coul/long 0.00129 2.4600
+pair_coeff      3 3 lj/cut/coul/long 0.00284 3.5000
+pair_coeff      3 4 lj/cut/coul/long 0.00304 3.5500
+pair_coeff      4 4 lj/cut/coul/long 0.00191 3.0000
+pair_coeff      1 5 morse 0.01088439 1.20 3.17
+pair_coeff      2 5 morse 0.00028620 1.51 3.61
+pair_coeff      3 5 morse 0.03035000 1.35 2.65
+pair_coeff      4 5 morse 0.00028620 1.51 3.61
+
+####### Define Variables
+variable        T0 equal 500.0
+variable        T1 equal 300.0
+
+####### Run Minimization
+reset_timestep  0
+thermo          100
+thermo_style    custom step time etotal temp pe press vol cella cellb cellc cellalpha cellbeta cellgamma density
+
+print          'Step 0 started, minimization'
+
+min_style       cg
+minimize        0.0 1.0e-10 5000 50000
+
+write_data      system.*.data
+
+####### equilibration nvt
+timestep        0.001 # picoseconds
+
+dump            dumptrajxyz all xyz 100000 dump.*.xyz
+dump_modify     dumptrajxyz element C H C H Ag
+
+print          'Step 1 started, equilibration nvt'
+
+fix             fxnvt all nvt temp ${T0} ${T0} 0.1 # iso ${PBAR} ${PBAR} 500
+run             50000
+unfix           fxnvt
+
+write_data      system.100K.*.data
+
+####### equilibration npt
+
+print          'Step 2 started, equilibration npt'
+
+fix             fxnpt all npt temp ${T0} ${T1} 0.1 aniso 1.01325 1.01325 2.0
+run             50000
+unfix           fxnpt
+
+write_data      system.100K.*.data
+
+####### computar msd y rdf
+group           C type 1 3
+group           H type 2 4
+group           CH type 1 2 3 4
+group           Ag type 5
+
+compute         C_msd C msd
+compute         H_msd H msd
+compute         metaxylene_msd CH msd
+compute         Ag_msd Ag msd
+
+compute         CC_CH_HH_rdf CH rdf 5000 1 1 1 2 2 2
+compute         metaxylene_rdf CH rdf 5000
+
+####### production
+print          'Step 3 started, production npt'
+
+reset_timestep  0
+
+fix             C_msd_fix C ave/time 1 1 100 c_C_msd mode vector file C.msd
+fix             H_msd_fix H ave/time 1 1 100 c_H_msd mode vector file H.msd
+fix             metaxylene_msd_fix CH ave/time 1 1 100 c_metaxylene_msd mode vector file metaxylene.msd
+fix             Ag_msd_fix Ag ave/time 1 1 100 c_Ag_msd mode vector file Ag.msd
+
+fix             CC_CH_HH_rdf_fix CH ave/time 1 1 50 c_CC_CH_HH_rdf mode vector file CC_CH_HH.rdf
+fix             metaxylene_rdf_fix CH ave/time 1 1 50 c_metaxylene_rdf mode vector file metaxylene.rdf
+
+fix             fxnpt all npt temp ${T1} ${T1} 0.1 aniso 1.01325 1.01325 2.0
+run             10000000
+unfix           fxnpt
+
+unfix           metaxylene_rdf_fix
+unfix           CC_CH_HH_rdf_fix
+
+unfix           Ag_msd_fix
+unfix           metaxylene_msd_fix
+unfix           H_msd_fix
+unfix           C_msd_fix
+
+write_data      system.*.data
+
+print          "All done"
+
