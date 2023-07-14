@@ -448,3 +448,6 @@ pair_coeff      * * ../potentials/eam/Fe-Ni-Cr_fcc.eam.fs Fe Ni Cr
 # How to modify LAMMPS
   http://pure-oai.bham.ac.uk/ws/portalfiles/portal/134808148/ChemEngineering_05_00030.pdf
 ------------------------------------------------------------------------------ 
+# Data-driven magneto-elastic predictions with scalable classical spin-lattice dynamics
+  Nikolov, S., et al., npj Comput Mater 7, 153 (2021). https://doi.org/10.1038/s41524-021-00617-2
+------------------------------------------------------------------------------ 
