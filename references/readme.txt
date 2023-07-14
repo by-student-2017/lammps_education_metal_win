@@ -67,6 +67,9 @@ input file (metal unit, lammps)
   
 - D. Chen et al., Doctor Thesis (2014).
   https://oaktrust.library.tamu.edu/handle/1969.1/154160
+  
+- A. Fredriksson, Master Thesis (2022).
+  https://lup.lub.lu.se/luur/download?func=downloadFile&recordOId=9079628&fileOId=9079859
 -------------------------------------------------------------------
 plot the temperature of each atom
 
