@@ -62,6 +62,20 @@ input file (metal unit, lammps)
   https://doi.org/10.1098/rspa.2022.0201
   Ordered_Nanoporous_Metals
   
+- A. Rohskopf et al., Comput. Mater. Sci. 184 (2020) 109884.
+  https://doi.org/10.1016/j.commatsci.2020.109884
+  IAPs
+  
+- J. A. Greathouse et al., J. Phys.: Condens. Matter 32 (2020) 085401.
+  https://iopscience.iop.org/article/10.1088/1361-648X/ab5377
+  10.1088/1361-648X/ab5377
+  ZrW2O8
+  
+- Y. Zulueta et al., Chem. Rxiv. (2020).
+  https://chemrxiv.org/engage/chemrxiv/article-details/60c74cb5bb8c1a8cce3db48a
+  10.26434/chemrxiv.12523640.v1
+  Metal-Doped_Li2SnO3
+  
 - D. Chen et al., Doctor Thesis (2014).
   https://oaktrust.library.tamu.edu/handle/1969.1/154160
   
@@ -73,18 +87,6 @@ input file (metal unit, lammps)
   
 - K.-J. Carter, Bachelor Thesis (2017).
   https://dspace.mit.edu/bitstream/handle/1721.1/112482/1011413174-MIT.pdf?sequence=1&isAllowed=y
-  
-- A. Rohskopf et al., Comput. Mater. Sci. 184 (2020) 109884.
-  https://doi.org/10.1016/j.commatsci.2020.109884
-  IAPs
-  
-- J. A. Greathouse et al., J. Phys.: Condens. Matter 32 (2020) 085401.
-  https://iopscience.iop.org/article/10.1088/1361-648X/ab5377
-  10.1088/1361-648X/ab5377
-  ZrW2O8
-  
-- Y. Zulueta et al., Chem. Rxiv. (2020).
-  10.26434/chemrxiv.12523640.v1
   
 - D. Chen et al., Master thesis (2011).
   https://oaktrust.library.tamu.edu/bitstream/handle/1969.1/ETD-TAMU-2011-08-10112/CHEN-THESIS.pdf?sequence=2&isAllowed=y

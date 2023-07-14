@@ -1,0 +1,97 @@
+##########################################################
+#------------Variables and cell--------------------------#
+##########################################################
+clear
+units metal #eV,atomic charge,angstroms,ps,kelvin,bars,g/mol
+dimension 3
+boundary p p p
+atom_style charge 
+#processors * * * grid numa
+read_data Ni3-Li2SnO3.lmp
+#replicate 5 5 5
+group Li type 1
+group Sn type 2
+group O type 3
+group Ni type 4
+mass 1 6.9
+mass 2 118.7
+mass 3 16 
+mass 4 58.69
+
+variable T1 equal 500
+variable Timer equal step*dt
+log ${T1}.lammps
+#########################################################
+#---------- Pair styles and electrostatics--------------#
+#########################################################
+
+pair_style buck/coul/long 10
+pair_coeff 1 1 0.0 1.0 0.0
+pair_coeff 1 2 0.0 1.0 0.0
+pair_coeff 1 3 632.1018 0.2906 0
+pair_coeff 1 4 0.0 1.0 0.0
+pair_coeff 2 2 0.0 1.0 0.0
+pair_coeff 2 3 1414.32 0.3479 13.66 
+pair_coeff 2 4 0.0 1.0 0.0
+pair_coeff 3 3 2764.30 0.14900 27.627
+pair_coeff 3 4 1018.36 0.3299 0.000 #Ni3-O
+pair_coeff 4 4 0.0 1.0 0.0
+kspace_style pppm 1e-05
+
+########################################################
+# -------------- Run Minimization ---------------------#
+########################################################
+
+reset_timestep 0 
+timestep 0.5
+thermo 10
+thermo_style custom step enthalpy fmax lx ly lz vol press 
+min_style cg 
+minimize 1e-25 1e-25 5000 10000
+
+########################################################
+# -------------- Relax Cell ---------------------------#
+########################################################
+
+reset_timestep 0 
+timestep 0.5
+fix 1 all box/relax aniso 1.0 vmax 0.003
+thermo 1 
+thermo_style custom step enthalpy fmax lx ly lz vol press 
+min_style cg 
+minimize 1e-25 1e-25 5000 10000 
+unfix 1
+########################################################
+# ------------- Run NPT T1-----------------------------#
+########################################################
+reset_timestep 0
+timestep 0.002
+velocity all create ${T1} 4928 rot yes dist gaussian
+fix 2 all npt temp ${T1} ${T1} 0.01 aniso 1.0 1.0 0.1
+thermo_style custom step v_Timer cpu temp etotal fmax lx ly lz vol press
+thermo 1000
+run 5000
+unfix 2
+reset_timestep 0
+timestep 0.002
+compute mymsdLi Li msd com yes
+compute mymsdNi Ni msd com yes
+variable msdxLi equal "c_mymsdLi[1]"
+variable msdyLi equal "c_mymsdLi[2]"
+variable msdzLi equal "c_mymsdLi[3]"
+variable msdtotLi equal "c_mymsdLi[4]"
+variable msdxNi equal "c_mymsdNi[1]"
+variable msdyNi equal "c_mymsdNi[2]"
+variable msdzNi equal "c_mymsdNi[3]"
+variable msdtotNi equal "c_mymsdNi[4]"
+fix msdT2 Ni ave/time 1 1 2500 v_msdxNi v_msdyNi v_msdzNi v_msdtotNi file msdNi${T1}
+fix msdT1 Li ave/time 1 1 2500 v_msdxLi v_msdyLi v_msdzLi v_msdtotLi file NimsdLithium${T1}
+fix 3 all nvt temp ${T1} ${T1} 0.01
+thermo_style custom step v_Timer cpu temp etotal fmax lx ly lz vol press v_msdtotLi v_msdtotNi
+thermo 5000
+dump dynamics all xyz 2500 Ni3-Li2SnO3nvt_${T1}.xyz
+dump_modify dynamics every 5000 element Li Sn O Ni first yes
+run 1000000
+unfix 3
+unfix msdT1
+unfix msdT2
