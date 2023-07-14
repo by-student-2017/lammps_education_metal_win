@@ -80,6 +80,12 @@ input file (metal unit, lammps)
 - A. Rohskopf et al., Comput. Mater. Sci. 184 (2020) 109884.
   https://doi.org/10.1016/j.commatsci.2020.109884
   IAPs
+  
+- J. A. Greathouse et al., J. Phys.: Condens. Matter 32 (2020) 085401.
+  DOI 10.1088/1361-648X/ab5377
+  
+- Y. Zulueta et al., Chem. Rxiv. (2020).
+  10.26434/chemrxiv.12523640.v1
 -------------------------------------------------------------------
 plot the temperature of each atom
 
