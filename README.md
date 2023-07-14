@@ -451,3 +451,9 @@ pair_coeff      * * ../potentials/eam/Fe-Ni-Cr_fcc.eam.fs Fe Ni Cr
 # Data-driven magneto-elastic predictions with scalable classical spin-lattice dynamics
   Nikolov, S., et al., npj Comput Mater 7, 153 (2021). https://doi.org/10.1038/s41524-021-00617-2
 ------------------------------------------------------------------------------ 
+# Tersoff Benchmarking of Be-C-H Interatomic Potential
+  https://www.osti.gov/biblio/23047403
+------------------------------------------------------------------------------ 
+# Deep-MD
+  Ren, Q., et al., Nat. Mater. (2023). https://doi.org/10.1038/s41563-023-01560-x
+------------------------------------------------------------------------------ 
