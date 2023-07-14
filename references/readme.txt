@@ -73,6 +73,9 @@ input file (metal unit, lammps)
   
 - M. P. Hazarika, Master Thesis (2019).
   http://dspace.cus.ac.in/jspui/bitstream/1/6333/1/Manash%20Protim%20Hazarika-Chemistry-MPhil.pdf
+  
+- K.-J. Carter, Bachelor Thesis (2017).
+  https://dspace.mit.edu/bitstream/handle/1721.1/112482/1011413174-MIT.pdf?sequence=1&isAllowed=y
 -------------------------------------------------------------------
 plot the temperature of each atom
 
