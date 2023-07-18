@@ -29,7 +29,7 @@ input file (metal unit, lammps)
   10.26434/chemrxiv.12523640.v1
   ---------- ---------- ---------- ---------- ---------- ----------
   Metal-Doped_Li2SnO3
-
+  
 - M. Li et al., Nanomaterials 9 (2019) 347.
   https://doi.org/10.3390/nano9030347 (Graphene, The temperature of each atom)
   Graphene
@@ -41,6 +41,10 @@ input file (metal unit, lammps)
 - Y.- P. Zhou et al., Sci. Rep. 7 (2017) 45516.
   https://www.nature.com/articles/srep45516
   Borophene
+  
+- M. Vaezi et al., J. Chem. Phys. 153 (2020) 234702.
+  https://doi.org/10.1063/5.0029490
+  05_C60_BN
   
 - P. Malakar et al., ACS Appl. Nano Mater. 5 (2022) 16489-16499.
   https://doi.org/10.1021/acsanm.2c03564 (lammps input file)

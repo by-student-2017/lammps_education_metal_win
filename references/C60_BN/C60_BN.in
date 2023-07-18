@@ -1,0 +1,89 @@
+#C60 motion on BN layer
+
+#package    	gpu 1 neigh no newton off
+#suffix      	gpu
+
+dimension		3
+boundary		p p p
+units       	metal
+atom_style		atomic
+
+read_data		C60_BN.data
+
+####################################################
+variable 		t equal 50  			# Temperature
+######################GROUPS########################
+group			B          type   1
+group			N          type   2
+group			C60        type   3
+group           BN         union  B N
+
+######################POTENTIALS#####################
+
+pair_style		hybrid airebo 2.5 1 1 tersoff lj/cut 12
+
+pair_coeff		* * airebo    CH.airebo      NULL    NULL  C     # airebo    for C60
+pair_coeff		* * tersoff   BNC.tersoff    B       N     NULL  # tersoff   for BN
+pair_coeff		1 3 lj/cut    0.003293879    3.410947912         # LJ        for B-C60
+pair_coeff		2 3 lj/cut    0.004068376    3.366989407         # LJ        for N-C60
+
+###################INITIAL VELOCITY###################
+velocity        C60                 create    $t   123456   mom yes rot yes dist gaussian
+velocity     	BN                  create    $t   123456   mom yes rot yes dist gaussian
+
+#####################FIX###############################
+fix				1 C60            nvt  temp       $t   $t   0.1
+fix				2 BN             nvt  temp       $t   $t   0.1
+fix				3 all            box/relax       iso  0.0  vmax      0.001
+###################COMPUTES############################
+
+
+compute			c60_temp            C60             temp/com
+compute			BN_temp             BN              temp/com
+compute			c60_ke              C60  			ke
+compute 		pe_atom_c60		    C60		        pe/atom
+compute			pe_c60				C60     		reduce			sum		c_pe_atom_c60
+compute			lennard 			C60     		group/group		BN   
+
+variable        xcm_x  equal xcm(C60,x)
+variable        xcm_y  equal xcm(C60,y)
+variable        xcm_z  equal xcm(C60,z)
+
+variable        vcm_x  equal vcm(C60,x)
+variable        vcm_y  equal vcm(C60,y)
+variable        vcm_z  equal vcm(C60,z)
+
+variable        xcm_x2  equal xcm(BN,x)
+variable        xcm_y2  equal xcm(BN,y)
+variable        xcm_z2  equal xcm(BN,z)
+
+variable        vcm_x2  equal vcm(BN,x)
+variable        vcm_y2  equal vcm(BN,y)
+variable        vcm_z2  equal vcm(BN,z)
+
+variable        wcm_x  equal omega(C60,x)
+variable        wcm_y  equal omega(C60,y)
+variable        wcm_z  equal omega(C60,z)
+#################FIX_MODIFY###################################
+fix_modify      1  temp   c60_temp
+fix_modify      2  temp   BN_temp
+#################THERMO-DUMP##################################
+thermo	     	100
+thermo_style  	custom step cpu c_c60_temp c_BN_temp c_c60_ke c_pe_c60 c_lennard v_xcm_x v_xcm_y v_xcm_z v_vcm_x v_vcm_y v_vcm_z v_xcm_x2 v_xcm_y2 v_xcm_z2 v_vcm_x2 v_vcm_y2 v_vcm_z2 v_wcm_x v_wcm_y v_wcm_z
+timestep     	0.001
+#dump		    1 all xyz  3000 dump.xyz 
+#dump_modify		1 element  B N C
+dump            d1 all cfg 100 cfg/run.*.cfg mass type xs ys zs id vx vy vx fx fy fz
+dump_modify     d1 element B N C
+restart 500000 backup.restart
+###########MINIMIZE-RLAX-RUN##################################
+
+minimize 		1.0e-6 1.0e-8 10000 100000
+reset_timestep	0
+
+run				100000
+
+
+reset_timestep	0
+run				30000000
+
