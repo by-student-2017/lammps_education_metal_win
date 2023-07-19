@@ -100,6 +100,9 @@ input file (metal unit, lammps)
   
 - D. Chen et al., Master thesis (2011).
   https://oaktrust.library.tamu.edu/bitstream/handle/1969.1/ETD-TAMU-2011-08-10112/CHEN-THESIS.pdf?sequence=2&isAllowed=y
+
+- Z. Liu et al., ACS Appl. Mater. Interfaces 13 (2021) 53409-53415.
+  https://doi.org/10.1021/acsami.1c11595
 -------------------------------------------------------------------
 plot the temperature of each atom
 
