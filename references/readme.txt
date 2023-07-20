@@ -44,7 +44,7 @@ input file (metal unit, lammps)
   
 - M. Vaezi et al., J. Chem. Phys. 153 (2020) 234702.
   https://doi.org/10.1063/5.0029490
-  05_C60_BN
+  05_C60_on_BN
   
 - P. Malakar et al., ACS Appl. Nano Mater. 5 (2022) 16489-16499.
   https://doi.org/10.1021/acsanm.2c03564 (lammps input file)
