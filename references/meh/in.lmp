@@ -1,0 +1,92 @@
+########################################################## 
+#------------Variables and cell--------------------------# 
+##########################################################
+
+lear 
+units metal #eV,atomic charge,angstroms,ps,kelvin,bars,g/mol 
+dimension 3 
+boundary p p p 
+atom_style full 
+#processors * * * grid numa 
+read_data data.meh 
+group lithium type 1 
+#replicate 2 2 2 
+variable T1 equal 1000 
+variable Timer equal step*dt
+
+######################################################### 
+#---------- Pair styles and electrostatics--------------# 
+#########################################################
+
+pair_style buck/coul/long 12.0 
+pair_coeff * * 0.0 1.0 0.0 
+pair_coeff 1 1 360.5269 0.1609 0 
+pair_coeff 1 2 292.3 0.3472 0 
+pair_coeff 1 3 421.0366 0.33364 0 
+pair_coeff 2 2 22764.3 0.149 13.185 
+pair_coeff 2 3 8287 0.259 62.2 
+pair_coeff 3 3 1227.2 0.3214 14.53 
+
+#pair_style buck/coul/long 10.0 
+#pair_coeff * * 0.0 1.0 0.0 
+#pair_coeff 1 4 2088.79 0.346 23.25 
+#pair_coeff 2 4 1453.8 0.35 0 
+#pair_coeff 3 4 632.1018 0.2906 0 
+#pair_coeff 4 4 22764.3 0.149 27.869
+
+kspace_style pppm 1e-05
+
+######################################################## 
+# -------------- Run Minimization ---------------------# 
+########################################################
+
+reset_timestep 0 
+timestep 0.5 
+thermo 10 
+thermo_style custom step enthalpy fmax lx ly lz vol press 
+min_style cg 
+minimize 1e-25 1e-25 5000 10000
+
+######################################################## 
+# -------------- Relax Cell ---------------------------# 
+######################################################## 
+
+reset_timestep 0 
+timestep 0.5 
+fix 1 all box/relax aniso 1.0 vmax 0.003 
+thermo 1 
+thermo_style custom step enthalpy fmax lx ly lz vol press 
+min_style cg 
+minimize 1e-25 1e-25 5000 10000 
+unfix 1
+
+######################################################## 
+# ------------- Run NPT T1-----------------------------# 
+######################################################## 
+
+reset_timestep 0 
+timestep 0.002 
+velocity all create ${T1} 4928459 rot yes dist gaussian 
+fix 2 all npt temp ${T1} ${T1} 0.01 aniso 1.0 1.0 0.1 
+thermo_style custom step v_Timer cpu temp etotal fmax lx ly lz vol press 
+thermo 1000 
+run 2000 
+unfix 2 
+
+reset_timestep 0 
+timestep 0.002 
+compute mymsd lithium msd com yes 
+variable msdx equal "c_mymsd[1]" 
+variable msdy equal "c_mymsd[2]" 
+variable msdz equal "c_mymsd[3]" 
+variable msdtot equal "c_mymsd[4]" 
+fix msdT1 lithium ave/time 1 1 10000 v_msdx v_msdy v_msdz v_msdtot file 
+msd${T1} 
+fix 3 all nvt temp ${T1} ${T1} 0.01 
+thermo_style custom step v_Timer cpu temp etotal fmax lx ly lz vol press 
+thermo 5000 
+#dump dynamics all xyz 100 dynamics.xyz 
+#dump 4 all atom 100 traj.dat 
+run 5000000 
+unfix 3 
+unfix msdT1 

@@ -1,0 +1,57 @@
+cutoff: 5.5
+seed: 42
+
+metadata:
+  purpose: C fit
+
+potential:
+  deltaSplineBins: 0.001
+  element: C
+  fs_parameters: [1, 1, 1, 0.5]
+  npot: FinnisSinclairShiftedScaled
+  NameOfCutoffFunction: cos
+  rankmax: 5
+  nradmax: [20,6,3,2]  # per-rank values of nradmax
+  lmax: [0,6,4,2]     # per-rank values of lmax,  lmax=0 for first rank always!
+
+  ndensity: 2
+  rcut: 5.5
+  dcut: 0.01
+  radparameters: [5.25]
+  radbase: ChebExpCos
+
+
+data:
+  filename: C_dataset.pckl.gzip
+  
+fit:
+  loss: { kappa: 0.6, L1_coeffs: 0,  L2_coeffs: 0,  w1_coeffs: 1, w2_coeffs: 1,
+          w0_rad: 0, w1_rad: 0, w2_rad: 0, w_orth: 1e-4 }
+          
+  weighting:
+    type: EnergyBasedWeightingPolicy
+    nfit: 60000
+    cutoff: 5.5
+    DElow: 3.0
+    DEup: 10.0
+    DE: 1.0
+    DF: 1.0
+    wlow: 0.95
+    seed: 42  
+
+  optimizer: BFGS
+  maxiter: 2000
+
+#  fit_cycles: 2    # number of cycles within one step
+#  noise_relative_sigma: 1e-18  # relative noise sigma value
+  ladder_step: [50, 0.2]   # number of functions per step to add
+  ladder_type: power_order
+  
+  ## EXTRA OPTIONS ##
+#  repulsion: auto            # set inner cutoff based on the minimal distance in the dataset
+
+
+backend:
+  evaluator: tensorpot
+  batch_size: 60
+  display_step: 50

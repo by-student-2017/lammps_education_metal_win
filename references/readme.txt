@@ -50,17 +50,13 @@ input file (metal unit, lammps)
   https://doi.org/10.1021/acsanm.2c03564 (lammps input file)
   Crack (It cannot be calculated unless it is a Lammps that supports the SW potential file of "MoS2".)
 
-- M. Valavi et al., Cem. Concr. Res. 154 (2022) 106712.
-  https://doi.org/10.1016/j.cemconres.2022.106712
-
-- C. Wilkinson et al., SoftwareX 14 (2021) 100683.
-  https://doi.org/10.1016/j.softx.2021.100683
-
 - M. Qamar et al., J. Chem. Theory, Comput. XXX (2023) XXX-XXXX.
   https://doi.org/10.1021/acs.jctc.2c01149
+  anc
   
 - J. A. Dawson et al., J. Phys. Chem. C 122 (2018) 23978–23984.
   https://doi.org/10.1021/acs.jpcc.8b08208
+  meh (need data.meh)
   
 - S. Shivpuje et al., 
   https://scholar.archive.org/work/ad7atvw33feslkudnhe2piyyhm/access/wayback/https://s3-eu-west-1.amazonaws.com/pstorage-tf-iopjsd8797887/17412845/gmos_a_1619929_sm5753.pdf
@@ -86,23 +82,36 @@ input file (metal unit, lammps)
   10.1088/1361-648X/ab5377
   ZrW2O8
   
-- D. Chen et al., Doctor Thesis (2014).
-  https://oaktrust.library.tamu.edu/handle/1969.1/154160
-  
 - A. Fredriksson, Master Thesis (2022).
   https://lup.lub.lu.se/luur/download?func=downloadFile&recordOId=9079628&fileOId=9079859
+  tungsten
   
-- M. P. Hazarika, Master Thesis (2019).
-  http://dspace.cus.ac.in/jspui/bitstream/1/6333/1/Manash%20Protim%20Hazarika-Chemistry-MPhil.pdf
+- D. Chen et al., Doctor Thesis (2014).
+  https://oaktrust.library.tamu.edu/handle/1969.1/154160
+  radiation (need datafile.lammps)
   
 - K.-J. Carter, Bachelor Thesis (2017).
   https://dspace.mit.edu/bitstream/handle/1721.1/112482/1011413174-MIT.pdf?sequence=1&isAllowed=y
+  Irradiation
   
 - D. Chen et al., Master thesis (2011).
   https://oaktrust.library.tamu.edu/bitstream/handle/1969.1/ETD-TAMU-2011-08-10112/CHEN-THESIS.pdf?sequence=2&isAllowed=y
+  polyfe (need polyfe.lammps)
 
 - Z. Liu et al., ACS Appl. Mater. Interfaces 13 (2021) 53409-53415.
   https://doi.org/10.1021/acsami.1c11595
+  mlip (failed)
+  
+- M. Valavi et al., Cem. Concr. Res. 154 (2022) 106712.
+  https://doi.org/10.1016/j.cemconres.2022.106712
+  ERICA (need Structure.data)
+  
+- C. Wilkinson et al., SoftwareX 14 (2021) 100683.
+  https://doi.org/10.1016/j.softx.2021.100683
+  see https://github.com/ElsevierSoftwareX/SOFTX_2020_31
+  
+- M. P. Hazarika, Master Thesis (2019).
+  http://dspace.cus.ac.in/jspui/bitstream/1/6333/1/Manash%20Protim%20Hazarika-Chemistry-MPhil.pdf
 -------------------------------------------------------------------
 plot the temperature of each atom
 

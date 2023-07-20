@@ -1,0 +1,153 @@
+# ------------------ Initialize Simulation -----------------------
+clear
+units		metal
+dimension	3
+atom_style	full
+boundary p p p
+box tilt large
+
+# ---------- Structure Data file ---------- #
+
+# Because of the adiabatic core-shell model (Mitchell & Finchman, J Phys Cond Mat, 5, 1993)
+# the CS-Info section in the data file is needed. Look: https://docs.lammps.org/Howto_coreshell.html
+
+fix csinfo all property/atom i_CSID
+read_data Structure.data fix csinfo NULL CS-Info
+
+group Ca type 1
+group Si type 2
+group O type 3
+group O(S) type 4
+group Ow type 5
+group Oh type 6
+group Hw type 7
+group H type 8
+
+set group Ca charge +2.0
+set group Si charge +4.0
+set group O charge +0.85
+set group O(S) charge -2.85
+set group Ow charge -0.82
+set group Oh charge -1.4
+set group Hw charge +0.41
+set group H charge +0.4
+
+group cores type 3
+group shells type 4
+
+# --------------- Define Interatomic Potential -------------------
+
+pair_style  hybrid/overlay    lj/cut/coul/long 8.5  buck/coul/long 8.5 coul/long 8.5  nm/cut/coul/long 8.5 buck/coul/long/cs  8.5
+
+pair_coeff      1      1     coul/long #Ca-Ca
+pair_coeff      1      2     coul/long #Ca-Si
+pair_coeff      1      3     coul/long #Ca-O
+pair_coeff      1      4     buck/coul/long 2152.3566 0.309227  0.099440 #Ca-O(S)
+pair_coeff      1      5     buck/coul/long  1286.6000  0.2970  0.0000 #Ca-Ow
+pair_coeff      1      6     buck/coul/long 2251.0500  0.2970  0.0000 #Ca-Oh
+pair_coeff      1      7     coul/long #Ca-Hw
+pair_coeff      1      8     coul/long #Ca-H
+
+
+pair_coeff      2      2     coul/long
+pair_coeff      2      3     coul/long
+pair_coeff      2      4     buck/coul/long 1283 0.3205 10.66 #Si-O(S)
+pair_coeff      2      5     buck/coul/long 1283.556 0.3202 10.6616 #Si-Ow
+pair_coeff      2      6     buck/coul/long 983.5 0.3255 10.66 #Si-Oh
+pair_coeff      2      7     coul/long
+pair_coeff      2      8     coul/long
+
+pair_coeff      3      3     buck/coul/long 0 1 0
+pair_coeff      3      4     buck/coul/long/cs 0 1 0
+pair_coeff      3      5     buck/coul/long 0 1 0
+pair_coeff      3      6     buck/coul/long 0 1 0
+pair_coeff      3      7     buck/coul/long 0 1 0
+pair_coeff      3      8     buck/coul/long 0 1 0
+
+pair_coeff      4      4     buck/coul/long 22764.3 0.149 27.88 #O(S)-O(S)
+pair_coeff      4      5     buck/coul/long 22764.3 0.149 28.92 #O(S)-Ow
+pair_coeff      4      6     buck/coul/long 22764.3 0.149 13.94 #O(S)-Oh
+pair_coeff      4      7     buck/coul/long 512  0.2500  0.0000 #O(S)-Hw
+pair_coeff      4      8     nm/cut/coul/long 0.0073 2.71 9 6 #O(S)-H
+
+pair_coeff      5      5     lj/cut/coul/long 0.0067 3.16 #Ow-Ow
+pair_coeff      5      6     nm/cut/coul/long 0.0013 4.63 9 6 #Ow-Oh
+pair_coeff      5      7     coul/long
+pair_coeff      5      8     nm/cut/coul/long 0.055 2 9 6 #Ow-H
+
+pair_coeff      6      6     buck/coul/long 22764 0.149 6.97 #Oh-Oh
+pair_coeff      6      7     coul/long
+pair_coeff      6      8     nm/cut/coul/long 0.0073 2.71 9 6 #Oh-H
+
+pair_coeff      7      7     coul/long
+pair_coeff      7      8     coul/long
+
+pair_coeff      8      8     coul/long
+
+bond_style hybrid  harmonic morse
+
+bond_coeff   1 harmonic   22.96   1.0120 #Ow-Hw
+bond_coeff   2 morse 7.0525 3.1749 0.942 #Oh-H
+bond_coeff   3 harmonic      37.5      0 #O-O(S)
+
+angle_style harmonic
+angle_coeff 1 1.64567 113.24 #SPC/Fw: Water model
+angle_coeff 2 7.74815 109.47000 #O-Si-O
+angle_coeff 3 7.74815 109.47000 #Oh-Si-Oh
+angle_coeff 4 7.74815 109.47000 #Oh-Si-O(S)
+angle_coeff 5 7.74815 141.5     #Si-Oh-H
+
+# If running a simulation with a vacuum gab, consider
+# switching to PPPM with kspace_modify 
+
+kspace_style ewald 1e-6
+#kspace_style pppm 1e-6
+#kspace_modify order 7
+
+# ------------------- Run Minimization,Equilibration and MD ---------------------------
+
+#minimize 1e-6 1e-8 10000 100000
+
+# ---------------- Core-Shell Equilibration ---------------- # 
+
+# Section to prevent the updrift of KE of the core-shell pairs
+# as proposed in Mitchell & Finchman, J Phys Cond Mat, 5, 1993.
+# The short NVE run with the Berendsen thermostat is needed at the start of 
+# the simulation or immidietly after minimization.
+
+compute CStemp all temp/cs cores shells 
+compute thermo_press_lmp all pressure thermo_temp # press for correct kinetic scalar
+compute prop all property/atom i_CSID
+compute cs_chunk all chunk/atom c_prop
+compute csPE all pe/atom bond
+compute csKE all ke/atom
+compute cstherm all temp/chunk cs_chunk temp internal com yes cdof 3.0
+#fix ave_chunk all ave/time 10000 1 10000 c_cstherm file chunk.dump mode vector 
+#fix ke_chunk all ave/chunk 10000 1 10000 cs_chunk c_csKE file csKinetic.txt
+#fix PEoutput all ave/chunk 10000 1 10000 cs_chunk c_csPE file csPotential.txt
+
+timestep 0.0002 #Small timestep for core-shells
+
+velocity all create 300 134 dist gaussian mom yes rot no bias yes temp CStemp
+velocity all scale 300 temp CStemp
+
+# thermostating using the core/shell decoupling 
+
+fix thermoberendsen all temp/berendsen 300 300 0.02
+fix nve all nve
+fix_modify thermoberendsen temp CStemp
+run 50000
+unfix thermoberendsen
+unfix nve
+
+
+# --------------- NVT and NPT -------------- #
+# Becayse of the rescaling of the core shell velocities the NVT and NPT 
+# should be followed by the fix_modify as shown below
+
+#fix npt_xy all npt temp 300.0 300.0 0.02 tri 1.0 1.0 0.2 couple none flip no
+#fix_modify npt_xy temp CStemp press thermo_press_lmp
+
+#fix nvt all nvt temp 300 300 0.02
+#fix_modify nvt temp CStemp 
+
