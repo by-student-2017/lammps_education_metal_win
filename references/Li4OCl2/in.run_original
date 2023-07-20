@@ -3,29 +3,14 @@
 ##########################################################
 
 clear
-
-units metal      # eV,atomic charge,angstroms,ps,kelvin,bars,g/mol
+units metal #eV,atomic charge,angstroms,ps,kelvin,bars,g/mol
 dimension 3
 boundary p p p
 atom_style full
-
 #processors * * * grid numa
-
 read_data Li4OCl2.lammps
-#replicate 2 2 2
-
 group lithium type 1
-group O  type 2
-group Cl type 3
-
-mass 1 6.941   # Li
-mass 2 15.9994 # O
-mass 3 35.453  # Cl
-
-set type 1 charge  1.0 # Li 1+
-set type 2 charge -2.0 # O  2-
-set type 3 charge -1.0 # Cl 1-
-
+#replicate 2 2 2
 variable T1 equal 500
 variable Timer equal step*dt
 
@@ -60,12 +45,9 @@ kspace_style pppm 1e-05
 ########################################################
 
 reset_timestep 0
-
 timestep 0.5
-
 thermo 10
 thermo_style custom step enthalpy fmax lx ly lz vol press
-
 min_style cg
 minimize 1e-25 1e-25 5000 10000
 
@@ -74,17 +56,12 @@ minimize 1e-25 1e-25 5000 10000
 ########################################################
 
 reset_timestep 0
-
 timestep 0.5
-
 fix 1 all box/relax aniso 1.0 vmax 0.003
-
 thermo 1
 thermo_style custom step enthalpy fmax lx ly lz vol press
-
 min_style cg
 minimize 1e-25 1e-25 5000 10000
-
 unfix 1
 
 ########################################################
@@ -92,51 +69,26 @@ unfix 1
 ########################################################
 
 reset_timestep 0
-
 timestep 0.002
-
 velocity all create ${T1} 4928459 rot yes dist gaussian
-
 fix 2 all npt temp ${T1} ${T1} 0.01 aniso 1.0 1.0 0.1
-
 thermo_style custom step v_Timer cpu temp etotal fmax lx ly lz vol press
 thermo 1000
-
-#---------------------------------------------------------
-dump            d1 all cfg 100 cfg/run.npt.*.cfg mass type xs ys zs id type q vx vy vz fx fy fz
-dump_modify     d1 element Li Si O
-#---------------------------------------------------------
-
 run 2000
-
 unfix 2
-undump d1
-
 reset_timestep 0
-
 timestep 0.002
-
 compute mymsd lithium msd com yes
-
 variable msdx equal "c_mymsd[1]"
 variable msdy equal "c_mymsd[2]"
 variable msdz equal "c_mymsd[3]"
 variable msdtot equal "c_mymsd[4]"
-
 fix msdT1 lithium ave/time 1 1 10000 v_msdx v_msdy v_msdz v_msdtot file msd${T1}
 fix 3 all nvt temp ${T1} ${T1} 0.01
-
 thermo_style custom step v_Timer cpu temp etotal fmax lx ly lz vol press
 thermo 5000
-
 #dump dynamics all xyz 100 dynamics.xyz
 #dump 4 all atom 100 traj.dat
-#---------------------------------------------------------
-dump            d2 all cfg 100 cfg/run.nvt.*.cfg mass type xs ys zs id type q vx vy vz fx fy fz
-dump_modify     d2 element Li Si O
-#---------------------------------------------------------
-
 run 5000000
-
 unfix 3
 unfix msdT1
