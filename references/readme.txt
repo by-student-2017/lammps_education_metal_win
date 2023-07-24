@@ -82,6 +82,10 @@ input file (metal unit, lammps)
   10.1088/1361-648X/ab5377
   ZrW2O8
   
+- G. V. Huerta et al., Doctoral Thesis (2019).
+  https://www.repo.uni-hannover.de/bitstream/handle/123456789/4482/GesamtRevisedFinal.pdf?sequence=1&isAllowed=y
+  YSZ
+  
 - A. Fredriksson, Master Thesis (2022).
   https://lup.lub.lu.se/luur/download?func=downloadFile&recordOId=9079628&fileOId=9079859
   tungsten
@@ -108,14 +112,10 @@ input file (metal unit, lammps)
   
 - C. Wilkinson et al., SoftwareX 14 (2021) 100683.
   https://doi.org/10.1016/j.softx.2021.100683
-  see https://github.com/ElsevierSoftwareX/SOFTX_2020_31
+  see https://github.com/ElsevierSoftwareX/SOFTX_2020_31 (github)
   
 - M. P. Hazarika, Master Thesis (2019).
   http://dspace.cus.ac.in/jspui/bitstream/1/6333/1/Manash%20Protim%20Hazarika-Chemistry-MPhil.pdf
-
-- G. V. Huerta et al., Doctoral Thesis (2019).
-  https://www.repo.uni-hannover.de/bitstream/handle/123456789/4482/GesamtRevisedFinal.pdf?sequence=1&isAllowed=y
-  YSZ
 -------------------------------------------------------------------
 plot the temperature of each atom
 
