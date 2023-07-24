@@ -116,6 +116,9 @@ input file (metal unit, lammps)
   
 - M. P. Hazarika, Master Thesis (2019).
   http://dspace.cus.ac.in/jspui/bitstream/1/6333/1/Manash%20Protim%20Hazarika-Chemistry-MPhil.pdf
+  
+- ERIK FRANSSON, JOHANNES LAURELL H˚AKANSSON, Master’s Thesis in Applied Physics (2014).
+  BaZrO3 (need ${name}_input.pos)
 -------------------------------------------------------------------
 plot the temperature of each atom
 
