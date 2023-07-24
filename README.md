@@ -228,6 +228,10 @@ pair_coeff      * * ../potentials/eam/Fe-Ni-Cr_fcc.eam.fs Fe Ni Cr
 
 [15] Molecular Dynamics (MD) Simulations Based Design and Process Optimization of Solar Cells
   https://www.osti.gov/servlets/purl/1241668
+
+
+[16] Buckingham database
+  https://www5.hp-ez.com/hp/calculations/page515
 ------------------------------------------------------------------------------
 # Input file
 
