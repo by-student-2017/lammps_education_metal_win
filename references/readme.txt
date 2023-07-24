@@ -86,6 +86,9 @@ input file (metal unit, lammps)
   https://www.repo.uni-hannover.de/bitstream/handle/123456789/4482/GesamtRevisedFinal.pdf?sequence=1&isAllowed=y
   YSZ
   
+- ERIK FRANSSON, JOHANNES LAURELL H˚AKANSSON, Master’s Thesis in Applied Physics (2014).
+  BaZrO3
+  
 - A. Fredriksson, Master Thesis (2022).
   https://lup.lub.lu.se/luur/download?func=downloadFile&recordOId=9079628&fileOId=9079859
   tungsten
@@ -116,9 +119,6 @@ input file (metal unit, lammps)
   
 - M. P. Hazarika, Master Thesis (2019).
   http://dspace.cus.ac.in/jspui/bitstream/1/6333/1/Manash%20Protim%20Hazarika-Chemistry-MPhil.pdf
-  
-- ERIK FRANSSON, JOHANNES LAURELL H˚AKANSSON, Master’s Thesis in Applied Physics (2014).
-  BaZrO3 (need ${name}_input.pos)
 -------------------------------------------------------------------
 plot the temperature of each atom
 
