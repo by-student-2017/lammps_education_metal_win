@@ -6,7 +6,7 @@
 dimension        3
 boundary         p p p
 units            metal
-atom_style   atomic
+atom_style       atomic
 
 # --------------
 
@@ -15,8 +15,8 @@ variable         file_tag    string Cu                      # Atomic species typ
 variable         mass_1      equal  63.546                  # Mass of atomic species
 variable         latcon      equal  3.5970                  # Standard lattice constant of structure
 variable         xsize       equal  0.4*${system_size}*${latcon}      # Size of domain in x-dimension in units of Angstroms
-variable         ysize       equal  1.00*${xsize}               # Size of domain in y-dimension
-variable         zsize       equal  400.00*${system_size}*${latcon}          # Size of domain in z-dimension
+variable         ysize       equal  1.00*${xsize}                     # Size of domain in y-dimension
+variable         zsize       equal  400.00*${system_size}*${latcon}   # Size of domain in z-dimension
 
 # -------------- Build the simulation box and crystal structure ------------------------------------------------------------------ #
 
@@ -32,6 +32,11 @@ create_atoms     1 box
 mass             1 ${mass_1}
 change_box       all boundary p p s
 
+# ----------------------------------
+dump            d1 all cfg 1000 cfg/run.equi.*.cfg mass type xs ys zs id type vx vy vz fx fy fz
+dump_modify     d1 element Cu
+# ----------------------------------
+
 # -------------- Optional: structural equilibration ------------------------------------------------------------------------------ #
 
 if "${equilibrate} == no" then "jump SELF break"
@@ -44,7 +49,7 @@ if "${equilibrate} == no" then "jump SELF break"
 
    # Interatomic force field, integration, and neighbor options
    pair_style       eam/alloy
-   pair_coeff       * * Cu_mishin1.eam.alloy Cu
+   pair_coeff       * * Cu01.eam.alloy Cu
    timestep         0.01
    neighbor         1.5 bin
    neigh_modify     every 5 delay 0 check yes
@@ -86,6 +91,12 @@ if "${equilibrate} == no" then "jump SELF break"
    unfix            1
 label break
 
+# ----------------------------------
+undump          d1
+dump            d2 all cfg 1000 cfg/run.shock.*.cfg mass type xs ys zs id type vx vy vz fx fy fz
+dump_modify     d2 element Cu
+# ----------------------------------
+
 # -------------- Shock simulation variables -------------------------------------------------------------------------------------- #
 
 variable         piston_vel equal ${pistvel}
@@ -107,7 +118,7 @@ timestep         0.001
 
 variable         deltaz equal 0.01*${zsize}
 compute          tcom all temp/com
-compute            tpartial all temp/profile 0 0 1 z 100
+compute          tpartial all temp/profile 0 0 1 z 100
 compute          toteng all pe/atom
 compute          keng all ke/atom
 compute          pall all stress/atom tpartial virial

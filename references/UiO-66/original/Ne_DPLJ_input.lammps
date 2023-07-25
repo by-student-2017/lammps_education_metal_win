@@ -1,0 +1,86 @@
+units 		metal  
+dimension 	3
+boundary 	p p p 
+atom_style 	atomic 
+
+
+box tilt        large
+read_data       UiO66.cubic-ozrhc.lmp extra/atom/types 1
+mass 		1 16
+mass 		2 91.442
+mass 		3 1.0072
+mass		4 12
+pair_style	hybrid deepmd DP-UiO66.pb lj/cut 15
+pair_coeff	* * deepmd 
+
+#_______________Adding in Ne (0loading)
+
+region	        box_Ne block 0 41.47307 0 41.47307 0 41.47307 
+molecule	Ne data.neonMolecule toff 4
+fix             1 all deposit 160 0 1 943487 region box_Ne near 2 attempt 10000 mol Ne 
+
+mass 		5 20.179700
+
+## Manually calculated using mixing rule: Eij = (Ei*Ej)**0.5 and sigij = (sigi + sigj)/2
+pair_coeff 	1 5 lj/cut 0.00379 3.111 #C - Ne
+pair_coeff 	2 5 lj/cut 0.00246 2.680 #H - Ne
+pair_coeff 	3 5 lj/cut 0.00287 2.954 #O - Ne
+pair_coeff 	4 5 lj/cut 0.00307 2.786 #Zr - Ne
+pair_coeff 	5 5 lj/cut 0.00317 2.790 #Ne - Ne
+
+
+# Performing for flexible MOF - disabling rigidity
+
+#_______________MOLECULE INSERTION
+
+timestep        0.0005
+
+fix             2 all nve
+thermo          10
+thermo_style    custom step temp press vol pe ke etotal atoms
+#dump            2 all custom 100 dump.NeInsertion.lammpstrj id type x y z xu yu zu fx fy fz
+run		500
+
+unfix           2
+#undump          2
+unfix           1
+
+#write_restart   restart.Ne_UiO-66_diffusion
+
+print "#_______________EQUILIBRATION USING NVT ENSEMBLE"
+
+reset_timestep  0
+velocity        all create 300.0 182905 
+fix 		3 all nvt temp 300.0 300.0 0.01 
+thermo		100
+thermo_style	custom step atoms temp press vol ke pe etotal
+#dump		3 all custom 1000 dump.Neequilibration.lammpstrj id type xu yu zu fx fy fz 
+run		100000
+#undump		3
+unfix		3
+
+#write_restart	restart.Ne_UiO-66_diffusion
+
+print "#_______________PRODUCTION USING NVE ENSEMBLE"
+
+reset_timestep  0
+fix             2 all nve
+group           Neon type == 5
+#neigh_modify	exclude type 5 5 # uncomment this for zero loading
+
+dump            4 Neon custom 1 dump.NeUnwrapped id type xu yu zu
+
+#write_restart   restart.Ne_UiO-66_diffusion
+
+
+print "#_______________CALCULATING THE MSD FOR LARGE NUMBER OF STEPS"
+
+#calculate mean squared displacement via center-of-mass formalism, and print averaged results to a file
+compute		msd Neon msd com yes
+fix		msd Neon ave/time 100 1 100 c_msd[*] file msd mode vector
+run 25000000
+
+print "#_______________DONE"
+
+write_restart   restart.Ne_UiO-66_diffusion
+

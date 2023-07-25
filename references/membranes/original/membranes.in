@@ -1,0 +1,173 @@
+############
+# GK shear #
+############
+echo                screen
+boundary            f p f
+units		        metal
+atom_style	        atomic
+read_data	        20220823_GK_ZZ_1_1.data
+
+
+
+########################
+# Neighborlist setting #
+########################
+neighbor	    4.0           bin
+neigh_modify	delay         0     every  1 check yes
+
+
+
+#################
+# Group setting #
+#################
+group           carbon    type      1
+group           hydrogen  type      2
+
+# Left edge
+variable        left_edge_1         equal                   bound(all,xmin)-0.1
+variable        left_edge_2         equal                   bound(all,xmin)+0.1
+region          LE_                 prism                   ${left_edge_1}   ${left_edge_2}       INF     INF      INF   INF    0.000000000     0.000000000     0.000000000 units box
+group           left_edge           region                  LE_
+								    																	    
+# Right edge
+variable        right_edge_1        equal                   bound(all,xmax)-0.1
+variable        right_edge_2        equal                   bound(all,xmax)+0.1
+region          RE_                 prism                   ${right_edge_1}  ${right_edge_2}      INF     INF      INF   INF    0.000000000     0.000000000     0.000000000 units box
+group           right_edge          region                  RE_
+
+group           edge                union                   left_edge        right_edge
+
+# Research
+group           research            subtract                all              edge
+
+
+
+###########################
+# Force field setup: rebo #
+###########################
+pair_style	    rebo
+pair_coeff	    * * CH.rebo C H
+
+
+
+############
+# Variable #
+############1.602 176 634 x 10-19
+variable        di                  equal  500
+variable        temperature         equal  300.0
+variable        tdamp               equal  0.1     # timestep = 0.001 fs
+variable        ly0                 equal  yhi-ylo
+variable        f_l_x               equal  fcm(left_edge,x)*1.602176634*10/${ly0}
+variable        f_l_y               equal  fcm(left_edge,y)*1.602176634*10/${ly0}
+variable        f_l_z               equal  fcm(left_edge,z)*1.602176634*10/${ly0}
+variable        f_r_x               equal  fcm(right_edge,x)*1.602176634*10/${ly0}
+variable        f_r_y               equal  fcm(right_edge,y)*1.602176634*10/${ly0}
+variable        f_r_z               equal  fcm(right_edge,z)*1.602176634*10/${ly0}
+variable        shearing_rate       equal  0.05 # units: Angstroms/picosecond, 5 m/s
+variable        deformation         equal  ${shearing_rate}*dt*step/${ly0}
+
+
+
+###################
+# Compute options #
+###################
+compute         researchtemp  research    temp
+compute         perpe         all         pe/atom
+
+
+
+##############
+# Relaxation #
+##############
+reset_timestep  0
+thermo          100
+
+velocity 	    research     create       ${temperature} 5287287 mom yes rot yes dist gaussian temp researchtemp
+
+fix             0 research   nve
+fix             1 research   temp/rescale 1 ${temperature}  ${temperature} 0.05 1.0
+fix             2 left_edge  move         linear   0.0000   0.0000   0.0000         units box
+fix             3 right_edge move         linear   0.0000   0.0000   0.0000         units box
+
+# Thermo output
+thermo_style	custom step temp c_researchtemp pe ke enthalpy evdwl epair v_f_l_x v_f_l_y v_f_l_z v_f_r_x v_f_r_y v_f_r_z v_deformation v_ly0
+thermo          100
+
+velocity 	    research     create       ${temperature} 5287287 mom yes rot yes dist gaussian temp researchtemp
+timestep        0.00000001
+run             1000
+
+velocity 	    research     create       ${temperature} 5287287 mom yes rot yes dist gaussian temp researchtemp
+timestep        0.0000001
+run             1000
+
+velocity 	    research     create       ${temperature} 5287287 mom yes rot yes dist gaussian temp researchtemp
+timestep        0.0000005
+run             1000
+
+velocity 	    research     create       ${temperature} 5287287 mom yes rot yes dist gaussian temp researchtemp
+timestep        0.00001
+run             1000
+
+velocity 	    research     create       ${temperature} 5287287 mom yes rot yes dist gaussian temp researchtemp
+timestep        0.00005
+run             1000
+
+velocity 	    research     create       ${temperature} 5287287 mom yes rot yes dist gaussian temp researchtemp
+timestep        0.0001
+run             1000
+
+velocity 	    research     create       ${temperature} 5287287 mom yes rot yes dist gaussian temp researchtemp
+timestep        0.001 # units: ps
+run             5000
+
+unfix           0
+unfix           1
+unfix           2
+unfix           3
+
+
+
+##############
+# Relaxation #
+##############
+reset_timestep  0
+thermo          100
+
+timestep        0.001 # units: ps
+
+# 1000 ps NVT , 1 ns
+fix             1 research   nvt          temp     ${temperature}    ${temperature} ${tdamp}
+fix             2 left_edge  move         linear   0.0000   0.0000   0.0000         units box
+fix             3 right_edge move         linear   0.0000   0.0000   0.0000         units box # shearing velocity 0 m/s
+
+run             1000000
+
+unfix           1
+unfix           2
+unfix           3
+
+
+
+############
+# Shearing #
+############
+reset_timestep  0
+thermo          10
+dump            1            all          atom     ${di}  all_nvt.lammpstrj
+dump            2            all          custom   ${di}  all.lammpstrj id type xu yu zu c_perpe 
+
+timestep        0.001 # units: ps
+
+fix             1 research   nvt          temp     ${temperature}    ${temperature} ${tdamp}
+fix             2 left_edge  move         linear   0.0000   0.0000                  0.0000         units box
+fix             3 right_edge move         linear   0.0000   ${shearing_rate}        0.0000         units box # shearing velocity 5 m/s
+
+run             500000
+
+unfix           1
+unfix           2
+unfix           3
+
+undump          1
+undump          2

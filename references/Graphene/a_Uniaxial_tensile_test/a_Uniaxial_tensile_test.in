@@ -1,0 +1,104 @@
+# a. Uniaxial tensile test 
+
+units metal
+dimension 3
+boundary p p s 
+
+atom_style full
+read_data graphene.data
+
+pair_style airebo 3.0 1 1 
+pair_coeff * * CH.airebo C 
+
+neighbor 3.0 nsq
+neigh_modify delay 0 every 1 check yes
+
+variable temperature equal 300
+variable tstep equal 0.001
+variable pressure equal 0
+variable thermalstep equal 100
+variable dumpstep equal 50000
+variable relaxtime equal 200000
+variable totaltime equal 500000
+variable deformrate equal 0.0005
+variable strain_max equal 0.3
+variable total_runs equal round(v_strain_max/(v_tstep*v_deformrate))
+
+velocity all create ${temperature} 1000000 rot yes dist gaussian
+
+min_style cg
+minimize 1.0e-14 1.0e-14 10000 10000 
+
+#unfix 1
+
+fix relax all npt temp ${temperature} ${temperature} 0.05 x 0 0 5 y 0 0 5 drag 0.2 
+
+dump config all custom 100000 relax.*.lammpstrj id type x y z
+#------------------------------------
+dump            d1 all cfg 1000 cfg/run.npt.*.cfg mass type xs ys zs id type q vx vy vz fx fy fz
+dump_modify     d1 element C
+#------------------------------------
+
+thermo 1000
+thermo_style custom step temp etotal pxx pyy pzz press
+
+restart 100000 relax.*.restart
+
+timestep ${tstep}
+
+run ${relaxtime}
+
+unfix relax 
+undump d1
+
+undump config
+
+reset_timestep 0
+
+variable toval equal ly*lx*3.35 
+variable vol equal ${toval} 
+variable vatom equal v_vol/v_nums 
+
+compute 1 all stress/atom NULL
+
+variable total equal etotal
+variable pair equal epair
+variable bond equal ebond
+variable angle equal eangle
+variable dihedral equal edihed
+
+compute xalls all reduce sum c_1[1]
+variable xstress equal (c_xalls)/(v_toval*10000)
+
+compute yalls all reduce sum c_1[2]
+variable ystress equal (c_yalls)/(v_toval*10000)
+
+compute zalls all reduce sum c_1[3]
+variable zstress equal (c_zalls)/(v_toval*10000)
+
+timestep ${tstep}
+
+thermo 2000
+
+fix avestress all ave/atom 1 ${dumpstep} ${dumpstep} c_1[1] c_1[2] c_1[3] c_1[4] c_1[5] c_1[6] 
+
+variable tmp equal "lx"
+variable L0 equal ${tmp}
+variable strain equal "(lx - v_L0)/v_L0"
+variable Cumulativels equal "(lx - v_L0)/10" 
+
+fix Step all print 100 "${strain} ${Cumulativels} ${xstress} ${total} ${bond} ${pair} ${angle} ${dihedral} “file grapoten.txt screen no
+dump 2 all custom ${dumpstep} relax.*.lammpstrj id type x y z f_avestress[1] f_avestress[2] f_avestress[3] f_avestress[4] f_avestress[5] f_avestress[6]
+#------------------------------------
+dump            d2 all cfg 1000 cfg/run.nvt.*.cfg mass type xs ys zs id type q vx vy vz fx fy fz
+dump_modify     d2 element C
+#------------------------------------
+
+
+fix 1 all nvt temp ${temperature} ${temperature} 0.05
+fix 3 all deform 1 x erate ${deformrate} units box remap x 
+fix 4 all ave/time 2 500 1000 v_xstress v_ystress v_zstress file pressure.out
+
+thermo_style custom step pe ke etotal lx ly lz v_strain v_xstress
+
+run ${total_runs}

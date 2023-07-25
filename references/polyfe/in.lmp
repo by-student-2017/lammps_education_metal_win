@@ -2,18 +2,20 @@
 
 #innitialization 
 clear 
-units metal 
-dimension 3  # Dimensions of space for simulation. 3D is default 
-newton on on # Newton's 3rd law for pairwise and bonded interactions 
 
-# Processors n m o define the proc. grid 
-boundary p p p    # Rules or boundary 
-atom_style atomic # Rules for atom styles. Atomic is default 
+units metal 
+dimension 3        # Dimensions of space for simulation. 3D is default 
+newton on on       # Newton's 3rd law for pairwise and bonded interactions 
+
+# Processors n m o # define the proc. grid 
+boundary p p p     # Rules or boundary 
+atom_style atomic  # Rules for atom styles. Atomic is default 
 # atom_modify
 
 # Atom definition 
 
 read_data polyfe.lammps 
+replicate 50 50 50    # about 14 nm x 14 nm x 14 nm
 #read_restart restartGBfe27w 
 
 lattice bcc 1 
@@ -30,7 +32,7 @@ group id id 83740
 mass 1 55.845 
 
 pair_style eam/fs 
-pair_coeff * * Fe_mm.eam.fs Fe
+pair_coeff * * Fe_2.eam.fs Fe
 
 min_style sd 
 minimize 1.0e-12 1.0e-12 1000 1000
@@ -41,8 +43,8 @@ velocity group2 create 300 54545 rot yes dist gaussian
 velocity all zero linear 
 velocity all zero angular
 
-fix 1 group2 npt 300 300 1 aniso NULL NULL 0.0 0.0 0.0 0.0 10 drag 1.0 
-#fix 1 group2 nvt 100 100 1.0 drag 0.2 
+fix 1 group2 npt temp 300 300 1 aniso 0.0 0.0 10.0 drag 1.0 
+#fix 1 group2 nvt temp 100 100 1.0 drag 0.2 
 #fix 1 all nve 
 fix 11 group1 setforce 0 0 0 
 
@@ -62,6 +64,10 @@ timestep 0.0005
 
 dump atom all xyz 100 grainfe.xyz 
 #dump atoms all custom 100 feGB1ps-15 id x y z c_1 
+#----------------------------
+dump            d1 all cfg 100 cfg/run.*.cfg mass type xs ys zs id type vx vy vz fx fy fz
+dump_modify     d1 element Fe
+#----------------------------
 
 run 1000 
 

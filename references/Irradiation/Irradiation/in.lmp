@@ -48,7 +48,7 @@ group outeratom subtract all interatom
 
 #------------------------FORCE FIELDS------------------------
 pair_style hybrid/overlay eam/alloy zbl 0.35 0.5
-pair_coeff * * eam/alloy Cu01.eam. alloy Cu
+pair_coeff * * eam/alloy Cu01.eam.alloy Cu
 pair_coeff * * zbl 29 29
 
 neigh_modify every 1 delay 0 check yes
@@ -63,14 +63,19 @@ thermo_style custom step dt time press pe temp c_interT c_outerT
 minimize 1.0e-8 1.0e-8 10000 10000
 
 #------------------------Equlibration------------------------
-reset-timestep 0
+reset_timestep 0
 timestep 0.001
 
 #dump dumpNPT all custom 100000 dumpNPT*.data id type x y z
+#------------------------------------------
+dump            d1 all cfg 1000 cfg/run.npt.*.cfg mass type xs ys zs id type vx vy vz fx fy fz
+dump_modify     d1 element Cu
+#------------------------------------------
 velocity all create ${myT} ${TSeed} mom yes
 fix 1 all nvt temp ${myT} ${myT} 0.1 #Relax at 300K
 run 100000
 #dump dumpNPT
+undump d1
 
 #------------------------PKA Ensemble------------------------
 fix 1 all nve
@@ -92,6 +97,10 @@ velocity pka set ${pkaVx} ${pkaVy} ${pkaVz} units box
 
 compute pkaKinetic pka ke/atom
 dump 1 pka custom 1000 pkavelocity-case2.txt id x y z vx vy vz c_pkaKinetic
+#------------------------------------------
+dump            d2 all cfg 1000 cfg/run.pka.*.cfg mass type xs ys zs id type vx vy vz fx fy fz
+dump_modify     d2 element Cu
+#------------------------------------------
 
 variable v1 equal "step"
 variable v2 equal "dt"
@@ -101,13 +110,20 @@ fix output all print 10 "${v1} ${v2} ${v3} ${v4}" file time2.txt screen no
 
 run 50000
 
+undump d2
+
 #write_data PKA-Laststeps-Case2.data
 
 compute csym   all centro/atom bcc
 compute PE     all pe/atom
 compute CNA    all cna/atom ${cnacut}
 dump minimized all custom 1000 dump-minimized-case2.data id type x y z c_csym c_PE c_CNA
+#------------------------------------------
+dump            d3 all cfg 1000 cfg/run.mini.*.cfg mass type xs ys zs id type vx vy vz fx fy fz
+dump_modify     d3 element Cu
+#------------------------------------------
 minimize 1.0e-10 1.0e-10 10000 10000
 
 variable e equal pe
+
 print "$e" file PE.Case2.dat

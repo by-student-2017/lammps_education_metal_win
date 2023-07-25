@@ -2,7 +2,7 @@
 
 variable a loop 121
 label loop
-variable myT equal "290+10+v-a"
+variable myT equal "290+10+v_a"
 
 #------------------------INITIALIZATION------------------------
 echo both
@@ -17,7 +17,7 @@ read_data quenched$c.data
 
 #------------------------FORCE FIELDS------------------------
 pair_style eam/alloy
-pair_coeff * * Cu01.eam. alloy Cu
+pair_coeff * * Cu01.eam.alloy Cu
 neigh_modify every 1 delay 0 check yes
 
 #------------------------SETTINGS------------------------
@@ -36,12 +36,19 @@ compute csym all centro/atom fcc
 compute PE   all pe/atom
 compute CNA  all cna/atom 3.1002
 dump minimized all custom 1000 dump-minimized-$a-${myT}.data id type x y z c_csym c_pe c_cna
+#------------------------------------------
+dump            d2 all cfg 1000 cfg/run.mini.*.cfg mass type xs ys zs id type vx vy vz fx fy fz
+dump_modify     d2 element Cu
+#------------------------------------------
+
 minimize 1.0e-10 1.0e-10 10000 10000
 
 variable e equal pe
+
 print "$e" file PE-$a_${myT}.dat
 
 clear
 
 next a
+
 jump input. heating.loop loop

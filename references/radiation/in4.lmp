@@ -1,0 +1,37 @@
+# LAMMPS input file for NEB calculation
+
+#innitialization
+clear
+
+units metal
+dimension 3               # Dimensions of space for simulation. 3D is default
+newton on on              # Newton's 3rd law for pairwise and bonded interactions
+#package gpu 0 1 -1 
+
+# Processors n m o        # define the proc. grid
+boundary p p p            # Rules or boundary
+atom_style atomic         # Rules for atom styles. Atomic is default
+atom_modify map array sort 0 0.0 # atom_modify
+variable u uloop 8
+
+# Atom definition
+
+read_data datafile.lammps # starting stage
+lattice bcc 1
+
+#Settings
+
+pair_style eam/fs
+pair_coeff * * Fe_mm.eam.fs Fe
+
+timestep 0.0005
+
+group nebatoms id id1 id2 ….. 
+group nonneb subtract all nebatoms
+thermo 100
+
+fix 1 nebatoms neb 1
+min_style quickmin
+
+dump 1 nebatoms atom 500 dump.neb.$u
+neb 0.0000001 0.00001 500000 500000 1000 final.hop1

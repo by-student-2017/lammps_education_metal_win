@@ -11,6 +11,8 @@
 # are 500000 time steps. The screen output every 50 time steps will be: step number,
 # current length, volume, temperature, stress in x-direction, strain.
 
+variable lx  equal 3.14339
+
 #Defining type of atoms, dimensions and boundary conditions.
 units metal
 dimension 3
@@ -48,13 +50,17 @@ compute peratom all stress/atom NULL
 compute sigmaxx all reduce ave c_peratom[1]
 
 #Create a variable called strain, which calculates the strain.
-variable strain equal (lx - v_L0)/v_L0
+variable strain equal "(lx - v_L0)/v_L0"
 
 #Screen output
 thermo 50
 thermo_style custom step lx vol temp c_sigmaxx v_strain
 dump 1 all atom 500 dump.all
 dump_modify 1 append yes
+#----------------------------
+dump            d1 all cfg 50 cfg/run.*.cfg mass type xs ys zs id type vx vy vz fx fy fz
+dump_modify     d1 element W W W
+#----------------------------
 
 #Defining the timestep and number of timesteps.
 timestep 0.005
