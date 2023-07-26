@@ -138,9 +138,11 @@ input file (metal unit, lammps)
 - C. K. Mallick, Thesis (2014).
   http://ethesis.nitrkl.ac.in/6566/
   3d-crystal (need structure files and modifying input files)
+  
+- Divya and Kamal, Zeba (2013)
+  http://ethesis.nitrkl.ac.in/5337/
 -------------------------------------------------------------------
 plot the temperature of each atom
-
 
 1. *.cfg -> Ovito -> (upper right) Add modification...
 2. Color coding -> Input property: f_ave_tempatom
