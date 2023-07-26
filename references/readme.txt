@@ -29,6 +29,8 @@ input file (metal unit, lammps)
 - Z. Wang, J. Phys. Chem. C 124 (2020) 3851–3856.
   https://doi.org/10.1021/acs.jpcc.9b10706
   CNT
+  ------------------------------------------------
+  http://idr.mnit.ac.in/bitstream/123456789/776/1/2015PDE5197-Komal%20Rathi.pdf
   
 - M. Li et al., Nanomaterials 9 (2019) 347.
   https://doi.org/10.3390/nano9030347 (Graphene, The temperature of each atom)
