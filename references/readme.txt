@@ -137,7 +137,7 @@ input file (metal unit, lammps)
 
 - C. K. Mallick, Thesis (2014).
   http://ethesis.nitrkl.ac.in/6566/1/Chinmaya_Kumar_Mallick(110MM0363).pdf
-  3d-crystal
+  3d-crystal (need structure files and modifying input files)
 -------------------------------------------------------------------
 plot the temperature of each atom
 
