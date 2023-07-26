@@ -1,0 +1,48 @@
+# Input file for obtaining equilibrated 3D-crystal lattice of Un-notched sample using LAMMPS:
+# This program is for obtaining 3d-crystal lattice
+# Un-Notched: 50 x 100 x 50, 21952 atoms
+
+units metal      # determines units of all quantities used in the input file 
+echoboth         # echoes each input script command to both log file and screen
+atom_style atomic 
+dimension 3
+boundary p p p   # periodic boundary condition
+region box block 0 50 0 100 0 50 units box # defines a geometric region of space
+create_box 1 box # creates a simulation box in the specified region
+
+lattice fcc 3.61 # lattice type and lattice parameter
+region cu block 0 50 0 100 0 50 units box
+create_atoms 1 region cu units box # creates copper atoms in the simulation box
+
+timestep 0.002   # sets the timestep for subsequent simulations
+pair_style eam/alloy
+pair_coeff * * Cu_zhou.eam.alloy Cu # specifies the potential file used
+
+# Energy Minimization
+#minimize 1.0e-7 1.0e-8 1000 1000
+thermo 100 # computes and prints thermodynamic 
+thermo_style custom step temp vol press etotal # specifies content of thermodynamic data to be printed in screen
+
+compute myRDF all rdf 1000
+
+fix 11 all ave/time 10 1 10 c_myRDF file cu_melt_new.rdf mode vector
+
+dump 1 all atom 10 Cu_crystal_melt_3d_s_dump_new.lammpstrj
+# dumps a snapshot of atom quantities every 10 time steps to the specified file
+
+dump_modify 1 scale no # modifies parameters of previously defined dump command. 
+# A value of scale ‘no’ means atom coordinates are written in absolute distance units. 
+
+log logCu_crystal_melt_3d_s_new.data
+# closes the current log file, opens a new log file, and begins logging information to it 
+
+velocity all create 300 873847 rot yes mom yes distGaussian
+# sets the velocity of a group of atoms
+
+#fixes
+#fix 1 all npt temp 100 100 0.1 iso 0 0 0.1 # temp and pressure conserved
+
+run 1000 # program is run for 1000 iterations
+
+unfix 1  # deletes the previously defined fix 1
+

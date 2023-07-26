@@ -134,6 +134,10 @@ input file (metal unit, lammps)
   
 - Introduction to atomman: Running LAMMPS and the Log class
   https://www.ctcms.nist.gov/potentials/testing/atomman/tutorial/2.2._Running_LAMMPS_and_the_Log_class.html
+
+- C. K. Mallick, Thesis (2014).
+  http://ethesis.nitrkl.ac.in/6566/1/Chinmaya_Kumar_Mallick(110MM0363).pdf
+  3d-crystal
 -------------------------------------------------------------------
 plot the temperature of each atom
 
