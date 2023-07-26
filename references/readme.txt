@@ -141,6 +141,12 @@ input file (metal unit, lammps)
   
 - Divya and Kamal, Zeba (2013)
   http://ethesis.nitrkl.ac.in/5337/
+  
+- Venumbaka , Sarat Chandra (2015) 
+  http://ethesis.nitrkl.ac.in/7043/
+  
+- Dora, Jay Krishan (2014)
+  http://ethesis.nitrkl.ac.in/6375/
 -------------------------------------------------------------------
 plot the temperature of each atom
 
