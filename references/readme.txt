@@ -49,11 +49,16 @@ input file (metal unit, lammps)
   05_C60_on_BN
   
 - ERIK FRANSSON, JOHANNES LAURELL H˚AKANSSON, Master’s Thesis in Applied Physics (2014).
+  https://core.ac.uk/display/70610056
   BaZrO3
+  -----------------------------------
+  https://core.ac.uk/
   
 - G. V. Huerta et al., Doctoral Thesis (2019).
-  https://www.repo.uni-hannover.de/bitstream/handle/123456789/4482/GesamtRevisedFinal.pdf?sequence=1&isAllowed=y
+  https://www.repo.uni-hannover.de/bitstream/handle/123456789/4482/GesamtRevisedFinal.pdf
   YSZ
+  -------------------------------------------
+  https://www.repo.uni-hannover.de/
   
 - J. A. Greathouse et al., J. Phys.: Condens. Matter 32 (2020) 085401.
   https://iopscience.iop.org/article/10.1088/1361-648X/ab5377
@@ -80,6 +85,9 @@ input file (metal unit, lammps)
 - A. Fredriksson, Master Thesis (2022).
   https://lup.lub.lu.se/luur/download?func=downloadFile&recordOId=9079628&fileOId=9079859
   tungsten
+  -------------------------------------
+  https://lup.lub.lu.se/student-papers/search/
+  https://lup.lub.lu.se/student-papers/search/publication/9102580
   
 - K.-J. Carter, Bachelor Thesis (2017).
   https://dspace.mit.edu/bitstream/handle/1721.1/112482/1011413174-MIT.pdf?sequence=1&isAllowed=y
@@ -88,6 +96,11 @@ input file (metal unit, lammps)
 - D. Chen et al., Master thesis (2011).
   https://oaktrust.library.tamu.edu/bitstream/handle/1969.1/ETD-TAMU-2011-08-10112/CHEN-THESIS.pdf?sequence=2&isAllowed=y
   polyfe (need polyfe.lammps)
+  --------------------------------------
+  https://oaktrust.library.tamu.edu/handle/1969.1/2
+    https://oaktrust.library.tamu.edu/handle/1969.1/151391
+    https://oaktrust.library.tamu.edu/handle/1969.1/191617
+    
   
 - D. Chen et al., Doctor Thesis (2014).
   https://oaktrust.library.tamu.edu/handle/1969.1/154160
@@ -147,9 +160,8 @@ input file (metal unit, lammps)
   http://ethesis.nitrkl.ac.in/7043/
   Fe3Al_intermetallics
   
-- Dora, Jay Krishan (2014)
-  http://ethesis.nitrkl.ac.in/6375/
-  PdPt
+- Sethy, Bipin Kumar and Mishra, Siddharth (2013) 
+  http://ethesis.nitrkl.ac.in/5403/
   
 - Rath, Sibasish and Toppo, Joy Kiran (2015) 
   http://ethesis.nitrkl.ac.in/7560/
@@ -163,11 +175,19 @@ input file (metal unit, lammps)
 - Kumar , Ajnish (2013)
   http://ethesis.nitrkl.ac.in/4907/
   
+- Dora, Jay Krishan (2014)
+  http://ethesis.nitrkl.ac.in/6375/
+  PdPt
+  
+  
+- Gupta, Pradeep (2019) 
+  http://ethesis.nitrkl.ac.in/10087/
+  
 - Mehta, Gaurav and Patra, Hrushikesh (2013) 
   http://ethesis.nitrkl.ac.in/4903/
   
-- Sethy, Bipin Kumar and Mishra, Siddharth (2013) 
-  http://ethesis.nitrkl.ac.in/5403/
+- Dhal, Satyanarayan and Yadlapalli, Raja (2012) 
+  http://ethesis.nitrkl.ac.in/3349/
   
 - http://ethesis.nitrkl.ac.in/cgi/search/simple?q=lammps&_action_search=Search&_action_search=Search&_order=bytitle&basic_srchtype=ALL&_satisfyall=ALL
 -------------------------------------------------------------------
