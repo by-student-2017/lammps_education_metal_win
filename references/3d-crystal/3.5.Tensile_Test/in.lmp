@@ -44,9 +44,9 @@ fix 3 all temp/rescale 10 100 100 0.05 1.0
 
 compute 11 all rdf 100
 
-fix 4 all ave/time 100 1 100 c_11 file rdf_Test_40%strain.rdf mode vector
+fix 4 all ave/time 100 1 100 c_11[*] file rdf_Test_40%strain.rdf mode vector
 
-compute 1 all stress/atom # computes the symmetric per-atom stress tensor for each atom in a group.
+compute 1 all stress/atom NULL # computes the symmetric per-atom stress tensor for each atom in a group.
 
 compute 2 all temp # computes the temp of a group of atoms
 
@@ -57,15 +57,15 @@ compute 3 all reduce sum c_1[2]
 # reduces vector quantities of all stress tensors in y-direction and adds all the quantities to a single
 
 variable stress equal c_3/(3*40000) # assigns a value to the variable name stress
-variablestress_GPa equal v_stress/10000 # converts the stress calculated to GPa
+variable stress_GPa equal v_stress/10000 # converts the stress calculated to GPa
 
-variablestress_MPa equal v_stress_GPa*10000
+variable stress_MPa equal v_stress_GPa*10000
 variable tmp equal ly
 variable lo equal ${tmp}
 variable strain equal (ly-v_lo)/v_lo
 variable p equal -pyy/10000 # assign a value to the variable name strain
 
 thermo 10
-thermo_style custom step temp press voletotal c_2 v_stressv_stress_GPav_stress_MPav_strain
+thermo_style custom step temp press vol etotal c_2 v_stress v_stress_GPa v_stress_MPa v_strain
 
 run 4000 # number of iterations is given so as to give 40% strain to the material
