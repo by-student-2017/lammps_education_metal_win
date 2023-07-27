@@ -143,13 +143,31 @@ input file (metal unit, lammps)
   http://ethesis.nitrkl.ac.in/6566/
   3d-crystal-2014M
   
+- Venumbaka , Sarat Chandra (2015) 
+  http://ethesis.nitrkl.ac.in/7043/
+  Fe3Al_intermetallics
+  
 - Dora, Jay Krishan (2014)
   http://ethesis.nitrkl.ac.in/6375/
   PdPt
   
-- Venumbaka , Sarat Chandra (2015) 
-  http://ethesis.nitrkl.ac.in/7043/
-  Fe3Al_intermetallics
+- Rath, Sibasish and Toppo, Joy Kiran (2015) 
+  http://ethesis.nitrkl.ac.in/7560/
+  
+- Kumar, Navratan (2014) 
+  http://ethesis.nitrkl.ac.in/6144/
+  
+- Das , A and Singh, G (2014)
+  http://ethesis.nitrkl.ac.in/6152/
+  
+- Kumar , Ajnish (2013)
+  http://ethesis.nitrkl.ac.in/4907/
+  
+- Mehta, Gaurav and Patra, Hrushikesh (2013) 
+  http://ethesis.nitrkl.ac.in/4903/
+  
+- Sethy, Bipin Kumar and Mishra, Siddharth (2013) 
+  http://ethesis.nitrkl.ac.in/5403/
   
 - http://ethesis.nitrkl.ac.in/cgi/search/simple?q=lammps&_action_search=Search&_action_search=Search&_order=bytitle&basic_srchtype=ALL&_satisfyall=ALL
 -------------------------------------------------------------------
