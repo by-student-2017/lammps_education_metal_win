@@ -134,20 +134,22 @@ input file (metal unit, lammps)
   
 - Introduction to atomman: Running LAMMPS and the Log class
   https://www.ctcms.nist.gov/potentials/testing/atomman/tutorial/2.2._Running_LAMMPS_and_the_Log_class.html
-
-- C. K. Mallick, Thesis (2014).
-  http://ethesis.nitrkl.ac.in/6566/
-  3d-crystal-2014M
   
 - Divya and Kamal, Zeba (2013)
   http://ethesis.nitrkl.ac.in/5337/
   3d-crystal-2013D
   
-- Venumbaka , Sarat Chandra (2015) 
-  http://ethesis.nitrkl.ac.in/7043/
+- C. K. Mallick, Thesis (2014).
+  http://ethesis.nitrkl.ac.in/6566/
+  3d-crystal-2014M
   
 - Dora, Jay Krishan (2014)
   http://ethesis.nitrkl.ac.in/6375/
+  PdPt
+  
+- Venumbaka , Sarat Chandra (2015) 
+  http://ethesis.nitrkl.ac.in/7043/
+  Fe3Al_intermetallics
 -------------------------------------------------------------------
 plot the temperature of each atom
 
