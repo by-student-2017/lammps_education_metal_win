@@ -101,7 +101,6 @@ input file (metal unit, lammps)
     https://oaktrust.library.tamu.edu/handle/1969.1/151391
     https://oaktrust.library.tamu.edu/handle/1969.1/191617
     
-  
 - D. Chen et al., Doctor Thesis (2014).
   https://oaktrust.library.tamu.edu/handle/1969.1/154160
   radiation (need datafile.lammps) (Structure of (013)[100]Σ = 5 symmetric-tilt grain boundary)
@@ -162,9 +161,11 @@ input file (metal unit, lammps)
   
 - Sethy, Bipin Kumar and Mishra, Siddharth (2013) 
   http://ethesis.nitrkl.ac.in/5403/
+  Cu-Ni_thin_film
   
 - Rath, Sibasish and Toppo, Joy Kiran (2015) 
   http://ethesis.nitrkl.ac.in/7560/
+  
   
 - Kumar, Navratan (2014) 
   http://ethesis.nitrkl.ac.in/6144/
