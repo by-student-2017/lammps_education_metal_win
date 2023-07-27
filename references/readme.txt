@@ -167,19 +167,20 @@ input file (metal unit, lammps)
   http://ethesis.nitrkl.ac.in/7560/
   defect
   
-- Kumar, Navratan (2014) 
-  http://ethesis.nitrkl.ac.in/6144/
-  
 - Das , A and Singh, G (2014)
   http://ethesis.nitrkl.ac.in/6152/
+  CuAl
   
 - Kumar , Ajnish (2013)
   http://ethesis.nitrkl.ac.in/4907/
   
+- Kumar, Navratan (2014) 
+  http://ethesis.nitrkl.ac.in/6144/
+  Fe0.05Cr_alloy
+  
 - Dora, Jay Krishan (2014)
   http://ethesis.nitrkl.ac.in/6375/
   PdPt
-  
   
 - Gupta, Pradeep (2019) 
   http://ethesis.nitrkl.ac.in/10087/

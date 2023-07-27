@@ -1,0 +1,36 @@
+# After creating simulation box with Fe-Cr alloy atoms filled inside it we go for calculating MSD value running the code given below:
+# msd calculation of Fe0.05Cr crystal at temperature 50k in file
+
+units metal
+boundary p p p
+atom_style atomic
+
+read_data Fe5Cr_crystal_50k_data.txt
+
+group Fe type 1
+group Cr type 2
+
+timestep 0.002
+
+pair_style eam/cd
+pair_coeff * * FeCr.cdeam Fe Cr
+
+# Energy Minimization
+minimize 1.0e-4 1.0e-6 10000 1000000
+
+velocity all create 50.0 5812775 rot yes mom yes dist gaussian
+
+# MSD Calculation
+compute 1 Fe msd 
+compute 2 Cr msd
+
+dump 1 all atom 1000 dump.Fe5Cr_50k_3d_11643_msd.dump.lammpstrj
+
+log logFe5Cr_50k_crystal_msd_11643.data
+
+fix 1 all npt temp 50.0 50.0 0.2 iso -1000.0 -1000.0 0.2
+
+thermo 300
+thermo_style custom step temp press vol pe ke etotal c_1[4] c_2[4] 
+
+run 50000
