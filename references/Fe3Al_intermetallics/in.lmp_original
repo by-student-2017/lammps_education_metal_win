@@ -119,10 +119,8 @@ pair_coeff * * Al-Fe.eam.fs Al Fe Al
 
 # Energy Minimization
 minimize 1.0e-3 1.0e-6 10000 100000
-
 compute csym all centro/atom fcc
 compute peratom all pe/atom 
-
 variable tmp equal ly
 variable lo equal ${tmp}
 variable strain equal (ly-v_lo)/v_lo 
@@ -158,15 +156,9 @@ variable s3 equal "((v_I1)/3)+(2/3)*(sqrt((v_I1)^2-(3*(v_I2))))*cos((v_A)+(4*PI)
 
 thermo 100
 thermo_style custom step temp vol press pe ke etotal
-
-compute 1 all stress/atom NULL # computes the symmetric per-atom stress tensor for each atom in a group.
-
 dump 1 all custom 100 compression_mmc.lammpstrj id type x y z 
-#------------------------------------------------------------
-dump 2 all cfg 100 cfg/dump.compress_mmc*.cfg mass type xs ys zs id type xs ys zs c_csym c_peratom 
-dump_modify 2 element Al Fe Al
-#------------------------------------------------------------
-dump 3 all custom 100 stress/stress_peratom* id type xs ys zs c_1[1] c_1[2] c_1[3] c_1[4] c_1[5] c_1[6]
+dump 2 all cfg 100 dump.compress_mmc*.cfg id type xs ys zs c_csym c_peratom 
+dump 3 all custom 100 stress_peratom* id type xs ys zs c_1[1] c_1[2] c_1[3] c_1[4] c_1[5] c_1[6]
 
 log NVTlog5050_compress_mmc.data
 velocity all create 300 873847 rot yes mom yes dist gaussian
