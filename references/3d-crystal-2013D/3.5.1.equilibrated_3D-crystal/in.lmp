@@ -1,0 +1,44 @@
+# 3.5.1. Input file for obtaining equilibrated 3D-crystal lattice using LAMMPS:
+
+units metal       # determines units of all quantities used in the input file
+echo both         # echoes each input script command to both log file and screen
+atom_style atomic
+dimension 3
+boundary p p p    # periodic boundary condition
+
+region box block 0 30 0 65 0 30 units box # defines a geometric region of space
+create_box 1 box  # creates a simulation box in the specified region
+
+lattice fcc 3.61  # lattice type and lattice parameter
+region cu block 0 30 0 65 0 30 units box
+create_atoms 1 region cu units box # creates copper atoms in the simulation box
+
+timestep 0.002    # sets the timestep for subsequent simulations
+pair_style eam/alloy
+pair_coeff * * Cu_zhou04.eam.alloy Cu # specifies the potential file used
+
+# Energy Minimization
+Minimize 1.0e-4 1.0e-5 10000 10000
+
+thermo 10 # computes and prints thermodynamic data after every 10 timesteps
+thermo_style custom step temp vol press etotal pe ke # pecifies content of thermodynamic data to be printed in screen & log file
+
+dump 1 all atom 100 Cu_crystal_3d_s_dump_EQUILIBRATED.lammpstrj
+# dumps a snapshot of atom quantities every 100 timesteps to the specified file
+
+dump_modify 1 scale no
+# modifies parameters of previously defined dump command. 
+# A value of scale ‘no’ means atom coordinates are written in absolute distance units.
+
+log logCu_crystal_3d_s_EQUILIBRATED.data
+# closes the current log file, opens a new log file, and begins logging  information to it
+
+velocity all create 300 873847 rot yes mom yes dist gaussian
+# sets the velocity of a group of atoms
+
+#fixes
+fix 1 all npt temp 300 300 0.1 iso 0.0 0.0 0.1 # temp and pressure conserved
+
+run 1000 # program is run for 1000 iterations
+
+unfix 1  # deletes the previously defined fix 1
