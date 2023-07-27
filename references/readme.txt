@@ -150,6 +150,8 @@ input file (metal unit, lammps)
 - Venumbaka , Sarat Chandra (2015) 
   http://ethesis.nitrkl.ac.in/7043/
   Fe3Al_intermetallics
+  
+- http://ethesis.nitrkl.ac.in/cgi/search/simple?q=lammps&_action_search=Search&_action_search=Search&_order=bytitle&basic_srchtype=ALL&_satisfyall=ALL
 -------------------------------------------------------------------
 plot the temperature of each atom
 
