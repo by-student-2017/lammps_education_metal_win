@@ -169,10 +169,11 @@ input file (metal unit, lammps)
   
 - Das , A and Singh, G (2014)
   http://ethesis.nitrkl.ac.in/6152/
-  CuAl
+  CuAl_defect
   
 - Kumar , Ajnish (2013)
   http://ethesis.nitrkl.ac.in/4907/
+  Cu-Zr_based_metallic_glasses
   
 - Kumar, Navratan (2014) 
   http://ethesis.nitrkl.ac.in/6144/
