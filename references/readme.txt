@@ -137,10 +137,11 @@ input file (metal unit, lammps)
 
 - C. K. Mallick, Thesis (2014).
   http://ethesis.nitrkl.ac.in/6566/
-  3d-crystal (need structure files and modifying input files)
+  3d-crystal-2014M
   
 - Divya and Kamal, Zeba (2013)
   http://ethesis.nitrkl.ac.in/5337/
+  3d-crystal-2013D
   
 - Venumbaka , Sarat Chandra (2015) 
   http://ethesis.nitrkl.ac.in/7043/
