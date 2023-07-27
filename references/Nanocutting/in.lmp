@@ -1,0 +1,335 @@
+# Appendix A
+# (NVT Tersoff simulation code)
+
+#####################################################################
+#
+# Project - Nanocutting
+#
+# Analytical Mechanics
+#
+#####################################################################
+# Step 0: Constants
+#####################################################################
+
+# The units of input/output variables
+units metal
+
+# Teperature [K]
+#variable temp equal 293
+
+## Material
+# Lattice parameter for Cu [˚A]
+variable latconst equal 3.615 #3.615
+
+# Mass of Cu atom [u]
+variable massCu equal 63.550
+
+# Mass of C atom [u]
+variable massC equal 12.0
+
+#lattice fcc ${latconst} orient x 1 0 0 orient y 0 1 0 orient z 0 0 1
+
+## Starting geometry, workpiece
+# thickness of WP fixed boundary, tB [˚A]
+variable tB equal 6.5 #6.5
+
+# thickness of WP thermo boundary + tB, ttB [˚A]
+variable ttB equal 2*${tB}
+
+# Length of WP, l [˚A]
+variable lengthWP equal 1600 #1600
+
+# Hight of WP, h [˚A]
+variable heightWP equal 200 #200
+
+# Thickness of WP, t [˚A]
+variable thicknessWP equal 36.15 # 36.15 equals 10 uc
+variable thicknessTool equal 35
+
+## Starting geometry, tool
+# Radius of tool, rTool [˚A]
+variable outerRTool equal 200
+variable cutDepth equal 20
+#variable toolThickness equal 10 # when the tool is a shell
+#variable removeradius equal 190 #outerRTool-toolThickness
+
+# Starting coordinats of centre of tool [uc]
+variable xStartTool equal ${lengthWP}+${outerRTool}-40 #-40
+variable yStartTool equal ${heightWP}+${outerRTool}-${cutDepth}
+
+variable xCutTool equal 1.05*${xStartTool}
+variable yCutTool equal 1.15*${yStartTool
+
+# Fixed and thermal boundary coordinates of the tool
+variable xFixedTool equal ${xCutTool}-${tB}
+variable xThermalTool equal ${xCutTool}-${ttB}
+variable yFixedTool equal ${yCutTool}-${tB}
+variable yThermalTool equal ${yCutTool}-${ttB}
+
+
+########################################################################
+# Step 1: Set parameters that need to be defined before atoms are created
+#######################################################################
+
+# Dimension of problem
+dimension 3
+
+# Boundarys are set to non-periodic and shrink-wrapped and periodic
+boundary s s p
+
+# Only the the default values are assosiated with the ato
+atom_style atomic
+
+########################################################################
+# Step 2: Create simulation box
+########################################################################
+
+# Defines the simulation box
+region simulationBox block 0 ${xCutTool} 0 ${yCutTool} 0 ${thicknessWP} units box
+
+# Creates a simulation box based on the specified region
+create_box 2 simulationBox
+
+
+########################################################################
+# Step 3a: Geometry and regions for workpiece (WP)
+########################################################################
+
+# fcc latice with lattice parameter as scale factor [1 0 0] along x-axis
+lattice fcc ${latconst} orient x 1 0 0 orient y 0 1 0 orient z 0 0 1
+
+# Defines the workpiece geometry [˚A]
+region geometryWP block 0 ${lengthWP} 0 ${heightWP} 0 ${thicknessWP} units box
+
+# Creates the Cu atoms
+create_atoms 1 region geometryWP
+
+# Defines the boundary atoms, as fixed boundary (FixBound)
+# and thermal boundary (TermalBound)
+# Units box = measurements are given in units metal
+region leftFixBound block 0 ${tB} INF INF 0 ${thicknessWP} units box
+region bottomFixBound block INF INF 0 ${tB} 0 ${thicknessWP} units box
+
+region leftThermalBound block ${tB} ${ttB} ${ttB} INF 0 ${thicknessWP} units box
+region bottomThermalBound block ${tB} INF ${tB} ${ttB} 0 ${thicknessWP} units box
+
+# Groups the atoms to the regions
+group WP region geometryWP
+group leftFixBound region leftFixBound
+group bottomFixBound region bottomFixBound
+group WPfixBound union leftFixBound bottomFixBound
+
+group leftThermalBound region leftThermalBound
+group bottomThermalBound region bottomThermalBound
+group WPthermalBound union leftThermalBound bottomThermalBound
+
+group WPboundary union WPfixBound WPthermalBound
+group middleWP subtract all WPboundary
+
+
+########################################################################
+# Step 3b: Geometry and regions for cutting tool
+########################################################################
+
+# fcc latice with lattice parameter as scale factor [1 0 0] along x-axis
+lattice diamond 3.56703 orient x 1 0 0 orient y 0 1 0 orient z 0 0 1
+
+# Defines the tool geometry
+region geometryToolA cylinder z ${xStartTool} ${yStartTool} &
+${outerRTool} 0 ${thicknessTool} units box
+
+
+## Creating the boxes which exclude geometry in tool
+#include boxListR200_L1600_h200.txt
+#region geometryTool intersect 2 boxes geometryToolC
+
+
+# Creates the C atoms
+create_atoms 2 region geometryToolA
+
+# Groups the atoms to the regions
+group tool region geometryToolA
+
+# Defines the hole
+#region geometryToolB cylinder z ${xStartTool} ${yStartTool} ${removeradius} 0 ${thicknessTool} units box
+#group toolremove region geometryToolB
+
+#Defines upper and right boundaries
+region geometryToolC block 0 INF ${yCutTool} INF INF INF units box #420
+region geometryToolD block ${xCutTool} INF INF INF INF INF units box #1800
+group toolremove2 region geometryToolC
+group toolremove3 region geometryToolD
+
+#remove atoms
+#delete_atoms group toolremove
+delete_atoms group toolremove2
+delete_atoms group toolremove3
+
+# Defines the boundary atoms, as fixed boundary (FixBound)
+# and thermal boundary (TermalBound) for the tool
+# Units box = measurements are given in units metal
+region rightFixBound block ${xFixedTool} ${xCutTool} INF INF 0 ${thicknessTool} units box
+region upFixBound block INF INF ${yFixedTool} ${yCutTool} 0 ${thicknessTool} units box
+region rightThermalBound block ${xThermalTool} ${xFixedTool} INF ${yThermalTool} 0 ${thicknessTool} units box
+region upThermalBound block INF ${xFixedTool} ${yThermalTool} ${yFixedTool} 0 ${thicknessTool} units box
+
+group rightFixBound region rightFixBound
+group upFixBound region upFixBound
+group ToolFixBound union rightFixBound upFixBound
+
+group rightThermalBound region rightThermalBound
+group upThermalBound region upThermalBound
+group ToolThermalBound union rightThermalBound upThermalBound
+group ToolBoundary union ToolFixBound ToolThermalBound
+
+group middleTool subtract tool ToolBoundary
+
+
+########################################################################
+# Step 4: Atom definitions
+########################################################################
+
+# mass of atoms
+mass 1 ${massCu}
+mass 2 ${massC}
+
+# Pairwise interactions models
+pair_style hybrid eam morse 6.5 tersoff
+
+# Specify the pairwise force fields
+pair_coeff * * tersoff SiCGe.tersoff NULL C
+pair_coeff 1 1 eam Cu_u3.eam
+pair_coeff 1 2 morse 0.087 5.14 2.05 6.5
+
+########################################################################
+# Step 5: Defining initial conditions
+########################################################################
+
+# Generates random velocities equaling the temperature 293K
+#velocity middleWP create 293 511124 rot yes mom yes
+#velocity WPthermalBound create 293 511124 rot yes mom yes
+velocity WP create 293 511124 rot yes mom yes
+#velocity middleTool create 293 511124 rot yes mom yes
+#velocity ToolThermalBound create 293 511124 rot yes mom yes
+velocity tool create 293 511124 rot yes mom yes
+
+########################################################################
+# Step 6: Output parameters
+########################################################################
+
+# Computing force between tool and workpiece
+compute forceWPTool middleWP group/group tool
+fix avgForceWPTool middleWP ave/time 1 200 200 c_forceWPTool[1] c_forceWPTool[2] c_forceWPTool[3]
+
+# Computing temperature of middle workpiece
+compute tempMiddleWP middleWP temp
+
+# Computing temperature of middle tool
+compute tempMiddleTool middleTool temp
+
+# Computing the average kinetic energy for WP
+compute keAtomWP middleWP ke/atom
+fix avgKeAtomWP middleWP ave/atom 1 200 200 c_keAtomWP
+
+# Computing the average kinetic energy for tool
+compute keAtomTool middleTool ke/atom
+fix avgKeAtomTool middleTool ave/atom 1 200 200 c_keAtomTool
+
+# Computing the average velocity magnitude for WP
+fix avgVelWP middleWP ave/atom 1 200 200 vx vy vz
+
+# Computing the average velocity magnitude for Tool
+fix avgVelTool middleTool ave/atom 1 200 200 vx vy vz
+
+dump avgForcesRelax all custom 8000 relax.lammpstrj id type x y z vx vy vz f_avgKeAtomWP f_avgKeAtomTool &
+f_avgVelWP[1] f_avgVelWP[2] f_avgVelWP[3] f_avgVelTool[1] f_avgVelTool[2] f_avgVelTool[3]
+#800
+
+# Output thermodynamics every N timesteps
+thermo 200 #200
+
+# Set the style and content for printing data to the screen and log file
+thermo_style custom step temp c_tempMiddleWP c_tempMiddleTool c_forceWPTool[1] c_forceWPTool[2] c_forceWPTool[3] f_avgForceWPTool[1] f_avgForceWPTool[2] &
+f_avgForceWPTool[3]
+
+
+#########################################################################
+# Step 7: Relaxation at 300 K
+#########################################################################
+
+# Fixes the time integration using the canonical ensemble (npt)
+# Relax everything at 293K with no pressure on periodic direction z
+fix 1 middleWP nvt temp 293 293 0.1
+fix 2 WPthermalBound nvt temp 293 293 0.1
+fix 3 WPfixBound nvt temp 293 293 0.1
+#fix 4 tool setforce 0.0 0.0 0.0
+fix 4 middleTool nvt temp 293 293 0.1
+fix 5 ToolThermalBound nvt temp 293 293 0.1
+fix 6 ToolFixBound nvt temp 293 293 0.1
+
+# Sets the timestep size for subsequent simulations
+timestep 0.0045 # 0.005 does not seem to work
+
+# Runs simulation for the specified number of timesteps
+run 30000
+
+# Unfixing the conditions for relaxation
+#unfix 1
+#unfix 2
+#unfix 4
+#unfix 5
+unfix 3
+unfix 6
+
+
+# Fixes the time integration using the canonical ensemble (nvt)
+fix 3 WPfixBound setforce 0.0 0.0 0.0
+fix 6 ToolFixBound setforce 0.0 0.0 0.0
+
+# Sets the timestep size for subsequent simulations
+timestep 0.0045 # 0.005
+
+# Runs simulation for the specified number of timesteps
+run 10000 #10000
+
+# Unfixing the conditions for relaxation
+unfix 1
+unfix 4
+#unfix 6
+
+
+########################################################################
+# Step 8: Simulation
+########################################################################
+
+undump avgForcesRelax
+
+dump avgForces all custom 8000 results.lammpstrj id type x y z vx vy vz f_avgKeAtomWP f_avgKeAtomTool &
+f_avgVelWP[1] f_avgVelWP[2] f_avgVelWP[3] f_avgVelTool[1] f_avgVelTool[2] f_avgVelTool[3]
+#800
+
+#velocity tool set -1 0.0 0.0 units box
+velocity WPfixBound set 0.0 0.0 0.0 units box
+velocity ToolFixBound set -1.0 0.0 0.0 units box
+
+# Fixes the time integration using the canonical ensemble (nvt) for the
+# thermal boundary and the microcanonical ensemble (nve) for the middle
+fix 7 middleWP nve
+#fix 8 tool nve
+fix 8 middleTool nve
+fix 9 ToolFixBound nve
+
+# Sets the timestep size for subsequent simulations
+timestep 0.003 # pb: the tool is moving slowly
+
+# Runs simulation for the specified number of timesteps
+run 1500000 #1500000
+
+# Simulation complete
+print "Simulation complete"
+
+#########################################################################
+#
+# END
+#
+#########################################################################

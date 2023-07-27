@@ -88,6 +88,7 @@ input file (metal unit, lammps)
   -------------------------------------
   https://lup.lub.lu.se/student-papers/search/
   https://lup.lub.lu.se/student-papers/search/publication/9102580
+  Nanocutting
   
 - K.-J. Carter, Bachelor Thesis (2017).
   https://dspace.mit.edu/bitstream/handle/1721.1/112482/1011413174-MIT.pdf?sequence=1&isAllowed=y
