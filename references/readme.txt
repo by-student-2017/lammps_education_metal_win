@@ -101,6 +101,8 @@ input file (metal unit, lammps)
   https://oaktrust.library.tamu.edu/handle/1969.1/2
     https://oaktrust.library.tamu.edu/handle/1969.1/151391
     https://oaktrust.library.tamu.edu/handle/1969.1/191617
+    https://oaktrust.library.tamu.edu/handle/1969.1/192592
+    
     
 - D. Chen et al., Doctor Thesis (2014).
   https://oaktrust.library.tamu.edu/handle/1969.1/154160
