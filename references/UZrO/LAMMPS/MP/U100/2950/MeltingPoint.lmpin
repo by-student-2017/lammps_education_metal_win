@@ -1,0 +1,118 @@
+#---------------------Initialisation-----------------------------------
+
+boundary p p p
+atom_style full
+units metal
+
+# Setting the damping parameters for the NPT simulation
+#---------------------Setting Up Atoms-------------------------------
+
+# Reading the input structure file
+
+read_data UO2.lmpstruct
+replicate 5 5 50
+
+# Setting the variables to elements as they are assigned in the input structure file
+
+variable O equal 1
+variable U equal 2
+variable Zr equal 3
+
+# setting charges as these were previously unset
+
+set type $O charge -1.1104
+set type ${U} charge 2.2208
+set type ${Zr} charge 2.2208
+
+
+#---------------------Force Fields-------------------------------
+
+pair_style      hybrid/overlay  coul/wolf 0.275 10.96 eam/alloy
+pair_coeff      * * coul/wolf
+pair_coeff   *    *  eam/alloy  UZrO.eam.alloy O U Zr
+
+#---------------------Minimisation-------------------------------
+
+variable THERMO_DAMP equal 0.1
+variable BARO_DAMP equal 0.5
+
+dump 1 all custom 5000 *.dump mass type xs ys zs id type 
+
+thermo 100
+thermo_style custom step temp press etotal lx ly lz vol
+min_style cg
+minimize 1.0e-10 1.0e-10 1000 1000
+
+variable T equal 2950
+timestep 0.002
+velocity all create 300 123456789
+fix thermostat_fix all npt temp 300 $T ${THERMO_DAMP} aniso 0.0 0.0 ${BARO_DAMP}
+
+run 30000
+unfix thermostat_fix
+fix thermostat_fix all npt temp $T $T ${THERMO_DAMP} aniso 0.0 0.0 ${BARO_DAMP}
+
+variable AVE_START equal step+20000
+variable V equal vol
+variable LX equal lx
+variable LY equal ly
+variable LZ equal lz
+fix avg_V_fix all ave/time 1 1000 1000 v_V start ${AVE_START}
+fix avg_LX_fix all ave/time 1 1000 1000 v_LX start ${AVE_START}
+fix avg_LY_fix all ave/time 1 1000 1000 v_LY start ${AVE_START}
+fix avg_LZ_fix all ave/time 1 1000 1000 v_LZ start ${AVE_START}
+
+run 30000
+
+variable AVG_V equal f_avg_V_fix
+variable AVG_LX equal f_avg_LX_fix
+variable AVG_LY equal f_avg_LY_fix
+variable AVG_LZ equal f_avg_LZ_fix
+
+variable AVG_half_LZ equal ${AVG_LZ}/2
+
+print "OUTPUT:${AVG_V}:${AVG_LX}:${AVG_LY}:${AVG_LZ}"
+
+change_box all x final 0.0 ${AVG_LX} &
+               y final 0.0 ${AVG_LY} &
+               z final 0.0 ${AVG_LZ} &
+               remap units box
+
+unfix thermostat_fix
+unfix avg_V_fix
+unfix avg_LX_fix
+unfix avg_LY_fix
+unfix avg_LZ_fix
+
+# ------------------------ MELT  ------------------------------
+
+region solid block  INF INF INF INF 0.0 ${AVG_half_LZ}
+
+region liquid block INF INF INF INF 0.0 ${AVG_half_LZ} side out
+group solid region solid
+group liquid region liquid
+
+velocity solid zero linear
+
+fix freeze solid setforce 0.0 0.0 0.0
+
+fix thermostat_fix liquid npt temp $T 4000 ${THERMO_DAMP} z 0.0 0.0 ${BARO_DAMP}
+
+run 30000
+unfix thermostat_fix
+fix thermostat_fix liquid npt temp 4000 4000 ${THERMO_DAMP} z 0.0 0.0 ${BARO_DAMP}
+
+run 30000
+unfix thermostat_fix
+fix thermostat_fix liquid npt temp 4000 $T ${THERMO_DAMP} z 0.0 0.0 ${BARO_DAMP}
+run 30000
+unfix thermostat_fix
+# ------------------------ EQUILIBRATION 2 ------------------------------
+
+unfix freeze
+
+# possible recreate the velocity here at $T to remove net momentum
+fix thermostat_fix all npt temp $T $T ${THERMO_DAMP} aniso 0.0 0.0 ${BARO_DAMP}
+
+run 1000000
+write_restart end.restart

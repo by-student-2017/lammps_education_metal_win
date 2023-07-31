@@ -1,0 +1,97 @@
+#---------------------Initialisation-----------------------------------
+
+boundary p p p
+atom_style full
+units metal
+
+# Setting the damping parameters for the NPT simulation
+
+variable THERMO_DAMP equal 0.1
+variable BARO_DAMP equal 0.5
+
+
+#---------------------Setting Up Atoms-------------------------------
+
+# Reading the input structure file
+
+read_data U50Zr50.lmpstruct
+
+# Setting the variables to elements as they are assigned in the input structure file
+
+variable O equal 1
+variable Zr equal 2
+variable U equal 3
+
+# setting charges as these were previously unset
+
+set type $O charge -1.1104
+set type ${Zr} charge 2.2208
+set type ${U} charge 2.2208
+
+#---------------------Force Fields-------------------------------
+
+pair_style      hybrid/overlay  coul/wolf 0.275 10.96 eam/alloy
+pair_coeff      * * coul/wolf
+pair_coeff   *    *  eam/alloy  UZrO.eam.alloy O Zr U
+
+#---------------------Simulation-------------------------------
+
+# Setting the initial temperature and the temperature step increment
+
+variable T equal 275.0
+variable T_STEP equal 25.0
+
+# Creating temperature using the velocity function
+
+velocity all create $T 160278
+
+# Setting the simulation timestep to 2 femtoseconds
+
+timestep 0.002
+
+# Setting up the NPT simulation
+
+fix thermostat_fix all npt temp $T $T ${THERMO_DAMP} aniso 0.0 0.0 ${BARO_DAMP}
+
+# Setting up the output variables, outputs every 10 time steps
+
+thermo_style custom step temp press vol lx ly lz enthalpy etotal
+thermo 10
+
+# setting up neighbour recalculations
+
+neigh_modify delay 0 every 1 check yes
+
+# Run time of 20 picoseconds
+
+dump myDump all atom 5000 *.dump
+
+run 10000
+
+#---------------------Simulation Loop-------------------------------
+
+# Loop used to increase the temperature from 300 to 3600 K
+# The first part of the loop runs the simulation for 10ps to ramp temperature
+# Second step runs for 10 ps at equilibrium
+
+label loop
+  print $T
+  variable NEW_TEMP equal $T+${T_STEP}
+  # Run 20ps heating up / equilibration
+  unfix thermostat_fix
+  fix thermostat_fix all npt temp $T ${NEW_TEMP} ${THERMO_DAMP} aniso 0.0 0.0 ${BARO_DAMP}
+  run 10000
+
+  # Run 10ps at steady state
+  unfix thermostat_fix
+  variable T equal ${NEW_TEMP}
+  fix thermostat_fix all npt temp $T $T ${THERMO_DAMP} aniso 0.0 0.0 ${BARO_DAMP}
+
+
+  run 10000
+
+  if ${NEW_TEMP}==3500.0 then "jump SELF break"
+  jump SELF loop
+
+
+label break
