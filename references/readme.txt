@@ -105,6 +105,14 @@ input file (metal unit, lammps)
     https://dspace.mit.edu/handle/1721.1/120392
     https://dspace.mit.edu/handle/1721.1/129108
     https://dspace.mit.edu/handle/1721.1/98127 (CG fit on MATLAB)
+    https://dspace.mit.edu/handle/1721.1/108218
+    https://dspace.mit.edu/handle/1721.1/123228 (REBO)
+    https://dspace.mit.edu/handle/1721.1/140043
+    https://dspace.mit.edu/handle/1721.1/109645
+    https://dspace.mit.edu/handle/1721.1/74420
+    https://dspace.mit.edu/handle/1721.1/111899
+    https://dspace.mit.edu/handle/1721.1/82707 (NAMD)
+    https://dspace.mit.edu/handle/1721.1/90011 (MATLAB)
     
   
 - D. Chen et al., Master thesis (2011).
@@ -236,7 +244,9 @@ input file (metal unit, lammps)
     https://scholarworks.uvm.edu/graddis/995/
     https://scholarworks.uvm.edu/graddis/1323/
     
+- https://prism.ucalgary.ca/bitstreams/a9233500-b1ea-445c-80c6-38bd8e046344/download
 
+- 
 -------------------------------------------------------------------
 plot the temperature of each atom
 
