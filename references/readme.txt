@@ -95,6 +95,8 @@ input file (metal unit, lammps)
   https://lup.lub.lu.se/student-papers/search/publication/9102580
   Nanocutting
   
+  https://lup.lub.lu.se/luur/download?func=downloadFile&recordOId=8977878&fileOId=8977883
+  
 - K.-J. Carter, Bachelor Thesis (2017).
   https://dspace.mit.edu/handle/1721.1/112482
   Irradiation
@@ -133,6 +135,8 @@ input file (metal unit, lammps)
 
 - https://oaktrust.library.tamu.edu/handle/1969.1/192592
   DEM
+  
+- http://ta.twi.tudelft.nl/users/vuik/numanal/romero_afst.pdf
 
 - D. Chen et al., Doctor Thesis (2014).
   https://oaktrust.library.tamu.edu/handle/1969.1/154160
@@ -343,6 +347,8 @@ input file (metal unit, lammps)
 
 - https://jscholarship.library.jhu.edu/handle/1774.2/68027
 
+- https://pewi.org/cv/files/msc.pdf
+  NEMD
 -------------------------------------------------------------------
 plot the temperature of each atom
 
