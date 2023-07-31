@@ -255,12 +255,15 @@ input file (metal unit, lammps)
 - https://research.tue.nl/files/150978464/0528792_Boomstra_M.W._MSc_thesis.pdf (LJ)
 - https://aaltodoc.aalto.fi/handle/123456789/22192 (LJ)
 
+- https://ntnuopen.ntnu.no/ntnu-xmlui/handle/11250/2350291
 - https://ntnuopen.ntnu.no/ntnu-xmlui/handle/11250/2562297 (LJ)
 - https://ntnuopen.ntnu.no/ntnu-xmlui/handle/11250/2562299 (LJ)
 - https://ntnuopen.ntnu.no/ntnu-xmlui/handle/11250/2445480 (LJ)
+- https://ntnuopen.ntnu.no/ntnu-xmlui/handle/11250/2562298 (LJ)
 - https://ntnuopen.ntnu.no/ntnu-xmlui/handle/11250/249557
 - https://ntnuopen.ntnu.no/ntnu-xmlui/handle/11250/2390753 (ReaxFF)
 - https://ntnuopen.ntnu.no/ntnu-xmlui/handle/11250/2445481 (ReaxFF)
+- https://ntnuopen.ntnu.no/ntnu-xmlui/handle/11250/246379 (ReaxFF file)
 
 - https://www.osti.gov/servlets/purl/1093887
 
@@ -280,6 +283,8 @@ input file (metal unit, lammps)
 
 - https://dspace.lib.cranfield.ac.uk/handle/1826/9283
 
+- https://repositories.lib.utexas.edu/handle/2152/26395
+- https://repositories.lib.utexas.edu/handle/2152/26448
 - 
 -------------------------------------------------------------------
 plot the temperature of each atom
