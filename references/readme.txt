@@ -295,6 +295,14 @@ input file (metal unit, lammps)
 - S. Amit, Thesis or Dissertation (2015)
   https://conservancy.umn.edu/handle/11299/182204
   TPI_v2
+  
+- https://scholarscompass.vcu.edu/etd/174/?show=full (LJ)
+
+- https://mds.marshall.edu/etd/1090/
+- https://mds.marshall.edu/etd/1411/
+- https://mds.marshall.edu/etd/1124/ (PdAgH, elastic)
+
+
 -------------------------------------------------------------------
 plot the temperature of each atom
 
