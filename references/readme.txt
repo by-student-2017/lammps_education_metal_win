@@ -330,8 +330,11 @@ input file (metal unit, lammps)
 - https://webthesis.biblio.polito.it/13857/1/tesi.pdf
 
 - https://repository.mines.edu/handle/11124/173097
+- https://repository.mines.edu/handle/11124/17099
+- https://repository.mines.edu/handle/11124/76842
+- https://repository.mines.edu/handle/11124/172834
+- https://repository.mines.edu/handle/11124/79468 (ReaxFF file)
 
-- 
 -------------------------------------------------------------------
 plot the temperature of each atom
 
