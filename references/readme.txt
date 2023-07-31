@@ -221,9 +221,6 @@ input file (metal unit, lammps)
   
 - Dhal, Satyanarayan and Yadlapalli, Raja (2012) 
   http://ethesis.nitrkl.ac.in/3349/
-  
-- http://ethesis.nitrkl.ac.in/cgi/search/simple?q=lammps&_action_search=Search&_action_search=Search&_order=bytitle&basic_srchtype=ALL&_satisfyall=ALL
-
 
 - https://www.byui.edu/documents/physics/Theses/2010-2015/Aaron-ButterfieldS13.pdf
 
@@ -285,6 +282,10 @@ input file (metal unit, lammps)
 
 - https://repositories.lib.utexas.edu/handle/2152/26395
 - https://repositories.lib.utexas.edu/handle/2152/26448
+- https://repositories.lib.utexas.edu/handle/2152/74260 (?)
+
+- https://opendata.uni-halle.de/bitstream/1981185920/87709/1/Thesis_FDEMYDIUK_GermanCovers.pdf
+
 - 
 -------------------------------------------------------------------
 plot the temperature of each atom
