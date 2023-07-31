@@ -313,6 +313,9 @@ input file (metal unit, lammps)
   
 - https://summit.sfu.ca/item/16590
 
+- C. Gibbon et al., 	Phys. Chem. Chem. Phys., 2023,25, 3190-3198.
+  https://doi.org/10.1039/D2CP05550C
+  
 
 -------------------------------------------------------------------
 plot the temperature of each atom
