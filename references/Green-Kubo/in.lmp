@@ -1,0 +1,95 @@
+# In this study, all the data collection is based on LAMMPS software. The code for Green-Kubo method that 
+# we applied for bulk h-BN system in this work is posted below: 
+
+variable x equal 10 
+variable y equal 10 
+variable z equal 2 
+variable t equal 300.0 # temperature 
+variable p equal 2000 # correlation length 
+variable s equal 10 # sample interval 
+variable d equal 20000 # dump interval 
+variable a equal 1.44 # lattice setting 
+variable b equal $a*3 
+variable c equal $a*sqrt(3) 
+variable e equal 3.35*2 
+variable f equal 1.0/6.0 
+variable g equal 2.0/3.0 
+
+units metal 
+timestep 0.0005 # dt = 0.5fs 
+atom_style atomic 
+
+lattice custom 1.0 a1 $b 0 0 a2 0 $c 0 a3 0 0 $e & 
+ basis 0 0 0 basis 0.5 0.5 0 & 
+ basis $f 0.5 0 basis $g 0 0 & 
+ basis 0 0 0.5 basis 0.5 0.5 0.5 & 
+ basis $f 0.5 0.5 basis $g 0 0.5 
+
+region myreg block 0 $x 0 $y 0 $z 
+create_box 4 myreg 
+create_atoms 4 region myreg basis 1 1 basis 2 1 & 
+ basis 3 2 basis 4 2 & 
+ basis 5 3 basis 6 3 & 
+ basis 7 4 basis 8 4 
+
+mass 1 10.81  # B
+mass 2 14.007 # N
+mass 3 14.007 # N
+mass 4 10.81  # B
+
+velocity all create $t 187265 dist gaussian rot yes mom yes 
+
+pair_style hybrid/overlay tersoff lj/cut 16.0 # LJ global cutoff 
+pair_coeff * * tersoff BNC.tersoff B N B N 
+pair_coeff 1 3 lj/cut 0.00484 3.449 # set the epsilon and sigma 
+pair_coeff 2 4 lj/cut 0.00484 3.449 
+pair_coeff 1 4 lj/cut 0.00781 3.638 
+pair_coeff 2 3 lj/cut 0.003 3.261 
+
+neighbor 2.0 bin 
+neigh_modify delay 0 every 1
+
+# first equilibrium run 
+fix 1 all nvt temp 300.0 300.0 1.0 
+thermo $d 
+run 1000000 
+unfix 1 
+
+# thermal conductivity calculation 
+reset_timestep 0
+
+compute myKE all ke/atom 
+compute myPE all pe/atom 
+compute myStress all stress/atom NULL virial 
+compute flux all heat/flux myKE myPE myStress 
+
+variable f1 equal c_flux[1] 
+variable f2 equal c_flux[2] 
+variable f3 equal c_flux[3] 
+variable time equal step*dt 
+
+fix heatcurrent all print 1 "${time} ${f1} ${f2} ${f3}" file & 
+HC_thermoInfo.txt screen no # record heat flux data 
+
+fix JJ all ave/correlate $s $p $d c_flux[1] c_flux[2] c_flux[3] & 
+ type auto file profile.heatflux ave running 
+
+variable scale equal $s*dt/$t/$t/vol 
+variable kb equal 8.6172e-5 # Boltzmann constant in unit metal 
+variable k11 equal trap(f_JJ[3])*${scale}/${kb} 
+variable k22 equal trap(f_JJ[4])*${scale}/${kb} 
+variable k33 equal trap(f_JJ[5])*${scale}/${kb} 
+
+thermo $d 
+thermo_style custom step temp v_k11 v_k22 v_k33 
+
+# dump to Ovito 
+dump 3 all custom $d cfg/dump.kappa.* type xs ys zs vx vy vz fx fy fz 
+
+run 4000000 
+print "result of x y z conductivity: ${k11} ${k22} ${k33}" 
+print "units of kappa: eV/(A*ps*K) " 
+undump 3 
+unfix JJ 
+unfix 1 
+print "All done!"

@@ -1,0 +1,65 @@
+# For displacement energy calculation, an input file of following format was used
+
+log SWNT1515_long_disp.log 
+
+clear 
+
+units metal
+
+boundary f f f 
+
+atom_style atomic 
+
+read_data SWNT1515_equ.lammps05 
+
+pair_style airebo 2.0 1 1 
+pair_coeff * * CH.airebo C 
+
+thermo 100 
+thermo_style custom step pe ke etotal enthalpy vol press temp 
+thermo_modify lost warn 
+
+neigh_modify every 1 delay 1 check yes page 100000 
+
+region fix1 block INF INF INF INF -5 5 side in units box 
+region fix2 block INF INF INF INF 45 55 side in units box 
+group fix1 region fix1 
+group fix2 region fix2 
+
+velocity fix1 set 0 0 0 units box 
+velocity fix2 set 0 0 0 units box 
+
+define_group 
+define_velocity 
+
+timestep 0.0002 
+
+fix 1 all nve 
+fix 2 fix1 setforce 0 0 0 
+fix 3 fix2 setforce 0 0 0 
+
+dump 1 all custom 50 SWNT1515_long_disp_collison.lammpstrj id x y z vx vy vz 
+
+run 1000
+
+unfix 1 
+unfix 2 
+unfix 3 
+undump 1 
+
+timestep 0.001 
+
+fix 1 all nve 
+fix 2 fix1 setforce 0 0 0 
+fix 3 fix2 setforce 0 0 0 
+
+dump 2 all custom 100 SWNT1515_long_disp.lammpstrj id x y z vx vy vz 
+
+run 1000
+
+unfix 1 
+unfix 2 
+unfix 3
+
+undump 2 
+write_restart SWNT1515_long_disp.restart

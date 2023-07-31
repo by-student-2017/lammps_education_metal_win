@@ -87,6 +87,8 @@ input file (metal unit, lammps)
   tungsten
   -------------------------------------
   https://lup.lub.lu.se/student-papers/search/
+  
+- G. Damien, Master Thesis (2022)
   https://lup.lub.lu.se/student-papers/search/publication/9102580
   Nanocutting
   
@@ -99,11 +101,16 @@ input file (metal unit, lammps)
   polyfe (need polyfe.lammps)
   --------------------------------------
   https://oaktrust.library.tamu.edu/handle/1969.1/2
-    https://oaktrust.library.tamu.edu/handle/1969.1/151391
-    https://oaktrust.library.tamu.edu/handle/1969.1/191617
-    https://oaktrust.library.tamu.edu/handle/1969.1/192592
-    
-    
+
+- https://oaktrust.library.tamu.edu/handle/1969.1/151391
+  SWNT
+
+- https://oaktrust.library.tamu.edu/handle/1969.1/191617
+  Green-Kubo
+
+- https://oaktrust.library.tamu.edu/handle/1969.1/192592
+  DEM
+
 - D. Chen et al., Doctor Thesis (2014).
   https://oaktrust.library.tamu.edu/handle/1969.1/154160
   radiation (need datafile.lammps) (Structure of (013)[100]Σ = 5 symmetric-tilt grain boundary)
