@@ -97,13 +97,13 @@ input file (metal unit, lammps)
   Irradiation
   
 - D. Chen et al., Master thesis (2011).
-  https://oaktrust.library.tamu.edu/bitstream/handle/1969.1/ETD-TAMU-2011-08-10112/CHEN-THESIS.pdf?sequence=2&isAllowed=y
-  polyfe (need polyfe.lammps)
+  
+  polyfe (need polyfe.lammps)https://oaktrust.library.tamu.edu/bitstream/handle/1969.1/ETD-TAMU-2011-08-10112/CHEN-THESIS.pdf?sequence=2&isAllowed=y
   --------------------------------------
   https://oaktrust.library.tamu.edu/handle/1969.1/2
 
 - https://oaktrust.library.tamu.edu/handle/1969.1/151391
-  SWNT
+  SWNT (need structure file: SWNT1515_equ.lammps05, SWNT1010_250A_double_equ300.lammps05)
 
 - https://oaktrust.library.tamu.edu/handle/1969.1/191617
   Green-Kubo
@@ -203,6 +203,23 @@ input file (metal unit, lammps)
   http://ethesis.nitrkl.ac.in/3349/
   
 - http://ethesis.nitrkl.ac.in/cgi/search/simple?q=lammps&_action_search=Search&_action_search=Search&_order=bytitle&basic_srchtype=ALL&_satisfyall=ALL
+
+
+- https://www.byui.edu/documents/physics/Theses/2010-2015/Aaron-ButterfieldS13.pdf
+
+- https://www.researchgate.net/profile/Sankhadeep-Bose-2/publication/342515066_Molecular_Dynamics_Modelling_of_Thermostatic_Properties_of_Nanoparticles/links/5ef9785145851550507b07d3/Molecular-Dynamics-Modelling-of-Thermostatic-Properties-of-Nanoparticles.pdf
+
+- https://etheses.bham.ac.uk/id/eprint/11999/
+  -------------------------------------------
+  https://etheses.bham.ac.uk/cgi/search/advanced
+  
+- https://pure.tue.nl/ws/portalfiles/portal/46924674/841526-1.pdf
+
+- XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+  -------------------------------------------
+  https://jscholarship.library.jhu.edu/discover
+  
+- 
 -------------------------------------------------------------------
 plot the temperature of each atom
 
