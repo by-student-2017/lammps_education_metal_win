@@ -3,6 +3,7 @@ input file (metal unit, lammps)
   
 - C.N. Andoh et al., J. Appl. Sci. Tech. 22 (2017) 1-13.
   https://www.researchgate.net/profile/Collins-Nana-Andoh/publication/327390429_MOLECULAR_DYNAMICS_SIMULATION_OF_MECHANICAL_DEFORMATION_OF_AUSTENITIC_STAINLESS_STEELS_Fe-Ni-Cr_ALLOYS_AT_SUPERCRITICAL_WATER_CONDITIONS/links/62ae336c938bee3e3f3f2253/MOLECULAR-DYNAMICS-SIMULATION-OF-MECHANICAL-DEFORMATION-OF-AUSTENITIC-STAINLESS-STEELS-Fe-Ni-Cr-ALLOYS-AT-SUPERCRITICAL-WATER-CONDITIONS.pdf
+  https://www.academia.edu/download/57943795/1._Andoh_Pap_2.pdf
   Fe-Ni-Cr_alloys
 
 - A. C. C. Dutra et al., Energy Adv., 2 (2023) 653-666.
@@ -246,7 +247,11 @@ input file (metal unit, lammps)
     
 - https://prism.ucalgary.ca/bitstreams/a9233500-b1ea-445c-80c6-38bd8e046344/download
 
-- 
+- https://mospace.umsystem.edu/xmlui/handle/10355/47997
+  --------------------------------------------
+    https://mospace.umsystem.edu/xmlui/handle/10355/83797
+    https://mospace.umsystem.edu/xmlui/handle/10355/90569
+    
 -------------------------------------------------------------------
 plot the temperature of each atom
 
