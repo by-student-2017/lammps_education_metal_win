@@ -103,6 +103,8 @@ input file (metal unit, lammps)
     https://dspace.mit.edu/handle/1721.1/119031
     https://dspace.mit.edu/handle/1721.1/104145
     https://dspace.mit.edu/handle/1721.1/120392
+    https://dspace.mit.edu/handle/1721.1/129108
+    https://dspace.mit.edu/handle/1721.1/98127 (CG fit on MATLAB)
     
   
 - D. Chen et al., Master thesis (2011).
