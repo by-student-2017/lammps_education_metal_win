@@ -116,7 +116,8 @@ input file (metal unit, lammps)
     https://dspace.mit.edu/handle/1721.1/111899
     https://dspace.mit.edu/handle/1721.1/82707 (NAMD)
     https://dspace.mit.edu/handle/1721.1/90011 (MATLAB)
-    
+
+- https://core.ac.uk/download/pdf/187147604.pdf
   
 - D. Chen et al., Master thesis (2011).
   polyfe (need polyfe.lammps)
@@ -334,6 +335,13 @@ input file (metal unit, lammps)
 - https://repository.mines.edu/handle/11124/76842
 - https://repository.mines.edu/handle/11124/172834
 - https://repository.mines.edu/handle/11124/79468 (ReaxFF file)
+
+- https://core.ac.uk/download/pdf/161264638.pdf
+
+- https://theses.hal.science/tel-03649130/
+- https://theses.hal.science/tel-04119671v1
+
+- https://jscholarship.library.jhu.edu/handle/1774.2/68027
 
 -------------------------------------------------------------------
 plot the temperature of each atom
