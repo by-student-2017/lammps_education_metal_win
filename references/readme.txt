@@ -93,12 +93,21 @@ input file (metal unit, lammps)
   Nanocutting
   
 - K.-J. Carter, Bachelor Thesis (2017).
-  https://dspace.mit.edu/bitstream/handle/1721.1/112482/1011413174-MIT.pdf?sequence=1&isAllowed=y
+  https://dspace.mit.edu/handle/1721.1/112482
   Irradiation
+  -------------------------------
+  https://dspace.mit.edu/discover
+    https://dspace.mit.edu/handle/1721.1/57788 (ReaxFF)
+    https://dspace.mit.edu/handle/1721.1/119936
+    https://dspace.mit.edu/handle/1721.1/78232
+    https://dspace.mit.edu/handle/1721.1/119031
+    https://dspace.mit.edu/handle/1721.1/104145
+    https://dspace.mit.edu/handle/1721.1/120392
+    
   
 - D. Chen et al., Master thesis (2011).
-  
-  polyfe (need polyfe.lammps)https://oaktrust.library.tamu.edu/bitstream/handle/1969.1/ETD-TAMU-2011-08-10112/CHEN-THESIS.pdf?sequence=2&isAllowed=y
+  polyfe (need polyfe.lammps)
+  https://oaktrust.library.tamu.edu/bitstream/handle/1969.1/ETD-TAMU-2011-08-10112/CHEN-THESIS.pdf?sequence=2&isAllowed=y
   --------------------------------------
   https://oaktrust.library.tamu.edu/handle/1969.1/2
 
@@ -219,7 +228,13 @@ input file (metal unit, lammps)
   -------------------------------------------
   https://jscholarship.library.jhu.edu/discover
   
-- 
+- https://scholarworks.uvm.edu/graddis/1410/
+  -------------------------------------------
+  https://scholarworks.uvm.edu/do/search/
+    https://scholarworks.uvm.edu/graddis/995/
+    https://scholarworks.uvm.edu/graddis/1323/
+    
+
 -------------------------------------------------------------------
 plot the temperature of each atom
 
