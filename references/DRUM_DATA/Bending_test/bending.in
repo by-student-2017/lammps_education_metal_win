@@ -1,0 +1,83 @@
+# Bending test for Mono MoS2
+# Initial setting for simulation 
+units 		metal
+atom_style 	atomic
+atom_modify 	map yes
+processors 	* * 1
+boundary 	p p f  
+read_data	./relaxed.data
+mass 		1 95.94  # Momass		
+mass		2 32.065 # S
+pair_style      rebomos
+pair_coeff      * * MoS.REBO.set5b M S
+timestep        0.001
+# Change box 
+change_box      all x delta -20.0 20.0 boundary p p f units box
+## Move atom constraint 
+# Input arguments
+variable        lMo equal 2.7426356296754615
+variable	rMo equal 148.1297965146468
+variable	Modis equal 2.7432 # Distance between Mo
+variable	tol equal 0.01 # Tolerance
+variable	R equal 100.0 
+variable	L equal ${rMo}-${lMo}
+variable	mlMo equal -${lMo}
+##
+displace_atoms  all move ${mlMo} 0.0 0.0 # Set 0.0 as fixed position 
+variable	L2 equal ${Modis}*2.0+${tol}
+variable	R1 equal ${L}-${tol}
+variable	R2 equal ${L}+${Modis}*2.0+${tol}
+region		ledgeR block -1.0 ${L2} INF INF INF INF # Left edge 
+region		redgeR block ${R1} ${R2} INF INF INF INF # Right edge
+group	        ledge region ledgeR	
+group		redge region redgeR 
+group		Moa type 1 
+group		ledgeMo intersect Moa ledge 
+group		redgeMo intersect Moa redge 
+## Input: Radius of curvature (Angstrom), Length between edges 
+# Set displace vector for each Mo atom 
+variable	disnum equal 100 # Number of step to reach final position
+variable	xdis  atom (-type+2)*(${R}*sin(${L}/2.0/${R})+${R}*cos(${L}/2.0/${R}+PI/2.0-x/${R})-x)/${disnum}
+variable	zdis  atom (-type+2)*(-${R}*cos(${L}/2.0/${R})+${R}*sin(${L}/2.0/${R}+PI/2.0-x/${R}))/${disnum}
+# Write atom file 
+variable	natom equal atoms
+print		"${natom}" file displacement_vector_x.txt screen no
+print		"${natom}" file displacement_vector_z.txt screen no
+variable        numa2 loop 1 ${natom}
+label 		top2
+variable	xtemp equal v_xdis[${numa2}]
+variable	ztemp equal v_zdis[${numa2}]
+variable	ID equal id[${numa2}]
+print		"${ID} ${xtemp}" append displacement_vector_x.txt screen no
+print		"${ID} ${ztemp}" append displacement_vector_z.txt screen no
+next		numa2
+jump		SELF top2
+# Read atom file 
+variable	xcurr atomfile displacement_vector_x.txt
+variable	zcurr atomfile displacement_vector_z.txt
+variable        numa3 loop 1 10
+label           top3
+variable	temp equal v_xcurr[${numa3}]
+print		"${numa3} x values ${temp}"
+next            numa3
+jump            SELF top3
+# 
+thermo          1000
+thermo_style    custom step epair etotal fnorm pxx pyy 
+thermo_modify   format line "%d %16.15g %16.15g %16.15g %16.15g %16.15g"
+neigh_modify    every 1 delay 0 check yes
+variable	num loop 1 ${disnum}
+label		top
+displace_atoms	ledgeMo move v_xcurr 0.0 v_zcurr
+displace_atoms	redgeMo move v_xcurr 0.0 v_zcurr
+fix 		ledgefix ledgeMo setforce 0.0 NULL 0.0
+fix 		redgefix redgeMo setforce 0.0 NULL 0.0
+min_style       fire
+min_modify      integrator verlet tmax 1.0 tmin 0.0
+if "${num} == ${disnum}" then "minimize  0.0 1e-9 100000 700000" else "minimize  0.0 1e-9 3000 700000"
+unfix		ledgefix
+unfix		redgefix
+write_data      bending_${num}.data
+next		num
+jump		SELF top 
+

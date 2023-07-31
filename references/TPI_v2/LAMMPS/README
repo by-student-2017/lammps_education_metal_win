@@ -1,0 +1,156 @@
+# 
+#
+#    README file for the LAMMPS scripts and additional LAMMPS features
+# 
+# 
+#    Copyright (c) 2014, Regents of the University of Minnesota.  
+#                  All rights reserved.
+#
+#    Contributor: Amit  Singh    Email : sing0335@umn.edu
+#    Advisor:     Ellad Tadmor   Email : tadmor@aem.umn.edu
+#               
+#    The contents of this file are distributed under the
+#    GNU General Public License.
+# 
+#    Release: This file is part of the tpi package.
+#
+#
+=================== The LAMMPS scripts and additional LAMMPS features ========================
+
+ This file provides an introduction to the LAMMPS scripts and some additional LAMMPS features 
+ used in the scripts. The scripts are used for generating temperature and heat current 
+ nonequilibrium Molecular Dynamics (NEMD) data (profile) files for an example case which can 
+ be found with the supplementary material to an article on the TPI method by A. Singh and 
+ E. B. Tadmor. Here, we give a brief overview of the scripts and describe some additional LAMMPS 
+ features which are not available in the original source code of LAMMPS.
+
+ Introduction to the example script 'in.npt.sinusoidal':
+ -----------------------------------------------------
+ First the script creates a solid argon beam of 33 x 4 x 4 unit cells with lattice parameter 
+ 5.24 Angstrom. Then a NPT simulation is performed at zero pressure and 15 K temperature with 
+ damping parameter set for thermostat and barostat as 100 ps and 400 ps. Then the beam along 
+ length (x-axis) is divided into 11 bins and using Langevin thermostats a nonequilibrium steady
+ state for sinusoidal temperature distribution along length  of the beam is achieved. Then the
+ phase-space of the simulation is stored 'nEnsembles = 50' times. Finally each ensemble 
+ (realization) is relaxed under NVE conditions.
+ 
+ Introduction to the example script 'in.sinusoidal':
+ -------------------------------------------------
+ This script creates a solid argon beam of 33 x 4 x 4 unit cells with lattice parameter known at
+ 15 K temperature. Then the beam along length (x-axis) is divided into 11 bins and using Langevin
+ thermostats a non-equilibrium steady state for sinusoidal temperature distribution along length
+ of the beam is achieved. Then the phase-space of the simulation is stored  'nEnsembles = 50' 
+ times. Finally each ensemble (realization) is relaxed under NVE conditions.
+
+ Additional LAMMPS features used by the script:
+ ---------------------------------------------
+ The scripts use two additional LAMMPS `fix` commands and one additional LAMMPS `compute' command. 
+ More about fix and compute commands of LAMMPS can be found at http://lammps.sandia.gov/. These 
+ additional commands are:
+ 
+ 1. fix langevin/layer command: This is a modified form of fix langevin which creates bins (layers) 
+                                of same length along the x-axis. Then it applies independent Langevin
+                                thermostats to each bin to achieve a sinusoidal temperature 
+                                distribution of the following form:
+                                
+                                T_n = theta0 + dtheta0 cos(2 \pi n/(Nbins-1)), 0 <= n <= Nbins-1,
+                                
+                                where Nbins is the total number of bins, and theta0 is the base or 
+                                mean temperature of the sinusoidal distribution and dtheta0 is the 
+                                amplitude of this distribution. More about this command can be found 
+                                in the file "fix_langevin_layer.html" available in the ${PWD}/doc 
+                                directory. In the example scripts, this command is invoked as follows:
+                                
+                                fix 100 all langevin/layer ${theta0} ${dtheta0} ${tdamp} 48279 ${Nbins} 
+
+                                Here, ${tdamp} is the damping parameter of the Langevin thermostats and
+                                the integer `48279' is used for generating random numbers.
+ 
+ 2. compute temp/heat/flux/layer 
+    command:                    This is a modified form of compute heat/flux which performs binning 
+                                every time when it is invoked and then calculates the temperature of 
+                                each bin, ranging from 1 to Nbins, and its x-component of heat current 
+                                vector based on contributions from atoms in each bin. This can be used 
+                                by itself to measure the heat flux into or out of a reservoir of atoms 
+                                or to calculate a thermal conductivity using the Green-Kubo formalism 
+                                or the Direct method or the TPI method. More about this command can be 
+                                found in the file "compute_temp_heat_flux_layer.html" available in the 
+                                ${PWD}/doc directory. In the example scripts, this command is invoked as 
+                                follows:
+                                
+                                compute 5 all temp/heat/flux/layer myPE myStress ${Nbins}
+
+                                Here myPE and myStress help calculating potential energy and virial 
+                                stress of each bin. See "compute_temp_heat_flux_layer.html" for 
+                                further info. 
+ 
+ 3. fix binAve/time command:    This is a modified version of fix ave/time which uses one or more global
+                                values as inputs every few timesteps, and average them over longer 
+                                timescales. When it is called as follows:
+                                
+                                fix 16 all binAve/time ${nev} ${nrep} ${nfreq} ${Nbins} 2 c_5 ave one & 
+                                                            file tempCurrent.$i.ensemble mode vector  
+                                
+                                then this command generates an output file in the following format: 
+                                
+                                #<Title 1>
+                                #<Title 2>
+                                #<Title 3>
+                                1  temperature_1  heat_current_1
+                                2  temperature_2  heat_current_2
+                                . . . . . . . . . . . . . . . .  
+                                . . . . . . . . . . . . . . . .  
+                                Nbins  temperature_Nbins  heat_current_Nbins
+                                <blank line>
+                                1  temperature_1  heat_current_1
+                                2  temperature_2  heat_current_2
+                                . . . . . . . . . . . . . . . .  
+                                . . . . . . . . . . . . . . . .  
+                                Nbins  temperature_Nbins  heat_current_Nbins
+                                <blank line>
+                                etc.
+
+                                Here we have a series of temperature and heat current profiles at 
+                                consecutive time steps separated by blank lines. Each profile in three 
+                                columns provides for all `Nbins' bins, the bin numbers, temperatures 
+                                (in degrees Kelvin), and x-components of heat current vectors 
+                                (J_x = q_x V) in energy*velocity units, where q_x is the heat-flux and 
+                                V is the volume of each bin). 
+                                
+                                This command gives the above file formatting only when it chooses vector
+                                mode in its arguments. More about the mode and this command can be found
+                                in the file "fix_binAve_time.html" available in the ${PWD}/doc directory. 
+
+*******************************************************************************************************
+
+ *.h, *.cpp. *.html FILES for LAMMPS additional features and their Installation
+
+ Directories
+ -----------
+ For the additional commands mentioned above, *.h and *.cpp files can be found in the ${PWD}/src directory, 
+ and *.html files can be found in the ${PWD}/doc directory. The file "compute_temp_heat_flux_layer.html" 
+ uses "heat_current_J.jpg" which has been placed in the directory ${PWD}/doc/Eqs. 
+ 
+ Installation
+ ------------
+ 1. Copy all files in ${PWD}/src to the `src' folder of the  LAMMPS installation directory. 
+ 2. Copy all files in ${PWD}/doc to the `doc' folder of the  LAMMPS installation directory.
+ 3. Recompile LAMMPS.
+
+ Run
+ ---
+ Having installed LAMMPS with new features and created `lmp_linux' executable, the script can be run on
+ 24 parallel nodes as follows:
+
+ mpirun -np 24 ${LAMMPS_DIR}/lmp_linux < in.sinusoidal
+
+ Or submit batch script. A batch script `submit.sh' is being provided.
+
+*******************************************************************************************************
+
+SUPPORT
+
+If you have problems or questions, send an email with your question and all
+relevant information to
+
+sing0335@umn.edu

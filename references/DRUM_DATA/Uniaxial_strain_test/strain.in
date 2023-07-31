@@ -1,0 +1,51 @@
+# Uniaxial test for Mono MoS2
+## Initial setting for simulation 
+units           metal
+atom_style      atomic
+atom_modify     map yes
+processors      * * 1
+boundary        p p f
+read_data	./relaxed.data
+mass            1 95.94  # Mo
+mass            2 32.065 # S
+pair_style      rebomos
+pair_coeff      * * MoS.REBO.set5b M S
+variable        xhiv equal xhi
+variable        yhiv equal yhi
+variable        xhiv2 equal ${xhiv}
+variable        yhiv2 equal ${yhiv}
+thermo          100
+thermo_style    custom step epair etotal fnorm pxx pyy pzz
+neigh_modify    every 1 delay 0 check yes
+variable        num loop 0 30
+label           top
+variable        change  equal 1+${num}/1000.0
+variable        newx equal ${xhiv2}
+variable        newy equal ${yhiv2}*${change} 
+# Change box and remap 
+change_box      all x final 0.0 ${newx} y final 0.0 ${newy} boundary p p f remap units box
+timestep        0.001
+min_style       fire
+min_modify      integrator verlet tmax 6.0 tmin 0.0
+minimize        0.0 1e-9 100000 700000
+
+variable        ang2m   equal 1e-10
+variable        areaxx  equal yhi*zhi
+variable        areayy  equal xhi*zhi
+variable        bar2pa  equal 100000
+variable        fxx equal pxx*${areaxx}*${bar2pa}*${ang2m}*${ang2m} # Force_x (newton)
+variable        fyy equal pyy*${areayy}*${bar2pa}*${ang2m}*${ang2m} # Force_y (newton)
+variable        strain equal (${newy}-${yhiv2})/${yhiv2}
+variable        pxxr equal pxx
+variable        pyyr equal pyy
+if "${num} == 0" then "print    '${strain} ${fxx} ${fyy} ${pxxr} ${pyyr}' file strain_y.txt" else "print    '${strain} ${fxx} ${fyy}  ${pxxr} ${pyyr}' append strain_y.txt"
+# Change box and remap
+change_box      all x final 0.0 ${xhiv2} y final 0.0 ${yhiv2} boundary p p f remap units box
+timestep        0.001
+min_style       fire
+min_modify      integrator verlet tmax 6.0 tmin 0.0
+minimize        0.0 1e-10 100000 700000
+next            num
+jump            SELF top
+
+

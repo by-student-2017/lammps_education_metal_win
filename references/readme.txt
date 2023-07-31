@@ -286,7 +286,15 @@ input file (metal unit, lammps)
 
 - https://opendata.uni-halle.de/bitstream/1981185920/87709/1/Thesis_FDEMYDIUK_GermanCovers.pdf
 
-- 
+- https://conservancy.umn.edu/handle/11299/253958 (LJ, zip file)
+
+- M.-K. Choi (2022)
+  https://conservancy.umn.edu/handle/11299/250214 (MoS2, zip file)
+  DRUM_DATA
+
+- S. Amit, Thesis or Dissertation (2015)
+  https://conservancy.umn.edu/handle/11299/182204
+  TPI_v2
 -------------------------------------------------------------------
 plot the temperature of each atom
 

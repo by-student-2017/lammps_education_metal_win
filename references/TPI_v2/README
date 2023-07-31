@@ -1,0 +1,119 @@
+# 
+#
+#    TPI : Thermal Parameters Identification Code README file  
+# 
+# 
+#    Copyright (c) 2014, Regents of the University of Minnesota.  
+#                  All rights reserved.
+#
+#    Contributor: Amit  Singh    Email : sing0335@umn.edu
+#    Advisor:     Ellad Tadmor   Email : tadmor@aem.umn.edu
+#               
+#    The contents of this file are distributed under the
+#    GNU General Public License.
+# 
+#    Release: This file is part of the tpi package.
+#
+#
+================================ The TPI code =================================
+
+ This file provides an introduction to the TPI code.
+
+ Introduction:
+
+ The Thermal Parameter Identification (TPI) method uses a nonlinear regression 
+ analysis to find the thermal parameters of either a Fourier, Cattaneo-Vernotte 
+ (CV), or Jeffreys-type heat conduction model. The method takes as input the time
+ history of the temperature of different regions (bins) along the length of a 
+ one-dimensional beam. The Jeffreys-type model also needs the time history of the 
+ heat current of all bins as input. Initially the temperatures of bins are set to 
+ a sinusoidal temperature distribution of the form:
+  
+  \theta_n = \theta_0 + \Delta\theta_0 \cos(2 \pi n/(\nbins-1)), 0 \le n \le \nbins-1, 
+  
+  where \theta_0 and \Delta\theta_0 are the base temperature and amplitude of the 
+  perturbation in the base temperature, respectively, and \nbins is the total number
+  of bins. Then the heated nanobeam is allowed to relax under periodic boundary 
+  conditions, \theta(t)\vert_{n = 0} = \theta(t)\vert_{n=\nbins-1}, t \ge 0, 
+  by removing all thermostats. The simulations are repeated multiple times with 
+  different initial positions and momenta of the atoms corresponding to the initial 
+  sinusoidal temperature distribution to obtain multiple realizations (ensembles). 
+  Having established a steady-state sinusoidal temperature distribution, the
+  the positions and velocities of the atoms are stored `nEnsembles' times at intervals 
+  of 10^4 MD time-steps to create initial conditions for `nEnsembles' realizations.
+  Then every realization of the system is allowed to relax under NVE conditions, and 
+  the average bin temperatures and average x-component of heat current vectors are 
+  recorded at each time step in files with the format specified below. The ensemble files
+  files are grouped into blocks (sets) and then a cosine average of the temperature and a
+  sine average of the x-component of heat-flux vector along the length of the beam are 
+  computed. Then the thermal parameters are calculated for each block by performing a   
+  nonlinear regression analysis over the average temperature and heat current data. 
+  Non-negative thermal parameters obtained by this approach are retained and averaged 
+  to predict the best fit parameters. The operation of the code is controlled through
+  a parameter file called `TPI.INPUT'.
+-------------------------------------------------------------------------------
+
+ The Code and Installation:
+
+
+ The MATLAB code and its installation requirements can be found in the directory 
+ MATLAB. An example is provided with the code. 
+
+-------------------------------------------------------------------------------
+
+ Input and  Output Files (I/O):
+
+
+Input Files:
+
+  1. A file `TPI.INPUT' which defines the parameters controlling
+     the code behavior. Please see the documentation and the example case
+     for further details.
+
+  2. An NEMD ensemble file begins with three commented lines serving as the
+     title for the file. These lines are ignored by the code for any processing.
+     The file then contains a series of temperature and possibly heat current profiles
+     at consecutive time steps separated by blank lines. Each profile provides for 
+     all n bins along the beam, the bin number, bin temperature (in degrees 
+     Kelvin), and possibly the x-component of heat current vector of the bin 
+     (J_x = q_x V, in eV\AA/ps, where q_x is the heat-flux and V is the bin volume),
+     in two or three columns. Thus the file has the following format:
+
+     #<Title 1>
+     #<Title 2>
+     #<Title 3>
+     1  temperature_1  heat_current_1
+     2  temperature_2  heat_current_2
+      . . . . . . . . . . . . . . . .  
+      . . . . . . . . . . . . . . . .  
+     n  temperature_n  heat_current_n
+     <blank line>
+     1  temperature_1  heat_current_1
+     2  temperature_2  heat_current_2
+      . . . . . . . . . . . . . . . .  
+      . . . . . . . . . . . . . . . .  
+     n  temperature_n  heat_current_n
+     <blank line>
+     etc.
+     
+     The third column need not be there when either the CV or the Fourier model 
+     are chosen.
+	 		
+Output Files (see the User Manual tpi.pdf for more information): 
+      
+   parameJeffreys.txt, paramCV.txt, or paramFourier.txt : This has the thermal 
+   parameters information for all accepted cases.	
+
+-------------------------------------------------------------------------------
+FILES and Functions used in the MATLAB script:
+
+tpi.m : This is the ONLY file in the MATLAB script. 
+
+*******************************************************************************
+
+SUPPORT
+
+If you have problems or questions, send an email with your question and all
+relevant information to
+
+sing0335@umn.edu or tadmor@umn.edu

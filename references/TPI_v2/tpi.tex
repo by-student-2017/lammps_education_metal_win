@@ -1,0 +1,370 @@
+%% A sample LaTex template
+%% Use and share!
+
+\documentclass[11pt]{article}
+\usepackage[breaklinks=true]{hyperref}
+\usepackage{url}
+\usepackage{graphicx}
+\usepackage{amsmath, amsthm, amssymb, amsfonts}
+\usepackage{graphicx}
+\usepackage{subfigure} % New added
+\usepackage{color} % New added
+\usepackage{xspace} % New added
+\usepackage{authblk}
+\usepackage{tikz}
+\usetikzlibrary{shapes,arrows}
+
+%Commands to be used regularly % New added
+%*******************************************************
+\newcommand{\myfloatalign}{\centering} % how all the floats will be aligned
+\renewcommand{\bold}[1]{\boldsymbol{#1}} % for boldsymbols
+\newcommand{\xt}{(\bold{x},t)}
+\newcommand{\lxt}{(x,t)} % xt for x-dimension 
+\renewcommand{\sp}[1]{\left({#1}\right)} % for small parentheses 
+\let\vaccent=\v % rename builtin command \v{ to \vaccent{
+\renewcommand{\v}[1]{\ensuremath{\mathbf{#1}}} % for vectors
+\newcommand{\gv}[1]{\ensuremath{\mbox{\boldmath$ #1 $}}}
+% for vectors of Greek letters
+\newcommand{\uv}[1]{\ensuremath{\mathbf{\hat{#1}}}} % for unit vector
+\newcommand{\abs}[1]{\left| #1 \right|} % for absolute value
+\newcommand{\avg}[1]{\left< #1 \right>} % for average
+\let\underdot=\d % rename builtin command \d{ to \underdot{
+\renewcommand{\d}[2]{\frac{d #1}{d #2}} % for derivatives
+\newcommand{\dd}[2]{\frac{d^2 #1}{d #2^2}} % for double derivatives
+\newcommand{\pd}[2]{\frac{\partial #1}{\partial #2}} % for partial derivatives
+\newcommand{\pdd}[2]{\frac{\partial^2 #1}{\partial #2^2}} % for double partial derivatives
+\newcommand{\pdc}[3]{\left( \frac{\partial #1}{\partial #2}\right)_{#3}} % for thermodynamic partial derivatives
+\newcommand{\ket}[1]{\left| #1 \right>} % for Dirac bras
+\newcommand{\bra}[1]{\left< #1 \right|} % for Dirac kets
+\newcommand{\braket}[2]{\left< #1 \vphantom{#2} \right|
+  \left. #2 \vphantom{#1} \right>} % for Dirac brackets
+\newcommand{\matrixel}[3]{\left< #1 \vphantom{#2#3} \right|
+     #2 \left| #3 \vphantom{#1#2} \right>} % for Dirac matrix elements
+\newcommand{\grad}[1]{\gv{\nabla} #1} % for gradient
+\let\divsymb=\div % rename builtin command \div to \divsymb
+\renewcommand{\div}[1]{\gv{\nabla} \cdot #1} % for divergence
+\newcommand{\curl}[1]{\gv{\nabla} \times #1} % for curl
+\providecommand{\norm}[1]{\lVert#1\rVert}
+\newcommand{\ebt}[1]{{\color{blue} (Ellad's Comment: #1)}}
+\newcommand{\amit}[1]{{\color{red} (Amit's Comment: #1)}}
+\newcommand {\eqn}[1] {Eq.~(\ref{#1})}
+\newcommand {\eqns}[1] {Eqs.~(\ref{#1})}
+\newcommand {\eqnx}[1] {(\ref{#1})}
+\newcommand {\Eqn}[1] {Equation~(\ref{#1})}
+\newcommand {\sect}[1] {Section~\ref{#1}}
+\newcommand {\fig}[1] {Fig.~\ref{#1}}
+\newcommand {\Fig}[1] {Figure~\ref{#1}}
+\newcommand {\figs}[1] {Figs.~\ref{#1}}
+\newcommand {\figx}[1] {\ref{#1}}
+\newcommand {\refcite}[1] {Ref.~\onlinecite{#1}}
+\newcommand {\refcites}[1] {Refs.~\onlinecite{#1}}
+\newcommand {\refcitex}[1] {\onlinecite{#1}}
+\newcommand{\tL}{\theta_{\rm L}}
+\newcommand{\tR}{\theta_{\rm R}}
+\newcommand{\tM}{\theta_{\rm M}}
+\newcommand{\sumdd}[3]{\ensuremath{\sum_{\substack{#1 \\ #2}}^{#3}}}
+\newcommand{\nbins}{N_{\rm bins}}
+\newcommand{\nprofs}{N_{\rm profiles}}
+\newcommand{\mprofs}{M_{\rm profiles}}
+\newcommand{\aveprofs}{A_{\rm profiles}}
+\newcommand{\ndata}{N_{\rm data}}
+\newcommand{\deltmd}{\Delta t_{\rm MD}}
+\newcommand{\tpi}{TPI\xspace}
+\newcommand{\tpicode}{TPI code\xspace}
+
+\newcounter{desccount}
+\newcommand{\descitem}[1]{%
+    \item[#1] \refstepcounter{desccount}\label{#1}
+}
+\newcommand{\descref}[1]{\hyperref[#1]{#1}}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{2ex plus 0.5ex minus 0.2ex}
+\numberwithin{equation}{section}
+\hyphenpenalty=5000
+\tolerance=1000
+
+\makeatletter
+%\doublespacing
+%\linenumbers
+
+\title{\Large{\textbf{Thermal Parameter Identification Code\\User Manual}}} 
+\author[1]{Amit Singh\thanks{sing0335@umn.edu}}
+\author[1]{Ellad~B.~Tadmor\thanks{tadmor@aem.umn.edu}}
+\affil[1]{Department of Aerospace Engineering and Mechanics, The University of
+Minnesota, Minneapolis, Minnesota 55455}
+
+\begin{document}
+\bibliographystyle{hunsrt} % style of bibliography apsrev4-1
+%\author{Amit Singh\\Dept of Aerospace Engg \& Mechanics \\
+%          University of Minnesota\\\\
+%  \\\\sing0335@umn.edu}
+\maketitle
+
+
+%\begin{abstract}
+%
+%\end{abstract}
+\thispagestyle{empty}
+
+\newpage{}
+\setcounter{page}{1}
+\section{Introduction}\label{sec:Introduction}
+This is the User Manual for the MATLAB implementations of the 
+\emph{Thermal Parameter Identification} (TPI) method referred to as the ``\tpicode''.
+This document is provided as supplemental material to an article on the \tpi method by A.~Singh and E.~B.~Tadmor.
+Here, we give a brief overview of the method and describe the \tpicode and its usage.
+
+The \tpi method uses a nonlinear regression analysis to find the thermal
+parameters of either a Fourier, Cattaneo-Vernotte (CV), or Jeffreys-type heat
+conduction model. The method takes as input the time history of the temperature
+of different regions (bins) along the length of a one-dimensional beam. The
+Jeffreys-type model also needs the time history of the heat current of all bins as
+input. Initially the temperatures of bins are set to a sinusoidal temperature
+distribution of the form:
+\begin{align}
+  \theta_n = \theta_0 + \Delta \theta_0 \cos(2 \pi n/(\nbins-1)), \quad 0 \le n \le
+  \nbins-1,
+  \label{IC1}
+\end{align}
+where $\theta_0$ and $\Delta \theta_0$ are the base temperature and amplitude of
+the perturbation in the base temperature, respectively. Then the heated nanobeam
+is allowed to relax under periodic boundary conditions, $\theta(t)\vert_{n = 0} =
+\theta(t)\vert_{n=\nbins-1}, t \ge 0,$ by removing all thermostats. 
+The simulations are repeated multiple times with different initial positions and
+momenta of the atoms corresponding to the initial condition described in
+\eqn{IC1} to obtain multiple realizations (ensembles). Having
+established a steady-state sinusoidal temperature distribution, the
+the positions and velocities of the atoms are stored `nEnsembles' times at intervals of
+$10^4$ MD time-steps to create initial conditions for `nEnsembles' realizations.
+Then every realization of the system is allowed to relax
+under NVE conditions, and the average bin temperatures and average
+$x$-component of heat current vectors are recorded at each time step in files with
+the format specified below.
+The ensemble files are grouped into blocks (sets) and then a cosine
+average of temperature and a sine average of the $x$-component of the heat current vector
+along the length of the beam are computed. Then the thermal parameters are
+calculated for each block by performing a nonlinear regression analysis over the
+average temperature and heat current data. Non-negative thermal parameters obtained
+by this approach are retained and averaged to predict the best fit parameters.
+The operation of the \tpicode is controlled through a parameter file called `TPI.INPUT'.
+
+The \tpicode performs two processes:
+\begin{enumerate}
+  \item \textbf{Consolidating temperature profiles}: 
+    Temperature profiles in the files provided by the user (in a format described
+    below) are stored by averaging over a time interval `deltat' defined in the
+    input parameter file. Each file represents a particular realization
+    (ensemble). To reduce noise, these files are grouped into blocks, and the
+    temperature and heat current data is block-averaged. Then the cosine average of the
+    temperature and the sine average of the $x$-component of the heat current vector along the
+    length of the beam are computed for the available number of profiles.
+  \item \textbf{Parameter extraction process}: Thermal parameters are extracted
+    using a nonlinear regression model. Only non-negative parameters are retained.
+\end{enumerate}
+
+\section{I/O Files and Parameters}
+This section describes the contents and format of the input and output files.
+
+\subsection{Input Files}
+The \tpicode requires an input file, ``TPI.INPUT'', which contains the input
+parameters that define the program operation. This file also contains the name
+of the files, containing temperature and heat current profiles, to which the
+regression analysis is applied.
+
+The input file ``TPI.INPUT'' must have the following lines:
+\begin{verbatim}
+model
+Jeffreys
+nemdFileCols
+3
+nEnsembles
+50
+nblocks
+5
+nemdFileOption
+LAMMPS
+nprofs
+100
+deltat
+0.5
+theta0
+36.2
+dtheta0
+3.62
+nbins
+11
+binL
+15.975
+binVol
+7247.69775
+gamma
+6.176189e-06
+\end{verbatim}
+The file consists of pairs of lines, the \tpicode parameter name followed on the next line
+by its value.  The parameters and their possible values are summarized in 
+Table~\ref{table:table01} and described below.
+\begin{table}
+  \caption{\label{table:table01}\tpicode parameters and the corresponding values}
+\centering
+  \begin{tabular}{c|c}
+  \hline
+  \hline
+    Parameters     &Values\\ \hline
+    model          &Jeffreys or CV or Fourier\\
+    nemdFileCols   &2 or 3\\
+    nEnsembles     &An integer\\
+    nblocks        &An integer\\ 
+    nemdFileOption &A string value\\
+    nprofs         &An integer\\ 
+    deltat         &A non-negative real number\\
+    theta0         &A non-negative real number\\
+    dtheta0        &A non-negative real number\\
+    nbins          &An integer\\ 
+    binL           &A non-negative real number\\
+    binVol         &A non-negative real number\\
+    gamma          &A non-negative real number\\
+  \hline
+  \hline
+  \end{tabular}
+\end{table}
+\begin{description}
+  \item[model] The continuum model used for the parameter extraction. 
+Three continuum models are supported: the Jeffreys-type, the Cattaneo-Vernotte
+(CV), and the Fourier model. The corresponding value for this parameter can
+be either `Jeffreys', `CV', or `Fourier'. 
+\item[nemdFileCols] The total number of columns in the nonequilibrium Molecular
+  Dynamics (NEMD) data files. This parameter 
+  must be either 2 or 3. The first, second, and third column correspond to the bin
+  number, bin temperature, and $x$-component of the bin heat current vector
+  (heat-flux times volume of the bin), respectively. This parameter must be set to 3 for the
+  Jeffreys-type model, since both the temperature and heat current data are required
+  for this model.
+  For either the CV or the Fourier model, its value can be either 2 or 3,
+  since these models only require temperature data. The heat current data (if supplied) is
+  ignored for these models.
+\item[nEnsembles] Total number of realizations (ensembles) available. 
+\item[nblocks] Number of blocks (sets) that the ensembles will be grouped into.
+  The thermal parameters are extracted for each block and then
+  a mean value is taken for all those blocks which successfully achieve
+  nonlinear minimization.
+\item[nemdFileOption] This parameter specifies the manner in which the NEMD
+  files containing the temperature data and possibly heat current data for $\nbins$
+  bins are parsed to the code. The parameter can take either `LAMMPS' or
+  `MANUAL' as its value. When its value is `LAMMPS' then the names of the
+  files must be either temp.\%d.ensemble or tempCurrent.\%d.ensemble, depending
+  upon whether the value of nemdFileCols is 2 or 3. Here `\%d' refers to the
+  ensemble number, which can vary from $1$ to nEnsembles. Using the LAMMPS
+  script, which can be found with the supplementary materials, these files are
+  automatically generated when the option `LAMMPS' is used for the NEMD
+  simulation. The format for these files is explained below. When the
+  value of this parameter is `MANUAL' then the names of all `nEnsembles' files
+  should be linewise listed followed by the string MANUAL. An example case
+  has been provided with the supplementary materials. It has the `TPI.INPUT'
+  files for both options -- `LAMMPS' and `MANUAL'. 
+\item[nprofs] The number of NEMD temperature profiles, $\nprofs$, available in
+  each NEMD ensemble file.
+\item[deltat] Time difference in picoseconds between two consecutive
+  temperature profiles recorded in the NEMD ensemble files.
+\item[theta0] Base or mean temperature, $\theta_0$, of the initial sinusoidal
+  temperature distribution in degrees Kelvin. 
+\item[dtheta0] Amplitude, $\Delta\theta_0$, of the sinusoidal temperature
+  distribution in degrees Kelvin. A typical value is 10\% of $\theta_0$.
+\item[nbins] Total number of bins $\nbins$. 
+\item[binL] The length of a bin in \AA.  
+\item[binVol] The volume of a bin in \AA$^3$.  
+\item[gamma] Volumetric specific heat, $\gamma$, in eV/(\AA$^3$K). 
+\end{description}
+
+\subsection{Format for the NEMD data file}\label{sec:format}
+An NEMD ensemble file begin with three commented lines serving as the title for
+the file. These lines are ignored by the \tpicode for any processing. The file
+then contains a series of temperature and possibly heat current profiles
+at consecutive time steps separated by blank lines. Each profile provides for all $n$ 
+bins along the beam, the bin number, bin temperature (in degrees Kelvin), and possibly
+the $x$-component of heat current vector of the bin ($J_x = q_x V$, in eV\AA/ps, where
+$q_x$ is the heat-flux and $V$ is the bin volume), in two or three columns.
+Thus the file has the following format:
+\begin{verbatim}
+#<Title 1>
+#<Title 2>
+#<Title 3>
+1  temperature_1  heat_current_1
+2  temperature_2  heat_current_2
+.  . . . . . . . . . . . . . . .  
+.  . . . . . . . . . . . . . . .  
+n  temperature_n  heat_current_n
+<blank line>
+1  temperature_1  heat_current_1
+2  temperature_2  heat_current_2
+.  . . . . . . . . . . . . . . .  
+.  . . . . . . . . . . . . . . .  
+n  temperature_n  heat_current_n
+<blank line>
+etc.
+\end{verbatim}
+The third column need not be there when either the CV or the Fourier model are
+chosen.
+\subsection{Output Files}
+Following the successful execution of the code, one of the following output files is generated:
+``paramJeffreys.txt'', ``paramCV.txt'', or ``paramFourier.txt'', depending
+on the thermal model chosen, which contains the extracted thermal parameters.
+For the Jeffreys-type model, the file has the following format:
+\begin{verbatim}
+Printing Jeffreys parameters for each block (set)
+========================================
+Case  kappa  tau_T  tau_q  residual norm
+========================================
+..     ..     ..     ..     ..
+..     ..     ..     ..     ..
+=================================================
+Case 1, 2, 3 refers to (lambda_2)^2 > 0, < 0, = 0.
+Case 0 means minimum was not found for the block.
+=================================================
+
+Printing final Jeffreys-type parameters:
+
+kappa  std_kappa  tau_T  std_tau_T  tau_q  std_tau_q
+====================================================
+  ..      ..        ..        ..     ..       ..    
+====================================================
+\end{verbatim}
+The first line contains the text ``Printing Jeffreys parameters for each block
+(set)''. The second and fourth line are separators. The third line consists of
+column headings. The first column is the case obtained after nonlinear
+minimization (see Section~III.C of the article for details). The cases 1, 2, 3
+refer to $\lambda_2^2 > 0, < 0, = 0$, respectively. Case 0 means that
+minimization was not possible for the particular block. This is explained in the
+later lines within separators. Thermal parameters are in the second to fourth
+column. The last column denotes the residual norm of the nonlinear curve fitting.
+At the bottom of the file, the averages of all non-negative parameters with
+their standard errors are reported over all blocks for which minimization was
+possible. The files ``paramCV.txt'' and ``parametersFourier.txt'' have the same
+format, except that for the CV model only the thermal conductivity and one relaxation time
+are included, and for the Fourier model only the thermal conductivity is included.
+
+\section{Further discussion}
+It is possible that the \tpicode will fail to provide thermal parameters for the
+given number of blocks and number of ensemble files. The following suggestions
+may help to obtain results:
+
+\begin{itemize}
+  \item The values of the parameters `nblocks' and `nEnsembles' can be changed.
+  \item The initial guesses for the thermal parameters can be changed. 
+    Nonlinear regression can be highly sensitive to the initial
+    guesses. A grid of initial guesses is formed for this purpose and nonlinear
+    minimization is performed for all grid values. However, it may occur that
+    these grid values do not lead to acceptable minimization results. In
+    this case, changing the grid values may help.
+\end{itemize}
+\newpage{}
+%\bibitem[Tipler91] {} Tipler, P.A. 1991. \textit{Physics for
+%    Scientists and Engineers}, 3rd ed., Worth. Chapter 24.
+%\bibitem[ChemGuide]{}
+%  http://www.chemguide.co.uk/analysis/masspec/howitworks.html
+
+%\end{thebibliography}
+
+%\bibliography{references}
+\end{document}
+

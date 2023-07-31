@@ -1,0 +1,179 @@
+#-------------------------------------------------------------------------
+# This script creates a solid argon beam of 3*${Nbins} x ny x ny unit cells
+# with lattice parameter 5.24 Angstrom. Then a NPT simulation is performed
+# at zero pressure and ${theta0} temperature with damping parameter set for 
+# thermostat and barostat as ${tdamp} and ${pdamp}. Then the beam along 
+# length (x-axis) is divided into ${Nbins} bins and using Langevin thermostats 
+# a nonequilibrium stead state for sinusoidal temperature distribution along
+# length  of the beam is achieved. Then the phase-space of the simulation is 
+# stored 'nEnsembles' times. Finally each ensemble (realization) is relaxed 
+# under NVE conditions.
+#-------------------------------------------------------------------------
+dimension       3	
+boundary        p p p       	
+units           metal 
+atom_style      atomic	
+
+# variables for interatomic potential
+variable sig equal 3.4 	        # sigma in LJ potential
+variable cut equal 4.5*${sig}   # cutoff r_c
+variable eps equal  0.01025423  # epsilon
+
+variable skin equal 0.5*${sig}  # skin 
+neighbor ${skin} bin         
+
+# Variables defined to store data, run MD simulation 
+variable nev equal 100 
+variable nrep equal 100 
+variable nfreq0 equal ${nev}*${nrep} 
+variable runtime0 equal 300*${nfreq0}
+variable ndump equal ${runtime0} 
+
+# Variable to set number of bins or layers
+variable Nbins equal 11
+
+# Variable to set the base temperature and amplitude of the sinusoidal
+# temperature distribution distribution
+variable theta0   equal 35.0
+variable theta2   equal 2*${theta0}
+variable dtheta0  equal 0.1*${theta0}
+
+# Variable to set damping time of the Langevin thermostat
+variable tdamp  equal 100.0
+variable pdamp  equal 400.0
+
+# create geometry
+variable nx equal 0.01+3*${Nbins}
+variable ny equal 4 
+
+lattice          fcc 5.24 
+region	         box block 0.01 ${nx} 0 ${ny} 0 ${ny} 
+create_box       1 box
+create_atoms	 1 region box 
+
+# Set mass
+mass             * 39.948
+
+# Set interatomic potential
+pair_style      lj/cut ${cut}   
+pair_coeff      * * ${eps} ${sig}   
+
+#------------------------------------------------------------------
+# Run the simulation under NPT conditions with zero pressure and
+# ${theta0} temperature. 
+#------------------------------------------------------------------
+restart		${ndump} NPT.*.file	
+
+velocity    all create ${theta2} 4459 mom yes rot yes dist gaussian
+
+fix 100 all npt temp ${theta0} ${theta0} ${tdamp} iso 0.0 0.0 ${pdamp}
+
+# To observe the global temperature evolution 
+compute 1 all temp
+fix gb_t all ave/time ${nev} ${nrep} ${nfreq0} c_1 ave running
+
+timestep        0.002	
+thermo	        ${nfreq0} 
+thermo_style	custom step temp f_gb_t etotal press vol    
+
+dump		1 all xyz ${ndump} beam0.xyz 
+run	        ${runtime0}
+
+#------------------------------------------------------------------
+# Divide into 'Nbins' bins and then independent Langevin thermostats 
+# are applied to all bins with target temperature of the following 
+# sinusoidal form along x-axis:
+#
+#  T_n = theta0 + dtheta0 cos(2 \pi n/(Nbins-1)), 0 <= n <= Nbins-1,
+#
+#  where n is the bin number.
+#------------------------------------------------------------------
+
+# Variable to set damping time of the Langevin thermostat
+variable tdamp  equal 1.0
+
+variable runtime1 equal 100*${nfreq0}
+variable ndump equal ${runtime1} 
+
+restart		${ndump} endSin.*.file	
+
+unfix 100
+fix 100 all langevin/layer ${theta0} ${dtheta0} ${tdamp} 48279 ${Nbins} 
+fix 200 all nve
+
+dump		2 all xyz ${ndump} beam1.xyz 
+run	        ${runtime1}
+
+#------------------------------------------------------------------
+# Store the positions and momenta of all atoms after each 'nfreq0' 
+# time-steps in ICEns.*.file, which helps prepare initial conditions
+# for 'nEnsembles' realizations (ensembles).
+#------------------------------------------------------------------
+
+variable nEnsembles equal 50 
+variable runtimeStore equal ${nEnsembles}*${nfreq0}
+
+restart		${nfreq0} ICEns.*.file	
+
+run	        ${runtimeStore}
+
+#------------------------------------------------------------------
+# Now relax the system from sinusoidal temperature distribution to 
+# achieve the steady state by switching the thermostats off.  
+#------------------------------------------------------------------
+
+# Variables defined to store data, run MD simulation for 'nEnsembles'
+# ensembles (realizations)
+variable nev equal     5  
+variable nrep equal    100 
+variable nfreq equal   ${nev}*${nrep}  
+variable nprofs equal  100           # number of profiles for each realization 
+variable runtime equal ${nprofs}*${nfreq}
+
+label      loop        
+variable   i loop ${nEnsembles} 
+    variable n equal ${runtime0}+${runtime1}+$i*${nfreq0}
+    clear
+    read_restart ICEns.${n}.file
+    
+    reset_timestep 0
+
+    # Perform NVE simulation
+    fix 200 all nve
+
+    # compute temperature and heat flux for all bins by averaging over 
+    # 'nfreq = nev*nrep' data and store in 'tempFlux.*.ensemble', where '*'
+    # represents the ensemble number     
+
+    compute 1 all temp
+    
+    compute myPE all pe/atom
+    compute myStress all stress/atom NULL virial 
+    compute 5 all temp/heat/flux/layer myPE myStress ${Nbins} 
+
+    # If both temperature and heat current recorded (uncomment the following two lines)
+    fix 16 all binAve/time ${nev} ${nrep} ${nfreq} ${Nbins} 2 c_5 ave one file tempCurrent.$i.ensemble mode vector & 
+           title2 "# Bin  Temperature       Heat-current" title3 "#------------------------------------"
+    
+    # If only temperature is recorded (uncomment the following two lines)
+    # fix 16 all binAve/time ${nev} ${nrep} ${nfreq} ${Nbins} 1 c_5 ave one file temp.$i.ensemble mode vector & 
+    #       title2 "# Bin  Temperature" title3 "#-----------------"
+
+    # Just for tracking the global temperature
+    fix gb_t all ave/time ${nev} ${nrep} ${nfreq} c_1 ave running
+
+    # run
+    timestep   0.001	
+    thermo     ${nfreq} 
+    thermo_style  custom step temp f_gb_t etotal press    
+
+    # dump for only the first ensemble and only once after runtime
+    if	    '$i == 1' then "dump	1 all xyz ${runtime} $i.xyz"  
+    run	     ${runtime}
+
+    next   i
+    jump   in.npt.sinusoidal loop  
+    # ATTENTION: make sure that script file name is put here
+
+label break
+variable i delete
