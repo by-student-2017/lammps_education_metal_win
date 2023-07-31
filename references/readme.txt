@@ -251,7 +251,33 @@ input file (metal unit, lammps)
   --------------------------------------------
     https://mospace.umsystem.edu/xmlui/handle/10355/83797
     https://mospace.umsystem.edu/xmlui/handle/10355/90569
-    
+  
+- https://research.tue.nl/files/150978464/0528792_Boomstra_M.W._MSc_thesis.pdf (LJ)
+- https://aaltodoc.aalto.fi/handle/123456789/22192 (LJ)
+
+- https://ntnuopen.ntnu.no/ntnu-xmlui/handle/11250/2562297 (LJ)
+- https://ntnuopen.ntnu.no/ntnu-xmlui/handle/11250/2562299 (LJ)
+- https://ntnuopen.ntnu.no/ntnu-xmlui/handle/11250/2390753 (ReaxFF)
+
+- https://www.osti.gov/servlets/purl/1093887
+
+- https://openscience.ub.uni-mainz.de/handle/20.500.12030/6656 (C60)
+
+- https://bearworks.missouristate.edu/theses/3669/ (ReaxFF file)
+- https://bearworks.missouristate.edu/theses/3536/ (ReaxFF file)
+- https://bearworks.missouristate.edu/theses/3739/ (ReaxFF file)
+- https://bearworks.missouristate.edu/theses/3690/ (ReaxFF ZnO)
+- https://bearworks.missouristate.edu/theses/3461/
+- https://bearworks.missouristate.edu/theses/3416/
+- https://bearworks.missouristate.edu/theses/3455/
+- https://bearworks.missouristate.edu/theses/3460/
+- https://bearworks.missouristate.edu/theses/3217/ (QE and VASP)
+
+- https://trace.tennessee.edu/utk_gradthes/3776/
+
+- https://dspace.lib.cranfield.ac.uk/handle/1826/9283
+
+- 
 -------------------------------------------------------------------
 plot the temperature of each atom
 
