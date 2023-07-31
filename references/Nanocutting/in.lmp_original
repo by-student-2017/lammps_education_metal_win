@@ -18,7 +18,7 @@ units metal
 #variable temp equal 293
 
 ## Material
-# Lattice parameter for Cu [Angstrom]
+# Lattice parameter for Cu
 variable latconst equal 3.615 #3.615
 
 # Mass of Cu atom [u]
@@ -30,24 +30,24 @@ variable massC equal 12.0
 #lattice fcc ${latconst} orient x 1 0 0 orient y 0 1 0 orient z 0 0 1
 
 ## Starting geometry, workpiece
-# thickness of WP fixed boundary, tB [Angstrom]
+# thickness of WP fixed boundary, tB
 variable tB equal 6.5 #6.5
 
-# thickness of WP thermo boundary + tB, ttB [Angstrom]
+# thickness of WP thermo boundary + tB, ttB
 variable ttB equal 2*${tB}
 
-# Length of WP, l [Angstrom]
+# Length of WP, l
 variable lengthWP equal 1600 #1600
 
-# Hight of WP, h [Angstrom]
+# Hight of WP, h
 variable heightWP equal 200 #200
 
-# Thickness of WP, t [Angstrom]
+# Thickness of WP, t
 variable thicknessWP equal 36.15 # 36.15 equals 10 uc
 variable thicknessTool equal 35
 
 ## Starting geometry, tool
-# Radius of tool, rTool [Angstrom]
+# Radius of tool, rTool
 variable outerRTool equal 200
 variable cutDepth equal 20
 #variable toolThickness equal 10 # when the tool is a shell
@@ -62,8 +62,8 @@ variable yCutTool equal 1.15*${yStartTool}
 
 # Fixed and thermal boundary coordinates of the tool
 variable xFixedTool equal ${xCutTool}-${tB}
-variable yFixedTool equal ${yCutTool}-${tB}
 variable xThermalTool equal ${xCutTool}-${ttB}
+variable yFixedTool equal ${yCutTool}-${tB}
 variable yThermalTool equal ${yCutTool}-${ttB}
 
 
@@ -241,11 +241,11 @@ fix avgVelWP middleWP ave/atom 1 200 200 vx vy vz
 # Computing the average velocity magnitude for Tool
 fix avgVelTool middleTool ave/atom 1 200 200 vx vy vz
 
-dump avgForcesRelax all custom 200 relax.lammpstrj id type x y z vx vy vz f_avgKeAtomWP f_avgKeAtomTool &
+dump avgForcesRelax all custom 8000 relax.lammpstrj id type x y z vx vy vz f_avgKeAtomWP f_avgKeAtomTool &
 f_avgVelWP[1] f_avgVelWP[2] f_avgVelWP[3] f_avgVelTool[1] f_avgVelTool[2] f_avgVelTool[3]
 #800
 #-----------------------------------------------------
-dump         d1 all cfg 200 cfg/run.*.cfg mass type xsu ysu zsu id type vx vy vz fx fy fz
+dump         d1 all cfg 100 cfg/run.*.cfg mass type xs ys zs id type vx vy vz fx fy fz
 dump_modify  d1 element Cu C
 #-----------------------------------------------------
 
@@ -275,7 +275,7 @@ fix 6 ToolFixBound nvt temp 293 293 0.1
 timestep 0.0045 # 0.005 does not seem to work
 
 # Runs simulation for the specified number of timesteps
-run 1000
+run 30000
 
 # Unfixing the conditions for relaxation
 #unfix 1
@@ -294,7 +294,7 @@ fix 6 ToolFixBound setforce 0.0 0.0 0.0
 timestep 0.0045 # 0.005
 
 # Runs simulation for the specified number of timesteps
-run 1000 #10000
+run 10000 #10000
 
 # Unfixing the conditions for relaxation
 unfix 1
