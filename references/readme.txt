@@ -257,7 +257,10 @@ input file (metal unit, lammps)
 
 - https://ntnuopen.ntnu.no/ntnu-xmlui/handle/11250/2562297 (LJ)
 - https://ntnuopen.ntnu.no/ntnu-xmlui/handle/11250/2562299 (LJ)
+- https://ntnuopen.ntnu.no/ntnu-xmlui/handle/11250/2445480 (LJ)
+- https://ntnuopen.ntnu.no/ntnu-xmlui/handle/11250/249557
 - https://ntnuopen.ntnu.no/ntnu-xmlui/handle/11250/2390753 (ReaxFF)
+- https://ntnuopen.ntnu.no/ntnu-xmlui/handle/11250/2445481 (ReaxFF)
 
 - https://www.osti.gov/servlets/purl/1093887
 
