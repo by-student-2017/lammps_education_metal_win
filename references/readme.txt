@@ -138,6 +138,9 @@ input file (metal unit, lammps)
   
 - http://ta.twi.tudelft.nl/users/vuik/numanal/romero_afst.pdf
 
+- https://pewi.org/cv/files/msc.pdf
+  NEMD
+
 - D. Chen et al., Doctor Thesis (2014).
   https://oaktrust.library.tamu.edu/handle/1969.1/154160
   radiation (need datafile.lammps) (Structure of (013)[100]Σ = 5 symmetric-tilt grain boundary)
@@ -346,9 +349,11 @@ input file (metal unit, lammps)
 - https://theses.hal.science/tel-04119671v1
 
 - https://jscholarship.library.jhu.edu/handle/1774.2/68027
+  
+- https://www.diva-portal.org/smash/get/diva2:1341275/FULLTEXT01.pdf
 
-- https://pewi.org/cv/files/msc.pdf
-  NEMD
+- https://uhra.herts.ac.uk/handle/2299/15336
+- 
 -------------------------------------------------------------------
 plot the temperature of each atom
 
