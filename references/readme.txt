@@ -325,7 +325,13 @@ input file (metal unit, lammps)
 - https://digitalcommons.mtu.edu/etdr/457/
 - https://digitalcommons.mtu.edu/etds/809/
 
+- https://qmro.qmul.ac.uk/xmlui/handle/123456789/427
 
+- https://webthesis.biblio.polito.it/13857/1/tesi.pdf
+
+- https://repository.mines.edu/handle/11124/173097
+
+- 
 -------------------------------------------------------------------
 plot the temperature of each atom
 
