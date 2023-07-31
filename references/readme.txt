@@ -5,6 +5,8 @@ input file (metal unit, lammps)
   https://www.researchgate.net/profile/Collins-Nana-Andoh/publication/327390429_MOLECULAR_DYNAMICS_SIMULATION_OF_MECHANICAL_DEFORMATION_OF_AUSTENITIC_STAINLESS_STEELS_Fe-Ni-Cr_ALLOYS_AT_SUPERCRITICAL_WATER_CONDITIONS/links/62ae336c938bee3e3f3f2253/MOLECULAR-DYNAMICS-SIMULATION-OF-MECHANICAL-DEFORMATION-OF-AUSTENITIC-STAINLESS-STEELS-Fe-Ni-Cr-ALLOYS-AT-SUPERCRITICAL-WATER-CONDITIONS.pdf
   https://www.academia.edu/download/57943795/1._Andoh_Pap_2.pdf
   Fe-Ni-Cr_alloys
+  
+- https://www.researchgate.net/profile/Collins-Nana-Andoh/publication/325126856_Binary_Collision_and_Molecular_Dynamics_Simulation_of_Fe-Ni-Cr_Alloys_at_Supercritical_Water_Condition/links/5f6d445c458515b7cf4c4d16/Binary-Collision-and-Molecular-Dynamics-Simulation-of-Fe-Ni-Cr-Alloys-at-Supercritical-Water-Condition.pdf
 
 - A. C. C. Dutra et al., Energy Adv., 2 (2023) 653-666.
   https://doi.org/10.1039/D3YA00075C
@@ -296,11 +298,20 @@ input file (metal unit, lammps)
   https://conservancy.umn.edu/handle/11299/182204
   TPI_v2
   
+- https://pure.tue.nl/ws/portalfiles/portal/69667354/Both_2016.pdf (LJ)
+  
 - https://scholarscompass.vcu.edu/etd/174/?show=full (LJ)
 
 - https://mds.marshall.edu/etd/1090/
 - https://mds.marshall.edu/etd/1411/
 - https://mds.marshall.edu/etd/1124/ (PdAgH, elastic)
+
+- https://repository.lboro.ac.uk/articles/thesis/Damage_of_nuclear_graphite_and_structural_response_of_carbon_fibre_to_tension/22345081/1/files/39760825.pdf
+
+- https://doi.org/10.26190/5d1d47a9eb76f
+  UZrO
+  
+- https://summit.sfu.ca/item/16590
 
 
 -------------------------------------------------------------------
