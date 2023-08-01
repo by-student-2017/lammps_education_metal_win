@@ -347,8 +347,7 @@ input file (metal unit, lammps)
 
 - https://open.library.ubc.ca/media/download/pdf/24/1.0220767/4
 
-- https://open.library.ubc.ca/media/stream/pdf/24/1.0166726/4 (K-G model)
-- https://open.library.ubc.ca/soa/cIRcle/collections/ubctheses/24/items/1.0166726 (K-G model)
+
 
 - https://shareok.org/handle/11244/332399
 
