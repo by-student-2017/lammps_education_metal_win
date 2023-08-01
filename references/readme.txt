@@ -259,14 +259,8 @@ input file (metal unit, lammps)
     https://mospace.umsystem.edu/xmlui/handle/10355/83797
     https://mospace.umsystem.edu/xmlui/handle/10355/90569
   
-- https://research.tue.nl/files/150978464/0528792_Boomstra_M.W._MSc_thesis.pdf (LJ)
-- https://aaltodoc.aalto.fi/handle/123456789/22192 (LJ)
-
 - https://ntnuopen.ntnu.no/ntnu-xmlui/handle/11250/2350291
-- https://ntnuopen.ntnu.no/ntnu-xmlui/handle/11250/2562297 (LJ)
-- https://ntnuopen.ntnu.no/ntnu-xmlui/handle/11250/2562299 (LJ)
-- https://ntnuopen.ntnu.no/ntnu-xmlui/handle/11250/2445480 (LJ)
-- https://ntnuopen.ntnu.no/ntnu-xmlui/handle/11250/2562298 (LJ)
+
 - https://ntnuopen.ntnu.no/ntnu-xmlui/handle/11250/249557
 - https://ntnuopen.ntnu.no/ntnu-xmlui/handle/11250/2390753 (ReaxFF)
 - https://ntnuopen.ntnu.no/ntnu-xmlui/handle/11250/2445481 (ReaxFF)
@@ -299,8 +293,6 @@ input file (metal unit, lammps)
 
 - https://opendata.uni-halle.de/bitstream/1981185920/87709/1/Thesis_FDEMYDIUK_GermanCovers.pdf
 
-- https://conservancy.umn.edu/handle/11299/253958 (LJ, zip file)
-
 - M.-K. Choi (2022)
   https://conservancy.umn.edu/handle/11299/250214 (MoS2, zip file)
   DRUM_DATA
@@ -308,10 +300,6 @@ input file (metal unit, lammps)
 - S. Amit, Thesis or Dissertation (2015)
   https://conservancy.umn.edu/handle/11299/182204
   TPI_v2
-  
-- https://pure.tue.nl/ws/portalfiles/portal/69667354/Both_2016.pdf (LJ)
-  
-- https://scholarscompass.vcu.edu/etd/174/?show=full (LJ)
 
 - https://mds.marshall.edu/etd/1090/
 - https://mds.marshall.edu/etd/1411/
@@ -380,15 +368,11 @@ input file (metal unit, lammps)
 
 - http://ethesis.nitrkl.ac.in/6991/ (CuZr)
 
-- https://ruor.uottawa.ca/handle/10393/28527 (LJ)
-
 - http://210.212.194.26/jspui/handle/123456789/14231 (hBN)
 
 - https://ujcontent.uj.ac.za/esploro/outputs/doctoral/Multiscale-numerical-analysis-of-the-sticking/9925409407691 (ALD)
 
 - file:///C:/Users/manab/Downloads/a_deshpande_073014.pdf
-
-- https://thesis.unipd.it/handle/20.500.12608/33210 (LJ)
 
 - https://www.politesi.polimi.it/handle/10589/2021 (real unit)
 
@@ -405,11 +389,8 @@ input file (metal unit, lammps)
 
 - https://research-information.bris.ac.uk/ws/portalfiles/portal/364060220/Final_Copy_2023_05_09_Petkov_A_PhD.pdf (beta-Ga2O3)
 
-- https://era.ed.ac.uk/handle/1842/35877 (LJ)
-
 - https://ttu-ir.tdl.org/bitstream/handle/2346/87494/DANKESREITER-THESIS-2021.pdf?sequence=1&isAllowed=y (DLC)
 
-- https://shareok.org/handle/11244/50751 (LJ)
 - https://shareok.org/handle/11244/52763 (Green-kubo)
 
 - https://theses.cz/id/fl7387/2022_DP_Cavojec_Martin_192047.pdf (python)
