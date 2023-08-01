@@ -285,6 +285,9 @@ input file (metal unit, lammps)
 - https://bearworks.missouristate.edu/theses/3455/
 - https://bearworks.missouristate.edu/theses/3460/
 - https://bearworks.missouristate.edu/theses/3217/ (QE and VASP)
+- https://bearworks.missouristate.edu/theses/3159/ (Ti-N-Al)
+- https://bearworks.missouristate.edu/theses/3670/ (Rf-MEAM)
+- 
 
 - https://trace.tennessee.edu/utk_gradthes/3776/
 
@@ -414,6 +417,10 @@ input file (metal unit, lammps)
 - https://library.ndsu.edu/ir/handle/10365/28721
 
 - https://www.research-collection.ethz.ch/handle/20.500.11850/258958
+
+- https://uir.unisa.ac.za/handle/10500/29236
+
+- https://webthesis.biblio.polito.it/secure/15380/1/tesi.pdf
 
 - 
 -------------------------------------------------------------------
