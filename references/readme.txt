@@ -353,6 +353,37 @@ input file (metal unit, lammps)
 - https://www.diva-portal.org/smash/get/diva2:1341275/FULLTEXT01.pdf
 
 - https://uhra.herts.ac.uk/handle/2299/15336
+
+- https://opendata.uni-halle.de/bitstream/1981185920/87709/1/Thesis_FDEMYDIUK_GermanCovers.pdf
+
+- https://openscholarship.wustl.edu/art_sci_etds/1722/
+- 
+
+- https://repositorio.unicamp.br/Busca/Download?codigoArquivo=545405
+
+- https://open.library.ubc.ca/media/download/pdf/24/1.0220767/4
+
+- https://open.library.ubc.ca/media/stream/pdf/24/1.0166726/4 (K-G model)
+
+- https://shareok.org/handle/11244/332399
+
+- https://digitalcommons.usf.edu/etd/2098/
+- https://digitalcommons.usf.edu/etd/280/ (Metal, lj)
+- https://digitalcommons.usf.edu/etd/3343/
+- https://digitalcommons.usf.edu/etd/2098/
+
+- https://helda.helsinki.fi/items/d6c16df9-76c4-4392-8e10-b1a9ecfd1e7e
+
+- http://ethesis.nitrkl.ac.in/6991/ (CuZr)
+
+- https://ruor.uottawa.ca/handle/10393/28527 (LJ)
+
+- http://210.212.194.26/jspui/handle/123456789/14231 (hBN)
+
+- https://ujcontent.uj.ac.za/esploro/outputs/doctoral/Multiscale-numerical-analysis-of-the-sticking/9925409407691 (ALD)
+
+- file:///C:/Users/manab/Downloads/a_deshpande_073014.pdf
+
 - 
 -------------------------------------------------------------------
 plot the temperature of each atom
