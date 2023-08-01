@@ -262,18 +262,11 @@ input file (metal unit, lammps)
 - https://ntnuopen.ntnu.no/ntnu-xmlui/handle/11250/2350291
 
 - https://ntnuopen.ntnu.no/ntnu-xmlui/handle/11250/249557
-- https://ntnuopen.ntnu.no/ntnu-xmlui/handle/11250/2390753 (ReaxFF)
-- https://ntnuopen.ntnu.no/ntnu-xmlui/handle/11250/2445481 (ReaxFF)
-- https://ntnuopen.ntnu.no/ntnu-xmlui/handle/11250/246379 (ReaxFF file)
 
 - https://www.osti.gov/servlets/purl/1093887
 
 - https://openscience.ub.uni-mainz.de/handle/20.500.12030/6656 (C60)
 
-- https://bearworks.missouristate.edu/theses/3669/ (ReaxFF file)
-- https://bearworks.missouristate.edu/theses/3536/ (ReaxFF file)
-- https://bearworks.missouristate.edu/theses/3739/ (ReaxFF file)
-- https://bearworks.missouristate.edu/theses/3690/ (ReaxFF ZnO)
 - https://bearworks.missouristate.edu/theses/3461/
 - https://bearworks.missouristate.edu/theses/3416/
 - https://bearworks.missouristate.edu/theses/3455/
@@ -312,7 +305,7 @@ input file (metal unit, lammps)
   
 - https://summit.sfu.ca/item/16590
 
-- C. Gibbon et al., 	Phys. Chem. Chem. Phys., 2023,25, 3190-3198.
+- C. Gibbon et al., Phys. Chem. Chem. Phys., 2023,25, 3190-3198.
   https://doi.org/10.1039/D2CP05550C
   
 - https://digitalcommons.mtu.edu/etdr/491/
@@ -332,7 +325,7 @@ input file (metal unit, lammps)
 - https://repository.mines.edu/handle/11124/17099
 - https://repository.mines.edu/handle/11124/76842
 - https://repository.mines.edu/handle/11124/172834
-- https://repository.mines.edu/handle/11124/79468 (ReaxFF file)
+
 
 - https://core.ac.uk/download/pdf/161264638.pdf
 
