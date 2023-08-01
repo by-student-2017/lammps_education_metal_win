@@ -422,6 +422,12 @@ input file (metal unit, lammps)
 
 - https://webthesis.biblio.polito.it/secure/15380/1/tesi.pdf
 
+- https://harvest.usask.ca/handle/10388/ETD-2013-10-1264
+
+- https://ttu-ir.tdl.org/handle/2346/85090
+- https://ttu-ir.tdl.org/handle/2346/73470
+- https://ttu-ir.tdl.org/handle/2346/87494
+
 - 
 -------------------------------------------------------------------
 plot the temperature of each atom
