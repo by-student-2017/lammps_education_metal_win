@@ -364,6 +364,7 @@ input file (metal unit, lammps)
 - https://open.library.ubc.ca/media/download/pdf/24/1.0220767/4
 
 - https://open.library.ubc.ca/media/stream/pdf/24/1.0166726/4 (K-G model)
+- https://open.library.ubc.ca/soa/cIRcle/collections/ubctheses/24/items/1.0166726 (K-G model)
 
 - https://shareok.org/handle/11244/332399
 
@@ -383,6 +384,36 @@ input file (metal unit, lammps)
 - https://ujcontent.uj.ac.za/esploro/outputs/doctoral/Multiscale-numerical-analysis-of-the-sticking/9925409407691 (ALD)
 
 - file:///C:/Users/manab/Downloads/a_deshpande_073014.pdf
+
+- https://thesis.unipd.it/handle/20.500.12608/33210 (LJ)
+
+- https://www.politesi.polimi.it/handle/10589/2021 (real unit)
+
+- https://www.sciencedirect.com/science/article/pii/S0010465518304107 (MagiC)
+
+- https://espace.curtin.edu.au/handle/20.500.11937/44762
+  sunset_yellow_dimers
+  
+- https://dam-oclc.bac-lac.gc.ca/download?is_thesis=1&oclc_number=1334672370&id=9d5dacb7-eb31-4359-9367-0923130add9f&fileName=Huberman_Samuel_C_201311_MASc_thesis.pdf
+
+- https://pure.tue.nl/ws/portalfiles/portal/217974945/Wezel_van_1277928_ABP_Salet.pdf
+
+- https://etda.libraries.psu.edu/catalog/25081 (CG)
+
+- https://research-information.bris.ac.uk/ws/portalfiles/portal/364060220/Final_Copy_2023_05_09_Petkov_A_PhD.pdf (beta-Ga2O3)
+
+- https://era.ed.ac.uk/handle/1842/35877 (LJ)
+
+- https://ttu-ir.tdl.org/bitstream/handle/2346/87494/DANKESREITER-THESIS-2021.pdf?sequence=1&isAllowed=y (DLC)
+
+- https://shareok.org/handle/11244/50751 (LJ)
+- https://shareok.org/handle/11244/52763 (Green-kubo)
+
+- https://theses.cz/id/fl7387/2022_DP_Cavojec_Martin_192047.pdf (python)
+
+- https://library.ndsu.edu/ir/handle/10365/28721
+
+- https://www.research-collection.ethz.ch/handle/20.500.11850/258958
 
 - 
 -------------------------------------------------------------------

@@ -1,0 +1,228 @@
+#########################################################################################################
+# LAMMPS input file template
+#########################################################################################################
+# Input coordinates and force field
+#########################################################################################################
+
+variable inpfile  string    coord.lmp         # input filename
+variable fffile   string    ../ff-sunset.lmp  # forcefield filename
+
+#########################################################################################################
+# Start up
+#########################################################################################################
+
+variable iseed0   equal  1836
+variable iseed1   equal  2947
+variable run_no   equal     0                  # run ID, if > 0 restart.* is read
+variable resfile  string    restart            # restart filename
+
+#########################################################################################################
+# Run type
+#########################################################################################################
+
+variable ens      equal        1               # ensemble (0=nve, 1=nvt, 2=npt, 3=ber, 4=lang, 5=stoc, 6=vres)
+variable npttype  string     iso               # type of NPT (iso, aniso, tri, z...)
+variable minimise equal        1               # initial energy minimisation (0=no; 1=yes)
+variable lowt     equal        0               # initial run at low T for free atoms only (0=no; 1=yes)
+variable plumed   equal        1               # PLUMED  (0=no; 1=yes)
+variable evb      equal       -1               # RAPTOR (-1=noEVB noOH; 0=noEVB yes OH; 1=yesEVB)
+
+#########################################################################################################
+# Simulation details
+#########################################################################################################
+
+variable ts       equal        0.001           # simuation timeste (time units)
+variable nstep0   equal   100000               # number of equilibration steps - PLUMED only
+variable nsteps   equal  5000000               # number of MD steps 
+variable ntraj    equal     1000               # trajectory output frequency 
+variable ntraj_s  equal    -1000               # trajectory output frequency 
+variable nthermo  equal     1000               # thermodynamic data output frequency 
+variable temp_s   equal      300               # start temperature 
+variable temp_f   equal      300               # final temperature 
+variable trel     equal        0.100           # thermostat relaxation time
+variable tscale   equal        1               # rescaling frequency (velocity rescaling only)
+variable pres     equal        1.01325         # pressure (NPT runs only)
+variable prel     equal        1.0             # barostat relaxation time
+
+variable dbg_erg equal        -1               # print out the energy in a gulp friendly mode for debugging
+
+#########################################################################################################
+# Include variables file
+#########################################################################################################
+
+shell "touch variables.lmp"
+include variables.lmp 
+
+#########################################################################################################
+# Info printout
+#########################################################################################################
+
+if "${run_no} == 0" then "print 'Starting from scratch'"
+if "${run_no} >= 1" then "print 'Restarting a simulation'"
+print "The seed for the initial velocities is ${iseed0}"
+print "The seed for the stochastic thermostat is ${iseed1}"
+shell "rm -f variables.lmp"
+
+#########################################################################################################
+# Units (eV - ps - angstrom - bar)
+#########################################################################################################
+
+units metal
+
+#########################################################################################################
+# 3D periodic simulation
+#########################################################################################################
+
+boundary p p p
+
+#########################################################################################################
+# Atom style - charge/vdw/bonded
+#########################################################################################################
+
+atom_style full
+
+#########################################################################################################
+# Read the input structure
+#########################################################################################################
+
+if "${run_no} == 0" then "read_data ${inpfile}" else "read_restart ${resfile}"
+# change_box all triclinic
+# box tilt large
+
+#########################################################################################################
+# Force field 
+#########################################################################################################
+
+include ${fffile}
+#dielectric 79.6
+
+#########################################################################################################
+# Parameters for reciprocal space electrostatics
+#########################################################################################################
+
+kspace_style pppm 1.0e-6
+kspace_modify fftbench no
+
+#########################################################################################################
+# Thermodynamic output
+#########################################################################################################
+
+variable str_basic string 'step pe temp press'
+
+variable str_ens string ' '
+if "${ens} == 0" then "variable str_ens string 'etotal'"
+if "${ens} == 1" then "variable str_ens string 'pxx pyy pzz'"
+if "${ens} == 2" then "variable str_ens string 'vol pxx pyy pzz cella cellb cellc cellalpha cellbeta cellgamma'"
+if "${ens} == 3" then "variable str_ens string 'pxx pyy pzz'"
+if "${ens} == 4" then "variable str_ens string 'pxx pyy pzz'"
+if "${ens} == 5" then "variable str_ens string 'pxx pyy pzz'"
+if "${ens} == 6" then "variable str_ens string 'pxx pyy pzz'"
+
+# variables for a gulp friendly output
+variable str_dbg string ' '
+if "${dbg_erg} == 1" then "variable e2body    equal ebond+evdwl"
+if "${dbg_erg} == 1" then "variable ecoul_tot equal ecoul+elong"
+if "${dbg_erg} == 1" then "variable str_dbg string 'ebond eangle edihed eimp evdwl ecoul elong etail v_e2body v_ecoul_tot'"
+
+thermo_style custom ${str_basic} ${str_ens} ${str_dbg} cpu
+thermo ${nthermo}
+
+#########################################################################################################
+# Eneergy minimisation
+#########################################################################################################
+
+if "${minimise} == 1 && ${run_no} == 0" then  "minimize 1.0e-4 1.0e-6 100 100"
+if "${minimise} == 1 && ${run_no} == 0" then  "reset_timestep 0"
+
+#########################################################################################################
+# Groups' definitions
+#########################################################################################################
+
+# region 1 block  INF INF  INF INF  0. 2. units box
+# group layer region 1
+# group ions type ${Ca} ${Mg} ${Sr} ${Ba}
+# group tether intersect layer ions
+
+group free id > -1
+group solute id > -1
+
+#########################################################################################################
+# Timestep in ps
+#########################################################################################################
+
+timestep ${ts}
+
+#########################################################################################################
+# Low temperature run for equilibration
+#########################################################################################################
+
+if "${lowt} == 1" then "fix 1 free nve"
+if "${lowt} == 1" then "fix 2 free temp/berendsen 1.0 1.0 0.01"
+if "${lowt} == 1" then "run 1000"
+if "${lowt} == 1" then "reset_timestep 0"
+if "${lowt} == 1" then "unfix 1"
+if "${lowt} == 1" then "unfix 2"
+
+#########################################################################################################
+# Velocity generation
+#########################################################################################################
+
+if "${run_no} == 0" then "velocity free create ${temp_s} ${iseed0} mom yes dist gaussian"
+
+#########################################################################################################
+# Restart file
+#########################################################################################################
+
+restart 100000 restart.1 restart.2
+
+#########################################################################################################
+# Trajectory output - whole system and solute only
+#########################################################################################################
+
+if "${ntraj} > 0" then "dump 1 all dcd ${ntraj} trajectory.${run_no}.dcd" 
+if "${ntraj} > 0" then "dump_modify 1 unwrap yes"                         
+
+if "${ntraj_s} > 0" then "dump 2 solute dcd ${ntraj_s} solute.${run_no}.dcd" 
+if "${ntraj_s} > 0" then "dump_modify 2 unwrap yes"
+
+#########################################################################################################
+# EVB - RAPTOR
+#########################################################################################################
+
+if "${evb} == 1" then "fix evb all evb in.evb evb.out evb.top"
+
+#########################################################################################################
+# Ensembles (0=nve, 1=nvt, 2=npt, 3=ber, 4=lang, 5=stoc)
+#########################################################################################################
+
+if "${ens} == 0" then "fix nve free nve"
+if "${ens} == 1" then "fix nvt free nvt temp ${temp_s} ${temp_f} ${trel} tchain 5"
+if "${ens} == 2" then "fix npt free npt temp ${temp_s} ${temp_f} ${trel} ${npttype} ${pres} ${pres} ${prel} tchain 5 pchain 5 mtk yes"
+if "${ens} == 3" then "fix nve free nve" "fix ber   free temp/berendsen ${temp_s} ${temp_f} ${trel}"
+if "${ens} == 4" then "fix nve free nve" "fix ber   free langevin ${temp_s} ${temp_f} ${trel} ${iseed1} tally yes zero yes"
+if "${ens} == 5" then "fix nve free nve" "fix stoch free temp/stochastic  ${temp_s} ${temp_f} ${trel} ${iseed1}"
+if "${ens} == 6" then "fix nve free nve" "fix vres  all temp/rescale ${tscale} ${temp_s} ${temp_f} 1.0 1.0"
+
+fix com free momentum 1000 linear 1 1 1
+
+#########################################################################################################
+# Run equilibration MD for PLUMED
+#########################################################################################################
+
+if "${plumed} >= 1 && ${run_no} == 0 && ${nstep0} > 0 && ${ens} >= 0" then   &
+  "fix eqplmd all plumed plumedfile plumed.equi.inp outfile plumed.equi.out" &
+  "run ${nstep0}"                                                            &
+  "write_restart equil_restart.${run_no}"                                    &
+  "unfix eqplmd"
+
+#########################################################################################################
+# Run MD - production
+#########################################################################################################
+
+if "${plumed} >= 1 && ${nsteps} >= 0"  then &
+  "fix plmd all plumed plumedfile plumed.mtd.inp outfile plumed.mtd.out"
+
+if "${ens} >= 0 && ${nsteps} >= 0" then "run ${nsteps}" 
+if "${ens} >  0 && ${nsteps} > 0" then "write_restart final_restart.${run_no}"
+
+
