@@ -428,6 +428,11 @@ input file (metal unit, lammps)
 - https://ttu-ir.tdl.org/handle/2346/73470
 - https://ttu-ir.tdl.org/handle/2346/87494
 
+- https://scholarcommons.scu.edu/mech_mstr/24/
+- https://scholarcommons.scu.edu/mech_mstr/9/
+
+- https://helda.helsinki.fi/items/b1b2e8bf-6448-4a64-ab41-cf1519875c55
+
 - 
 -------------------------------------------------------------------
 plot the temperature of each atom
