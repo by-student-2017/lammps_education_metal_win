@@ -433,6 +433,7 @@ input file (metal unit, lammps)
 
 - https://helda.helsinki.fi/items/b1b2e8bf-6448-4a64-ab41-cf1519875c55
 
+- https://theses.lib.polyu.edu.hk/handle/200/9699
 - 
 -------------------------------------------------------------------
 plot the temperature of each atom
