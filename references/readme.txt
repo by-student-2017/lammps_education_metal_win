@@ -114,17 +114,21 @@ input file (metal unit, lammps)
   Migration
 
 - B. N. Sorbom, thesis (2010).
-   https://dspace.mit.edu/handle/1721.1/120392
-   YBCO (an acronym for, yttrium, barium, copper, and oxygen) (Y1Ba2Cu3O7) (need *.dat and table) (failed)
+  https://dspace.mit.edu/handle/1721.1/120392
+  YBCO (an acronym for, yttrium, barium, copper, and oxygen) (Y1Ba2Cu3O7) (need *.dat and table) (failed)
 
 - S. T. T. Lam, thesis (2013).
   https://dspace.mit.edu/handle/1721.1/129108
-  (VASP, Packmol, PANNA, Lammps)
+  (VASP, Packmol, PANNA, Lammps) (failed)
 
+- K. C. Alexander, thesis (2011).
+  https://dspace.mit.edu/handle/1721.1/108218
+  Grain_Boundary_generation (failed)
 
-    https://dspace.mit.edu/handle/1721.1/108218
-    https://dspace.mit.edu/handle/1721.1/123228 (REBO)
-    https://dspace.mit.edu/handle/1721.1/140043
+- G. S. Jung, thesis (2019).
+  https://dspace.mit.edu/handle/1721.1/123228 
+  (REBO)
+
     https://dspace.mit.edu/handle/1721.1/109645
     https://dspace.mit.edu/handle/1721.1/74420
     https://dspace.mit.edu/handle/1721.1/111899
