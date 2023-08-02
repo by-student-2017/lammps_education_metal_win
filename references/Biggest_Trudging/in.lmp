@@ -1,0 +1,151 @@
+# A sample input file for the LAMMPS simulation, from the "Biggest Trudging" case:
+
+#processors 3 1 3
+
+units si
+dimension 3
+
+newton off
+boundary p p f
+
+atom_style sphere
+
+comm_modify mode single vel yes
+
+neighbor 0.0005 nsq
+
+variable d equal 0.0008
+variable err equal 0.2
+variable dl equal d*(1-err)/1.05/(1+err)
+variable dh equal d*(1+err)/1.05/(1+err)
+variable rho equal 2500
+variable latt equal vd*1.0
+variable L equal 275
+variable q equal 1
+variable tau equal 10^-4/(9.8/d)^0.5 * 1
+
+timestep tau
+
+lattice sc d
+
+read_restart BigWheel1200000.restart
+
+region world block 0 L 0 1 0 200
+region sand  block 0 L 0 1 0 150
+region bed   block 0 L 0 1 4 145
+region floor region block 0 L 0 1 0 3
+region plate region block 40 81 0 1 152 157
+region plate region inner block 41 80 0 1 152.5 156.5
+
+create_box 4 world
+
+variable     kn equal 2*10^5 * 3.14/6 * rho * d * d * 9.8 * 10
+variable     kt equal kn * 2/7
+variable gamman equal 50 * (9.8/d)^0.5 * 100
+variable gammat equal 50 * (9.8/d)^0.5 * 0
+
+pair_style gran/hooke/history kn kt gamman gammat 0.4 1
+pair_coeff * *
+
+fix 3 all wall/gran kn kt gamman gammat 0.4 1 zplane 0 200 
+
+create_atoms 2 region bed
+
+label loopb
+
+variable b loop 12400
+variable d2 equal random(dl,dh,1)
+
+set atom b diameter d2
+
+next b
+
+jump SELF loopb
+
+create_atoms 1 region floor region
+create_atoms 3 region plate region
+
+set type 1 diameter d
+set type 1 density rho
+set type 2 density rho
+set type 3 diameter 0.0008
+set type 3 density rho
+set type 4 diameter 0.0008
+set type 4 density 10374.62
+
+group  wheel region plate region
+group center region plate region inner
+group bottom region floor region
+group  grain subtract all wheel bottom
+
+set group bottom type 1
+set group  wheel type 3
+set group center type 4
+
+neigh_modify exclude type 3 1
+neigh_modify exclude type 4 1
+neigh_modify exclude type 4 4
+neigh_modify exclude type 3 4
+neigh_modify exclude type 3 3
+neigh_modify exclude type 1 1
+
+group plate type 3 4
+
+velocity grain create 1E14 4928459
+
+fix 1 wheel move rotate 60.5 0.5 74.5 0 1 0 1.414
+fix gravi grain gravity 9.8 vector 0 0 -1
+fix grav2 wheel gravity 9.8 vector 0 0 -1
+fix integrate grain nve/sphere
+
+variable cmx equal xcm(plate,x)
+variable cmy equal xem(plate,y)
+variable cmz equal xcm(plate,z)
+variable wx equal omega(plate,x)
+variable wy equal omega(plate,y)
+variable wz equal omega(plate,z)
+variable tx equal torque(plate,x)
+variable ty equal torque(plate,y)
+variable tz equal torque(plate,z)
+variable vmx equal vcm(plate,x)
+variable vmy equal vcm(plate,y)
+variable vmz equal vcm(plate,z)
+
+compute stress all stress/atom NULL pair
+
+run 1
+
+balance 1.05 shift z 10 1.05
+
+unfix 1
+
+fix wheelspinning wheel rigid single force * on on on torque * off off off
+fix zeroyforce wheel setforce NULL 0 NULL
+
+dump dumpi all image 100000 BigWheel*.jpg
+
+type diameter size 1280 720 center s 0.5 0.3 0.4 zoom 3.3 view 90 90
+
+dump d3 all custom 100000 BigWheel*.txt
+
+id type x y z vx vy vz diameter cstress[1] cstress[2] cstress[3] cstress[4] cstress[5] cstress[6]
+
+dump_modify d3 format
+
+restart 100000 BigWheel*.restart
+
+thermo 10000
+thermo_style custom step vcmx vcmy vcmz vvmx vvmy vvmz vwx vwy vwz vtx vty vtz
+
+run 19
+run 180
+
+label loopa
+
+variable a loop 1500
+
+run 20000
+
+next a
+
+jump SELF loopa

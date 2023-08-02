@@ -100,23 +100,35 @@ input file (metal unit, lammps)
 - K.-J. Carter, Bachelor Thesis (2017).
   https://dspace.mit.edu/handle/1721.1/112482
   Irradiation
-  -------------------------------
-  https://dspace.mit.edu/discover
-    https://dspace.mit.edu/handle/1721.1/57788 (ReaxFF)
-    https://dspace.mit.edu/handle/1721.1/119936
-    https://dspace.mit.edu/handle/1721.1/78232
-    https://dspace.mit.edu/handle/1721.1/119031
-    https://dspace.mit.edu/handle/1721.1/104145
-    https://dspace.mit.edu/handle/1721.1/120392
-    https://dspace.mit.edu/handle/1721.1/129108
-    https://dspace.mit.edu/handle/1721.1/98127 (CG fit on MATLAB)
+
+- S. Townsend, thesis (2018).
+  https://dspace.mit.edu/handle/1721.1/119936
+  Biggest_Trudging
+
+- S. E. Ferry, thesis (2011).
+  https://dspace.mit.edu/handle/1721.1/119031
+  Ni-Al_alloy (need NiAl_50.data)
+
+- S. L. Ball, thesis (2014).
+  https://dspace.mit.edu/handle/1721.1/104145
+  Migration
+
+- B. N. Sorbom, thesis (2010).
+   https://dspace.mit.edu/handle/1721.1/120392
+   YBCO (an acronym for, yttrium, barium, copper, and oxygen) (Y1Ba2Cu3O7) (need *.dat and table) (failed)
+
+- S. T. T. Lam, thesis (2013).
+  https://dspace.mit.edu/handle/1721.1/129108
+  (VASP, Packmol, PANNA, Lammps)
+
+
     https://dspace.mit.edu/handle/1721.1/108218
     https://dspace.mit.edu/handle/1721.1/123228 (REBO)
     https://dspace.mit.edu/handle/1721.1/140043
     https://dspace.mit.edu/handle/1721.1/109645
     https://dspace.mit.edu/handle/1721.1/74420
     https://dspace.mit.edu/handle/1721.1/111899
-    https://dspace.mit.edu/handle/1721.1/82707 (NAMD)
+
     https://dspace.mit.edu/handle/1721.1/90011 (MATLAB)
 
 - https://core.ac.uk/download/pdf/187147604.pdf
@@ -377,7 +389,6 @@ input file (metal unit, lammps)
 
 - https://pure.tue.nl/ws/portalfiles/portal/217974945/Wezel_van_1277928_ABP_Salet.pdf
 
-- https://etda.libraries.psu.edu/catalog/25081 (CG)
 
 - https://research-information.bris.ac.uk/ws/portalfiles/portal/364060220/Final_Copy_2023_05_09_Petkov_A_PhD.pdf (beta-Ga2O3)
 

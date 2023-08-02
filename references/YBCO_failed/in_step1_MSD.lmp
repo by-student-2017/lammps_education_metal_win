@@ -1,0 +1,90 @@
+# ----- PKA simulation for YBCO ------------------
+
+variable myT equal 800
+
+# - -------- INITIALIZATION ------------------- --
+units metal
+boundary p p p
+dimension 3
+atom_style charge
+atom_modify map hash
+read_data YBCO_10_10_4.dat
+region inter block -17.000000 17.000000&
+                   -17.100000 17.100000&
+                   -21.380000 21.380000 units box
+group interatom region inter
+group outeratom subtract all interatom
+
+compute interT interatom temp
+compute outT outeratom temp
+
+# ----------- Force Field --------------------------
+# radii (Angstrom); Y:1.78, Ba:2.3, Cu:1.2, O:1.74
+# atomic charge; Y:1.9, Ba:1.5, Cu:1.4, O:-1.3
+# 1:Y, 2:Ba, 3:Cu, 4:Cu, 5:O
+
+pair_style hybrid/overlay buck/coul/long 9.990001 9.990001&
+                          zbl 0.9 1.8 table linear 1000
+pair_coeff * * buck/coul/long 1e-30 1e-30 0.0
+pair_coeff 1 1 buck/coul/long 1822.0000 0.287933 0.0 # Y-Y
+pair_coeff 1 2 buck/coul/long 1822.0000 0.329990 0.0 # Y-Ba
+pair_coeff 1 3 buck/coul/long 1822.0000 0.241022 0.0 # Y-Cu
+pair_coeff 1 4 buck/coul/long 1822.0000 0.241022 0.0 # Y-Cu
+pair_coeff 1 5 buck/coul/long 1822.0000 0.284698 0.0 # Y-O
+pair_coeff 2 2 buck/coul/long 1822.0000 0.372048 0.0 #Ba-Ba
+pair_coeff 2 3 buck/coul/long 1822.0000 0.283080 0.0 #Ba-Cu
+pair_coeff 2 4 buck/coul/long 1822.0000 0.283080 0.0 #Ba-Cu
+pair_coeff 2 5 buck/coul/long 1822.0000 0.326755 0.0 #Ba-O
+pair_coeff 3 3 buck/coul/long 1822.0000 0.194112 0.0 #Cu-Cu
+pair_coeff 3 4 buck/coul/long 1822.0000 0.194112 0.0 #Cu-Cu
+pair_coeff 3 5 buck/coul/long 1822.0000 0.237787 0.0 #Cu-O
+pair_coeff 4 4 buck/coul/long 1822.0000 0.194112 0.0 #Cu-Cu
+pair_coeff 4 5 buck/coul/long 1822.0000 0.237787 0.0 #Cu-O
+pair_coeff 5 5 buck/coul/long 1822.0000 0.281462 0.0 # O-O
+pair_coeff 1 1 zbl 39.000000 39.000000 # Y-Y
+pair_coeff 1 2 zbl 39.000000 56.000000 # Y-Ba
+pair_coeff 1 3 zbl 39.000000 29.000000 # Y-Cu
+pair_coeff 1 4 zbl 39.000000 29.000000 # Y-Cu
+pair_coeff 1 5 zbl 39.000000  8.000000 # Y-O
+pair_coeff 2 2 zbl 56.000000 56.000000 #Ba-Ba
+pair_coeff 2 3 zbl 56.000000 29.000000 #Ba-Cu
+pair_coeff 2 4 zbl 56.000000 29.000000 #Ba-Cu
+pair_coeff 2 5 zbl 56.000000  8.000000 #Ba-O
+pair_coeff 3 3 zbl 29.000000 29.000000 #Cu-Cu
+pair_coeff 3 4 zbl 29.000000 29.000000 #Cu-Cu
+pair_coeff 3 5 zbl 29.000000  8.000000 #Cu-O
+pair_coeff 4 4 zbl 29.000000 29.000000 #Cu-Cu
+pair_coeff 4 5 zbl 29.000000  8.000000 #Cu-O
+pair_coeff 5 5 zbl  8.000000  8.000000 # O-O
+pair_coeff 3 5 table Potential_35.table LS_YBCO 9.990001
+pair_coeff 4 5 table Potential_45.table LS_YBCO 9.990001
+pair_coeff 5 5 table Potential_55.table LS_YBCO 9.990001
+kspace_style pppm 0.0001
+neigh_modify delay 0 every 1 check yes
+group oxygen type 5
+
+##-------------- Plot energy/force vs. distance r ----------
+thermo 100
+thermo_style custom step pe ke press lx ly lz temp pxx pyy pzz
+minimize 2e-10 1e-10 5000 10000
+
+##----------- Relax. at Target Temp for 100 ps ----------------
+reset_timestep 0
+timestep 0.001
+velocity all create ${myT} 8200 mom yes
+fix 1 all nvt temp ${myT} ${myT} 0.1
+run 100000
+
+#------------------ MSD ---------------------------------------
+compute Omsd oxygen msd com yes
+variable OMSDX equal "c_Omsd[1]"
+variable OMSDY equal "c_Omsd[2]"
+variable OMSDZ equal "c_Omsd[3]"
+variable OMSDAll equal "c_Omsd[4]"
+thermo 1000
+thermo-style custom step pe ke press lx ly lz temp&
+             c_Omsd[1] c_Omsd[2] c_Omsd[3] c_Omsd[41
+fix 2 all print 1000&
+             "${OMSDX} ${OMSDY} ${OMSDZ} ${OMSDAll} "&
+             file MSD.data screen no
+run 3000000

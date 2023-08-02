@@ -1,0 +1,32 @@
+# Input file for Ni-Al alloy equlibration
+
+# ------------------------ INITIALIZATION ----------------------------
+units metal
+dimension 3
+boundary p p p
+atom_style atomic
+variable latparam equal 3.5 
+
+# ----------------------- ATOM DEFINITION ----------------------------
+read_data NiAl_50.data
+group ni type 1
+group al type 2
+
+# ------------------------ FORCE FIELDS ------------------------------
+pair_style eam/alloy
+pair_coeff * * NiAl02.eam.alloy Ni Al
+
+# ------------------------- SETTINGS ---------------------------------
+thermo 100 
+thermo_style custom step lx ly lz press pxx pyy pzz pe temp
+
+#-------------------------- Equilibriation -----------------------------
+reset_timestep 0
+timestep 0.001
+
+velocity all create 300.0 4928459 mom yes rot yes dist gaussian 
+fix 1 all npt temp 300 300 0.1 iso 0.0 0.0 2
+
+dump 1 all xyz 100 relaxed_config.xyz 
+
+run 100000
