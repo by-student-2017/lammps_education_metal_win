@@ -135,6 +135,7 @@ input file (metal unit, lammps)
 
 - T. Metspalu, Master Thesis (2015)
   https://core.ac.uk/download/pdf/187147604.pdf
+  CLIC_electrical_breakdown
   
 - D. Chen et al., Master thesis (2011).
   polyfe (need polyfe.lammps)

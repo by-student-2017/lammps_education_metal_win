@@ -1,0 +1,121 @@
+# --- SIMULATION BOX SIZE DEPENDENT VARIABLES ---
+variable sizeX2 equal v_sizeX /2 # Middle of initial box size X
+variable sizeY2 equal v_sizeY /2 # Middle of initial box size Y
+variable sizeZ2 equal v_sizeZ /2 # Middle of initial box size Z
+variable X_1 equal v_sizeX -1
+variable Y_1 equal v_sizeY -1
+# Defining simulation box
+region regioon block 0 $ { sizeX } 0 $ { sizeY } 0 $ { sizeZ }
+create_box 1 regioon
+
+# --- ION SPEED ---
+# Ion energy in eV - s ( divided by 100 because of the default A / ps unit )
+variable m_Cu equal (63.546*(1/12) *1.998467052*10^-26)
+variable iSpeed equal ( sqrt (2* v_energy *1.602176565*10^ -19/( v_m_Cu ) ) ) /100
+
+# --- EAM POTENTIAL ---
+pair_style eam / alloy # Potential type
+pair_coeff * * Potentials / $ { POT } Cu # Potential file
+
+# --- READING IN PRE - RELAXED STATE ---
+read_dump Relax / $ { POT }/ $ { surf_temp } Kelvins / RELAX . orient$ { orientation }. ${ surf_temp } K . $ (( v_relax *2) ) TS . DUMP $ (( v_relax *2) ) x y z vx vy vz box yes
+add yes
+
+# --- RANDOM VARIABLES : COORDINATES , ANGLES , VELOCITY COMPONENTS ---
+# Random X value in the middle of the simulation box (+ -1/2 lattice )
+variable RanX equal ( random ( v_sizeX2 -1/2 , v_sizeX2 +1/2 , v_seed ) )
+variable RanY equal ( random ( v_sizeY2 -1/2 , v_sizeY2 +1/2 , v_seed ) )
+variable RandomX equal $ { RanX } # Fixing the random value
+variable RandomY equal $ { RanY }
+# Random incident angle
+variable RanAlpha equal random ( $ { low } , $ { high } , v_seed )
+variable RandomAlpha equal $ { RanAlpha }
+variable RanPhi equal ( acos (1 -2* random (0 ,1 , v_seed ) ) *360/ PI )
+variable RandomPhi equal $ { RanPhi }
+variable iSpeedZ equal v_iSpeed * cos ( v_RandomAlpha * PI /180)
+variable iSpeedXY equal sqrt (( v_iSpeed * v_iSpeed ) -( v_iSpeedZ * v_iSpeedZ ) )
+variable iSpeedX equal sin ( $ { RandomPhi }) * $ { iSpeedXY }
+variable iSpeedY equal cos ( $ { RandomPhi }) * $ { iSpeedXY }
+
+# --- RANDOM BOX SHIFTING ---
+variable RanDX equal ( random (0 , v_sizeX , v_seed ) )
+variable RanDY equal ( random (0 , v_sizeY , v_seed ) )
+displace_atoms all move $ { RanDX } $ { RanDY } 0
+
+# --- ION CREATION ---
+create_atoms 1 single $ { RandomX } $ { RandomY } $ { Z_ion } # Creating one ion
+region iooniregioon sphere $ { RandomX } $ { RandomY } $ { Z_ion } 0.1
+group ion region iooniregioon # Defining a ion region
+
+# --- NEW REGIONS ---
+region atomregion block INF INF INF INF INF INF
+group atoms region atomregion
+region bottomregioon block 0 $ { sizeX } 0 $ { sizeY } INF 2
+group bottom region bottomregioon
+region anttiwalls block 1 $ { X_1 } 1 $ { Y_1 } -1 INF
+group antiwalls region anttiwalls
+group walls subtract atoms antiwalls
+# Finding the group of atoms that is going to be integrated over time
+group integraalgrupp1 subtract atoms bottom
+group integral union integraalgrupp1 ion
+# Bombarded target atoms + ion - bottom - walls
+group bomb_surf subtract integral walls
+# Bottom is fixed , top is shrink - wrapped
+change_box all boundary p p fs
+
+# --- SETTING ION VELOCITY ---
+velocity ion set $ { iSpeedX } $ { iSpeedY } -$ { iSpeedZ } mom yes rot no
+units box
+
+# --- RUN SETTINGS ---
+compute IonKin ion ke
+compute IonZ ion reduce max z
+# Displayed parameters
+thermo_style custom step cpu dt time ke c_IonKin c_IonZ
+reset_timestep 0
+fix adaptive_timestep all dt / reset 10 1.0 e -5 0.002 0.1 units box
+fix 3 bomb_surf nve
+fix thermowalls walls nvt temp $ { surf_temp } $ { surf_temp } 1
+neigh_modify check yes every 1 delay 0 # Check for building the
+regular neighbor lists more frequently to avoid errors
+
+# --- ELECTRONIC STOPPING POWER ---
+fix STOP all elstop 10 region regioon
+
+# --- BALANCING PROCESSOR LOAD ---
+comm_style tiled
+fix BAL all balance 200 1.05 rcb
+
+# --- RUN - - -
+thermo 25 # Show parameters every ... timesteps
+# Dump location of every atom after every 10 timesteps .
+dump 3 all custom 10 BOMBDUMP . dump id x y z
+if " $ { energy } == 100" then & " variable bombrun equal 2000" &
+elif " $ { energy } == 200" & " variable bombrun equal 2250" &
+elif " $ { energy } == 500" & " variable bombrun equal 2500" &
+elif " $ { energy } == 1000" & " variable bombrun equal 3000" &
+elif " $ { energy } == 2000" & " variable bombrun equal 3500" &
+elif " $ { energy } == 5000" & " variable bombrun equal 4000" &
+else " variable bombrun equal 2000"
+run $ { bombrun }
+unfix adaptive_timestep
+unfix 3
+unfix thermowalls
+unfix STOP
+unfix BAL
+undump 3
+
+# --- PENETRATION DEPTH ---
+variable Z_final equal c_IonZ
+variable Z_surf equal ’ v_sizeZ * v_latparamZ ’
+variable Depth equal ’ v_Z_surf - v_Z_final ’
+
+# --- SPUTTERING YIELD ---
+region sputterbox block INF INF INF INF $ { Z_ion } INF
+group sputtergroup region sputterbox
+variable NRA equal count ( sputtergroup )
+variable NRAtot equal count ( atoms )
+# Logging the results of the run
+print " $ { POT } $ { orientation } $ { count } $ { seed } $ { surf_temp } $ { energy } $ { RandomAlpha } $ { RandomPhi } $ { RandomX } $ { RandomY } $ { NRAtot } $ { Depth } $ {NRA }" append Logs / Sputter . log screen no
+
+# --- END OF SCRIPT ---
