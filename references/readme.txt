@@ -129,13 +129,12 @@ input file (metal unit, lammps)
   https://dspace.mit.edu/handle/1721.1/123228 
   (REBO)
 
-    https://dspace.mit.edu/handle/1721.1/109645
-    https://dspace.mit.edu/handle/1721.1/74420
-    https://dspace.mit.edu/handle/1721.1/111899
+- B. A. Demian, thesis (2014).
+  https://dspace.mit.edu/handle/1721.1/90011
+  (MATLAB)
 
-    https://dspace.mit.edu/handle/1721.1/90011 (MATLAB)
-
-- https://core.ac.uk/download/pdf/187147604.pdf
+- T. Metspalu, Master Thesis (2015)
+  https://core.ac.uk/download/pdf/187147604.pdf
   
 - D. Chen et al., Master thesis (2011).
   polyfe (need polyfe.lammps)
