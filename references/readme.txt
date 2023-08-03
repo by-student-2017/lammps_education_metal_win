@@ -285,7 +285,6 @@ input file (metal unit, lammps)
   https://bearworks.missouristate.edu/theses/3461/
   Ni-Al (need structure file: poly4_5, etc)
 
-- https://bearworks.missouristate.edu/theses/3416/
 - https://bearworks.missouristate.edu/theses/3455/
 - https://bearworks.missouristate.edu/theses/3460/
 - https://bearworks.missouristate.edu/theses/3217/ (QE and VASP)
