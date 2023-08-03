@@ -285,7 +285,10 @@ input file (metal unit, lammps)
   https://bearworks.missouristate.edu/theses/3461/
   Ni-Al (need structure file: poly4_5, etc)
 
-- https://bearworks.missouristate.edu/theses/3455/
+- R. Khadka, Master thesis (2019).
+  https://bearworks.missouristate.edu/theses/3455/
+  a-BC (SW or ReaxFF)
+
 - https://bearworks.missouristate.edu/theses/3460/
 - https://bearworks.missouristate.edu/theses/3217/ (QE and VASP)
 - https://bearworks.missouristate.edu/theses/3159/ (Ti-N-Al)
