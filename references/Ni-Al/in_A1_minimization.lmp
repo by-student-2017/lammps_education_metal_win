@@ -1,0 +1,28 @@
+# A. LAMMPS input script
+# 1. Structural minimization script
+
+units metal
+boundary p p p 
+atom_style atomic
+read_data poly4_5
+
+mass 1 58.69
+mass 2 26.98
+
+# ---------- Calling the potential file---------------------
+pair_style eam/alloy
+pair_coeff * * NiAl2.txt Ni A
+
+delete_atoms overlap 1.9 all all
+
+# ---------- Running NPT simulation----------------
+timestep 0.0001
+#velocity all create 300 4928459 dist gaussian
+dump melt all atom 100 poly_dump_iso.dat
+#restart 1000 restart.*
+thermo 10
+thermo_style custom step temp etotal pe press vol lx ly lz pxx pyy pzz pyz pxz pxy
+
+minimize 0.0 1.0e-8 1000 100000
+#fix 1 all npt temp 300 300 0.1 iso 0.0 0.0 0.1
+#run 5000

@@ -281,11 +281,10 @@ input file (metal unit, lammps)
   https://ntnuopen.ntnu.no/ntnu-xmlui/handle/11250/2350291
   cantilever
 
-- https://www.osti.gov/servlets/purl/1093887
+- S. K. Pinky, Master thesis (2019).
+  https://bearworks.missouristate.edu/theses/3461/
+  Ni-Al (need structure file: poly4_5, etc)
 
-- https://openscience.ub.uni-mainz.de/handle/20.500.12030/6656 (C60)
-
-- https://bearworks.missouristate.edu/theses/3461/
 - https://bearworks.missouristate.edu/theses/3416/
 - https://bearworks.missouristate.edu/theses/3455/
 - https://bearworks.missouristate.edu/theses/3460/
@@ -365,8 +364,6 @@ input file (metal unit, lammps)
 
 - https://open.library.ubc.ca/media/download/pdf/24/1.0220767/4
 
-
-
 - https://shareok.org/handle/11244/332399
 
 - https://digitalcommons.usf.edu/etd/2098/
@@ -429,6 +426,12 @@ input file (metal unit, lammps)
 
 - S. Shivpuje et al., 
   https://scholar.archive.org/work/ad7atvw33feslkudnhe2piyyhm/access/wayback/https://s3-eu-west-1.amazonaws.com/pstorage-tf-iopjsd8797887/17412845/gmos_a_1619929_sm5753.pdf
+
+- https://www.osti.gov/servlets/purl/1093887
+
+- J. William, Thesis (2021).
+  https://openscience.ub.uni-mainz.de/handle/20.500.12030/6656 
+  C60 (girifalco.table) (failed)
 -------------------------------------------------------------------
 plot the temperature of each atom
 

@@ -1,0 +1,80 @@
+# A. LAMMPS input script
+# 3. Uniaxial compressive loading simulation script
+
+# ------------------------ INITIALIZATION ----------------------------
+units metal
+dimension3
+boundaryppp
+atom_styleatomic
+#variable latparam equal 3.52
+
+# ----------------------- ATOM DEFINITION ----------------------------
+#latticefcc ${latparam}
+#regionwhole block 0 30 0 30 0 30
+#create_box1 whole
+#regionupper block INF INF INF INF INF INF units box 
+#lattice fcc ${latparam} orient x 1 0 0 orient y 0 1 0 orient z 0 0 1
+#create_atoms1 region whole
+read_data mega
+
+region void sphere 13.0 13.0 13.0 5 side in
+delete_atoms region void
+
+# ------------------------ FORCE FIELDS ------------------------------
+pair_styleeam/alloy
+pair_coeff* * NiAl2.txt Ni Al
+
+# ------------------------- SETTINGS ---------------------------------
+compute csym all centro/atom fcc
+compute peratom all pe/atom
+
+######################################
+# EQUILIBRATION
+reset_timestep 0
+timestep 0.001
+velocity all create 300 12345 mom yes rot no
+fix 1 all npt temp 300 300 1 iso 0 0 1 drag 1 
+
+# Set thermo output
+thermo 1000
+thermo_style custom step lx ly lz press pxx pyy pzz pe temp
+
+# Run for at least 10 picosecond (assuming 1 fs timestep)
+run 20000
+unfix 1
+
+# Store final cell length for strain calculations
+variable tmp equal "lx"
+variable L0 equal ${tmp}
+print "Initial Length, L0: ${L0}"
+
+######################################
+# DEFORMATION
+reset_timestep 0
+
+fix1 all npt temp 300 300 1 y 0 0 1 z 0 0 1 drag 1
+variable srate equal 5.0e9
+variable srate1 equal "-v_srate / 1.0e12"
+fix2 all deform 1 x erate ${srate1} units box remap x
+#fix 2 all deform 1 x erate 0.01 units box remap x
+
+# Output strain and stress info to file
+# for units metal, pressure is in [bars] = 100 [kPa] = 1/10000 [GPa]
+# p2, p3, p4 are in GPa
+variable strain equal "(lx - v_L0)/v_L0"
+variable p1 equal "v_strain"
+variable p2 equal "-pxx/10000"
+variable p3 equal "-pyy/10000"
+variable p4 equal "-pzz/10000"
+fix def1 all print 100 "${p1} ${p2} ${p3} ${p4}" file Ni_comp_100.def1.txt screen no
+
+dump myDump all atom 200 dumppure1.atom
+
+# Display thermo
+thermo 1000
+thermo_stylecustom step v_strain temp v_p2 v_p3 v_p4 ke pe press
+
+run50000
+
+######################################
+# SIMULATION DONE

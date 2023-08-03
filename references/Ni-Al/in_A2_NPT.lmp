@@ -1,0 +1,24 @@
+# A. LAMMPS input script
+# 2. NPT simulation script
+
+units metal
+boundary p p p 
+atom_style atomic
+read_data NiAl_2
+
+mass 1 58.69
+mass 2 26.98
+
+# ---------- Calling the potential file---------------------
+pair_style eam/alloy
+pair_coeff * * NiAl.txt Ni Al
+
+# ---------- Running NPT simulation----------------
+timestep 0.002
+velocity all create 300 4928459 dist gaussian
+dump melt all atom 100 NiAl_dump_aniso.dat
+#restart 1000 restart.*
+thermo 100
+thermo_style custom step temp etotal pe press vol lx ly lz pxx pyy pzz pyz pxz pxy
+fix 1 all npt temp 300 300 0.1 iso 0.0 0.0 0.1
+run 5000
