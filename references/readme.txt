@@ -281,8 +281,6 @@ input file (metal unit, lammps)
   https://ntnuopen.ntnu.no/ntnu-xmlui/handle/11250/2350291
   cantilever
 
-- https://ntnuopen.ntnu.no/ntnu-xmlui/handle/11250/249557
-
 - https://www.osti.gov/servlets/purl/1093887
 
 - https://openscience.ub.uni-mainz.de/handle/20.500.12030/6656 (C60)
