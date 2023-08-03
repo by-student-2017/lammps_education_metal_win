@@ -245,30 +245,41 @@ input file (metal unit, lammps)
   https://www.byui.edu/documents/physics/Theses/2010-2015/Aaron-ButterfieldS13.pdf
   Cu
   
-- https://etheses.bham.ac.uk/id/eprint/11999/
-  -------------------------------------------
-  https://etheses.bham.ac.uk/cgi/search/advanced
+- A. Albano, Doctor Thesis (2021).
+  https://etheses.bham.ac.uk/id/eprint/11999/
+  hybrid_meso_atomic
   
-- https://pure.tue.nl/ws/portalfiles/portal/46924674/841526-1.pdf
+- B. de Braaf, Master Thesis (2015).
+  https://pure.tue.nl/ws/portalfiles/portal/46924674/841526-1.pdf
+  Semi-Flexible Rod-Like Particles
+  
+- M. R. Pringle, Master Thesis (2021).
+  https://scholarworks.uvm.edu/graddis/1410/
+  Ag-Ni (need Data-ntAg-12nm-grs-NoTwin.in)
+  
+- X. Ke, Doctor Thesis (2019).
+  https://scholarworks.uvm.edu/graddis/995/
+  Cu-Ag_MC (need Data.in.gz and python code)
 
-- XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-  -------------------------------------------
-  https://jscholarship.library.jhu.edu/discover
+- Q. Fang, Doctor Thesis (2020).
+  https://scholarworks.uvm.edu/graddis/1323/
+  Cu-Ag_2D (need Data-2DCu-20grs-noKk-TBS92A.in) (python and fortran code)
   
-- https://scholarworks.uvm.edu/graddis/1410/
-  -------------------------------------------
-  https://scholarworks.uvm.edu/do/search/
-    https://scholarworks.uvm.edu/graddis/995/
-    https://scholarworks.uvm.edu/graddis/1323/
-    
-- https://prism.ucalgary.ca/bitstreams/a9233500-b1ea-445c-80c6-38bd8e046344/download
+- I. Khaled, Doctor Thesis (2012).
+  https://prism.ucalgary.ca/bitstreams/a9233500-b1ea-445c-80c6-38bd8e046344/download
+  Nanopatterning (need data.nanopatt)
 
-- https://mospace.umsystem.edu/xmlui/handle/10355/47997
-  --------------------------------------------
-    https://mospace.umsystem.edu/xmlui/handle/10355/83797
-    https://mospace.umsystem.edu/xmlui/handle/10355/90569
+- M. B. Larbi, Master Thesis (2015).
+  https://mospace.umsystem.edu/xmlui/handle/10355/47997
+  a-BxCy (need data.4.6b-c)
   
-- https://ntnuopen.ntnu.no/ntnu-xmlui/handle/11250/2350291
+- A. Saltos, Doctor Thesis (2020).
+  https://mospace.umsystem.edu/xmlui/handle/10355/83797
+  Greens_Function_Method (need Ugamma101010.pos) (MCNP and OpenMC code)
+  
+- M. Jorum, Master thesis (2015).
+  https://ntnuopen.ntnu.no/ntnu-xmlui/handle/11250/2350291
+  cantilever
 
 - https://ntnuopen.ntnu.no/ntnu-xmlui/handle/11250/249557
 

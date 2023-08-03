@@ -1,0 +1,67 @@
+# Compression Simulations Input with Ni Nanolayer and Relaxation
+# LAMMPS input file that defines a Ni nanolayer in the pure Ag and relaxes the model.
+
+# Compression in pure Ag with Ni nanolayer
+echo both
+
+dimension 3
+boundary p p p
+
+units metal
+atom_style atomic
+neighbor 1.5 bin
+neigh_modify delay 5
+
+lattice fcc 4.09
+
+read_data Data-ntAg-12nm-grs-NoTwin.in
+
+#EAM
+pair_style eam/fs
+pair_coeff * * Ag-Ni.eam.fs Ag Ni
+
+timestep 0.005 
+
+compute ctr all cna/atom 3.491
+compute str all stress/atom NULL
+#compute pe all pe/atom
+
+#Creating regions to replace with Ni
+region 1 block INF INF INF INF 225 260 units box
+region 2 block INF INF INF INF -35 0 units box
+
+#Removing Ag atoms and adding Ni atoms
+delete_atoms region 1
+create_atoms 2 random 700000 698317 1
+delete_atoms region 2
+create_atoms 2 random 700000 612317 2
+
+#deleting GB atoms that are too close
+delete_atoms overlap 0.5 all all
+
+#Minimization
+min_style cg
+minimize 1.0e-4 1.0e-6 200 1000
+
+# Equilibration at 800K, followed by cooling at 300K
+velocity all create 450.0 36434 rot yes
+thermo_style one
+thermo 1000
+
+dump 10 all custom 10000 coord0.xyz xs ys zs id type
+fix 15 all npt temp 450 450 0.05 aniso 0.0 0.0 0.12 drag 2
+run 20000
+unfix 15
+
+fix 15 all npt temp 450 300 0.05 aniso 0.0 0.0 0.12 drag 2
+run 10000
+unfix 15
+
+fix 15 all npt temp 300 300 0.05 aniso 0.0 0.0 0.12 drag 2
+run 10000
+unfix 15
+
+undump 10
+
+write_restart relax.restart-12nmgrs
+write_data Data-ntAg-Ni-12nmgrs-relaxed.in

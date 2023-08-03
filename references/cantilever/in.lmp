@@ -1,0 +1,262 @@
+# Appendix C: Input Script
+# The following is an example of the input script for cantilever 1.
+
+#################################################################################
+# Simulation of a fib-milled beam with crack
+#
+# Beam party script made by the awesome duo of Marie and Jorn
+#
+#################################################################################
+
+# Dimensions and boundary conditions
+#package gpu 1 force
+#package omp 8
+#processors * 4 2
+dimension 3
+boundary s p p # Choose the type of boundary conditions to use in x-, y- and z-direction
+units metal # Determines the units that all properties will be given in
+
+# Define variables
+variable filename string orient1_round_short # Define ending of filename, to change name of log and dump files further down
+variable latlength equal 2.85896 # Unit cell length used for iron
+variable temp equal 300.0
+variable xlatfactor equal 1.0 # Normalization factor for y lattice direction.
+variable ylatfactor equal 1.0 # Normalization factor for x lattice direction.
+variable zlatfactor equal 1.0 # Normalization factor for z lattice direction.
+
+variable scale equal 20/${latlength}
+variable height equal ceil(${scale}*20/${ylatfactor})
+variable heightx equal ceil(${scale}*20/${xlatfactor}) 
+variable w equal ceil(${scale}*20/${zlatfactor})
+variable halfw equal $w/2
+variable crackwall equal ${heightx}*1
+variable crackbeam equal ${heightx}*3
+variable length equal ${crackwall}+${crackbeam}
+variable high equal ${height}*0.75
+variable sidewidth equal $w*0.3
+variable low equal ${high}+${height}
+variable loose equal ceil(${scale}*0.2)/${xlatfactor}
+variable fix equal ceil(${scale}*0.1)/${xlatfactor}
+variable wall equal ${loose}+${fix}
+variable a equal ${height}*0.3
+variable ctodL equal round(${crackwall})-2
+variable ctodR equal round(${crackwall})+2
+variable ctodCL equal ${ctodL}+0.2
+variable ctodCR equal ${ctodR}-0.2
+variable left equal ${crackwall}-2
+variable right equal ${crackwall}+2
+variable H1_hi equal 0.1/${ylatfactor}
+variable H1_lo equal -0.1/${ylatfactor}
+variable H2_hi equal -round($a*0.3)+0.1/${ylatfactor}
+variable H2_lo equal -round($a*0.3)-0.1/${ylatfactor}
+variable H3_hi equal -round($a*0.85)+0.1/${ylatfactor}
+variable H3_lo equal -round($a*0.85)-0.1/${ylatfactor}
+variable H4_hi equal -round($a)+0.1/${ylatfactor}
+variable H4_lo equal -round($a)-0.1/${ylatfactor}
+
+variable radius equal $w*0.25*(${zlatfactor}/${xlatfactor})
+
+variable highz equal $w+${sidewidth}
+variable theta equal 45
+
+variable cornerlength equal ${length}-0.5*${heightx}
+variable cornerheight equal ${height}*0.2
+
+variable ts equal 0.0015
+variable trelax equal 200000 # Time-steps to relax system initially
+variable trun equal 1000000 # Time-steps we wish to run deformation
+variable ramp equal -ramp(0.0,0.0035)
+
+# Create geometry and atoms
+
+lattice bcc ${latlength} orient x 1 0 0 orient y 0 1 0 orient z 0 0 1 # Orient bjelkefest!
+region box block -${wall} ${length} -${low} ${high} -${sidewidth} ${highz} # Size of the system in x-, y- and zdirection, in units of the lattice unit length
+create_box 7 box # Create the system box
+region bjelke block 0 ${length} -${height} 0 0 $w 
+#Bjelkeutsikker
+region feste block -${wall} 0 INF INF INF INF 
+#Bakstykke
+variable yz equal 0.5*$w*tan(${theta}*3.14/180)*(${zlatfactor}/${ylatfactor})
+variable peak equal -${height}-${yz}
+variable peak2 equal -${height}+${yz}
+
+## variables for the rounding part
+variable round_r equal $w/4*${zlatfactor} # the radius for the rounding part
+variable round_highy equal ${round_r}/${ylatfactor}
+variable round_lowy equal -${height}-${round_r}/${ylatfactor}
+variable round_highz equal $w+${round_r}/${zlatfactor}
+variable round_lowz equal -${round_r}/${zlatfactor}
+variable round_ry equal ${round_r}/${ylatfactor}
+variable round_rx equal ${round_r}/${xlatfactor}
+variable round_rz equal ${round_r}/${zlatfactor}
+
+region cyl_hiy cylinder z ${round_rx} ${round_highy} ${round_rx} INF INF side out
+region cyl_loy cylinder z ${round_rx} ${round_lowy}  ${round_rx} INF INF side out
+region cyl_hiz cylinder y ${round_rx} ${round_highz} ${round_rx} INF INF side out
+region cyl_loz cylinder y ${round_rx} ${round_lowz}  ${round_rx} INF INF side out
+region round_block block 0 ${round_rx} ${round_lowy} ${round_highy} ${round_lowz} ${round_highz}
+region round intersect 5 cyl_hiy cyl_loy cyl_hiz cyl_loz round_block
+
+variable beardroundy equal ${peak}+${round_ry}/sin((90-${theta})*3.14/180)/${ylatfactor}
+variable beardboxy   equal ${peak}+${round_ry}*(1/sin((90-${theta})*3.14/180)-sin((90-${theta})*3.14/180))/${ylatfactor}
+
+region cyl_beard cylinder x ${beardroundy} ${halfw} ${round_ry} 0 INF side out
+#region cyl_beard2 cylinder x ${beardroundy} ${halfw} ${round_rz} 20 INF side in
+region box_beard block 0 INF INF ${beardboxy} INF INF side in
+
+region beardcut intersect 2 cyl_beard box_beard
+
+# A = (xhi-xlo,0,0); B = (xy,yhi-ylo,0); C = (xz,yz,zhi-zlo)
+region bottomL prism 0 ${length} -${height} ${peak2} 0 ${halfw} 0 0 -${yz}
+region bottomR prism 0 ${length} ${peak} -${height} ${halfw} $w 0 0 ${yz}
+
+region total union 5 round bjelke feste bottomL bottomR 
+create_atoms 1 region total # Create the atoms inside the system box
+
+delete_atoms region beardcut
+
+# Potential
+mass * 55.845 # Atom mass
+
+pair_style eam/fs
+#pair_style eam/fs/omp
+pair_coeff * * Fe_2.eam.fs Fe Fe Fe Fe Fe Fe Fe
+
+# Define groups
+region fixed block -${wall} -${loose} INF INF INF INF 
+#Fixed atoms
+group fixed region fixed
+group mobile subtract all fixed
+region leftcrack block ${left} ${crackwall} -$a 0 INF INF #Left of crack
+group leftcrack region leftcrack
+region rightcrack block ${crackwall} ${right} -$a 0 INF INF #Right of crack
+group rightcrack region rightcrack
+region ctodL1 block ${ctodL} ${ctodCL} ${H1_lo} ${H1_hi} INF INF
+region ctodL2 block ${ctodL} ${ctodCL} ${H2_lo} ${H2_hi} INF INF 
+region ctodL3 block ${ctodL} ${ctodCL} ${H3_lo} ${H3_hi} INF INF
+region ctodL4 block ${ctodL} ${ctodCL} ${H4_lo} ${H4_hi} INF INF
+region ctodR1 block ${ctodCR} ${ctodR} ${H1_lo} ${H1_hi} INF INF
+region ctodR2 block ${ctodCR} ${ctodR} ${H2_lo} ${H2_hi} INF INF
+region ctodR3 block ${ctodCR} ${ctodR} ${H3_lo} ${H3_hi} INF INF
+region ctodR4 block ${ctodCR} ${ctodR} ${H4_lo} ${H4_hi} INF INF
+#region corner block ${cornerlength} ${length} -${cornerheight} 0 INF INF
+region corner sphere ${cornerlength} 0 ${halfw} ${radius}
+group corner region corner
+#region sprekk block ${crackwall} ${crackwall} -$a 0 INF INF
+#group sprekk region sprekk
+#delete_atoms group sprekk 
+
+# Define which atoms to dump
+variable dumplength equal (2/3)*${length}
+region dump block 0 ${dumplength} INF INF INF INF
+group mdump region dump
+
+group ctodL1 region ctodL1
+group ctodL2 region ctodL2
+group ctodL3 region ctodL3
+group ctodL4 region ctodL4
+
+group ctodR1 region ctodR1
+group ctodR2 region ctodR2
+group ctodR3 region ctodR3
+group ctodR4 region ctodR4
+
+group ctodR union ctodR1 ctodR2 ctodR3 ctodR4
+group ctodL union ctodL1 ctodL2 ctodL3 ctodL4
+
+set group fixed type 2
+set group leftcrack type 3
+set group rightcrack type 4
+set group corner type 5
+set group ctodR type 6
+set group ctodL type 7
+
+# Define some computes to be used for system and atom output during simulation run
+compute myTemp mobile temp
+compute pot all pe/atom # Computes potential energy per atom
+compute stress all stress/atom NULL # Computes virial stress per atom
+variable mises atom "0.707106781 * sqrt( (c_stress[1] -c_stress[2])^2 + (c_stress[2] - c_stress[3])^2 + &
+  (c_stress[1] - c_stress[3])^2 + 6*(c_stress[4]^2 + c_stress[5]^2 + c_stress[6]^2))" # Computes the von Mises stress for each atom
+
+compute ctodL1x ctodL1 reduce ave x
+compute ctodL1y ctodL1 reduce ave y
+compute ctodL2x ctodL2 reduce ave x
+compute ctodL2y ctodL2 reduce ave y
+compute ctodL3x ctodL3 reduce ave x
+compute ctodL3y ctodL3 reduce ave y
+compute ctodL4x ctodL4 reduce ave x
+compute ctodL4y ctodL4 reduce ave y
+
+compute ctodR1x ctodR1 reduce ave x
+compute ctodR1y ctodR1 reduce ave y
+compute ctodR2x ctodR2 reduce ave x
+compute ctodR2y ctodR2 reduce ave y
+compute ctodR3x ctodR3 reduce ave x
+compute ctodR3y ctodR3 reduce ave y
+compute ctodR4x ctodR4 reduce ave x
+compute ctodR4y ctodR4 reduce ave y
+
+compute cornerx corner reduce ave x
+compute cornery corner reduce ave y
+
+variable ctod1 equal sqrt((sqrt((c_ctodL1x)^2)-sqrt((c_ctodR1x)^2))^2+(sqrt((c_ctodL1y)^2)-sqrt((c_ctodR1y)^2))^2)
+variable ctod2 equal sqrt((sqrt((c_ctodL2x)^2)-sqrt((c_ctodR2x)^2))^2+(sqrt((c_ctodL2y)^2)-sqrt((c_ctodR2y)^2))^2)
+variable ctod3 equal sqrt((sqrt((c_ctodL3x)^2)-sqrt((c_ctodR3x)^2))^2+(sqrt((c_ctodL3y)^2)-sqrt((c_ctodR3y)^2))^2)
+variable ctod4 equal sqrt((sqrt((c_ctodL4x)^2)-sqrt((c_ctodR4x)^2))^2+(sqrt((c_ctodL4y)^2)-sqrt((c_ctodR4y)^2))^2)
+
+# Initial velocities
+velocity mobile create ${temp} 887723
+
+# Fix to be used during relaxation
+fix 1 mobile npt temp ${temp} ${temp} 0.1 drag 2.0 y 0.0 0.0 1.0 z 0.0 0.0 1.0 drag 2.0 couple none # Use NPT ensemble with zero pressure in y- and z-directions
+#fix 1 all nvt temp ${temp} ${temp} 0.1 drag 2.0
+
+# Set timestep and temperature
+timestep ${ts}
+thermo 200
+
+# fix CNA stuff
+compute cna all cna/atom 3.46
+compute current all reduce sum c_cna
+thermo_style custom step temp c_current
+run 0
+variable cnaatom atom "c_cna == 3"
+group bcc variable cnaatom
+
+# fix back thermo output
+thermo_style custom step temp pxx pyy pzz ly v_ramp cpu &
+  v_ctod1 v_ctod2 v_ctod3 v_ctod4 c_cornerx c_cornery c_ctodL1x &
+  c_ctodR1x c_ctodL1y c_ctodR1y c_ctodL2x c_ctodR2x c_ctodL2y   &
+  c_ctodR2y c_ctodL3x c_ctodR3x c_ctodL3y c_ctodR3y c_ctodL4x   &
+  c_ctodR4x c_ctodL4y c_ctodR4y
+thermo_modify temp myTemp
+thermo_modify lost warn
+
+# Relax the simulation with a crack
+neigh_modify exclude type 3 4
+delete_atoms overlap 0.01 all all
+fix balance all balance 100000 1.05 shift x 20 1.05
+fix yzbal all balance ${trelax} 1.05 shift yz 20 1.05
+
+# Dump properties for each atom to file dump.indent
+dump 1 mdump custom 50000 mdump.${filename}.* id type xs ys zs c_pot v_mises
+dump 2 all custom 100000 dump.${filename}.* id type xs ys zs c_pot v_mises
+fix fixatoms fixed setforce 0.0 0.0 0.0
+
+run ${trelax}
+
+reset_timestep 0
+
+dump bccdump bcc custom 500 dump.beta.${filename}.* id type xs ys zs c_pot v_mises c_cna
+dump alphadump all custom 2500 dump.alpha.${filename}.* id type xs ys zs c_pot v_mises c_cna
+dump_modify bccdump thresh c_cna != 3
+dump_modify alphadump thresh c_cna != 3
+
+restart 200000 restart.${filename}.*
+
+# Run with deformation
+unfix 1
+fix 1 mobile nvt temp ${temp} ${temp} 0.1 drag 2.0 
+fix move corner addforce 0.0 v_ramp 0.0
+log log.${filename} # Write to logfile
+run ${trun} # Number of timesteps to run with these conditions

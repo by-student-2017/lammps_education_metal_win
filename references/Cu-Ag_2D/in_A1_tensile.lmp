@@ -1,0 +1,73 @@
+# A.4 LAMMPS script for MD simulations
+#  1. 3d models in tensile deformation
+
+dimension 3
+boundary p p p
+units metal
+atom_style atomic
+
+read_data Data-2DCu-20grs-noKk-TBS92A.in
+
+neighbor 1.5 bin
+neigh_modify delay 5
+
+pair_style eam/alloy
+pair_coeff * * CuAg.eam.alloy Cu
+
+compute ctr all cna/atom 3.086
+compute str all stress/atom NULL
+compute vor all voronoi/atom
+
+mass * 63.55
+timestep 0.005
+
+thermo 500
+
+dump 10 all custom 1 model.xyz x y z id c_ctr
+run 0
+undump 10
+
+delete_atoms overlap 1.326 all all compress yes
+min_style cg
+minimize 1.0e-6 1.0e-6 10000 10000
+write_restart restart.minimize
+
+dump 10 all custom 1 minimized.xyz x y z id c_ctr
+run 0
+undump 10
+
+#change_box all triclinic
+reset_timestep 0
+fix 5 all ave/time 100 5 500 c_thermo_press[1] c_thermo_press[2] c_thermo_press[3] file pressure.ave
+
+restart 10000 restart
+velocity all create 450 12345
+dump 11 all custom 2000 anneal1.xyz x y z id c_ctr c_str[1] c_str[2] c_str[3] c_str[4] c_str[5] c_str[6]
+fix 15 all npt temp 450 450 0.5 aniso 0.0 0.0 5 drag 2
+
+run 10000
+unfix 15
+undump 11
+
+dump 11 all custom 2000 anneal2.xyz x y z id c_ctr c_str[1] c_str[2] c_str[3] c_str[4] c_str[5] c_str[6]
+fix 15 all npt temp 450 300 0.5 aniso 0.0 0.0 5 drag 2
+run 10000
+unfix 15
+undump 11
+
+dump 11 all custom 2000 anneal3.xyz x y z id c_ctr c_str[1] c_str[2] c_str[3] c_str[4] c_str[5] c_str[6]
+fix 15 all npt temp 300 300 0.5 aniso 0.0 0.0 5 drag 2
+run 10000
+unfix 15
+undump 11
+
+fix 25 all deform 1 x erate 0.0002
+fix 15 all npt temp 300 300 0.5 y 0 0 5 z 0.0 0.0 5 drag 2
+
+variable a loop 1 10
+label repeat20
+dump 11 all custom 500 coord$a.xyz x y z id c_ctr c_vor[1] c_str[1] c_str[2] c_str[3] c_str[4] c_str[5] c_str[6]
+run 10000
+undump 11
+next a
+jump in.anneal-tensile repeat20

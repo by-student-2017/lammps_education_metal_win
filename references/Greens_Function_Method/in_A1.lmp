@@ -1,0 +1,62 @@
+# C.1 LAMMPS
+# C.1.1 Green’s Function Method
+# A sample of the LAMMPS input file used to calculate the phonon dispersion relations and 
+# phonon density of states using the Green’s function method is included below. 
+# This file corresponds to the case of γ-uranium at 1113 K. The atomic positions files
+#  (i.e., Ugamma101010.pos) were generated using the Latgen software developed by Kong [130].
+
+# gamma -U Input
+# LAMMPS (17 Nov 2016)
+# phonon calculation #EAM U-Mo -Xe potential
+# Andrea Saltos
+
+# Initialization
+units metal
+dimension 3
+boundary p p p
+
+# Definitions
+box tilt large
+read_data Ugamma101010.pos
+
+# Interatomic Potential
+pair_style eam/alloy
+pair_coeff * * U_Mo_Xe.2013.eam.alloy U
+
+#Settings
+mass 1 238.02891
+
+#Fixes
+fix myfix all box/relax iso 0
+
+variable a_x equal lx/10
+variable a_y equal ly/10
+variable a_z equal lz/10
+variable x_y equal xy
+variable x_z equal xz
+variable y_z equal yz
+variable totalE equal etotal
+variable Time equal time
+
+#Output1
+thermo_style custom step time ke pe etotal press temp v_a_x &
+  v_a_y v_a_z v_x_y v_x_z v_y_z
+thermo 100
+dump mydump all atom 10000 dump.U
+fix thermodata all print 100 "${Time} ${totalE }" file thermo.out &
+  title "# Time Etotal" screen no
+
+#Actions
+minimize 0 0 1000 100000
+unfix myfix
+minimize 0 0 1000 100000
+velocity all create 2226 4928549 dist gaussian mom yes rot yes
+fix myfix2 all npt temp 1113 1113 0.05 iso 0 0 0.5 pchain 8 drag 1 flip no
+timestep 0.0005
+run 1600000
+
+# To get dynamical matrix
+unfix myfix2
+fix myfix4 all nve
+fix myfix3 all phonon 20 100000 0 Ugamma101010map.in phononU sysdim 3
+run 100000000

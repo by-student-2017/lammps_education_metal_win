@@ -1,0 +1,84 @@
+# E.1 LAMMPS input script for Nanopatterning study (Chapter 4)
+
+dimension 3
+boundary p p p
+units real
+
+atom_style molecular
+
+neighbor 0.3 bin
+neigh_modify delay 1
+
+read_data data.nanopatt
+
+mass 1 63.546
+mass 2 39.95
+
+# Create groups by type :
+group sol type 1
+group liq type 2
+
+# Define heating/cooling regions
+region qin block INF INF INF INF −1.0 1.0 units box
+group qin region qin
+region qout block INF INF INF INF −107.774822 107.774822 &
+  side out units box
+
+# Interaction type:
+pair_style lj/cut 8.5
+pair_modify shift yes
+
+pair_coeff 1 1 0.0 0.0
+pair_coeff 2 2 0.2385277 3.40
+pair_coeff 1 2 0.2385277 2.8385
+
+bond_style morse
+bond_coeff 17.663017 1.369 2.89
+
+velocity liq create 140 451216 units box
+velocity sol create 140 453516 units box
+
+timestep 1.0
+
+variable etk equal 503.23082 #Temperature conversion factor
+compute temper a l l ke /atom
+variable temps1 atom c_tempe r/1.5
+variable temps1k atom v_temps1*${etk}
+
+# Calculate liquid pressure
+compute stens liq stress/atom
+compute p1 liq reduce sum c_stens[1]
+compute p2 liq reduce sum c_stens[2]
+compute p3 liq reduce sum c_stens[3]
+
+variable volliq equal 629188.8
+variable presl  equal −(c_p1+c_p2+c_p3)/(3∗ v_volliq)
+variable preslz equal −(c_p3)/(v_volliq)
+
+# Compute tamperature profiles in solid and liquid separately
+fix tps sol ave/spatial 1 250000 250000 z 0.0 2.043539 &
+  v_temps1k file tmps.profile units box
+
+fix tpl liq ave/spatial 1 250000 250000 z 0.0 2.043539 &
+  v_temps1k file tmps.profile units box
+
+# Animation file
+dump anim all atom 5000 anim.atom
+
+thermo_style custom step ke pe etotal temp press v_presl v_preslz
+thermo_modify flush yes
+thermo 1000
+
+
+# Equilibration with Berendsen thermostat
+
+fix 1 all nve
+fix 2 all temp/berendsen 140 140 500
+fix unif qin recenter NULL NULL 0.0 shift all units box
+
+run 1000000
+unfix 2
+
+fix hot qin heat 1 0.00254427
+fix cold liq heat 1 −0.00254427 region qout
+run 10000000

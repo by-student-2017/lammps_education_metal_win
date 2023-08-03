@@ -1,0 +1,68 @@
+# Nanoindentation Simulations Input File
+# LAMMPS input file for nanoindentation simulation, 
+# LAMMPS data file already includes the Ni layer and indents 5 nm.
+
+#nanoindentation in the z dir in thinfilm ntAg with Nanolayered Ni
+echo both
+
+dimension 3
+boundary p p f
+
+units metal
+atom_style atomic
+neighbor 1.5 bin
+neigh_modify delay 5
+
+lattice fcc 4.09
+
+read_data Data-ntAg-Ni-1nm-relaxed.in
+
+#EAM
+pair_style eam/fs
+pair_coeff * * Ag-Ni.eam.fs Ag Ni
+
+timestep 0.005 
+compute ctr all cna/atom 3.491
+compute str all stress/atom NULL
+#compute pe all pe/atom
+
+#Creating wall force 0
+region 1 block INF INF INF INF INF -222 units box
+group wall region 1
+fix 1 wall setforce 0.0 0.0 0.0 
+
+#deleting GB atoms that are too close
+delete_atoms overlap 0.5 all all
+
+#Minimization
+#min_style cg
+#minimize 1.0e-4 1.0e-6 200 1000
+
+# 10000 steps at 300K
+region 2 block INF INF INF INF -222 INF units box
+group else region 2
+velocity else create 300.0 36434 rot yes
+thermo_style one
+thermo 1000
+
+dump 10 all custom 10000 coord0-indent.xyz xs ys zs id type
+fix 15 else npt temp 300 300 0.05 x 0.0 0.0 0.12 y 0.0 0.0 0.12 drag 2
+run 10000
+unfix 15
+
+undump 10
+
+write_restart relax.restart-1nm
+write_data Data-Nindent-ntAg-Ni-1nm-relaxed.in
+
+# Begin Indentation
+reset_timestep 0
+timestep 0.005
+variable z equal "765 - 0.01*step*dt"
+fix 15 all indent 10 sphere 0 0 v_z 500 units box
+fix 25 else nvt temp 300 300 0.05
+dump 1 all atom 2500 dump.indent*
+
+restart 150000 restart.1nmindent
+
+run 1100000

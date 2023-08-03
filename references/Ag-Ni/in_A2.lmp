@@ -1,0 +1,39 @@
+# Compression Simulations with Deformation
+# LAMMPS input file that creates the compression through 
+# the application of a negative strain rate in the z direction.
+
+#Compression in LAMMPS model
+echo both
+
+read_restart restart.600000
+
+#EAM
+pair_style eam/fs
+pair_coeff * * Ag-Ni.eam.fs Ag Ni
+
+timestep 0.005 
+compute ctr all cna/atom 3.491
+compute str all stress/atom NULL
+#compute pe all pe/atom
+
+restart 50000 restart
+
+#reset_timestep 0
+
+fix 5 all ave/time 100 5 1000 c_thermo_press[1] c_thermo_press[2] c_thermo_press[3] file pressure_2.ave
+
+fix 25 all deform 1 z erate -0.0001
+fix 35 all npt temp 300.0 300.0 0.05 x 0.0 0.0 0.12 y 0.0 0.0 0.12 drag 2
+
+variable a loop 61 120
+
+label repeat60
+
+dump 45 all custom 1000 coord$a.xyz xs ys zs id type c_ctr c_str[3]
+
+run 10000
+
+undump 45
+
+next a
+jump in.tensionxx_restart repeat60
