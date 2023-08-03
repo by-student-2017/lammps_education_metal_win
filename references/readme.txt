@@ -149,16 +149,9 @@ input file (metal unit, lammps)
 - https://oaktrust.library.tamu.edu/handle/1969.1/151391
   SWNT (need structure file: SWNT1515_equ.lammps05, SWNT1010_250A_double_equ300.lammps05)
 
-- https://oaktrust.library.tamu.edu/handle/1969.1/191617
-  Green-Kubo
-
-- https://oaktrust.library.tamu.edu/handle/1969.1/192592
-  DEM
-  
-- http://ta.twi.tudelft.nl/users/vuik/numanal/romero_afst.pdf
-
-- https://pewi.org/cv/files/msc.pdf
-  NEMD
+- M. Dong, Master thesis (2020).
+  https://oaktrust.library.tamu.edu/handle/1969.1/191617
+  Green-Kubo (bulk h-BN system)
 
 - D. Chen et al., Doctor Thesis (2014).
   https://oaktrust.library.tamu.edu/handle/1969.1/154160
