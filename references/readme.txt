@@ -166,9 +166,6 @@ input file (metal unit, lammps)
     performed with the cell temperature at 450K. 
   -----------------------------------------------------------------------------------------------
 
-- S. Shivpuje et al., 
-  https://scholar.archive.org/work/ad7atvw33feslkudnhe2piyyhm/access/wayback/https://s3-eu-west-1.amazonaws.com/pstorage-tf-iopjsd8797887/17412845/gmos_a_1619929_sm5753.pdf
-
 - A. Rohskopf et al., Comput. Mater. Sci. 184 (2020) 109884.
   https://doi.org/10.1016/j.commatsci.2020.109884
   IAPs (GaN)
@@ -244,10 +241,10 @@ input file (metal unit, lammps)
 - Dhal, Satyanarayan and Yadlapalli, Raja (2012) 
   http://ethesis.nitrkl.ac.in/3349/
 
-- https://www.byui.edu/documents/physics/Theses/2010-2015/Aaron-ButterfieldS13.pdf
-
-- https://www.researchgate.net/profile/Sankhadeep-Bose-2/publication/342515066_Molecular_Dynamics_Modelling_of_Thermostatic_Properties_of_Nanoparticles/links/5ef9785145851550507b07d3/Molecular-Dynamics-Modelling-of-Thermostatic-Properties-of-Nanoparticles.pdf
-
+- A. S. Butterfield, Bachelor Thesis (2013).
+  https://www.byui.edu/documents/physics/Theses/2010-2015/Aaron-ButterfieldS13.pdf
+  Cu
+  
 - https://etheses.bham.ac.uk/id/eprint/11999/
   -------------------------------------------
   https://etheses.bham.ac.uk/cgi/search/advanced
@@ -420,6 +417,9 @@ input file (metal unit, lammps)
 - https://theses.lib.polyu.edu.hk/handle/200/9699
 
 - https://pure.tue.nl/ws/portalfiles/portal/176688998/Boot_BEP_verslag.pdf
+
+- S. Shivpuje et al., 
+  https://scholar.archive.org/work/ad7atvw33feslkudnhe2piyyhm/access/wayback/https://s3-eu-west-1.amazonaws.com/pstorage-tf-iopjsd8797887/17412845/gmos_a_1619929_sm5753.pdf
 -------------------------------------------------------------------
 plot the temperature of each atom
 
