@@ -7,6 +7,7 @@ input file (metal unit, lammps)
   Fe-Ni-Cr_alloys
   
 - https://www.researchgate.net/profile/Collins-Nana-Andoh/publication/325126856_Binary_Collision_and_Molecular_Dynamics_Simulation_of_Fe-Ni-Cr_Alloys_at_Supercritical_Water_Condition/links/5f6d445c458515b7cf4c4d16/Binary-Collision-and-Molecular-Dynamics-Simulation-of-Fe-Ni-Cr-Alloys-at-Supercritical-Water-Condition.pdf
+  Mechanical_Damage_Assessment (Fe-Ni-Cr Alloys)
 
 - A. C. C. Dutra et al., Energy Adv., 2 (2023) 653-666.
   https://doi.org/10.1039/D3YA00075C
