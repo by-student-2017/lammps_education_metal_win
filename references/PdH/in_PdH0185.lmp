@@ -1,0 +1,71 @@
+# LAMMP PROGRAMMING
+# STRUCTURE OPTIMIZATION FOR PDH0.185
+
+units metal
+boundary p p p
+atom_style atomic
+variable a equal 3.89 
+#
+lattice custom $a a1 1.0 0.0 0.0 a2 0.0 1.0 0.0 a3 0.0 0.0 1.0 &
+  basis 0.0  0.0  0.0  basis 0.5  0.5  0.0  basis 0.5  0.0  0.5  &
+  basis 0.0  0.5  0.5  basis 0.25 0.25 0.25 basis 0.75 0.75 0.75 &
+  basis 0.75 0.25 0.25 basis 0.25 0.75 0.25 
+#
+region box block -2 2 -2 2 -2 2
+create_box 2 box
+create_atoms 1 box basis 5 2 basis 6 2 basis 7 2 basis 8 2
+
+# Group atoms to be deleted
+group group1 id 5:509:8 # PdH0.784
+group group2 id 7:511:8
+group group3 id 6:512:8
+group group4 id 8:136:8 
+# Remove atoms
+delete_atoms group group1
+delete_atoms group group2
+delete_atoms group group3 
+delete_atoms group group4
+#
+pair_style eam/alloy
+#
+#pair_coeff * * PdH_Zhou.eam.alloy Pd H
+#pair_coeff * * PdH_Park.eam.alloy Pd H
+pair_coeff * * PdH_Zhou_June29_2007_2.set Pd H 
+#
+group Pd type 1
+group H type 2
+#
+neighbor 0.3 bin
+neigh_modify delay 5
+variable t index 500 
+variable p index 0
+
+#
+velocity all create $t 4928459
+fix 1 all npt temp $t 1 10 iso 0.0 0.0 100
+fix 2 all temp/rescale 1 $t 1 0.01 1.0 
+#
+thermo_style custom step temp press vol epair lx ly lz
+thermo 10
+dump 1 all xyz 1000 PdH-NPT-0185.xyz 
+#-----------------------------------
+dump            d1 all cfg 1000 cfg/run.*.cfg mass type xs ys zs id type vx vy vz fx fy fz
+dump_modify     d1 element Pd H 
+#-----------------------------------
+run 1000000
+#
+# Start Molecular Static Simulation
+unfix 1
+unfix 2
+#
+fix 3 all box/relax iso 0.0 vmax 0.01
+min_style sd 
+min_modify line quadratic
+# Write output info to files
+#dump 2 all xyz 1 PdH-SD-0185.xyz 
+
+dump 2 all custom 1 PdH-SD-0185.xyz type x y z
+dump_modify 2 sort 1
+
+log PdH_0185.lammps 
+minimize 1.0e-6 1.0e-6 10000 100000

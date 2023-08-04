@@ -291,7 +291,10 @@ input file (metal unit, lammps)
   https://conservancy.umn.edu/handle/11299/182204
   TPI_v2
 
-- https://mds.marshall.edu/etd/1090/
+- Y. Zhang, Master thesis (2017).
+  https://mds.marshall.edu/etd/1090/
+  PdH
+
 - https://mds.marshall.edu/etd/1411/
 - https://mds.marshall.edu/etd/1124/ (PdAgH, elastic)
 
