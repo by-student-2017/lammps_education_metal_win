@@ -1,0 +1,96 @@
+# Tetragonal Version:
+# Input file for bi-layered crystal, Nickle and Vanadium Dioxide, relaxed
+
+# ------------------------ INITIALIZATION ----------------------
+clear
+units metal
+dimension 3
+boundary p p s
+atom_style charge
+
+# ----------------------- ATOM DEFINITION -----------------------
+# 15nm NI
+lattice fcc 3.52
+region upper block 0 9 0 9 9.5 20
+
+#Vanadium, Oxygen, 100nm, Tetragonal
+#Vanadium
+lattice custom 1 a1 4.55 0.0 0.0 a2 0.0 4.55 0.0 a3 0.0 0.0 2.86 &
+  basis 0.0 0.0 0.0 basis 0.5 0.5 0.5
+region middle block 0 7 0 7 0 10
+
+#Oxygen
+lattice custom 1 a1 4.55 0.0 0.0 a2 0.0 4.55 0.0 a3 0.0 0.0 2.86 &
+  basis 0.799435 0.200565 0.500000 &
+  basis 0.200565 0.799435 0.500000 &
+  basis 0.700565 0.700565 0.000000 &
+  basis 0.299435 0.299435 0.000000
+region lower block 0 7 0 7 0 10
+region whole union 3 upper middle lower
+
+create_box 3 whole
+
+lattice fcc 3.52 orient x 1 0 0 orient y 0 1 0 orient z 0 0 1
+create_atoms 1 region upper
+
+lattice custom 1 a1 4.55 0.0 0.0 a2 0.0 4.55 0.0 a3 0.0 0.0 2.86 &
+  basis 0.0 0.0 0.0 basis 0.5 0.5 0.5 &
+  orient x 1 0 0 orient y 0 1 0 orient z 0 0 1
+create_atoms 2 region middle
+
+lattice custom 1 a1 4.55 0.0 0.0 a2 0.0 4.55 0.0 a3 0.0 0.0 2.86 &
+  basis 0.799435 0.200565 0.500000 &
+  basis 0.200565 0.799435 0.500000 &
+  basis 0.700565 0.700565 0.000000 &
+  basis 0.299435 0.299435 0.000000 &
+  orient x 1 0 0 orient y 0 1 0 orient z 0 0 1
+create_atoms 3 region lower
+
+mass 1 59   # Ni?
+mass 2 50.9 # V
+mass 3 16   # O
+
+# ------------------------ FORCE FIELDS -----------------------
+#Ni-O
+#pair_style comb3 polar_off
+#pair_coeff * * ffield.comb3.NiAlO Ni O
+
+#V-Ni
+#pair_style meam
+#pair_coeff * * library.meam Ni V VNiTi.meam Ni 
+
+#V-O
+#pair_style buck 3.0
+#pair_coeff * * 15585.5 .1941 27.25
+
+pair_style hybrid/overlay comb3 polar_off meam morse 3.0 buck 3.0
+pair_coeff * * comb3 ffield.comb3.NiAlO Ni NULL O
+pair_coeff * * meam library.meam Ni V VNiTi.meam Ni V NULL
+pair_coeff 2 2 morse .5270 11.720 2.620
+pair_coeff 2 3 buck 15585.5 .1941 27.25
+pair_coeff 3 3 buck 23090.5 .2030 30.00
+pair_coeff * * meam library.Ni.meam Ni Ni.meam Ni NULL NULL
+
+#---------------------------Settings----------------------------
+compute csym all centro/atom fcc
+compute eng all pe/atom
+compute eatoms all reduce sum c_eng
+compute strs all stress/atom NULL
+
+#----------------------Run Minimization-------------------------
+#set temp
+reset_timestep 0
+fix 1 all nvt temp 300.0 300.0 $(100.0*dt)
+thermo 10
+thermo_style custom step pe lx ly lz press pxx pyy pzz c_eatoms
+dump 1 all custom 10 dump.comp.*
+id type mass xs ys zs c_csym c_eng c_strs[1] c_strs[2] c_strs[3]
+min_style cg
+minimize 1e-15 1e-15 5000 5000
+
+print "All done!"
+
+######################################
+
+# SIMULATION DONE
+print "All done"

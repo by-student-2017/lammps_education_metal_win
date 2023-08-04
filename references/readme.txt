@@ -309,24 +309,11 @@ input file (metal unit, lammps)
 - N. D. M. Arachchige, Doctor thesis (2016).
   https://summit.sfu.ca/item/16590
   uniaxial_tensile_test_graphene
-  
-- C. Gibbon et al., Phys. Chem. Chem. Phys., 2023,25, 3190-3198.
-  https://doi.org/10.1039/D2CP05550C
-  
-- https://digitalcommons.mtu.edu/etdr/491/
-- https://digitalcommons.mtu.edu/etdr/885/
-- https://digitalcommons.mtu.edu/etds/598/
-- https://digitalcommons.mtu.edu/etds/946/
-- https://digitalcommons.mtu.edu/etds/643/
-- https://digitalcommons.mtu.edu/etds/21/
-- https://digitalcommons.mtu.edu/etdr/457/
-- https://digitalcommons.mtu.edu/etds/809/
 
-- https://qmro.qmul.ac.uk/xmlui/handle/123456789/427
+- K. Malone, Master thesis (2019).
+  https://repository.mines.edu/handle/11124/173097
+  Ni-V-O
 
-- https://webthesis.biblio.polito.it/13857/1/tesi.pdf
-
-- https://repository.mines.edu/handle/11124/173097
 - https://repository.mines.edu/handle/11124/17099
 - https://repository.mines.edu/handle/11124/76842
 - https://repository.mines.edu/handle/11124/172834
@@ -460,6 +447,9 @@ input file (metal unit, lammps)
   9.2.2Python codes for coordination analysis
   9.2.3Python codes for bond and angle distribution analysis
   9.3 MATLAB codes for Raman spectrum data analysis
+  
+- C. Gibbon et al., Phys. Chem. Chem. Phys., 2023,25, 3190-3198.
+  https://doi.org/10.1039/D2CP05550C
 -------------------------------------------------------------------
 plot the temperature of each atom
 
