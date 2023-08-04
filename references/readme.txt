@@ -277,7 +277,9 @@ input file (metal unit, lammps)
   https://trace.tennessee.edu/utk_gradthes/3776/
   Radiation_Defects
 
-- https://dspace.lib.cranfield.ac.uk/handle/1826/9283
+- M. T. E. Kio, Doctor Thesis (2014).
+  https://dspace.lib.cranfield.ac.uk/handle/1826/9283 (LJ)
+  NANOCHANNEL
 
 - https://repositories.lib.utexas.edu/handle/2152/26395
 - https://repositories.lib.utexas.edu/handle/2152/26448
