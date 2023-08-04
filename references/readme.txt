@@ -303,8 +303,13 @@ input file (metal unit, lammps)
   https://mds.marshall.edu/etd/1411/
   ZnS (need structure files) (core-shell model) (elastic) (MATLAB)
 
-- https://repository.lboro.ac.uk/articles/thesis/Damage_of_nuclear_graphite_and_structural_response_of_carbon_fibre_to_tension/22345081/1/files/39760825.pdf
-
+- S. Zhizhen, Doctor thesis (2022).
+  https://repository.lboro.ac.uk/articles/thesis/Damage_of_nuclear_graphite_and_structural_response_of_carbon_fibre_to_tension/22345081/1/files/39760825.pdf
+  tensile_test_carbon (need structure file: carbonfibre)
+  9.2.2Python codes for coordination analysis
+  9.2.3Python codes for bond and angle distribution analysis
+  9.3 MATLAB codes for Raman spectrum data analysis
+  
 - https://doi.org/10.26190/5d1d47a9eb76f
   UZrO
   

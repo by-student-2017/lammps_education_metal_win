@@ -1,0 +1,40 @@
+# Input file for tensile test of carbon fibre
+units metal
+boundary p p p
+
+# Define bonding
+atom_style angle
+pair_style airebo 3.0
+
+# Read in starting positions
+read_data carbonfibre
+
+mass 1 12 # C
+
+# Potential parameters
+pair_coeff * * CH.airebo C
+
+# Neighbour calculations
+neighbor 0.5 bin
+neigh_modify delay 5 every 1
+
+compute pe all pe/atom
+
+dump dd all custom 2000 dump1.* id type x y z c_pe fx fy fz
+
+fix Fixall all npt temp 300 300 1 y 1.0 1.0 1.0 z 1.0 1.0 1.0 couple none
+
+velocity all create 300.0 761341 rot yes dist gaussian
+timestep 0.001
+thermo 200
+run 100000
+write_data temp.szz
+undump dd
+
+dump ee all custom 5000 dump2.* id type x y z c_pe fx fy fz
+
+fix def all deform 1 x erate 0.00001 remap x
+
+timestep 0.001
+thermo 200
+run 10000000
