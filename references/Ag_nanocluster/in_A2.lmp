@@ -1,0 +1,116 @@
+# APPENDIX 2: INPUT SCRIPT FOR 3 NM CLUSTER DEPOSITION 
+# The LAMMPS code used to simulate the deposition of 3 nm NCs is detailed below. The 
+# substrate is of dimension 30 30 10 lattice units. The deposition rate is fixed by releasing a new 
+# NC each 20 ps. The NC velocity is fixed to 800 m/s here. The first thermalization lasts 20 ps, the 
+# last one 40 ps. A log file reporting the simulation settings is generated and two different outputs 
+# are created, either a .jpg format or .cfg format.
+
+# ------------------------ INITIALIZATION ----------------------------
+units metal
+dimension 3
+boundary p p p
+atom_style atomic
+variable latparam equal 4.09
+
+# ----------------------- ATOM DEFINITION ----------------------------
+lattice fcc ${latparam}
+region box block 0 30 0 30 -40 40
+create_box 9 box
+
+region substrate block 0 30 0 30 0 10
+lattice fcc ${latparam} orient x 1 0 0 orient y 0 1 0 orient z 0 0 1
+create_atoms 1 region substrate
+group substrate region substrate
+
+# ------------------------ FORCE FIELDS ------------------------------
+pair_style eam/alloy
+pair_coeff * * Ag.eam.alloy Ag Ag Ag Ag Ag Ag Ag Ag Ag
+
+# ------------------------- SETTINGS ---------------------------------
+compute temp_substrate all temp/region substrate
+
+# ----------------------- THERMALIZATION ----------------------------
+reset_timestep 0
+timestep 0.001
+velocity all create 300 12345 mom yes rot no
+fix 1 all nvt temp 300 300 100 drag 1
+thermo 20000
+thermo_style custom step temp c_temp_substrate 
+run 20000
+unfix 1
+
+# ----------------------- VISUALIZATION ----------------------------
+dump 1 all image 200 output53/image.*.png type type center s 0.5 0.5 0.5 zoom 3.5 axes 
+no 45 0.02 view 90 0
+dump_modify 1 backcolor white boxcolor white acolor 1*9 green/red/aqua/yellow/blue/orange/cyan
+# dump 2 all cfg 5000 output49/dump.Ag_*.cfg mass type xs ys zs id fx fy fz
+# dump_modify 2 element Ag 
+
+dump            d1 all cfg 200 cfg/run.*.cfg mass type xs ys zs id type vx vy vz fx fy fz
+dump_modify     d1 element Ag
+
+# ----------------------- NCs DEPOSITION ----------------------------
+reset_timestep 0
+# fix 1 all nvt temp 300 300 100 drag 1
+fix 1 all npt temp 300 300 1 iso 0 0 100 drag 1
+fix 2 substrate temp/rescale 100 300.0 300.0 1.0 1.0
+fix_modify 2 temp temp_substrate
+
+region NP0 sphere 4.75 4.75 15 3.7
+lattice fcc ${latparam} orient x 1 1 0 orient y -1 1 0 orient z 0 0 1
+create_atoms 2 region NP0
+group NP0 region NP0
+velocity NP0 set 0 0 -8
+run 20000
+
+region NP1 sphere 4.5 11.25 15 3.7
+lattice fcc ${latparam} orient x 1 1 0 orient y -1 1 0 orient z 0 0 1
+create_atoms 3 region NP1
+group NP1 region NP1
+velocity NP1 set 0 0 -8
+run 20000
+
+region NP2 sphere 11.25 4.5 15 3.7
+lattice fcc ${latparam} orient x 1 1 0 orient y -1 1 0 orient z 0 0 1
+create_atoms 4 region NP2
+group NP2 region NP2
+velocity NP2 set 0 0 -8
+run 20000
+
+region NP3 sphere 11.25 15 15 3.7
+lattice fcc ${latparam} orient x 1 1 0 orient y -1 1 0 orient z 0 0 1
+create_atoms 5 region NP3
+group NP3 region NP3
+velocity NP3 set 0 0 -8
+run 20000
+
+region NP4 sphere 4.75 10 20 3.7
+lattice fcc ${latparam} orient x 1 1 0 orient y -1 1 0 orient z 0 0 1
+create_atoms 6 region NP4
+group NP4 region NP4
+velocity NP4 set 0 0 -8
+run 20000
+
+region NP5 sphere 11.25 4.75 20 3.7
+lattice fcc ${latparam} orient x 1 1 0 orient y -1 1 0 orient z 0 0 1
+create_atoms 7 region NP5
+group NP5 region NP5
+velocity NP5 set 0 0 -8
+run 20000
+
+region NP6 sphere 13 17 20 3.7
+lattice fcc ${latparam} orient x 1 1 0 orient y -1 1 0 orient z 0 0 1
+create_atoms 8 region NP6
+group NP6 region NP6
+velocity NP6 set 0 0 -8
+run 20000
+
+region NP7 sphere 4.75 13.25 20 3.7
+lattice fcc ${latparam} orient x 1 1 0 orient y -1 1 0 orient z 0 0 1
+create_atoms 9 region NP7
+group NP7 region NP7
+velocity NP7 set 0 0 -8
+run 40000
+
+# SIMULATION DONE
+print "All done"
