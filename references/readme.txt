@@ -281,7 +281,6 @@ input file (metal unit, lammps)
   https://repositories.lib.utexas.edu/handle/2152/26395
   Ag_nanocluster
 
-- https://repositories.lib.utexas.edu/handle/2152/26448
 - https://repositories.lib.utexas.edu/handle/2152/74260 (?)
 
 - https://opendata.uni-halle.de/bitstream/1981185920/87709/1/Thesis_FDEMYDIUK_GermanCovers.pdf
