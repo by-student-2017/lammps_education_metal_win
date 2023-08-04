@@ -317,35 +317,28 @@ input file (metal unit, lammps)
 - M. Hoerner, Doctor thesis (2014).
   https://repository.mines.edu/handle/11124/172834
   Grain_Boundary_Energy
-
-- https://core.ac.uk/download/pdf/161264638.pdf
-
-- https://theses.hal.science/tel-03649130/
-- https://theses.hal.science/tel-04119671v1
-
-- https://jscholarship.library.jhu.edu/handle/1774.2/68027
   
-- https://www.diva-portal.org/smash/get/diva2:1341275/FULLTEXT01.pdf
+- https://ttu-ir.tdl.org/handle/2346/85090
+  Grain_Boundary (CuH)
+  
+- https://ttu-ir.tdl.org/handle/2346/73470
+  nanoprotrusion
+  
+- https://ttu-ir.tdl.org/handle/2346/87494
+  DLC
+  
+- https://scholarcommons.scu.edu/mech_mstr/9/
+  screw_dislocation
+  
+- https://harvest.usask.ca/handle/10388/ETD-2013-10-1264
+  ZrH2
 
 - https://uhra.herts.ac.uk/handle/2299/15336
+  CeO2
 
-- https://opendata.uni-halle.de/bitstream/1981185920/87709/1/Thesis_FDEMYDIUK_GermanCovers.pdf
-
-- https://openscholarship.wustl.edu/art_sci_etds/1722/
-- 
-
-- https://repositorio.unicamp.br/Busca/Download?codigoArquivo=545405
-
-- https://open.library.ubc.ca/media/download/pdf/24/1.0220767/4
-
-- https://shareok.org/handle/11244/332399
-
-- https://digitalcommons.usf.edu/etd/2098/
-- https://digitalcommons.usf.edu/etd/280/ (Metal, lj)
-- https://digitalcommons.usf.edu/etd/3343/
-- https://digitalcommons.usf.edu/etd/2098/
-
-- https://helda.helsinki.fi/items/d6c16df9-76c4-4392-8e10-b1a9ecfd1e7e
+- https://digitalcommons.usf.edu/etd/2098/ (Metal, lj)
+- https://digitalcommons.usf.edu/etd/280/  (Metal, lj)
+- https://digitalcommons.usf.edu/etd/2098/ (Metal, lj)
 
 - http://ethesis.nitrkl.ac.in/6991/ (CuZr)
 
@@ -353,19 +346,12 @@ input file (metal unit, lammps)
 
 - https://ujcontent.uj.ac.za/esploro/outputs/doctoral/Multiscale-numerical-analysis-of-the-sticking/9925409407691 (ALD)
 
-- file:///C:/Users/manab/Downloads/a_deshpande_073014.pdf
-
 - https://www.politesi.polimi.it/handle/10589/2021 (real unit)
 
 - https://www.sciencedirect.com/science/article/pii/S0010465518304107 (MagiC)
 
 - https://espace.curtin.edu.au/handle/20.500.11937/44762
   sunset_yellow_dimers
-  
-- https://dam-oclc.bac-lac.gc.ca/download?is_thesis=1&oclc_number=1334672370&id=9d5dacb7-eb31-4359-9367-0923130add9f&fileName=Huberman_Samuel_C_201311_MASc_thesis.pdf
-
-- https://pure.tue.nl/ws/portalfiles/portal/217974945/Wezel_van_1277928_ABP_Salet.pdf
-
 
 - https://research-information.bris.ac.uk/ws/portalfiles/portal/364060220/Final_Copy_2023_05_09_Petkov_A_PhD.pdf (beta-Ga2O3)
 
@@ -374,34 +360,6 @@ input file (metal unit, lammps)
 - https://shareok.org/handle/11244/52763 (Green-kubo)
 
 - https://theses.cz/id/fl7387/2022_DP_Cavojec_Martin_192047.pdf (python)
-
-- https://library.ndsu.edu/ir/handle/10365/28721
-
-- https://www.research-collection.ethz.ch/handle/20.500.11850/258958
-
-- https://uir.unisa.ac.za/handle/10500/29236
-
-- https://webthesis.biblio.polito.it/secure/15380/1/tesi.pdf
-
-- https://harvest.usask.ca/handle/10388/ETD-2013-10-1264
-
-- https://ttu-ir.tdl.org/handle/2346/85090
-- https://ttu-ir.tdl.org/handle/2346/73470
-- https://ttu-ir.tdl.org/handle/2346/87494
-
-- https://scholarcommons.scu.edu/mech_mstr/24/
-- https://scholarcommons.scu.edu/mech_mstr/9/
-
-- https://helda.helsinki.fi/items/b1b2e8bf-6448-4a64-ab41-cf1519875c55
-
-- https://theses.lib.polyu.edu.hk/handle/200/9699
-
-- https://pure.tue.nl/ws/portalfiles/portal/176688998/Boot_BEP_verslag.pdf
-
-- S. Shivpuje et al., 
-  https://scholar.archive.org/work/ad7atvw33feslkudnhe2piyyhm/access/wayback/https://s3-eu-west-1.amazonaws.com/pstorage-tf-iopjsd8797887/17412845/gmos_a_1619929_sm5753.pdf
-
-- https://www.osti.gov/servlets/purl/1093887
 -------------------------------------------------------------------
 - J. William, Thesis (2021).
   https://openscience.ub.uni-mainz.de/handle/20.500.12030/6656 
@@ -440,6 +398,18 @@ input file (metal unit, lammps)
   https://www.byui.edu/documents/physics/Theses/2010-2015/Aaron-ButterfieldS13.pdf
   Cu
   
+- https://webthesis.biblio.polito.it/secure/15380/1/tesi.pdf
+  Au
+  
+- https://open.library.ubc.ca/media/download/pdf/24/1.0220767/4
+  Fe
+  
+- https://scholarcommons.scu.edu/mech_mstr/24/
+  Al
+  
+- https://openscholarship.wustl.edu/art_sci_etds/1722/
+  ZrNi
+  
 - S. Zhizhen, Doctor thesis (2022).
   https://repository.lboro.ac.uk/articles/thesis/Damage_of_nuclear_graphite_and_structural_response_of_carbon_fibre_to_tension/22345081/1/files/39760825.pdf
   tensile_test_carbon (need structure file: carbonfibre)
@@ -453,6 +423,14 @@ input file (metal unit, lammps)
 - L. I. D. Cid, Doctor thesis (2015).
   https://repository.mines.edu/handle/11124/17099
   LIGGGGHTs
+  
+- https://pure.tue.nl/ws/portalfiles/portal/217974945/Wezel_van_1277928_ABP_Salet.pdf
+  LIGGGHTS
+  
+- https://uir.unisa.ac.za/handle/10500/29236
+  LIGGGHTS
+  
+- https://core.ac.uk/download/pdf/161264638.pdf (Docking process)
 -------------------------------------------------------------------
 plot the temperature of each atom
 
