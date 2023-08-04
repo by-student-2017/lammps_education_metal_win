@@ -314,10 +314,9 @@ input file (metal unit, lammps)
   https://repository.mines.edu/handle/11124/173097
   Ni-V-O
 
-- https://repository.mines.edu/handle/11124/17099
-- https://repository.mines.edu/handle/11124/76842
-- https://repository.mines.edu/handle/11124/172834
-
+- M. Hoerner, Doctor thesis (2014).
+  https://repository.mines.edu/handle/11124/172834
+  Grain_Boundary_Energy
 
 - https://core.ac.uk/download/pdf/161264638.pdf
 
@@ -450,6 +449,10 @@ input file (metal unit, lammps)
   
 - C. Gibbon et al., Phys. Chem. Chem. Phys., 2023,25, 3190-3198.
   https://doi.org/10.1039/D2CP05550C
+  
+- L. I. D. Cid, Doctor thesis (2015).
+  https://repository.mines.edu/handle/11124/17099
+  LIGGGGHTs
 -------------------------------------------------------------------
 plot the temperature of each atom
 
