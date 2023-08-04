@@ -310,13 +310,6 @@ input file (metal unit, lammps)
   https://summit.sfu.ca/item/16590
   uniaxial_tensile_test_graphene
   
-- S. Zhizhen, Doctor thesis (2022).
-  https://repository.lboro.ac.uk/articles/thesis/Damage_of_nuclear_graphite_and_structural_response_of_carbon_fibre_to_tension/22345081/1/files/39760825.pdf
-  tensile_test_carbon (need structure file: carbonfibre)
-  9.2.2Python codes for coordination analysis
-  9.2.3Python codes for bond and angle distribution analysis
-  9.3 MATLAB codes for Raman spectrum data analysis
-  
 - C. Gibbon et al., Phys. Chem. Chem. Phys., 2023,25, 3190-3198.
   https://doi.org/10.1039/D2CP05550C
   
@@ -460,6 +453,13 @@ input file (metal unit, lammps)
 - A. S. Butterfield, Bachelor Thesis (2013).
   https://www.byui.edu/documents/physics/Theses/2010-2015/Aaron-ButterfieldS13.pdf
   Cu
+  
+- S. Zhizhen, Doctor thesis (2022).
+  https://repository.lboro.ac.uk/articles/thesis/Damage_of_nuclear_graphite_and_structural_response_of_carbon_fibre_to_tension/22345081/1/files/39760825.pdf
+  tensile_test_carbon (need structure file: carbonfibre)
+  9.2.2Python codes for coordination analysis
+  9.2.3Python codes for bond and angle distribution analysis
+  9.3 MATLAB codes for Raman spectrum data analysis
 -------------------------------------------------------------------
 plot the temperature of each atom
 
