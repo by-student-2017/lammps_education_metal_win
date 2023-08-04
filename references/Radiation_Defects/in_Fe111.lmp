@@ -1,0 +1,75 @@
+# Appendix
+# <111> loop box code
+
+units metal
+dimension 3
+boundary p p p
+
+atom_modify map array
+variable lattice equal 2.8654
+variable WN equal 46
+variable LN equal 57
+variable HN equal 33
+
+variable W equal sqrt(3)*${lattice}*${WN}
+variable L equal sqrt(2)*${lattice}*${LN}
+variable H equal sqrt(6)*${lattice}*${HN}
+
+units metal
+atom_style atomic
+lattice bcc ${lattice} orient x 1 1 1 orient y 1 -1 0 orient z 1 1 -2 origin 0.001 0.001 0.001
+
+region main block 0.0 $W 0.0 $L 0.0 $H units box
+
+variable plane_1x equal 0.5*$W
+variable plane_1y equal 0.5*$L
+variable plane_1z equal 0.5*$H
+
+variable plane_2x equal 0.5*$W+0.5*sqrt(3)*${lattice}
+variable plane_2y equal 0.5*$L
+variable plane_2z equal 0.5*$H
+
+variable sphere_x equal 0.5*$W
+variable sphere_y equal 0.5*$L
+variable sphere_z equal 0.5*$H
+
+variable radius equal 7.5*${lattice}
+
+region habitplane1 plane ${plane_1x} ${plane_1y} ${plane_1z} 1 0 0 units box
+region habitplane2 plane ${plane_2x} ${plane_2y} ${plane_2z} -1 0 0 units box
+region spheredisloc sphere ${sphere_x} ${sphere_y} ${sphere_z} ${radius} units box
+region extra intersect 4 main habitplane1 habitplane2 spheredisloc
+
+create_box 2 main
+create_atoms 1 region extra
+group loop region extra
+
+variable b_displ equal 0.25*${lattice}*sqrt(3)
+displace_atoms loop move ${b_displ} 0 0 units box
+create_atoms 1 region main
+
+mass 1 55.847 # Fe
+mass 2 4.0026 # He
+
+# Force Fields
+pair_style hybrid table linear 10000 eam/fs
+pair_coeff * * eam/fs Fe-C_Hepburn_Ackland.eam.fs Fe NULL
+pair_coeff 1 2 table  FeHe-Juslin2008.table FeHe
+pair_coeff 2 2 table  He_He_JW2013.table He
+
+minimize 0 0 10000 10000
+
+dump 1 all atom 1000 minimized.all
+dump 2 loop atom 1000 minimized.loop
+
+timestep 0.001
+
+velocity all create 1543.0 25232351 dist gaussian
+thermo_style custom step temp pe etotal press vol lx ly lz
+thermo 1000
+thermo_modify lost error
+fix 1 all nvt temp 773.0 773.0 1
+thermo 100
+
+run 1000
+unfix 1

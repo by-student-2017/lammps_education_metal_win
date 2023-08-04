@@ -1,0 +1,62 @@
+#---------------------------------------New SW potential for BC system------------------------------------
+#---------------------------------------Defining_Units&atomic_style----------------------------------------
+units metal
+atom_style atomic
+
+#------------------------------------------Loading_structure---------------------------------------------------
+read_data BxC_Structure_input.lmp # Input file name for B12-CCC, B12-CBC
+
+#------------------------------------------Reading_potential---------------------------------------------------
+pair_style sw
+pair_coeff * * New_SW_Potential_file_name.sw B C
+
+#------------------------------------Masses_and_initial_velocity_for_atoms-------------------------------
+mass 1 10.811 # Mass of Boron
+mass 2 12.0107 # Mass of Carbon
+velocity all create 300 4928459 rot yes dist gaussian 
+
+#------------------------------------------Thermo-------------------------------------------------------------
+thermo 100
+thermo_style custom step temp pe etotal press vol pxx pyy pzz lx ly lz xy xz yz
+neighbor 0.3 bin
+neigh_modify every 2 delay 0 check no
+restart 50000 restart.*.dens17
+
+#-----------------------------------------Time_is_in_picosecond---------------------------------------------
+timestep 0.0001
+dump 1 all atom 500 dump_Part_X1.dat
+
+#----------------------------------------- Simulation Scheme -------------------------------------------------
+fix 1 all nvt temp 300.0 300.0 100.0
+run 500000
+unfix 1
+fix 2 all npt temp 500 500 100 aniso 0 0 1000
+run 1500000
+
+unfix 2
+fix 3 all npt temp 500 500 100 aniso 100000 100000 1000
+run 1000000
+unfix 3
+
+#-------------------------------------------------Minimize----------------------------------------------------
+min_style cg
+minimize 0.0 1.0e-8 5000 100000
+
+#----------------------------------------------------------------------------------------------------------------
+fix 4 all npt temp 500 500 100 aniso 0 0 1000
+run 1500000
+unfix 4
+fix 5 all npt temp 500 500 100 aniso 200000 200000 1000
+run 500000
+unfix 5
+
+#-------------------------------------------------Minimize----------------------------------------------------
+min_style cg
+minimize 0.0 1.0e-8 5000 100000
+
+#-----------------------------------------------------------------------------------------------------------------
+fix 6 all npt temp 300 300 100 aniso 0 0 1000
+run 1000000
+unfix 6
+
+#---------------------------------------------The_End---------------------------------------------------------

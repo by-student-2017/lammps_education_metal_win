@@ -1,0 +1,50 @@
+#-------------------------------------REAX potential for BC system --------------------------------------
+#-------------------------------------Defining_Units&atomic_style----------------------------------------
+units real
+atom_style charge
+
+#-------------------------------------Loading_structure------------------------------------------------------
+read_data initial_starting_configuration.lmp
+
+#-------------------------------------Reading_potential------------------------------------------------------
+pair_style reax/c lmp_control
+pair_coeff * * ffield.reax.hcb B C H
+
+#-------------------------------------Masses_and_initial_velocity_for_atoms----------------------------
+mass 1 10.811
+mass 2 12.0107
+mass 3 1.008
+velocity all create 300.0 4928459 rot yes dist gaussian 
+
+#-------------------------------------Thermo---------------------------------------------------------------------
+thermo 100
+thermo_style custom step temp pe etotal press vol pxx pyy pzz lx ly lz xy xz yz
+neighbor 0.3 bin
+neigh_modify every 10 delay 0 check no
+restart 5000 restart.*.dens17
+
+#-------------------------------------Dumping_the_movie_file-----------------------------------------------
+timestep 0.25
+dump 1 all atom 150 dump_Part-X.xyz
+
+#-------------------------------------Simulation_type_NVT_Maintain_the_box---------------------------
+fix 1 all nvt temp 300.0 300.0 100.0
+fix 2 all qeq/reax 1 0.0 10.0 1e-6 param_bch.qeq
+run 50000
+unfix 1
+
+#-------------------------------------Simulation_type_NPT-Densification----------------------------------
+fix 3 all npt temp 500 500 100 aniso 300000.0 300000.0 100 
+run 25000 # Pressure varied from 80K to 700K
+unfix 3
+
+#------------------------------------Potential_Energy_Minimization---------------------------------------
+min_style cg
+minimize 0.0 1.0e-8 5000 100000
+
+#------------------------------------NPT_Pressure_Release---------------------------------------------------
+fix 4 all npt temp 300 300 100 aniso 0.0 0.0 100
+run 25000
+unfix 4
+
+#---------------------------------------------The_End-----------------------------------------------------------

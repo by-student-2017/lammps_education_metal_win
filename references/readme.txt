@@ -118,7 +118,7 @@ input file (metal unit, lammps)
 
 - B. N. Sorbom, thesis (2010).
   https://dspace.mit.edu/handle/1721.1/120392
-  YBCO (an acronym for, yttrium, barium, copper, and oxygen) (Y1Ba2Cu3O7) (need *.dat and table) (failed)
+  YBCO (Y1Ba2Cu3O7) (need *.dat and table) (failed)
 
 - S. T. T. Lam, thesis (2013).
   https://dspace.mit.edu/handle/1721.1/129108
@@ -169,10 +169,6 @@ input file (metal unit, lammps)
 - A. Rohskopf et al., Comput. Mater. Sci. 184 (2020) 109884.
   https://doi.org/10.1016/j.commatsci.2020.109884
   IAPs (GaN)
-
-- Z. Liu et al., ACS Appl. Mater. Interfaces 13 (2021) 53409-53415.
-  https://doi.org/10.1021/acsami.1c11595
-  mlip (failed)
   
 - S. K. Achar et al., J. Chem. Theory Comput. 18 (2022) 3593-3606.
   https://doi.org/10.1021/acs.jctc.2c00010
@@ -240,10 +236,6 @@ input file (metal unit, lammps)
   
 - Dhal, Satyanarayan and Yadlapalli, Raja (2012) 
   http://ethesis.nitrkl.ac.in/3349/
-
-- A. S. Butterfield, Bachelor Thesis (2013).
-  https://www.byui.edu/documents/physics/Theses/2010-2015/Aaron-ButterfieldS13.pdf
-  Cu
   
 - A. Albano, Doctor Thesis (2021).
   https://etheses.bham.ac.uk/id/eprint/11999/
@@ -281,21 +273,9 @@ input file (metal unit, lammps)
   https://ntnuopen.ntnu.no/ntnu-xmlui/handle/11250/2350291
   cantilever
 
-- S. K. Pinky, Master thesis (2019).
-  https://bearworks.missouristate.edu/theses/3461/
-  Ni-Al (need structure file: poly4_5, etc)
-
-- R. Khadka, Master thesis (2019).
-  https://bearworks.missouristate.edu/theses/3455/
-  a-BC (SW or ReaxFF)
-
-- https://bearworks.missouristate.edu/theses/3460/
-- https://bearworks.missouristate.edu/theses/3217/ (QE and VASP)
-- https://bearworks.missouristate.edu/theses/3159/ (Ti-N-Al)
-- https://bearworks.missouristate.edu/theses/3670/ (Rf-MEAM)
-- 
-
-- https://trace.tennessee.edu/utk_gradthes/3776/
+- Z. Huang, Master thesis (2016).
+  https://trace.tennessee.edu/utk_gradthes/3776/
+  Radiation_Defects
 
 - https://dspace.lib.cranfield.ac.uk/handle/1826/9283
 
@@ -430,10 +410,43 @@ input file (metal unit, lammps)
   https://scholar.archive.org/work/ad7atvw33feslkudnhe2piyyhm/access/wayback/https://s3-eu-west-1.amazonaws.com/pstorage-tf-iopjsd8797887/17412845/gmos_a_1619929_sm5753.pdf
 
 - https://www.osti.gov/servlets/purl/1093887
-
+-------------------------------------------------------------------
 - J. William, Thesis (2021).
   https://openscience.ub.uni-mainz.de/handle/20.500.12030/6656 
   C60 (girifalco.table) (failed)
+  
+- S. Islam, Master Thesis (2017).
+  https://bearworks.missouristate.edu/theses/3217/
+  Li_Mobility
+  (QE and VASP) (no Lammps files)
+  
+- S. K. Pinky, Master thesis (2019).
+  https://bearworks.missouristate.edu/theses/3461/
+  Ni-Al (need structure file: poly4_5, etc)
+
+- R. Khadka, Master thesis (2019).
+  https://bearworks.missouristate.edu/theses/3455/
+  a-BC (need structure file. SW or ReaxFF)
+
+- M. Rabbani, Master thesis (2019).
+  https://bearworks.missouristate.edu/theses/3460/
+  Al-Ni (need data.AlNi) (lammps and VASP)
+
+- P. Y. Simanjuntak, Master thesis (2017).
+  https://bearworks.missouristate.edu/theses/3159/
+  Ti-N-Al (need potential and structure files)
+
+- B. Timalsina, Master thesis (2021).
+  https://bearworks.missouristate.edu/theses/3670/
+  (Rf-MEAM)
+  
+- Z. Liu et al., ACS Appl. Mater. Interfaces 13 (2021) 53409-53415.
+  https://doi.org/10.1021/acsami.1c11595
+  mlip
+  
+- A. S. Butterfield, Bachelor Thesis (2013).
+  https://www.byui.edu/documents/physics/Theses/2010-2015/Aaron-ButterfieldS13.pdf
+  Cu
 -------------------------------------------------------------------
 plot the temperature of each atom
 

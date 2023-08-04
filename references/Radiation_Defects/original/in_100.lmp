@@ -1,0 +1,66 @@
+# Appendix
+# <100> box loop code
+
+units metal
+dimension 3
+boundary p p p
+variable lattice equal 2.8654
+atom_modify map array
+
+variable l_x equal 80*${lattice}
+variable l_y equal 80*${lattice}
+variable l_z equal 80*${lattice}
+
+variable z_thick equal 1.5*${lattice}
+variable z_W_max equal ${l_z}+0.01*${lattice}
+variable z_W_min equal -0.01*${lattice}
+
+variable plane_1x equal 39.9*${lattice}
+variable plane_1y equal 39.0*${lattice}
+variable plane_1z equal 32.0*${lattice}
+
+variable plane_2x equal 40.6*${lattice}
+variable plane_2y equal 39.0*${lattice}
+variable plane_2z equal 32.0*${lattice}
+
+variable sphere_x equal 40.25*${lattice}
+variable sphere_y equal 32.0*${lattice}
+variable sphere_z equal 32.0*${lattice}
+variable radius equal 7.1*${lattice}
+
+region habitplane1 plane ${plane_1x} ${plane_1y} ${plane_1z} 1 0 0
+region habitplane2 plane ${plane_2x} ${plane_2y} ${plane_2z} -1 0 0
+region boundary sphere ${sphere_x} ${sphere_y} ${sphere_z} ${radius}
+
+region simbox block 0 ${l_x} 0 ${l_y} 0 ${l_z}
+create_box 2 simbox
+region dislocate intersect 4 simbox habitplane1 habitplane2 boundary
+
+lattice bcc ${lattice}
+create_atoms 1 region dislocate
+group loop region dislocate
+displace_atoms loop move 0.5 0 0
+create_atoms 1 region simbox
+mass 1 55.847
+mass 2 4.0026
+
+# Force Fields
+pair_style hybrid table linear 10000 eam/fs
+pair_coeff * * eam/fs Fe-Ackland2004.eam.fs Fe NULL
+pair_coeff 1 2 table  FeHe-Juslin2008.table FeHe
+pair_coeff 2 2 table  He-Janzen1997.table He
+
+minimize 0 0 10000 10000
+
+dump 1 all atom 1 dump.boxloop100_500C.all
+dump 2 loop atom 1 dump.boxloop100_500C
+
+timestep 0.001
+
+velocity all create 1543.0 25232351 dist gaussian
+thermo_style custom step temp pe etotal press vol lx ly lz
+thermo 1000
+thermo_modify lost error
+fix 1 all nvt temp 773.0 773.0 0.1
+thermo 100
+run 1000

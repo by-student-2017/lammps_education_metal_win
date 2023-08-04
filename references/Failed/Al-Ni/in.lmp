@@ -1,0 +1,25 @@
+# LAMMPS
+# Thermal Stability.
+units metal
+boundary p p p 
+atom_style atomic
+
+# ---------- Create Atoms ---------------------
+read_data data.AlNi
+mass 1 27      # Al
+mass 2 58.6934 # Ni
+
+# ---------- Calling the potential file---------------------
+pair_style eam/alloy
+pair_coeff * * Mishin-Ni-Al-2009.eam.alloy Al Ni
+
+# ---------- Running NPT simulation----------------
+timestep 0.001
+velocity all create 300 12345 mom yes rot no
+dump dump all atom 10 dump_iso_1500K_model_5.dat
+#restart 1000 restart.*
+thermo 10
+thermo_style custom step temp etotal pe press vol lx ly lz pxx pyy pzz pyz pxz pxy
+fix 1 all npt temp 300 300 1 iso 0 0 1 
+run 10000
+unfix 1

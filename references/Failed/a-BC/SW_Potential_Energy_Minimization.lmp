@@ -1,0 +1,29 @@
+# SW Potential Energy Minimization Input File
+
+#-------------------- SW Potential energy minimization input file ----------------------------------------
+units metal # Unit type for SW
+atom_style atomic # Atomic style for SW
+read_data Structure_file_name.lmp # Add data file
+
+# -------------------------------------- Calling the potential file----------------------------------------------
+pair_style sw # SW potential style
+pair_coeff * * Potential_file_name.sw B # Add potential file 
+mass 1 10.811 # Mass of Boron atom
+velocity all create 0 4928459 rot yes dist gaussian
+
+#---------------------------------------------Thermo-------------------------------------------------------------
+thermo 1 # Save every step
+thermo_style custom step fnorm pe etotal press vol temp
+
+#-------------------------------------------------------------------------------------------------------------------
+neighbor 0.3 bin
+neigh_modify every 2 delay 0 check no
+
+# ---------------------------- Running Energy minimization simulation------------------------------------
+timestep 0.0005 # In picoseconds
+dump 1 all atom 100 dump_minimized.dat
+min_style cg # Conjugate gradient
+minimize 0.0 1.0e-8 100000 1000000 # Minimization criteria
+write_data xyz_minimized.lmp # Write final structure
+
+#---------------------------------------- The End ---------------------------------------------------------------

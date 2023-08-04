@@ -1,0 +1,41 @@
+# LAMMPS Scripts
+# Amorphous Boron Carbide ReaxFF
+
+#----------------- REAX potential for BC system------------------------------------------------------------
+#-----------------Defining_Units&atomic_style--------------------------------------------------------------
+units real
+atom_style charge
+
+#-----------------Loading_structure----------------------------------------------------------------------------
+read_data BxC_Structure_input.lmp # Input file name for B12-CCC, B12-CBC, B11C-CBC
+
+#-----------------Reading_potential----------------------------------------------------------------------------
+pair_style reax/c control_file_name # Add LAMMPS control file name
+pair_coeff * * ffield.reax.hcb B C # Reax Potential file name
+
+#-----------------Masses_and_initial_velocity_for_atoms-------------------------------------------------
+mass 1 10.811 # Mass of Boron
+mass 2 12.0107 # Mass of Carbon
+velocity all create 300.0 4928459 rot yes dist gaussian 
+
+#-----------------Thermo-----------------------------------------------------------------------------------------
+hermo 100
+thermo_style custom step temp pe etotal press vol pxx pyy pzz lx ly lz xy xz yz
+neighbor 0.3 bin
+neigh_modify every 10 delay 0 check no
+restart 5000 restart.*.dens17
+
+#-----------------Dumping_the_movie_file-------------------------------------------------------------------
+timestep 0.25
+dump 1 all atom 100 dump_file_name.xyz
+
+#-----------------Simulation scheme --------------------------------------------------------------------------
+fix 1 all qeq/reax 1 0.0 10.0 1e-6 param_bc.qeq
+fix 2 all npt temp 10 300 100 iso 0.0 0.0 1000
+run 170000
+unfix 2
+fix 3 all npt temp 300 300 100 iso 0.0 0.0 1000
+run 330000
+unfix 3
+
+#---------------------------------------------The_End-----------------------------------------------------------
