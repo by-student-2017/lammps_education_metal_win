@@ -293,10 +293,15 @@ input file (metal unit, lammps)
 
 - Y. Zhang, Master thesis (2017).
   https://mds.marshall.edu/etd/1090/
-  PdH
+  PdH (elastic) (MATLAB)
 
-- https://mds.marshall.edu/etd/1411/
-- https://mds.marshall.edu/etd/1124/ (PdAgH, elastic)
+- R. Fuller, Master thesis (2018).
+  https://mds.marshall.edu/etd/1124/
+  PdAgH (elastic)
+
+- R. Xie, Master thesis (2021).
+  https://mds.marshall.edu/etd/1411/
+  ZnS (need structure files) (core-shell model) (elastic) (MATLAB)
 
 - https://repository.lboro.ac.uk/articles/thesis/Damage_of_nuclear_graphite_and_structural_response_of_carbon_fibre_to_tension/22345081/1/files/39760825.pdf
 

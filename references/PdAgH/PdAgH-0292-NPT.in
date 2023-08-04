@@ -1,0 +1,61 @@
+# FREE ENERGY AT 300 K
+
+units metal
+boundary p p p
+atom_style atomic
+variable a equal 3.89
+
+lattice custom $a a1 1.0 0.0 0.0 a2 0.0 1.0 0.0 a3 0.0 0.0 1.0 &
+  basis 0.0  0.0  0.0  basis 0.5  0.5  0.0  basis 0.5  0.0  0.5  &
+  basis 0.0  0.5  0.5  basis 0.25 0.25 0.25 basis 0.75 0.75 0.75 &
+  basis 0.75 0.25 0.25 basis 0.25 0.75 0.25 
+#
+region box block 0 4 0 4 0 4
+create_box 3 box
+create_atoms 1 box basis 1 2 basis 5 3 basis 6 3 basis 7 3 basis 8 3
+#
+group group1 id 5:509:8 # PdH0.784
+group group2 id 7:511:8
+group group3 id 6:422:8 
+
+delete_atoms group group1
+delete_atoms group group2
+delete_atoms group group3 
+#
+pair_style eam/alloy
+#
+#pair_coeff * * PdAgH.eam.alloy Pd Ag H 
+pair_coeff * * PdAgH_HybridPd3Ag.eam.alloy Pd Ag H 
+#pair_coeff * * PdAgH_MorsePd3Ag.eam.alloy Pd Ag H 
+#
+group Pd type 1
+group Ag type 2
+group H type 3
+#
+neighbor 0.3 bin
+neigh_modify delay 5
+variable t index 300 
+variable p index 0
+#
+velocity all create $t 4928459
+fix 1 all npt temp $t 1 10 iso 0.0 0.0 100
+fix 2 all temp/rescale 1 $t $t 0.01 1.0 
+thermo_style custom step temp press vol epair lx ly lz
+thermo 100
+dump 1 all xyz 100000 PdAgH-0292-NPT.xyz 
+dump 2 all xyz 100000 PdAgH-0292-SD.xyz 
+log PdAgH_0292.lammps 
+run 100000 
+
+variable z loop 10
+
+label loopz
+
+run 100
+variable natoms equal "count(all)" 
+variable xlength equal "lx/4"
+variable ecoh equal "pe/v_natoms"
+print "${xlength} ${ecoh}" file MD_results_PdAgH0292_$z.dat
+
+next z 
+jump SELF loopz
