@@ -1,0 +1,42 @@
+# LAMMPS input file in.graphene to simulate the uniaxial tensile test in Section 2.6 is given below.
+
+##—————INITIALIZATION——————————
+units metal
+dimension 3
+boundary p p f
+atom_style atomic
+newton on
+
+##—————ATOM DEFINITION——————————
+read_data data.graphene
+
+##—————FORCE FIELD———————————
+pair_style airebo 3.0
+pair_coeff * * CH.airebo C
+
+##—————SETTINGS————————————
+timestep 0.0005
+fix 1 all npt temp 300 300 0.05 x 0 0 0.5 y 0 0 0.5
+thermo 100
+thermo_style custom step temp pe ke etotal lx ly press
+#-----------------------------------
+dump            d1 all cfg 1000 cfg/run.npt.*.cfg mass type xs ys zs id type vx vy vz fx fy fz
+dump_modify     d1 element C
+#-----------------------------------
+
+##—————RELAXATION————————————
+run 60000
+
+##—————DEFORMATION————————————
+reset_timestep 0
+unfix 1
+undump d1
+fix 2 all npt temp 300 300 0.05 y 0 0 0.5
+variable srate equal 1.0e9
+variable srate1 equal "v_srate/1.0e12"
+fix 3 all deform 1 x erate $srate1 units box remap x
+#-----------------------------------
+dump            d2 all cfg 1000 cfg/run.deform.*.cfg mass type xs ys zs id type vx vy vz fx fy fz
+dump_modify     d2 element C
+#-----------------------------------
+run 400000
