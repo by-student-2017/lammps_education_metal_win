@@ -52,6 +52,11 @@ input file (metal unit, lammps)
   https://doi.org/10.1063/5.0029490
   C60_on_BN
   
+- Benjamin T. Dankesreiter, B.S., Master thesis (2021).
+  https://ttu-ir.tdl.org/handle/2346/87494
+  DLC (diamond-like carbon) (python code)
+  (B series need DLC_pen.txt)
+  
 - ERIK FRANSSON, JOHANNES LAURELL H˚AKANSSON, Master’s Thesis in Applied Physics (2014).
   https://core.ac.uk/display/70610056
   BaZrO3
@@ -127,10 +132,6 @@ input file (metal unit, lammps)
 - K. C. Alexander, thesis (2011).
   https://dspace.mit.edu/handle/1721.1/108218
   Grain_Boundary_generation (failed)
-
-- G. S. Jung, thesis (2019).
-  https://dspace.mit.edu/handle/1721.1/123228 
-  (REBO)
 
 - B. A. Demian, thesis (2014).
   https://dspace.mit.edu/handle/1721.1/90011
@@ -326,11 +327,6 @@ input file (metal unit, lammps)
   https://ttu-ir.tdl.org/handle/2346/73470
   nanoprotrusion
   
-- Benjamin T. Dankesreiter, B.S., Master thesis (2021).
-  https://ttu-ir.tdl.org/handle/2346/87494
-  DLC (diamond-like carbon) (python code)
-  (B series need DLC_pen.txt)
-  
 - S. Soltanibajestani, Master thesis (2017).
   https://scholarcommons.scu.edu/mech_mstr/9/
   screw_dislocation (need Ni_Data.txt)
@@ -347,7 +343,7 @@ input file (metal unit, lammps)
   https://research-information.bris.ac.uk/ws/portalfiles/portal/364060220/Final_Copy_2023_05_09_Petkov_A_PhD.pdf 
   beta-Ga2O3 (MATLAB code)
 
-- Doctor thesis ().
+- T. Siby, Doctor thesis (2017).
   http://210.212.194.26/jspui/handle/123456789/14231 
   hBN
 -------------------------------------------------------------------
@@ -420,7 +416,8 @@ input file (metal unit, lammps)
 - https://uir.unisa.ac.za/handle/10500/29236
   LIGGGHTS
   
-- https://core.ac.uk/download/pdf/161264638.pdf (Docking process)
+- https://core.ac.uk/download/pdf/161264638.pdf 
+  Docking process
 
 - K. McLaughlin, thesis (2009).
   https://digitalcommons.usf.edu/etd/2098/ (Metal, lj)
@@ -433,6 +430,10 @@ input file (metal unit, lammps)
 - https://www.sciencedirect.com/science/article/pii/S0010465518304107 (MagiC)
 
 - https://theses.cz/id/fl7387/2022_DP_Cavojec_Martin_192047.pdf (python)
+
+- G. S. Jung, thesis (2019).
+  https://dspace.mit.edu/handle/1721.1/123228 
+  (REBO) (MoS2-WSe2)
 -------------------------------------------------------------------
 plot the temperature of each atom
 
