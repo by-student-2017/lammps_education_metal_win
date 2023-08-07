@@ -1,0 +1,71 @@
+# 4.2 Tensile deformation of quenched specimen
+
+# After the development of glassy model alloy, uniaxial tensile deformation has been done at 
+# distinctive temperatures viz. 300K, 200K, 100K, 50K and 10K and strain rates viz. 1 x 10^9 s^-1, 
+# 1 x 10^10 s-1, 1 x 10^11 s^-1 and 1 x 10^12 s-1, in order to study the effect of free volume, temperatures and 
+# strain rates on the model alloy. After tensile test, mechanical properties such as ultimate tensile strength and 
+# yield strength has been evaluated. 
+
+# This program is for obtaining tensile behavior of Cu50-Zr50 for 3D system (10^9 s^-1 strain rate).
+
+units metal
+echo both
+atom_style atomic
+dimension 3
+boundary s p s
+read_data CuZr_cooling_10_13.txt
+timestep 0.002
+pair_style eam/fs
+pair_coeff * * CuZr_mm.eam.fs Cu Zr 
+
+# Energy Minimization
+minimize 1.0e-9 1.0e-6 1000 1000
+compute 1 all stress/atom 
+compute csym all centro/atom fcc
+compute peratom all pe/atom 
+variable tmp equal ly
+variable lo equal ${tmp}
+variable strain equal (ly-v_lo)/v_lo
+
+variable p1 equal "-pxx/10000"
+variable p2 equal "-pyy/10000"
+variable p3 equal "-pzz/10000"
+variable p12 equal "-pxy/10000"
+variable p23 equal "-pyz/10000"
+variable p13 equal "-pxz/10000"
+
+variable fm equal "(v_p2+v_p3+v_p1)/3" ##### Hydrostatic stress
+variable fv equal "sqrt(((v_p2-v_p3)^2+(v_p3-v_p1)^2+(v_p1-v_p2)^2+6*(v_p12^2+v_p23^2+v_p13^2))/2)" ######Von Mises Stress
+
+variable t equal "v_fm/v_fv"
+
+variable fd equal (((v_p2-v_fm)*(v_p3-v_fm)*(v_p1-v_fm))-(v_p12)^2*(v_p3-v_fm)-(v_p13)^2*(v_p2-v_fm)-(v_p23)^2*(v_p1v_fm)+2*v_p12*v_p23*v_p13) ####Deviatoric Von Mises stress
+
+# principal stresses
+variable I1 equal "(v_p1+v_p2+v_p3)"
+variable I2 equal "((v_p1)*(v_p2))+((v_p2)*(v_p3))+((v_p1)*(v_p3))-(v_p12)^2-(v_p23)^2-(v_p13)^2"
+variable I3 equal "((v_p1)*(v_p2)*(v_p3))-((v_p1)*((v_p23)^2))-((v_p2)*((v_p13)^2))-((v_p3)*((v_p12)^2))+2*(v_p12)*(v_p23)*(v_p13)"
+variable A equal "(acos(((2*(v_I1)^3)-9*(v_I1)*(v_I2)+27*(v_I3))/(2*((v_I1)^2-(3*(v_I2)))^(3/2))))/3"
+variable s1 equal "((v_I1)/3)+(2/3)*(sqrt((v_I1)^2-(3*(v_I2))))*cos(v_A)" 
+variable s2 equal "((v_I1)/3)+(2/3)*(sqrt((v_I1)^2-(3*(v_I2))))*cos((v_A)+(2*PI)/3)" 
+variable s3 equal "((v_I1)/3)+(2/3)*(sqrt((v_I1)^2-(3*(v_I2))))*cos((v_A)+(4*PI)/3)" 
+
+thermo 10000
+thermo_style custom step temp vol press pe ke etotal
+
+dump 1 all custom 10000 tension_CuZr.lammpstrj id type x y z 
+dump 2 all cfg 10000 dump.tensile_CuZr*.cfg mass type xs ys zs c_csym c_peratom
+dump 3 all custom 10000 stress_peratom* id type x y z c_1[1] c_1[2] c_1[3] c_1[4] c_1[5] c_1[6]
+
+log NVTlog5050_tensile_CuZr.dat
+
+velocity all create 300 8173847 rot yes mom yes dist gaussian
+
+#temperature controller
+fix 1 all nvt temp 300 300 0.1
+
+# tensile deformation
+fix 2 all deform 1 y erate 0.001 units box 
+fix 3 all print 10000 "${strain} ${p2}" file stress_strain_data.txt 
+fix def all print 1 "${strain} ${p2} ${s1} ${s2} ${s3} ${fm} ${fv} ${t} ${fd}" file CuZr_tension_von.txt
+run 1000000

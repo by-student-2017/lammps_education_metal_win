@@ -339,16 +339,13 @@ input file (metal unit, lammps)
   https://harvest.usask.ca/handle/10388/ETD-2013-10-1264
   ZrH2
 
-- https://digitalcommons.usf.edu/etd/2098/ (Metal, lj)
-  
-- https://digitalcommons.usf.edu/etd/280/  (Metal, lj)
-- https://digitalcommons.usf.edu/etd/2098/ (Metal, lj)
+- A. Kabi, Master thesis (2015).
+  http://ethesis.nitrkl.ac.in/6991/ 
+  CuZr (need structure files)
 
-- http://ethesis.nitrkl.ac.in/6991/ (CuZr)
-
-- http://210.212.194.26/jspui/handle/123456789/14231 (hBN)
-
-- https://ujcontent.uj.ac.za/esploro/outputs/doctoral/Multiscale-numerical-analysis-of-the-sticking/9925409407691 (ALD)
+- , Doctor thesis ().
+  http://210.212.194.26/jspui/handle/123456789/14231 
+  hBN
 
 - https://www.politesi.polimi.it/handle/10589/2021 (real unit)
 
@@ -431,6 +428,14 @@ input file (metal unit, lammps)
   LIGGGHTS
   
 - https://core.ac.uk/download/pdf/161264638.pdf (Docking process)
+
+- K. McLaughlin, thesis (2009).
+  https://digitalcommons.usf.edu/etd/2098/ (Metal, lj)
+  low_surface_friction (need structure file)
+  
+- H. M. Harper, thesis (2008).
+  https://digitalcommons.usf.edu/etd/280/  (Metal, lj)
+  d-AlNiCo (do not copy & paste from PDF)
 -------------------------------------------------------------------
 plot the temperature of each atom
 

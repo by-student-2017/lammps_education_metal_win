@@ -1,0 +1,123 @@
+# Appendix C LAMMPS input files
+
+# This is a sample input file used in our molecular-dynamics simulations. Each input
+# file is modified by submit.sh to replace text enclosed by angled brackets “<>” and 
+# submitted to the Sun Grid Engine. Text enclosed by curly brackets “{}” is to be editted
+# manually by the user.
+
+
+#### template.in
+#### Fibonaccium Friction Simulations
+## Keith McLaughlin
+## Solid State Theory
+## Department of Physics
+## University of South Florida
+
+dimension 3
+boundary s p p ## two periodic boundaries
+## Metal units: Angstroms, eV, picoseconds, proton mass
+units metal
+timestep 0.002
+## They’re atoms! (no rotational DoF)
+atom_style atomic
+## Atomic coordinates
+read_data {PATHTOSAMPLE}/<SAMPLE>
+## Types of pots used
+pair_style hybrid table linear 10000 lj/cut 6
+## 1-3 interact with 4 via LJ
+pair_coeff 1*3 4 lj/cut 0.05 2.672696154
+## 1-3 interact with each other via table
+pair_coeff 1*3 1*3 table {SC-POT-LOCATION} SC
+## some stuff doesn’t interact
+pair_coeff 1*3 5 none
+pair_coeff 4*5 4*5 none
+
+## Define regions
+## xlo xhi ylo yhi zlo zhi
+## Using INF doesn’t work properly, so I use +/- 300 instead.
+region QC_rigid_region block -300 -24.00001 -300 300 -300 300 units box
+region QC_tstat_region block -24 -18.00001 -300 300 -300 300 units box
+region QC_free_region block -18 0.00001 -300 300 -300 300 units box
+region DUMP_region block -18 10 -300 300 -300 300 units box
+
+## Define groups
+group QC type <= 3
+group TIP type = 4
+group BOB type = 5
+## We don’t use nve on rigid bodies.
+group nve_group union QC BOB
+
+## Used for dumping atoms. we only dump regions that are interesting
+group DUMP_group region DUMP_region
+
+## Define based on atoms *INITIALLY* in specified regions.
+## It doesn’t matter if they later move out.
+group QC_rigid region QC_rigid_region
+group QC_tstat region QC_tstat_region
+group QC_free region QC_free_region
+
+## NVE ensemble. We will control T via thermostating.
+fix fix_nve nve_group nve
+## Make the TIP rigid
+fix TIP_rigid TIP rigid single torque * off off off
+## Tether the TIP to the BOB; k=1
+fix TIP_tether TIP spring couple BOB 1 0 0 0 0
+## Set forces on the BOB to zero
+fix BOB_force BOB setforce 0 0 0
+## Set forces on the base of the QC to zero
+fix QC_rigid_force QC_rigid setforce 0 0 0
+
+## Calculate temperature of the dynamic region of the QC
+compute temp_QC_free QC_free temp
+
+## Output Options - for compression and relaxation steps
+thermo 20
+thermo_style custom step etotal c_temp_QC_free
+
+## COMPRESSION ####################################################
+## thermostat the entire qc; relaxation time = 0.002 timesteps
+fix tstat_qc_all QC langevin 0 0 0.002 109232
+## Lower the tip. 10000 timesteps per 1A.
+velocity BOB set -0.05 0 0 units box sum no
+run <LOWER>
+
+## FULL RELAXATION #########################
+## stop lowering the tip.
+velocity all set 0 0 0 units box sum no
+## relax the entire QC and TIP for a while.
+unfix tstat_qc_all
+fix tstat_all all langevin 0 0 1 98463
+## Run!
+run 10000
+
+## HEAT THE SYSTEM #########################
+## Remove the thermostat from the bob and rigid layers.
+unfix tstat_all
+## Heat up the thermostat and free layers
+fix QC_0_T_tstat QC_tstat langevin 0 {T_final} 1 31222
+fix QC_0_T_free QC_free langevin 0 {T_final} 1 31222
+## Run!
+run 10000
+
+## PREPARE FOR SLIDING ####################
+## Now that we are at T_final
+unfix QC_0_T_tstat
+unfix QC_0_T_free
+fix QC_T_T_tstat QC_tstat langevin 300 300 200 398128
+## We only want to consider perpendicular motion in the thermostat application
+## DIRECTION can either be "0 1" or "1 0"
+compute temp_QC_tstat_part QC_tstat temp/partial 1 <DIRECTION>
+fix_modify QC_T_T_tstat temp temp_QC_tstat_part
+## sliding velocity
+velocity QC_rigid set 0 <velocities> sum no units box
+## Run!
+run 20000
+
+## SLIDE #################################
+## dump atom coordinates
+dump dump_xyz DUMP_group custom 10000 1.dmp id x y z type
+## modify the output. we want to output the forces on the BOB
+thermo_style custom step etotal \
+c_temp_QC_free f_BOB_force[1] f_BOB_force[2] f_BOB_force[3]
+## Move the tip through the unit cell
+run 2000000
