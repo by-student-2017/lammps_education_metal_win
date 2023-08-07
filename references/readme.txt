@@ -343,15 +343,13 @@ input file (metal unit, lammps)
   http://ethesis.nitrkl.ac.in/6991/ 
   CuZr (need structure files)
 
-- , Doctor thesis ().
-  http://210.212.194.26/jspui/handle/123456789/14231 
-  hBN
-
 - P. Alexander, Doctor thesis (2023).
   https://research-information.bris.ac.uk/ws/portalfiles/portal/364060220/Final_Copy_2023_05_09_Petkov_A_PhD.pdf 
   beta-Ga2O3 (MATLAB code)
 
-- https://theses.cz/id/fl7387/2022_DP_Cavojec_Martin_192047.pdf (python)
+- Doctor thesis ().
+  http://210.212.194.26/jspui/handle/123456789/14231 
+  hBN
 -------------------------------------------------------------------
 - J. William, Thesis (2021).
   https://openscience.ub.uni-mainz.de/handle/20.500.12030/6656 
@@ -433,6 +431,8 @@ input file (metal unit, lammps)
   d-AlNiCo (do not copy & paste from PDF)
   
 - https://www.sciencedirect.com/science/article/pii/S0010465518304107 (MagiC)
+
+- https://theses.cz/id/fl7387/2022_DP_Cavojec_Martin_192047.pdf (python)
 -------------------------------------------------------------------
 plot the temperature of each atom
 

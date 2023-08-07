@@ -37,8 +37,8 @@ lattice custom 1.0 &
 region main block -50 50 -10 10 0 10
 create_box 2 main
 
-mass 1 69.723 # Ga
-mass 2 15.999 # O
+mass 1 69.723
+mass 2 15.999
 
 create_atoms 2 region main &
   basis 1 1 &
@@ -62,10 +62,10 @@ create_atoms 2 region main &
   basis 19 2 &
   basis 20 2
 
-set type 1 charge  3 #  2.67
-set type 2 charge -2 # -2.51
-
+set type 1 charge  3 #2.67
+set type 2 charge -2 #-2.51
 pair_style born/coul/dsf/cs 0.2 16.0
+
 pair_coeff * * 0.0 16.0 0.0 0.0 0.0
 pair_coeff 1 2 907.89 0.345 0.0 10.0 0.0
 pair_coeff 2 2 22764.0 0.149 0.0 0.0 0.0
@@ -90,19 +90,14 @@ reset_timestep 0
 
 #write_data 1.dat
 
-#---------------------------------------------------------
-dump            d1 all cfg 1000 cfg/run.nvt.*.cfg mass type xs ys zs id type vx vy vz fx fy fz
-dump_modify     d1 element Ga O
-#---------------------------------------------------------
-
 velocity all create 300.0 4928459 dist gaussian
 
 fix 1 all nvt temp 300 300 0.002
 
 run 100000
 
+
 unfix 1
-undump d1
 
 #in.heat conductivity calculation part1
 
@@ -111,28 +106,17 @@ fix hot all heat 1 20.0 region hot
 fix cold2 all heat 1 -10.0 region cold2
 fix cold1 all heat 1 -10.0 region cold1
 
-thermo 1000
 thermo_style custom step temp c_Tcold1 c_Thot c_Tcold2
-
-#---------------------------------------------------------
-dump            d2 all cfg 1000 cfg/run.cond.*.cfg mass type xs ys zs id type vx vy vz fx fy fz
-dump_modify     d2 element Ga O
-#---------------------------------------------------------
+thermo 1000
 
 run 600000
 
-undump d2
-
 #actual calculation
-
 compute ke all ke/atom
 variable temp atom c_ke/1.5
-compute layers all chunk/atom bin/1d x lower 0.01 units reduced
-fix 2 all ave/chunk 10 100 1000 layers v_temp temp file profile.heat
 
-#---------------------------------------------------------
-dump            d3 all cfg 1000 cfg/run.temp.*.cfg mass type xs ys zs id type vx vy vz fx fy fz v_temp
-dump_modify     d3 element Ga O
-#---------------------------------------------------------
+compute layers all chunk/atom bin/1d x lower 0.01 units reduced
+
+fix 2 all ave/chunk 10 100 1000 layers v_temp temp file profile.heat
 
 run 10000
