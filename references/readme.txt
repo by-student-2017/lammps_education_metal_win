@@ -331,10 +331,12 @@ input file (metal unit, lammps)
   DLC (diamond-like carbon) (python code)
   (B series need DLC_pen.txt)
   
-- https://scholarcommons.scu.edu/mech_mstr/9/
-  screw_dislocation
+- S. Soltanibajestani, Master thesis (2017).
+  https://scholarcommons.scu.edu/mech_mstr/9/
+  screw_dislocation (need Ni_Data.txt)
   
-- https://harvest.usask.ca/handle/10388/ETD-2013-10-1264
+- R. K. Siripurapu, Master thesis (2013).
+  https://harvest.usask.ca/handle/10388/ETD-2013-10-1264
   ZrH2
 
 - https://uhra.herts.ac.uk/handle/2299/15336

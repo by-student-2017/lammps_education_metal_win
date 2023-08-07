@@ -1,0 +1,75 @@
+# Appendix B: Sample script in LAMMPS
+# The following script was used in LAMMPS to study the diffusion in Ni at 1550 K. The input file, 
+# “Ni_Data.txt” contains atom IDs, coordinates of Ni atoms in a system with a relaxed screw 
+# dislocation. Lines starting with # are comments.
+
+units metal       # define the unit system used 
+dimension 3       # 3 dimension simulation box 
+boundary f f p    # boundary conditions along x, y and z directions. f for fixed and p for periodic. 
+atom_style atomic # style of particles 
+# defining the structure, lattice parameter and orientation of x, y and z directions
+lattice fcc 3.52 orient x -1 1 -2 orient y -1 1 1 orient z 1 1 0 
+# reading atom IDs and coordinates from the input file 
+read_data Ni_Data.txt
+group ni type 1
+
+# ---------- Define Interatomic Potential ---------------------
+
+pair_style eam/alloy
+#pair_coeff * * NiAl.eam.alloy.txt Ni # reads the EAM potential file
+pair_coeff * * Mishin_updated-Ni-Al-Co-2013.eam.alloy Ni 
+
+# ---------------fixing atoms on the edge of the cylinder-----------
+
+region inside cylinder z 0 1 20 -25 24.8 side in units box 
+region edge cylinder z 0 1 20 -25 24.8 side out units box 
+group edge region edge 
+group inside region inside
+fix 1 edge setforce 0 0 0 
+
+#------- defining cylinders with different radii to study diffusion -----
+
+region diffusionR1 cylinder z 0 1 5 -25 24.8 side in units box 
+group diffusionR1 region diffusionR1 
+region diffusionR2 cylinder z 0 1 6 -25 24.8 side in units box 
+group diffusionR2 region diffusionR2 
+region diffusionR3 cylinder z 0 1 7 -25 24.8 side in units box
+group diffusionR3 region diffusionR3 
+region diffusionR4 cylinder z 0 1 8 -25 24.8 side in units box 
+group diffusionR4 region diffusionR4 
+region diffusionR5 cylinder z 0 1 9 -25 24.8 side in units box 
+group diffusionR5 region diffusionR5 
+region diffusionR6 cylinder z 0 1 10 -25 24.8 side in units box 
+group diffusionR6 region diffusionR6 
+region diffusionR7 cylinder z 0 1 11 -25 24.8 side in units box 
+group diffusionR7 region diffusionR7 
+region diffusionR8 cylinder z 0 1 12 -25 24.8 side in units box 
+group diffusionR8 region diffusionR8 
+region diffusionR9 cylinder z 0 1 13 -25 24.8 side in units box 
+group diffusionR9 region diffusionR9 
+region diffusionR10 cylinder z 0 1 14 -25 24.8 side in units box 
+group diffusionR10 region diffusionR9 
+
+#define the timestep 
+reset_timestep 0 
+timestep 0.002 
+
+#assigning velocities to atoms with respect to the desired temperature
+velocity inside create 1550 102486 mom yes rot no 
+
+# running dynamics with NVT ensemble to reach the desired temperature 
+fix 15 inside nvt temp 1550 1550 100
+run 500000
+
+# starting to dump output files of cylinders with different radii and run dynamics for 30 #nanoseconds
+dump 10 all custom 50000 DUMP_All_Ni_1550K.lammpstrj id type x y z
+dump 11 diffusionR1 custom 10000 DUMP_R1.lammpstrj id type xu yu zu
+dump 12 diffusionR2 custom 10000 DUMP_R2.lammpstrj id type xu yu zu
+dump 13 diffusionR3 custom 10000 DUMP_R3.lammpstrj id type xu yu zu
+dump 14 diffusionR4 custom 10000 DUMP_R4.lammpstrj id type xu yu zu
+dump 15 diffusionR5 custom 10000 DUMP_R5.lammpstrj id type xu yu zu
+dump 16 diffusionR6 custom 10000 DUMP_R6.lammpstrj id type xu yu zu
+dump 17 diffusionR7 custom 10000 DUMP_R7.lammpstrj id type xu yu zu
+dump 18 diffusionR8 custom 10000 DUMP_R8.lammpstrj id type xu yu zu
+dump 19 diffusionR9 custom 10000 DUMP_R9.lammpstrj id type xu yu zu
+run 15000000
