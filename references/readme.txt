@@ -151,7 +151,7 @@ input file (metal unit, lammps)
 
 - M. Dong, Master thesis (2020).
   https://oaktrust.library.tamu.edu/handle/1969.1/191617
-  Green-Kubo (bulk h-BN system)
+  Green-Kubo_bulk_h-BN
 
 - D. Chen et al., Doctor Thesis (2014).
   https://oaktrust.library.tamu.edu/handle/1969.1/154160
@@ -361,10 +361,6 @@ input file (metal unit, lammps)
   sunset_yellow_dimers
 
 - https://research-information.bris.ac.uk/ws/portalfiles/portal/364060220/Final_Copy_2023_05_09_Petkov_A_PhD.pdf (beta-Ga2O3)
-
-- https://ttu-ir.tdl.org/bitstream/handle/2346/87494/DANKESREITER-THESIS-2021.pdf?sequence=1&isAllowed=y (DLC)
-
-- https://shareok.org/handle/11244/52763 (Green-kubo)
 
 - https://theses.cz/id/fl7387/2022_DP_Cavojec_Martin_192047.pdf (python)
 -------------------------------------------------------------------
