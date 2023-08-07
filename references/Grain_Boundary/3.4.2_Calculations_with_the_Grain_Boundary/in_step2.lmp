@@ -1,0 +1,43 @@
+# 3.4.2 Calculations with the Grain Boundary
+
+read_data Data.R1
+
+group upper type 1 
+group lower type 2
+
+pair_style bop
+pair_coeff * * CuH.bop.table Cu Cu H
+
+comm_modify cutoff 11.4
+
+displace_atoms upper move 0 0 0 units lattice 
+
+delete_atoms overlap 2.5 lower upper
+
+velocity all create 700 25674 dist gaussian
+
+minimize 1.0e-8 1.0e-8 1000000 1000000
+
+timestep 0.001
+
+reset_timestep 0
+
+fix 1 all npt temp 700 700 0.1 iso 0.0 0.0 10 
+fix 3 all momentum 1 linear 1 1 1
+
+thermo 20000
+
+dump 2 all atom 20000 copper_box_300K2.lammpstrj
+
+thermo_modify lost ignore
+
+restart 1000000 poly.restart
+
+run 10000000
+
+unfix 1
+
+write_data Data25.R1
+write_restart Copper2_box_300k.restart
+
+print “Done”

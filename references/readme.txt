@@ -318,10 +318,12 @@ input file (metal unit, lammps)
   https://repository.mines.edu/handle/11124/172834
   Grain_Boundary_Energy
   
-- https://ttu-ir.tdl.org/handle/2346/85090
+- Joy Acharjee, B.S., thesis (2019).
+  https://ttu-ir.tdl.org/handle/2346/85090
   Grain_Boundary (CuH)
   
-- https://ttu-ir.tdl.org/handle/2346/73470
+- Z. Zhang, Master thesis (2017).
+  https://ttu-ir.tdl.org/handle/2346/73470
   nanoprotrusion
   
 - https://ttu-ir.tdl.org/handle/2346/87494
@@ -337,6 +339,7 @@ input file (metal unit, lammps)
   CeO2
 
 - https://digitalcommons.usf.edu/etd/2098/ (Metal, lj)
+  
 - https://digitalcommons.usf.edu/etd/280/  (Metal, lj)
 - https://digitalcommons.usf.edu/etd/2098/ (Metal, lj)
 

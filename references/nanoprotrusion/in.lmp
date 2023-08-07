@@ -1,0 +1,71 @@
+# 3.5 The LAMMPS Scheme
+
+variable CuLatCst equal 3.615 # lattice constant, 3.61492505
+
+variable sizeX equal  15 #lattice units
+variable sizeY equal  15 #lattice units
+variable sizeZ equal   6 #lattice units
+
+variable tsizeX equal  2 #lattice units
+variable tsizeY equal  2 #lattice units
+variable tsizeZ equal 16 #lattice units
+
+units metal
+atom_style atomic
+
+#boundary p p fs
+boundary p p f
+
+lattice fcc ${CuLatCst} orient x 0 0 1 orient y 1 -1 0 orient z 1 1 0
+
+region  base block $(-v_sizeX)  $(v_sizeX)  $(-v_sizeY)  $(v_sizeY)  $(-v_sizeZ) 0 units lattice #Define the region of substrate
+region   tip block $(-v_tsizeX) $(v_tsizeX) $(-v_tsizeY) $(v_tsizeY) 0           $(v_tsizeZ) units lattice #Define the region of nanoprotrusion
+region empty block $(-v_sizeX)  $(v_sizeX)  $(-v_sizeY)  $(v_sizeY)  $(v_tsizeZ) $(v_tsizeZ + v_sizeZ) units lattice #Define the region of empty
+region wholeBox union 3 base tip empty
+
+create_box 1 wholeBox
+create_atoms 1 region wholeBox
+group gempty region empty
+delete_atoms group gempty
+
+pair_style eam #Potential
+pair_coeff 1 1 ./Cu_u6.eam
+
+variable inff equal 5e9 # pseudo infinity
+variable lower equal "zlo+3.0" # z max of the fixed layer
+
+region botreg block -${inff} ${inff} -${inff} ${inff} -${inff} ${lower} units box
+group botgroup region botreg
+
+fix botforce botgroup setforce 0.0 0.0 0.0
+
+timestep 0.002
+
+variable runtime0 equal 75000 # 150ps Time of the relaxing period
+variable temperature equal 298
+
+velocity all create ${temperature} 5343 #87287
+
+fix nve1 all nve
+
+region heat_tip block $(-v_tsizeX) $(v_tsizeX) $(-v_tsizeY) $(v_tsizeY) $(v_tsizeZ-v_tsizeZ/2) $(v_tsizeZ) units lattice #Define the region of nanoprotrusion
+group movgroup region heat_tip
+velocity movgroup create 1273 5343 #87287
+
+fix nvt1 all temp/berendsen ${temperature} ${temperature} 0.1
+
+dump 1 all custom 500 trajectory1.lammpstrj id x y z
+#---------------------------------------------------------
+compute ke all ke/atom
+variable eV2J equal 1.602763e-19
+variable kB   equal 1.380650e-23
+variable temp atom c_ke*${eV2J}/(1.5*${kB}) #### T
+variable tempatom atom c_ke*${eV2J}*2/3/${kB}
+dump            d1 all cfg 500 cfg/run.*.cfg mass type xs ys zs id type vx vy vz fx fy fz v_tempatom
+#fix ave_tempatom all ave/atom 1 500 500 v_tempatom # Average calculation for temperature of each atom
+#dump            d1 all cfg 500 cfg/run.*.cfg mass type xs ys zs id type vx vy vz fx fy fz f_ave_tempatom
+dump_modify     d1 element Cu
+#---------------------------------------------------------
+
+run ${runtime0}
+
