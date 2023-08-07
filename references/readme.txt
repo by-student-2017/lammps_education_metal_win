@@ -326,8 +326,9 @@ input file (metal unit, lammps)
   https://ttu-ir.tdl.org/handle/2346/73470
   nanoprotrusion
   
-- https://ttu-ir.tdl.org/handle/2346/87494
-  DLC
+- Benjamin T. Dankesreiter, B.S., Master thesis (2021).
+  https://ttu-ir.tdl.org/handle/2346/87494
+  DLC (diamond-like carbon)
   
 - https://scholarcommons.scu.edu/mech_mstr/9/
   screw_dislocation
