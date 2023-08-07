@@ -50,7 +50,7 @@ input file (metal unit, lammps)
   
 - M. Vaezi et al., J. Chem. Phys. 153 (2020) 234702.
   https://doi.org/10.1063/5.0029490
-  05_C60_on_BN
+  C60_on_BN
   
 - ERIK FRANSSON, JOHANNES LAURELL H˚AKANSSON, Master’s Thesis in Applied Physics (2014).
   https://core.ac.uk/display/70610056
