@@ -1,0 +1,103 @@
+# Stress and strain
+
+log stress.out
+
+units metal
+boundary p p p
+atom_style atomic
+
+lattice hcp 3.232
+region box block 0 5 0 3 0 3
+
+create_box 1 box
+create_atoms 1 box
+
+pair_style meam
+pair_coeff * * meam Zr H ZrH.meam Zr
+
+neighbor 2.0 bin
+neigh_modify delay 10 check yes
+
+mass * 91.225 # Zr
+
+reset_timestep 0 
+
+fix 1 all box/relax aniso 0.0 vmax 0.001
+
+thermo 10 
+thermo_style custom step pe lx ly lz press pxx pyy pzz
+
+min_style cg 
+minimize 1e-25 1e-25 5000 10000 
+
+unfix 1
+
+######################################
+# EQUILIBRATION
+
+reset_timestep 0
+
+timestep 0.001
+
+velocity all create 500 12345 mom yes rot no
+
+fix 1 all npt temp 500 500 1 iso 0 0 1 drag 1 
+
+# Set thermo output
+thermo 1000
+thermo_style custom step lx ly lz press pxx pyy pzz pe temp
+
+#---------------------------------------------------------
+dump            d1 all cfg 1000 cfg/run.npt.*.cfg mass type xs ys zs id type vx vy vz fx fy fz
+dump_modify     d1 element Zr
+#---------------------------------------------------------
+
+# Run for at least 10 picosecond (assuming 1 fs timestep)
+run 100000
+
+unfix 1
+undump d1
+
+# Store final cell length for strain calculations
+variable tmp equal "lz"
+variable L0 equal ${tmp}
+
+print "Initial Length, L0: ${L0}"
+
+######################################
+# DEFORMATION
+
+reset_timestep 0
+
+dump 1 all custom 100 300.dump id type x y z
+dump_modify 1 every 1000
+
+fix 1 all npt temp 500 500 1 x 0 0 1 y 0 0 1 drag 1
+
+variable srate equal 1.0e10
+variable srate1 equal "v_srate / 1.0e12"
+
+fix 2 all deform 1 z erate ${srate1} units box remap x
+
+# Output strain and stress info to file
+# for units metal, pressure is in [bars] = 100 [kPa] = 1/10000 [GPa]
+# p2, p3, p4 are in GPa
+variable strain equal "(lz - v_L0)/v_L0"
+variable p1 equal "v_strain"
+variable p2 equal "-pxx/10000"
+variable p3 equal "-pyy/10000"
+variable p4 equal "-pzz/10000"
+
+# Display thermo
+thermo 1000
+thermo_style custom step v_strain temp v_p2 v_p3 v_p4 ke pe press
+
+#---------------------------------------------------------
+dump            d1 all cfg 1000 cfg/run.defrom.*.cfg mass type xs ys zs id type vx vy vz fx fy fz
+dump_modify     d1 element Zr
+#---------------------------------------------------------
+
+run 30000
+
+# SIMULATION DONE
+print "All done"

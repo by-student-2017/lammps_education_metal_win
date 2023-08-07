@@ -1,0 +1,70 @@
+# Sample program to calculate lattice parameters for pure alpha-Zr using MEAM
+
+log lattice.out
+
+units metal
+boundary p p p
+atom_style atomic
+
+lattice hcp 3.232
+#lattice fcc 4.83 for zirconium hydride
+
+region box block 0 5 0 3 0 3
+create_box 1 box
+create_atoms 1 box
+
+mass 1 91.224  # Zr
+#mass 2 1.0079 # H (in case of hydrogen)
+
+pair_style meam # For MEAM potential 
+pair_coeff * * meam Zr H ZrH.meam Zr
+pair_coeff * * meam Zr H ZrH.meam Zr H # (For MEAM with hydrogen)
+
+# regions of sample
+neighbor 2.0 bin
+neigh_modify delay 0 every 1
+
+dump 1 all custom 100 atom.dump id type x y z
+dump_modify 1 every 100
+
+# ---------- Define Settings ---------------------
+
+compute eng all pe/atom
+compute eatoms all reduce sum c_eng
+
+fix 1 all nve/limit 0.1
+
+thermo_style custom step pe lx ly lz press pxx pyy pzz c_eatoms vol etotal
+
+minimize 1.00e-30 1.00e-30 100000 1000000
+
+unfix 1
+
+# ---------- Run Minimization ---------------------
+
+reset_timestep 0
+
+fix 1 all box/relax aniso 0.0 vmax 0.1
+
+thermo 1
+thermo_style custom step pe lx ly lz press pxx pyy pzz c_eatoms vol etotal
+
+#---------------------------------------------------------
+dump            d1 all cfg 1 cfg/run.*.cfg mass type xs ys zs id type vx vy vz fx fy fz
+dump_modify     d1 element Zr
+#---------------------------------------------------------
+
+min_style cg
+minimize 1e-25 1e-25 5000 10000
+
+variable   teng equal "c_eatoms"
+variable length equal "lx"
+variable length equal "lz"
+variable   ecoh equal "v_teng/v_natoms"
+
+print "Total energy (eV) = ${teng};"
+print "Number of atoms = ${natoms};"
+print "Lattice constant (Angstoms) = ${length};"
+print "Cohesive energy (eV) = ${ecoh};"
+
+print "All done!"
