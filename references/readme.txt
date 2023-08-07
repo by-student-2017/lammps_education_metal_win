@@ -347,14 +347,9 @@ input file (metal unit, lammps)
   http://210.212.194.26/jspui/handle/123456789/14231 
   hBN
 
-- https://www.politesi.polimi.it/handle/10589/2021 (real unit)
-
-- https://www.sciencedirect.com/science/article/pii/S0010465518304107 (MagiC)
-
-- https://espace.curtin.edu.au/handle/20.500.11937/44762
-  sunset_yellow_dimers
-
-- https://research-information.bris.ac.uk/ws/portalfiles/portal/364060220/Final_Copy_2023_05_09_Petkov_A_PhD.pdf (beta-Ga2O3)
+- P. Alexander, Doctor thesis (2023).
+  https://research-information.bris.ac.uk/ws/portalfiles/portal/364060220/Final_Copy_2023_05_09_Petkov_A_PhD.pdf 
+  beta-Ga2O3 (MATLAB code)
 
 - https://theses.cz/id/fl7387/2022_DP_Cavojec_Martin_192047.pdf (python)
 -------------------------------------------------------------------
@@ -436,6 +431,8 @@ input file (metal unit, lammps)
 - H. M. Harper, thesis (2008).
   https://digitalcommons.usf.edu/etd/280/  (Metal, lj)
   d-AlNiCo (do not copy & paste from PDF)
+  
+- https://www.sciencedirect.com/science/article/pii/S0010465518304107 (MagiC)
 -------------------------------------------------------------------
 plot the temperature of each atom
 
