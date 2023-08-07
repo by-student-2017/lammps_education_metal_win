@@ -339,9 +339,6 @@ input file (metal unit, lammps)
   https://harvest.usask.ca/handle/10388/ETD-2013-10-1264
   ZrH2
 
-- https://uhra.herts.ac.uk/handle/2299/15336
-  CeO2
-
 - https://digitalcommons.usf.edu/etd/2098/ (Metal, lj)
   
 - https://digitalcommons.usf.edu/etd/280/  (Metal, lj)
