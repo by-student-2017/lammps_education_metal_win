@@ -328,7 +328,8 @@ input file (metal unit, lammps)
   
 - Benjamin T. Dankesreiter, B.S., Master thesis (2021).
   https://ttu-ir.tdl.org/handle/2346/87494
-  DLC (diamond-like carbon)
+  DLC (diamond-like carbon) (python code)
+  (B series need DLC_pen.txt)
   
 - https://scholarcommons.scu.edu/mech_mstr/9/
   screw_dislocation

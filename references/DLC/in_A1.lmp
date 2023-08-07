@@ -1,0 +1,82 @@
+# APPENDIX A, DLC QUENCHING SCRIPT
+
+# create DLC
+# ---------------------------
+
+log DLC_prep.log
+units metal
+dimension 3
+boundary p p p
+atom_style charge
+
+# --------------------------------------
+
+region box block 0 120 0 40 0 20 units box
+create_box 2 box
+create_atoms 1 random 10600 964723 box
+create_atoms 2 random 500 39572 box
+mass 1 12.0107
+mass 2 1.00794
+group all region box
+set type 1 charge 0
+set type 2 charge 0
+
+# -----------------------------------
+
+pair_style airebo 2.5 1 1
+pair_coeff * * CH.airebo C H
+
+# -----------------------------------
+
+velocity all create 300 2946873 units box
+
+minimize 1.0e-8 1.0e-8 1000000 1000000
+
+reset_timestep 0
+
+timestep 0.0001
+
+fix 1 all langevin 300 300 0.01 7268134
+fix 2 all nve
+
+thermo_style custom step temp press vol enthalpy ke pe etotal lx ly lz density atoms
+thermo_modify lost warn
+
+dump 1 all atom 1000 DLC_prep.lammpstrj
+
+#---------------------------------------------------------
+dump            d1 all cfg 1000 cfg_A1/run.*.cfg mass type xs ys zs id type vx vy vz fx fy fz
+dump_modify     d1 element C H
+#---------------------------------------------------------
+
+thermo 1000
+
+run 50000
+write_restart DLC_prep_rho2pt2_ox_300k_20151022_300K.restart
+unfix 1
+
+fix 1 all langevin 300 8000 0.01 541397
+run 100000
+write_restart DLC_prep_rho2pt2_ox_300k_20151022_melting.restart
+unfix 1
+
+fix 1 all langevin 8000 8000 0.01 541397
+run 20000
+write_restart DLC_prep_rho2pt2_ox_300k_20151022_8000K.restart
+unfix 1
+
+fix 1 all langevin 8000 300 0.01 541397
+run 20000
+write_restart DLC_prep_rho2pt2_ox_300k_20151022_quench.restart
+unfix 1
+
+fix 1 all langevin 300 300 0.025 9536418
+
+dump 3 all custom 10000 DLC_prep_final.dump id type q x y z vx vy vz
+compute 1 all coord/atom cutoff 1.75
+dump 4 all custom 10000 coordination.dump c_1
+
+run 100000
+
+# ——————————————
+print “Done”

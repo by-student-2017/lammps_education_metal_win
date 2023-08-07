@@ -1,0 +1,45 @@
+# APPENDIX D, SURFACE ENERGY SCRIPT
+
+log SE_f.log
+units metal
+dimension 3
+atom_style full
+
+# --------------------------------------
+
+read_restart DLC_prep_rho2pt2_ox_300k_20151022_quench.restart
+change_box all boundary p p f
+mass 1 12.0107
+mass 2 1.00794
+group all type 1 2
+set type 1 charge 0
+set type 2 charge 0
+
+# -----------------------------------
+
+pair_style airebo 2.5 1 1
+pair_coeff * * CH.airebo C H
+
+# -----------------------------------
+
+velocity all create 300 2946873 units box
+
+#minimize 1.0e-8 1.0e-8 1000000 1000000
+
+reset_timestep 0
+
+timestep 0.000025
+
+fix 1 all langevin 300 300 0.0025 9536418
+fix 2 all nve
+
+thermo_style custom step temp press vol enthalpy ke pe etotal lx ly lz density atoms
+thermo_modify lost warn
+
+dump 1 all atom 20000 SE_f.lammpstrj
+
+write_restart SE_f.restart
+
+run 400000
+# ——————————————
+print “Done”
