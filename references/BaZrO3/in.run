@@ -4,7 +4,7 @@
 # URL: https://odr.chalmers.se/server/api/core/bitstreams/23eab5bd-4671-4e7f-a6bc-7b39bbc6bd17/content
 clear
 
-# ---------- settings ---------------------
+#-------------------- settings -----------------------------------------------------------
 variable rho12 equal 0.3949 # rho of Ba2+ - O2-
 variable rho23 equal 0.3760 # rho of O2-  - Zr4+
 #----------------------------------------
@@ -29,12 +29,12 @@ variable tRun    equal 100
 
 variable Nprint  equal 10
 
-# ---------- Initialize Simulation ---------------------
+#-------------------- Initialize Simulation ----------------------------------------------
 units metal
 boundary p p p
 atom_style full
 
-# ---------- Create Atoms ---------------------
+# ------------------- Create Atoms -------------------------------------------------------
 read_data ${name}_input.pos
 replicate 5 5 5
 
@@ -50,45 +50,47 @@ set type 1 charge  2.0 # Ba 2+
 set type 2 charge -2.0 # O  2-
 set type 3 charge  4.0 # Zr 4+
 
-# ---------- Define Interatomic Potential ---------------------
-
+# ------------------- Define Interatomic Potential ---------------------------------------
 pair_style buck/coul/long ${Rcut}
 pair_modify table 0
-kspace_style ewald 1.0e-5
 
 # 1:Ba2+, 2:O2-, 3:Zr4+
-pair_coeff * * 0.0 0.1 0.0
-pair_coeff 1 2 931.700 ${rho12} 0.0
-pair_coeff 2 2 22764.300 0.1490 27.890
-pair_coeff 2 3 985.869 ${rho23} 0.0
+pair_coeff * *     0.0   0.1       0.0   # all-all
+pair_coeff 1 2   931.700 ${rho12}  0.0   #  Ba-O
+pair_coeff 2 2 22764.300 0.1490   27.890 #   O-O
+pair_coeff 2 3   985.869 ${rho23}  0.0   #   0-Zr
 
-# ---------- Define Settings ---------------------
+kspace_style ewald 1.0e-5
+
+# ------------------- Define Settings ----------------------------------------------------
+reset_timestep 0
+
+timestep ${dt}
+
+thermo 100
+thermo_style custom step temp press lx
+
+#---------- output file settings -------------------
+dump            d1 all cfg ${Nprint} cfg/run.*.cfg mass type xs ys zs id type q vx vy vz fx fy fz
+dump_modify     d1 element Ba O Zr
+#----------------------------------------------------
+
+velocity all create $T 28459 rot yes dist gaussian mom yes
+
+#-------------------- Run the simulation -------------------------------------------------
+fix 1 all nvt temp $T $T 1 # Find equilibrium
+run ${tEq}
+
+# ------------------- calculates the radial distribution function (RDF) --------------------
+reset_timestep 0
+
+thermo 100
+thermo_style custom step temp press lx
 
 # Radial distribution function (RDF) of O-O, also called g(r) of O-O
 compute myRDF all rdf ${Nbins} 2 2
-
-# ---------- Run MD ---------------------
-reset_timestep 0
-thermo 100
-thermo_style custom step temp press lx
-
-velocity all create $T 28459 rot yes dist gaussian mom yes
-fix 1 all nvt temp $T $T 1
-#fix 1 all nvt temp $T $T $(100.0*dt)
-
-#Output
-dump            d1 all cfg ${Nprint} cfg/run.*.cfg mass type xs ys zs id type q vx vy vz fx fy fz
-dump_modify     d1 element Ba O Zr
-
-#Find equilibrium
-timestep ${dt}
-run ${tEq}
-
-#Compute RDF
-thermo 100
-thermo_style custom step temp press lx
-
-reset_timestep 0
 fix 2 all ave/time ${Nevery} ${Nrepeat} ${tRun} c_myRDF[*] file RDF_${name}.dat mode vector
 
 run ${tRun}
+
+#-------------------- End ----------------------------------------------------------------
