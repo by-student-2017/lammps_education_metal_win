@@ -3,15 +3,16 @@
 ##########################################################
 
 clear
+#processors * * * grid numa
 
-units metal      # eV,atomic charge,angstroms,ps,kelvin,bars,g/mol
+# eV,atomic charge,angstroms,ps,kelvin,bars,g/mol
+units metal
+
 dimension 3
 boundary p p p
 atom_style charge
 
-#processors * * * grid numa
-read_data Ni3-Li2SnO3.lmp
-
+read_data Ni3-Li2SnO3.data
 #replicate 5 5 5
 
 group Li type 1
@@ -22,7 +23,7 @@ group Ni type 4
 mass 1   6.9410 # Li
 mass 2 118.71   # Sn
 mass 3  15.9994 # O
-mass 4  58.6934 # Ni
+mass 4  58.6934 # Ni, Ti:47.867, V:50.9415, Cr:51.9961, Mn:54.938049, Fe:55.847, Co:58.9332
 
 # Note: MT3+ on Sn site, #MT2+ on Li site.
 set type 1 charge  1.0 # Li 1+
@@ -32,6 +33,7 @@ set type 4 charge  3.0 # Ni 3+
 
 variable T1 equal 500 # Temperature [K]
 variable Timer equal step*dt
+
 log ${T1}.lammps
 
 #########################################################
@@ -115,13 +117,13 @@ kspace_style pppm 1e-05
 
 reset_timestep 0 
 
-timestep 0.5
+timestep 0.5 # 0.5 [ps]
 
 thermo 10
 thermo_style custom step enthalpy fmax lx ly lz vol press 
 
 min_style cg 
-minimize 1e-25 1e-25 5000 10000
+minimize 1e-25 1e-25 5000 10000 # 0 [K], structure optimization
 
 ########################################################
 # -------------- Relax Cell ---------------------------#
@@ -129,7 +131,7 @@ minimize 1e-25 1e-25 5000 10000
 
 reset_timestep 0
 
-timestep 0.5
+timestep 0.5 # 0.5 [ps]
 
 fix 1 all box/relax aniso 1.0 vmax 0.003
 
@@ -137,7 +139,7 @@ thermo 1
 thermo_style custom step enthalpy fmax lx ly lz vol press 
 
 min_style cg 
-minimize 1e-25 1e-25 5000 10000 
+minimize 1e-25 1e-25 5000 10000 # 0 [K], structure optimization
 
 unfix 1
 
@@ -147,22 +149,26 @@ unfix 1
 
 reset_timestep 0
 
-timestep 0.002
+timestep 0.002 # 2 [fs]
 
 velocity all create ${T1} 4928 rot yes dist gaussian
 
 fix 2 all npt temp ${T1} ${T1} 0.01 aniso 1.0 1.0 0.1
 
-thermo_style custom step v_Timer cpu temp etotal fmax lx ly lz vol press
 thermo 1000
+thermo_style custom step v_Timer cpu temp etotal fmax lx ly lz vol press
 
 run 5000
 
 unfix 2
 
+########################################################
+# ------------- MSD -----------------------------------#
+########################################################
+
 reset_timestep 0
 
-timestep 0.002
+timestep 0.002 # 2 [fs]
 
 compute mymsdLi Li msd com yes
 compute mymsdNi Ni msd com yes
@@ -182,10 +188,10 @@ fix msdT1 Li ave/time 1 1 2500 v_msdxLi v_msdyLi v_msdzLi v_msdtotLi file NimsdL
 
 fix 3 all nvt temp ${T1} ${T1} 0.01
 
-thermo_style custom step v_Timer cpu temp etotal fmax lx ly lz vol press v_msdtotLi v_msdtotNi
 thermo 5000
+thermo_style custom step v_Timer cpu temp etotal fmax lx ly lz vol press v_msdtotLi v_msdtotNi
 
-dump dynamics all xyz 2500 Ni3-Li2SnO3nvt_${T1}.xyz
+dump dynamics all xyz/xyz 2500 Ni3-Li2SnO3nvt_${T1}.xyz
 dump_modify dynamics every 5000 element Li Sn O Ni first yes
 
 run 1000000
@@ -193,3 +199,7 @@ run 1000000
 unfix 3
 unfix msdT1
 unfix msdT2
+
+########################################################
+# ------------- End -----------------------------------#
+########################################################
