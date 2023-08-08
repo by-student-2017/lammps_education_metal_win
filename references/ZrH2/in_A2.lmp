@@ -1,46 +1,52 @@
 # Sample script to calculate lattice parameters at various temperatures
 
-log lattice.out
+#-------------------- Initialization -----------------------------------------------------
+clear
 
 units metal
 boundary p p p
+
+#-------------------- Atom & Lattice description ----------------------------------------
 atom_style atomic
 
 lattice hcp 3.232
-region box block 0 16 0 10 0 10
 
+# regions of sample
+region box block 0 16 0 10 0 10
 create_box 1 box
 create_atoms 1 box
 
 mass 1 91.224 # Zr
 
+#-------------------- Force field --------------------------------------------------------
 pair_style meam
 pair_coeff * * meam Zr H ZrH.meam Zr
 
-# regions of sample
+#-------------------- Settings -----------------------------------------------------------
 neighbor 2.0 bin
 neigh_modify delay 0 every 1
 
 reset_timestep 0
 
-velocity all create 500. 12345 mom yes rot no
-
-fix 1 all npt temp 500. 500. 1 aniso 0 0 1 drag 0.5
-
 compute 2 all temp
-
-dump 1 all custom 1000 temp3.dump id type xu yu zu ix iy iz
-dump_modify 1 every 10000
-
-#---------------------------------------------------------
-dump            d1 all cfg 1000 cfg/run.*.cfg mass type xs ys zs id type vx vy vz fx fy fz
-dump_modify     d1 element Zr
-#---------------------------------------------------------
 
 # Set thermo output
 thermo 10000
 thermo_style custom step temp pe lx ly lz press pxx pyy pzz c_eatoms vol etotal
 
-run 1000000
+#---------- output file settings -------------------------
+#dump 1 all custom 1000 temp3.dump id type xu yu zu ix iy iz
+#dump_modify 1 every 10000
+#---------------------------------------------------------
+dump            d1 all cfg 1000 cfg/run.*.cfg mass type xs ys zs id type vx vy vz fx fy fz
+dump_modify     d1 element Zr
+#---------------------------------------------------------
+log lattice.out
 
+velocity all create 500. 12345 mom yes rot no
+
+#-------------------- Run the simulation -------------------------------------------------
+fix 1 all npt temp 500. 500. 1 aniso 0 0 1 drag 0.5
+run 1000000
 unfix 1
+#-------------------- End ----------------------------------------------------------------
