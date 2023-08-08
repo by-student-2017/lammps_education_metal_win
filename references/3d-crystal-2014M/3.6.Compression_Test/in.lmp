@@ -7,62 +7,68 @@
 #3.6.1. Input file for compression testing of equilibrated crystal:
 # 3d compression simulation JP4review
 
+#-------------------- Initialization -----------------------------------------------------
+clear
+echo both
 units metal
 boundary p p p
-atom_style atomic
-echo both
 
+#-------------------- Read structure file ------------------------------------------------
+atom_style atomic
 read_data Test.dat # reads the data file containing the atom positions of the equilibrated crystal in the specified file
 
-timestep 0.001
+#-------------------- Force field --------------------------------------------------------
 pair_style eam/alloy
 pair_coeff * * Cu_zhou04.eam.alloy Cu
 
-# Energy Minimization
+#-------------------- Energy Minimization ------------------------------------------------
+# 0 K, structure optimization
 #minimize 1.0e-5 1.0e-10 10000 100000
-dump 1 all atom 100 dump.Test_40%strain.lammpstrj
-log log5050_Test_40%strain.dat
 
-# initial velocities
-velocity all create 300 482748 rot yes mom yes dist gaussian
+#-------------------- Settings -----------------------------------------------------------
+#reset_timestep 0
 
-#fix 1 all deform 1 y erate -1.0 # strain rate of -0.1 [1/sec] is applied in y direction
-#ERROR: Final box dimension due to fix deform is < 0.0 (src/fix_deform.cpp:461)
-fix 1 all deform 1 y erate -0.1 # strain rate of -0.01 [1/sec] is applied in y direction
+timestep 0.001
 
-fix 2 all npt temp 100.0 100.0 10.0 x 0 0 10.0 z 0 0 10.0 dilate all
-# all atoms rescaled to new positions while temp and pressure is conserved
+compute 1 all stress/atom NULL  # computes the symmetric per-atom stress tensor for each atom in a group.
+compute 2 all temp              # computes the temp of a group of atoms
+compute 3 all reduce sum c_1[2] # reduces vector quantities of all stress tensors in y-direction and adds all the quantities to a single
 
-fix 3 all temp/rescale 10 100 100 0.05 1.0
-# Resets the temp of atoms to 100K by rescaling velocities after every 10 steps
+variable    tmp equal ly
+variable     lo equal ${tmp}
+variable strain equal (ly-v_lo)/v_lo
+variable      p equal -pyy/10000 # assign a value to the variable name strain
 
-compute 11 all rdf 100
+variable stress     equal c_3/(3*40000)  # assigns a value to the variable name stress
+variable stress_GPa equal v_stress/10000 # converts the stress calculated to GPa
+variable stress_MPa equal v_stress_GPa*10000
 
-fix 4 all ave/time 100 1 100 c_11[*] file rdf_Test_40%strain.rdf mode vector
+thermo 10
+thermo_style custom step temp press vol etotal c_2 v_stress v_stress_GPa v_stress_MPa v_strain
 
-compute 1 all stress/atom NULL # computes the symmetric per-atom stress tensor for each atom in a group.
-
-compute 2 all temp # computes the temp of a group of atoms
-
-dump 2 all custom 1000 dump.stress_atom_Test_40%strain type x y z c_1[1] c_1[2] c_1[3] c_1[4] c_1[5] c_1[6]
+#---------- output file settings ------------------------
+dump 1 all atom 100 dump.Test_40_strain.lammpstrj
+dump 2 all custom 1000 dump.stress_atom_Test_40_strain type x y z c_1[1] c_1[2] c_1[3] c_1[4] c_1[5] c_1[6]
 # dumps atom type; x,y,z coordinates; 6 stress tensors computed in 1 to an array of 6 elements
 #---------------------------------------------------
 dump            d1 all cfg 100 cfg/run.*.cfg mass type xs ys zs id type vx vy vz fx fy fz
 dump_modify     d1 element Cu
 #---------------------------------------------------
+log log5050_Test_40_strain.dat
 
-compute 3 all reduce sum c_1[2] # reduces vector quantities of all stress tensors in y-direction and adds all the quantities to a single
+# calculates the radial distribution function (RDF) and output file
+compute 11 all rdf 100
+fix 4 all ave/time 100 1 100 c_11[*] file rdf_Test_40_strain.rdf mode vector
 
-variable stress equal c_3/(3*40000) # assigns a value to the variable name stress
-variable stress_GPa equal v_stress/10000 # converts the stress calculated to GPa
+# initial velocities
+velocity all create 300 482748 rot yes mom yes dist gaussian
 
-variable stress_MPa equal v_stress_GPa*10000
-variable tmp equal ly
-variable lo equal ${tmp}
-variable strain equal (ly-v_lo)/v_lo
-variable p equal -pyy/10000 # assign a value to the variable name strain
-
-thermo 10
-thermo_style custom step temp press vol etotal c_2 v_stress v_stress_GPa v_stress_MPa v_strain
-
+#-------------------- Run the simulation -------------------------------------------------
+#fix 1 all deform 1 y erate -1.0 # strain rate of -0.1 [1/sec] is applied in y direction
+#ERROR: Final box dimension due to fix deform is < 0.0 (src/fix_deform.cpp:461)
+fix 1 all deform 1 y erate -0.1 # strain rate of -0.01 [1/sec] is applied in y direction
+fix 2 all npt temp 100.0 100.0 10.0 x 0 0 10.0 z 0 0 10.0 dilate all # all atoms rescaled to new positions while temp and pressure is conserved
+fix 3 all temp/rescale 10 100 100 0.05 1.0 # Resets the temp of atoms to 100K by rescaling velocities after every 10 steps
 run 4000 # number of iterations is given so as to give 40% strain to the material
+
+#-------------------- End ----------------------------------------------------------------

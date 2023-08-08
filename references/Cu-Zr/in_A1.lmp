@@ -19,6 +19,8 @@ variable  cooling_Temp equal   270 #   Cooling temperature [K] (Final target val
 variable  cooling_Time equal   100 # Cooling time [ps]
 variable         dt_ps equal 0.002 # 2 [fs]
 
+variable        ncycle equal v_cooling_Time/v_dt_ps
+
 #-------------------- Initialization -----------------------------------------------------
 echo both
 units metal
@@ -67,8 +69,6 @@ dump_modify     d1 element Cu Zr
 
 log log5050_q_bar_10e13ks-1.data
 
-velocity all create 300.0 873847 rot yes mom yes dist gaussian
-
 # calculates the mean-squared displacement (MSD)
 compute 1 cu msd
 compute 2 zr msd
@@ -76,6 +76,8 @@ compute 2 zr msd
 # calculates the radial distribution function (RDF)
 compute myRDF all rdf 100
 fix 2 all ave/time 1000 1 1000 c_myRDF[*] file Cu_Zr_quench_large_restart.rdf mode vector
+
+velocity all create 300.0 873847 rot yes mom yes dist gaussian
 
 #-------------------- Run the simulation -------------------------------------------------
 #fix 1 all npt temp  300 1150 0.1 iso 0.0 0.0 0.2 # heating rate: (1150-300)/(10000*0.002)*1e-15 = 0.425e-13 [K/s]
@@ -90,7 +92,7 @@ unfix 1
 
 #fix 1 all npt temp 1150  270 0.1 iso 0.0 0.0 0.2 # cooling rate: (1150-270)/(10000*0.002)*1e-15 = 0.44e-13 [K/s]
 fix 1 all npt temp ${anneaing_Temp} ${cooling_Temp} $(100*dt) iso 0.0 0.0 $(200*dt)
-run $(v_stop-v_start:%d)
+run ${ncycle}
 unfix 1
 
 #-------------------- Output data file ---------------------------------------------------

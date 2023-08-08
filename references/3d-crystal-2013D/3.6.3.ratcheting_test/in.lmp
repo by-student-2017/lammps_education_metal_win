@@ -19,9 +19,6 @@ pair_coeff * * Cu_zhou04.eam.alloy Cu
 #-------------------- Settings -----------------------------------------------------------
 timestep 0.002 # 2 [fs] = 2e-15 [s]
 
-# initializing velocities
-velocity mobile create 300.0 873847 rot yes mom yes dist gaussian
-
 # mobile zone
 region 1 block 0 30  0 10 0 30 units box # defines a geometric region of space around the specified xyz coordinates around the specified xyz coordinates
 region 2 block 0 30 55 65 0 30 units box
@@ -37,11 +34,7 @@ compute 2 mobile temp # computes temperature of ‘mobile’ group
 thermo 100
 thermo_style custom step temp yloyhietotal press pyy c_2
 
-#fixes
-fix 2 boundary setforce 0.0 0.0 0.0 # sets each component of force on each atom in group ‘boundary’ as 0,0,0 
-fix 3 mobile nve # Performs constant NVE integration to update position and velocity for atoms in the group ‘mobile’ each timestep.
-fix 4 mobile temp/rescale 100 300 300 0.05 1.0 # Resets the temp of atoms in‘mobile’ group to 300K by rescaling velocities after every 100 timesteps
-
+#---------- output file settings ------------------------
 dump 2 all atom 1000 Cu_fatigue_LOOP_300k_2,1.dump_test.lammpstrj # dumps a snapshot of all atom quantities every 1000 timesteps to the specified file
 dump_modify 2 scale no
 #--------------------------------------------------------
@@ -50,7 +43,14 @@ dump_modify 3 scale no
 #--------------------------------------------------------
 log logCu_fatigue_3d_LOOP_300k_2_1_test.data
 
+# initializing velocities
+velocity mobile create 300.0 873847 rot yes mom yes dist gaussian
+
 #-------------------- Run the simulation -------------------------------------------------
+fix 2 boundary setforce 0.0 0.0 0.0 # sets each component of force on each atom in group ‘boundary’ as 0,0,0 
+fix 3 mobile nve # Performs constant NVE integration to update position and velocity for atoms in the group ‘mobile’ each timestep.
+fix 4 mobile temp/rescale 100 300 300 0.05 1.0 # Resets the temp of atoms in‘mobile’ group to 300K by rescaling velocities after every 100 timesteps
+
 #-------------------- Start loop1 -----------------------------------------
 # loop is given below for the fix 5
 label loop1 # used for looping over a section of the input script

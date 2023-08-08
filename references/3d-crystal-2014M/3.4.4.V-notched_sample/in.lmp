@@ -2,11 +2,16 @@
 # This program is for obtaining 3d-crystal lattice
 # V-Notched: 50 x 100 x 50, 21056 atoms
 
-units metal      # determines units of all quantities used in the input file 
+#-------------------- Initialization -----------------------------------------------------
+clear
 echo both        # echoes each input script command to both log file and screen
-atom_style atomic 
+units metal      # determines units of all quantities used in the input file 
 dimension 3
 boundary p p p   # periodic boundary condition
+
+#-------------------- Atom & Lattice description ----------------------------------------
+atom_style atomic 
+
 region box block 0 50 0 100 0 50 units box # defines a geometric region of space
 create_box 1 box # creates a simulation box in the specified region
 
@@ -22,34 +27,38 @@ region cu2 prism  0 20 40 60 0 50 -20 0 0 units box # defines a geometric region
 group crystal2 region cu2
 delete_atoms group crystal2 # creates square-notch in the simulation box
 
-timestep 0.002   # sets the timestep for subsequent simulations
+#-------------------- Force field --------------------------------------------------------
 pair_style eam/alloy
 pair_coeff * * Cu_zhou04.eam.alloy Cu # specifies the potential file used
 
-# Energy Minimization
+#-------------------- Energy Minimization ------------------------------------------------
+# 0 [K], structure optimization
 #minimize 1.0e-7 1.0e-8 1000 1000
+
+#-------------------- Settings -----------------------------------------------------------
+reset_timestep 0
+
+timestep 0.002   # 2 [fs], sets the timestep for subsequent simulations
 
 thermo 100 # computes and prints thermodynamic 
 thermo_style custom step temp vol press etotal # specifies content of thermodynamic data to be printed in screen
 
-compute myRDF all rdf 1000
-
-fix 11 all ave/time 10 1 10 c_myRDF[*] file cu_melt_new.rdf mode vector
-
-dump 1 all atom 10 Cu_crystal_melt_3d_s_dump_new.lammpstrj
-# dumps a snapshot of atom quantities every 10 time steps to the specified file
-
+#---------- output file settings --------------------------------------
+dump 1 all atom 10 Cu_crystal_melt_3d_s_dump_new.lammpstrj # dumps a snapshot of atom quantities every 10 time steps to the specified file
 dump_modify 1 scale no # modifies parameters of previously defined dump command.
 # A value of scale ‘no’ means atom coordinates are written in absolute distance units. 
+#----------------------------------------------------------------------
+log logCu_crystal_melt_3d_s_new.data # closes the current log file, opens a new log file, and begins logging information to it
 
-log logCu_crystal_melt_3d_s_new.data
-# closes the current log file, opens a new log file, and begins logging information to it
+# calculates the radial distribution function (RDF)
+compute myRDF all rdf 1000
+fix 11 all ave/time 10 1 10 c_myRDF[*] file cu_melt_new.rdf mode vector
 
 velocity all create 300 873847 rot yes mom yes dist gaussian # sets the velocity of a group of atoms
 
-#fixes
+#-------------------- Run the simulation -------------------------------------------------
 fix 1 all npt temp 100 100 0.1 iso 0 0 0.1 # temp and pressure conserved
-
 run 1000 # program is run for 1000 iterations
-
 unfix 1  # deletes the previously defined fix 1
+
+#-------------------- End ----------------------------------------------------------------
