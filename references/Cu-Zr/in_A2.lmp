@@ -21,29 +21,31 @@ units metal
 dimension 3
 boundary s p s
 
-#-------------------- Atom & Lattice description -------------------------------
+#-------------------- Atom & Lattice description -----------------------------------------
 atom_style atomic
 read_data CuZr_cooling_10_13.txt
 
-#-------------------- Force field ----------------------------------------------
+#-------------------- Force field --------------------------------------------------------
 pair_style eam/fs
 pair_coeff * * CuZr_mm.eam.fs Cu Zr
 
-#-------------------- Energy Minimization --------------------------------------
+#-------------------- Energy Minimization ------------------------------------------------
 # 0 K, structure optimization
 minimize 1.0e-9 1.0e-6 1000 1000
 
-#-------------------- Settings -------------------------------------------------
+#-------------------- Settings -----------------------------------------------------------
+reset_timestep 0
+
 #timestep 0.002 # 2 fs
 timestep ${dt_ps}
 
 velocity all create 300 8173847 rot yes mom yes dist gaussian
 
-#-------------------- NVT simulation -------------------------------------------
+#-------------------- NVT simulation -----------------------------------------------------
 fix A all nvt temp 300 ${Test_Temp} $(100*dt)
 run 10000
 
-#-------------------- Settings -------------------------------------------------
+#-------------------- Settings -----------------------------------------------------------
 compute       1 all stress/atom
 compute    csym all centro/atom fcc
 compute peratom all pe/atom 
@@ -91,7 +93,7 @@ fix 2 all deform 1 y erate 0.001 units box
 fix 3 all print 10000 "${strain} ${p2}" file stress_strain_data.txt 
 fix def all print 1 "${strain} ${p2} ${s1} ${s2} ${s3} ${fm} ${fv} ${t} ${fd}" file CuZr_tension_von.txt
 
-#-------------------- Run the simulation ---------------------------------------
+#-------------------- Run the simulation -------------------------------------------------
 run 1000000
 
-#-------------------- End ------------------------------------------------------
+#-------------------- End ----------------------------------------------------------------
