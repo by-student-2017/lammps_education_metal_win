@@ -16,8 +16,8 @@ clear
 #-------------------- Environment Settings -----------------------------------------------
 variable anneaing_Temp equal  1150 # Annealing temperature [K]
 variable  cooling_Temp equal   270 #   Cooling temperature [K] (Final target value)
-variable  cooling_Time equal   100 # ps units (Cooling time) 
-variable         dt_ps equal 0.002 # 2 fs
+variable  cooling_Time equal   100 # Cooling time [ps]
+variable         dt_ps equal 0.002 # 2 [fs]
 
 #-------------------- Initialization -----------------------------------------------------
 echo both
@@ -46,11 +46,11 @@ pair_style eam/fs
 pair_coeff * * CuZr_mm.eam.fs Cu Zr
 
 #-------------------- Energy Minimization ------------------------------------------------
-# 0 K, structure optimization
+# 0 [K], structure optimization
 minimize 1.0e-3 1.0e-6 1000 10000
 
 #-------------------- Settings -----------------------------------------------------------
-#timestep 0.002 # 2 fs = 2e-15 s
+#timestep 0.002 # 2 [fs] = 2e-15 [s]
 timestep ${dt_ps}
 
 thermo 100
@@ -88,6 +88,7 @@ unfix 1
 
 #fix 1 all npt temp 1150  270 0.1 iso 0.0 0.0 0.2 # cooling rate: (1150-270)/(10000*0.002)*1e-15 = 0.44e-13 [K/s]
 fix 1 all npt temp ${anneaing_Temp} ${cooling_Temp} $(100*dt) iso 0.0 0.0 $(200*dt)
+run $(cooling_Time/dt_ps)
 unfix 1
 
 #-------------------- Output data file ---------------------------------------------------
