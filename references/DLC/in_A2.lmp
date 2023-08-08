@@ -1,49 +1,58 @@
 # APPENDIX D, SURFACE ENERGY SCRIPT
 
-log SE_f.log
+#-------------------- Initialization -----------------------------------------------------
+clear
 units metal
 dimension 3
+
+#-------------------- Read restart file --------------------------------------------------
 atom_style full
-
-# --------------------------------------
-
 read_restart DLC_prep_rho2pt2_ox_300k_20151022_quench.restart
 change_box all boundary p p f
-mass 1 12.0107
-mass 2 1.00794
+
+mass 1 12.0107 # C
+mass 2 1.00794 # H
+
 group all type 1 2
-set type 1 charge 0
-set type 2 charge 0
 
-# -----------------------------------
+set type 1 charge 0 # 0 [e] of C
+set type 2 charge 0 # 0 [e] of H
 
+#-------------------- Force field --------------------------------------------------------
 pair_style airebo 2.5 1 1
 pair_coeff * * CH.airebo C H
 
-# -----------------------------------
-
+#-------------------- Energy Minimization ------------------------------------------------
 velocity all create 300 2946873 units box
 
+# 0 [K], structure optimization
 #minimize 1.0e-8 1.0e-8 1000000 1000000
 
+#-------------------- Settings -----------------------------------------------------------
 reset_timestep 0
 
-timestep 0.000025
-
-fix 1 all langevin 300 300 0.0025 9536418
-fix 2 all nve
+timestep 0.000025 # 0.025 [fs]
 
 thermo_style custom step temp press vol enthalpy ke pe etotal lx ly lz density atoms
 thermo_modify lost warn
 
+#---------- output file settings -------------------------
 dump 1 all atom 20000 SE_f.lammpstrj
 #---------------------------------------------------------
 dump            d1 all cfg 1000 cfg_A2/run.*.cfg mass type xs ys zs id type vx vy vz fx fy fz
 dump_modify     d1 element C H
 #---------------------------------------------------------
+log SE_f.log
+#---------------------------------------------------------
 
-write_restart SE_f.restart
+#-------------------- Run the simulation -------------------------------------------------
+fix 1 all langevin 300 300 0.0025 9536418
+fix 2 all nve
 
 run 400000
-# ——————————————
+
+#---------- output file settings -------------------------
+write_restart SE_f.restart
+#---------------------------------------------------------
 print “Done”
+#-------------------- End ----------------------------------------------------------------

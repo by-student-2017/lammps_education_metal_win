@@ -1,34 +1,49 @@
 # APPENDIX B, INDENTATION SCRIPT
 
-log DLC_pen.log
+#-------------------- Initialization -----------------------------------------------------
+clear
 dimension 3
 boundary p p f
 atom_style full
 units metal
 
+#-------------------- Read structure file ------------------------------------------------
 read_data DLC_pen.txt
 
 region surf block 0 120 0 40 3 21 units box
 group surf region surf
 group tip type 1
 
+#-------------------- Force field --------------------------------------------------------
 pair_style airebo 2.5 1 1
 pair_coeff * * CH.airebo C C H
+
+#-------------------- Settings -----------------------------------------------------------
+timestep 0.0001 # 0.1 [fs]
+
 compute coordno surf coord/atom cutoff 1.73
 compute surftemp surf temp
+
 variable fx equal fcm(tip,x)
 variable fz equal fcm(tip,z)
 
-timestep 0.0001
-fix 1 surf nvt temp 295 295 0.01
-fix 2 surf wall/reflect zhi 20 units box
+thermo 2500
+thermo_style custom step atoms temp press ke pe etotal lx ly lz density c_surftemp v_fx v_fz
+thermo_modify lost warn
 
-fix 3 tip move linear 0 0 -0.1 units box
+#---------- output file settings -------------------------
 dump 1 all atom 50000 DLC_pen.lammpstrj
 dump 2 all custom 50000 DLC_pen.dump id mol type q x y z vx vy vz
 dump 3 all custom 50000 DLC_pen.coordno id type c_coordno
-thermo_style custom step atoms temp press ke pe etotal lx ly lz density c_surftemp v_fx v_fz
-thermo_modify lost warn
-thermo 2500
+#---------------------------------------------------------
+log DLC_pen.log
+
+#-------------------- Run the simulation -------------------------------------------------
+fix 1 surf nvt temp 295 295 0.01
+fix 2 surf wall/reflect zhi 20 units box
+fix 3 tip move linear 0 0 -0.1 units box
 run 700000
+
+#---------- output file settings -------------------------
 write_restart DLC_pen.restart
+#-------------------- End ----------------------------------------------------------------

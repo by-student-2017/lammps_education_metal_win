@@ -1,43 +1,62 @@
 # APPENDIX C, SLIDING CONTACT SCRIPT
 
-log DLC_slide.log
+#-------------------- Initialization -----------------------------------------------------
+clear
+units metal
 dimension 3
 boundary p p f
-atom_style full
-units metal
 
+#-------------------- Read restart file --------------------------------------------------
+atom_style full
 read_restart DLC_pen.restart
-reset_timestep 0
+
 region tstat block 0 120 0 40 3 15 units box
 region top block 0 120 0 40 15 21 units box
+
 group tstat region tstat
 group top region top
 group tip type 1
+
 group dlc type 2 3
 group surf intersect dlc top
+
 group dlccarbon type 2
 group surfcarbon intersect dlccarbon top
 
+#-------------------- Force field --------------------------------------------------------
 pair_style airebo 2.5 1 1
 pair_coeff * * CH.airebo C C H
 
+#-------------------- Settings -----------------------------------------------------------
+reset_timestep 0
+
+timestep 0.0001 # 0.1 [fs]
+
 compute coordno surfcarbon coord/atom cutoff 1.73
 compute surftemp surf temp
+
 variable fx equal fcm(tip,x)
 variable fz equal fcm(tip,z)
 
-timestep 0.0001
+thermo 2500
+thermo_style custom step atoms temp press ke pe etotal lx ly lz density c_surftemp v_fx v_fz
+thermo_modify lost warn
+
+#---------- output file settings -------------------------
+dump 1 all atom 2500 slide.lammpstrj
+dump 2 all custom 2500 slide.dump id mol type q x y z vx vy vz
+dump 3 surfcarbon custom 2500 slide.coordno id type c_coordno
+#---------------------------------------------------------
+log DLC_slide.log
+
+#-------------------- Run the simulation -------------------------------------------------
 fix 1 tstat nvt temp 295 295 0.01
 fix 2 surf nve
 fix 3 surf wall/reflect zhi 20 units box
 fix 4 tstat wall/reflect zhi 20 units box
 fix 5 tip move linear 0.8 0 0 units box
-dump 1 all atom 2500 slide.lammpstrj
-dump 2 all custom 2500 slide.dump id mol type q x y z vx vy vz
-dump 3 surfcarbon custom 2500 slide.coordno id type c_coordno
-thermo_style custom step atoms temp press ke pe etotal lx ly lz density c_surftemp v_fx v_fz
-thermo_modify lost warn
-thermo 2500
 run 1000000
 
+#---------- output file settings -------------------------
 write_restart DLC_slide.restar
+#-------------------- End ----------------------------------------------------------------
