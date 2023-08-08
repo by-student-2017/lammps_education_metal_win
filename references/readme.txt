@@ -337,7 +337,7 @@ input file (metal unit, lammps)
 
 - A. Kabi, Master thesis (2015).
   http://ethesis.nitrkl.ac.in/6991/ 
-  Cu-Zr
+  Cu-Zr (Tensil (A2) or Compressive (A3) defromation of quenched specimen (A1))
 
 - P. Alexander, Doctor thesis (2023).
   https://research-information.bris.ac.uk/ws/portalfiles/portal/364060220/Final_Copy_2023_05_09_Petkov_A_PhD.pdf 
