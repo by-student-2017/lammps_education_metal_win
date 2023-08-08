@@ -1,0 +1,58 @@
+# 3.8 LAMMPS
+#-------------------- Initialization -------------------------------------------
+clear
+
+echo both
+units metal
+dimension 3
+boundary p p p
+
+#-------------------- Atom & Lattice description -------------------------------
+atom_style atomic
+
+region box block 0 50 0 100 0 50 units box 
+create_box 1 box
+lattice fcc 3.61
+
+create_atoms 1 region box
+set region box type 1
+
+group cu type 1
+#-------------------- Force field ----------------------------------------------
+pair_style eam/fs
+pair_coeff * * CuZr_mm.eam.fs Cu
+
+#-------------------- Energy Minimization --------------------------------------
+minimize 1.0e-9 1.0e-6 1000 10000
+
+#-------------------- Settings -------------------------------------------------
+timestep 0.002
+
+thermo 100
+thermo_style custom step temp vol press pe ke etotal
+
+#dump 1 all atom 10000 q_bar_1013ks-1.lammpstrj
+#dump_modify 1 scale no
+
+dump            d1 all cfg 100 cfg/run.*.cfg mass type xs ys zs id type vx vy vz fx fy fz
+dump_modify     d1 element Cu
+
+velocity all create 300.0 873847 rot yes mom yes dist gaussian
+
+#-------------------- Run the simulation ---------------------------------------
+fix 1 all npt temp 300 1150 0.1 iso 0.0 0.0 0.2 # heating rate: (1150-300)/(10000*0.002)*1e-15 = 0.425e-13 [K/s]
+run 10000
+unfix 1
+
+fix 1 all npt temp 1150 1150 0.1 iso 0.0 0.0 0.2 # annealing time: 50000*0.002 = 100 [ps] = 0.1 [ns]
+run 50000
+unfix 1
+
+fix 1 all npt temp 1150  270 0.1 iso 0.0 0.0 0.2 # cooling rate: (1150-270)/(10000*0.002)*1e-15 = 0.44e-13 [K/s]
+run 10000
+unfix 1
+
+#-------------------- Output data file -----------------------------------------
+write_data Cu_cooling_10_13.txt
+
+#-------------------- End ------------------------------------------------------

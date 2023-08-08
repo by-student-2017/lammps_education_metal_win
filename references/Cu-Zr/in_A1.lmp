@@ -1,0 +1,82 @@
+# 4.SIMULATION RESULTS
+# 4.1 Creation of amorphous alloy
+# 4.1.1 Creation of Cu50-Zr50 glassy alloy
+
+# There are three steps for the development of Cu50-Zr50 amorphous alloy. In the first step, 
+# heating the crystalline material from room temperature (300 K) to 1150 K, then holding for 
+# 100 ps and then rapid cooling/quenching the model alloy to the room temperature.
+# In order to construct a glassy model a code is written and executed in LAMMPS. 
+# The following ‘in. file’ consists of set of commands that will construct a glassy model.
+
+# This program is for obtaining quenched structure by melting Cu50-Zr50 alloy for 3d system.
+#-------------------- Initialization -------------------------------------------
+clear
+
+echo both
+units metal
+dimension 3
+boundary p p p
+
+#-------------------- Atom & Lattice description ------------------------------
+atom_style atomic
+
+region box block 0 50 0 100 0 50 units box
+create_box 2 box
+
+lattice fcc 3.61
+region cu block 0 50 0 100 0 50 units box
+create_atoms 1 region cu units box
+
+# creating composition using set command for cu50zr50 alloy
+set region cu type/fraction 2 0.5 12393
+
+group cu type 1
+group zr type 2
+
+#-------------------- Force field ----------------------------------------------
+pair_style eam/fs
+pair_coeff * * CuZr_mm.eam.fs Cu Zr
+
+#-------------------- Energy Minimization --------------------------------------
+minimize 1.0e-3 1.0e-6 1000 10000
+
+#-------------------- Settings -------------------------------------------------
+timestep 0.002 # 2 fs = 2e-15 s
+
+thermo 100
+thermo_style custom step temp vol press pe ke etotal
+
+#dump 1 all atom 10000 q_bar_1013ks-1.lammpstrj
+#dump_modify 1 scale no
+
+dump            d1 all cfg 100 cfg/run.*.cfg mass type xs ys zs id type vx vy vz fx fy fz
+dump_modify     d1 element Cu Zr
+
+log log5050_q_bar_10e13ks-1.data
+
+velocity all create 300.0 873847 rot yes mom yes dist gaussian
+
+compute 1 cu msd
+compute 2 zr msd
+
+#fixes
+compute myRDF all rdf 100
+fix 2 all ave/time 1000 1 1000 c_myRDF[*] file Cu_Zr_quench_large_restart.rdf mode vector
+
+#-------------------- Run the simulation ---------------------------------------
+fix 1 all npt temp  300 1150 0.1 iso 0.0 0.0 0.2 # heating rate: (1150-300)/(10000*0.002)*1e-15 = 0.425e-13 [K/s]
+run 10000
+unfix 1
+
+fix 1 all npt temp 1150 1150 0.1 iso 0.0 0.0 0.2 # annealing time: 50000*0.002 = 100 [ps] = 0.1 [ns]
+run 50000
+unfix 1
+
+fix 1 all npt temp 1150  270 0.1 iso 0.0 0.0 0.2 # cooling rate: (1150-270)/(10000*0.002)*1e-15 = 0.44e-13 [K/s]
+run 10000
+unfix 1
+
+#-------------------- Output data file -----------------------------------------
+write_data CuZr_cooling_10_13.txt # 0.44 x 10^-13 [K/s]
+
+#-------------------- End ------------------------------------------------------
