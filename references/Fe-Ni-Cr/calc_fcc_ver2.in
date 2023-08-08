@@ -1,9 +1,8 @@
 # Find minimum energy fcc configuration
 # Required variable latconst to be input via the command line
 # e.g., lmp_win_no-mpi -var latconst 4 < calc_fcc_ver2.in
-#
 
-# ---------- Initialize Simulation -----------
+#-------------------- Initialization -----------------------------------------------------
 clear
 units metal
 dimension 3
@@ -11,32 +10,37 @@ boundary p p p
 atom_style atomic
 atom_modify map array
 
-# ---------- Create Atoms -----------
+#-------------------- Atom & Lattice description ----------------------------------------
 lattice fcc ${latconst}
+
 region box block 0 1 0 1 0 1 units lattice
 create_box 1 box
+
 lattice fcc ${latconst} orient x 1 0 0 orient y 0 1 0 orient z 0 0 1
 create_atoms 1 box
+
 replicate 1 1 1
 
-# ------ Define Interatomic Potential --------
+#-------------------- Force field --------------------------------------------------------
 pair_style eam/alloy
 pair_coeff * * FeNiCr.eam.alloy Fe
+
+#-------------------- Settings -----------------------------------------------------------
 neighbor 2.0 bin
 neigh_modify delay 0 every 10 check yes
 
-# ---------- Define Settings ----------------
-compute eng all pe/atom
+compute    eng all pe/atom
 compute eatoms all reduce sum c_eng
-
-# ---------- Run Minimization --------------
-reset_timestep 0
-
-fix 1 all box/relax iso 0.0 vmax 0.001
 
 thermo 10
 thermo_style custom step pe lx ly lz press pxx pyy pzz c_eatoms
 
+#-------------------- Energy Minimization ------------------------------------------------
+#reset_timestep 0
+
+fix 1 all box/relax iso 0.0 vmax 0.001
+
+# 0 [K], structure optimization
 min_style cg
 minimize 1e-25 1e-25 5000 10000
 
@@ -44,9 +48,9 @@ minimize 1e-25 1e-25 5000 10000
 unfix 1
 
 variable natoms equal "count(all)"
-variable teng equal "c_eatoms"
+variable   teng equal "c_eatoms"
 variable length equal "lx"
-variable ecoh equal "v_teng/v_natoms"
+variable   ecoh equal "v_teng/v_natoms"
 
 print "Total energy (eV) = ${teng};"
 print "Number of atoms = ${natoms};"
@@ -54,3 +58,4 @@ print "Lattice constant (Angstoms) = ${length};"
 print "Cohesive energy (eV) = ${ecoh};"
 
 print "All done!"
+#-------------------- End ----------------------------------------------------------------
