@@ -337,7 +337,7 @@ input file (metal unit, lammps)
 
 - A. Kabi, Master thesis (2015).
   http://ethesis.nitrkl.ac.in/6991/ 
-  Cu-Zr (need structure files)
+  Cu-Zr
 
 - P. Alexander, Doctor thesis (2023).
   https://research-information.bris.ac.uk/ws/portalfiles/portal/364060220/Final_Copy_2023_05_09_Petkov_A_PhD.pdf 
