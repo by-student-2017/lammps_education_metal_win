@@ -5,13 +5,18 @@
 clear 
 #processors * * * grid numa 
 
- # eV,atomic charge,angstroms,ps,kelvin,bars,g/mol 
+# eV,atomic charge,angstroms,ps,kelvin,bars,g/mol 
 units metal
+
 dimension 3
 boundary p p p
-atom_style full
+atom_style charge
 
+# Memo
+# supercells of about 5000 ions
+#
 read_data data.Li3OCl  # Li3OCl or "Li3OX where X = Cl or Br"
+#
 replicate 2 2 2 
 
 group lithium type 1 
@@ -24,7 +29,7 @@ mass  3  35 # Cl 1-
 
 set type 1 charge  1.0 # Li 1+
 set type 2 charge -2.0 # O  2-
-set type 3 charge -1.0 # Si 1-
+set type 3 charge -1.0 # Cl 1-
 
 variable T1 equal 1000 # "Note: In paper, 700 K"
 variable Timer equal step*dt
@@ -34,18 +39,47 @@ log ${T1}.lammps
 ######################################################### 
 #---------- Pair styles and electrostatics--------------# 
 #########################################################
+#Ref1 (for in this work): https://doi.org/10.1021/acsaem.1c00656
+# https://pubs.acs.org/doi/suppl/10.1021/acsaem.1c00656/suppl_file/ae1c00656_si_001.pdf
+#Ref2 (other references): https://www.ucl.ac.uk/klmc/Potentials/O/index.html
 
 pair_style buck/coul/long 12.0 
 pair_coeff * *     0.0    1.0      0.0   # all-all
 pair_coeff 1 1   360.5269 0.1609   0.0   #  Li-Li
 pair_coeff 1 2   292.3    0.3472   0.0   #  Li-O
-pair_coeff 1 3   421.0366 0.33364  0.0   #  Li-Si
+pair_coeff 1 3   421.0366 0.33364  0.0   #  Li-Cl
 pair_coeff 2 2 22764.3    0.149   13.185 #   O-O
-pair_coeff 2 3  8287      0.259   62.2   #   O-Si
-pair_coeff 3 3  1227.2    0.3214  14.53  #  Si-Si
+pair_coeff 2 3  8287      0.259   62.2   #   O-Cl
+pair_coeff 3 3  1227.2    0.3214  14.53  #  Cl-Cl
+
 # 1:Li+, 2:O2-, 3:Cl-
 # For Li3-xNaxOCl1-yBry, see Supporting Info (https://doi.org/10.1021/acs.jpcc.8b08208)
 
+
+# 0.27% Li vacancies (Undoped (LiCl Schottky).)
+# Dopant parameters (Li3OCl) (Mg2+, Ca2+, Sr2+ or Ba2+ at Li+ site)
+# Mg
+#pair_coeff 2 4  1428.5    0.2945  0.0   #  O-Mg
+#pair_coeff 3 4  4914.54   0.257   0.0   # Cl-Mg
+# Ca
+#pair_coeff 2 4  1090.4    0.3437  0.0   #  O-Ca
+#pair_coeff 3 4  2302.0    0.3402  0.0   # Cl-Ca
+# Sr
+#pair_coeff 2 4   959.1    0.3721  0.0   #  O-Sr
+#pair_coeff 3 4  2191.09   0.3457  0.0   # Cl-Sr
+# Ba
+#pair_coeff 2 4   905.7    0.3976  0.0   #  O-Ba
+#pair_coeff 3 4  2704.55   0.3528  0.0   # Cl-Ba
+# Al
+#pair_coeff 2 4  1725.0    0.2897  0.0   #  O-Al
+#pair_coeff 3 4  1736.12   0.2927  0.0   # Cl-Al
+# F
+#pair_coeff 1 4   600.0    0.25    0.0   # Li-F
+#pair_coeff 2 4   198.3    0.1110 73.8   #  O-F
+#pair_coeff 3 4   556.83   0.3707 48.8   # Cl-F
+#pair_coeff 4 4  2008.6    0.1937 67.5   #  F-F
+
+# Li7La3Zr2O12 (LLZO) ?
 #pair_style buck/coul/long 10.0 
 #pair_coeff * *     0.0    1.0     0.0   # all-all
 #pair_coeff 1 4  2088.79   0.346  23.25  #  Zr-O
@@ -96,10 +130,6 @@ reset_timestep 0
 
 timestep 0.002 # 2 [fs]
 
-velocity all create ${T1} 4928459 rot yes dist gaussian 
-
-fix 2 all npt temp ${T1} ${T1} 0.01 aniso 1.0 1.0 0.1 
-
 thermo 1000 
 thermo_style custom step v_Timer cpu temp etotal fmax lx ly lz vol press 
 
@@ -108,7 +138,11 @@ dump            d1 all cfg 100 cfg/run.npt.*.cfg mass type xs ys zs id type q vx
 dump_modify     d1 element Li O Cl
 #---------------------------------------------------------
 
-run 2000 
+velocity all create ${T1} 4928459 rot yes dist gaussian 
+
+fix 2 all npt temp ${T1} ${T1} 0.01 aniso 1.0 1.0 0.1 
+
+run 2000 # 4 [ps]
 
 unfix 2 
 undump          d1
@@ -141,7 +175,7 @@ dump            d2 all cfg 100 cfg/run.nvt.*.cfg mass type xs ys zs id type q vx
 dump_modify     d2 element Li O Cl
 #---------------------------------------------------------
 
-run 5000000 
+run 5000000 # 10 [ns]
 
 unfix 3 
 unfix msdT1 
@@ -149,3 +183,8 @@ unfix msdT1
 ##########################################################
 #------------ End ---------------------------------------#
 ##########################################################
+#------------------------------------------------------#
+# Memo
+# MSD = 6*D*t
+# where t is the simulation time, D is diffusion coeffcients.
+#------------------------------------------------------#
