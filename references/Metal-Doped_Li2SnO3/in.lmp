@@ -142,10 +142,10 @@ reset_timestep 0
 
 timestep 0.5 # 0.5 [ps]
 
-fix 1 all box/relax aniso 1.0 vmax 0.003
-
 thermo 1 
 thermo_style custom step enthalpy fmax lx ly lz vol press 
+
+fix 1 all box/relax aniso 1.0 vmax 0.003
 
 min_style cg 
 minimize 1e-25 1e-25 5000 10000 # 0 [K], structure optimization
@@ -160,16 +160,20 @@ reset_timestep 0
 
 timestep 0.002 # 2 [fs]
 
+thermo 1000
+thermo_style custom step v_Timer cpu temp etotal fmax lx ly lz vol press
+
+dump            d1 all cfg 1000 cfg/run.npt.*.cfg mass type xs ys zs id type q vx vy vz fx fy fz
+dump_modify     d1 element Li Sn O Ni
+
 velocity all create ${T1} 4928 rot yes dist gaussian
 
 fix 2 all npt temp ${T1} ${T1} 0.01 aniso 1.0 1.0 0.1
 
-thermo 1000
-thermo_style custom step v_Timer cpu temp etotal fmax lx ly lz vol press
-
 run 5000 # 10 [ps]
 
 unfix 2
+undump d1
 
 ########################################################
 # ------------- MSD -----------------------------------#
@@ -200,8 +204,12 @@ fix 3 all nvt temp ${T1} ${T1} 0.01
 thermo 5000
 thermo_style custom step v_Timer cpu temp etotal fmax lx ly lz vol press v_msdtotLi v_msdtotNi
 
-dump dynamics all xyz/xyz 2500 Ni3-Li2SnO3nvt_${T1}.xyz
-dump_modify dynamics every 5000 element Li Sn O Ni first yes
+#dump dynamics all xyz/xyz 2500 Ni3-Li2SnO3nvt_${T1}.xyz
+#dump_modify dynamics every 5000 element Li Sn O Ni first yes
+#---------------------------------------------------
+dump            d2 all cfg 2500 cfg/run.nvt.*.cfg mass type xs ys zs id type q vx vy vz fx fy fz
+dump_modify     d2 element Li Sn O Ni
+#---------------------------------------------------
 
 run 1000000 # 2 [ns]
 
