@@ -13,19 +13,23 @@ boundary p p p
 atom_style charge 
 
 # Memo
-# 5x10x10 supercell (12000 ions)
+# Li2SiO3 (unit cell): Li:8, Si:4, O:12, Total: 24 atoms
+# 5x10x10 supercell of Li2SiO3 (12000 ions)
+# Li2-xSiO3-0.5x (x = 0.02, 0.06, 0.10, 0.14, and 0.20) (Li2O Schottky defec)
+#  (equivalent to 1, 3, 5, 7 and 10 mol %, respectively)
+# x = 0.02 (1 mol %): 10x5x10 (Li:80, O:40) = 5x1x5 (Li:4, O:2)
 #
-read_data Li2SiO3-1.lmp # defective 5x5x5 unit cells of Li2SiO3
+read_data Li2SiO3_10x5x10_defect_x002_Li2O.data # defective (x=0.02) 10x5x10 supercell of Li2SiO3
 #
-replicate 1 2 2
+#replicate 2 5 2 # 10x5x10 supercell of Li2SiO3 from 5x1x5 supercell
 
 group Li type 1
 group Si type 2
-group O type 3
+group  O type 3
 
-mass  1   7 # Li 1+
-mass  2  28 # Si 4+
-mass  3  16 # O  2-
+mass 1   6.9410 # Li 1+
+mass 2  28.0855 # Si 4+
+mass 3  15.9994 # O  2-
 
 set type 1 charge  1.0 # Li 1+
 set type 2 charge  4.0 # Si 4+
@@ -45,8 +49,9 @@ pair_coeff 1 3   632.1018 0.2906   0.0  #  Li-O
 pair_coeff 2 3  1283.91   0.32052 10.66 #  Si-O
 pair_coeff 3 3 22764.3    0.149   27.89 #   O-O
 
-#pair_coeff 3 4  1271.50   0.300    0.0  # O-Na
-#pair_coeff 3 4  3587.57   0.300    0.0  # O-K
+# Na- and K-doped Li2SiO3, 4:Na+ or 4:K+
+#pair_coeff 4 3  1271.50   0.300    0.0  #  Na-O
+#pair_coeff 4 3  3587.57   0.300    0.0  #   K-O
 
 # Memo (trivalent cations, TM3+) (MT3+ on Sn site)
 #pair_coeff 3 4  1715.7    0.3069    0.000 # Ti-O, [G1]
@@ -129,10 +134,10 @@ reset_timestep 0
 
 timestep 0.5 # 0.5 [ps]
 
-fix 1 all box/relax aniso 1.0 vmax 0.003
-
 thermo 1 
 thermo_style custom step enthalpy fmax lx ly lz vol press 
+
+fix 1 all box/relax aniso 1.0 vmax 0.003
 
 min_style cg 
 minimize 1e-25 1e-25 5000 10000 
@@ -147,19 +152,19 @@ reset_timestep 0
 
 timestep 0.002 # 2 [fs]
 
-velocity all create ${T1} 4928 rot yes dist gaussian
-
-fix 2 all npt temp ${T1} ${T1} 0.01 aniso 1.0 1.0 0.1
-
 thermo 1000
 thermo_style custom step v_Timer cpu temp etotal fmax lx ly lz vol press
 
 #---------------------------------------------------------
-dump            d1 all cfg 100 cfg/run.npt.*.cfg mass type xs ys zs id type q vx vy vz fx fy fz
+dump            d1 all cfg 1000 cfg/run.npt_${T1}.*.cfg mass type xs ys zs id type q vx vy vz fx fy fz
 dump_modify     d1 element Li Si O
 #---------------------------------------------------------
 
-run 5000
+velocity all create ${T1} 4928 rot yes dist gaussian
+
+fix 2 all npt temp ${T1} ${T1} 0.01 aniso 1.0 1.0 0.1
+
+run 5000 # 10 [ps]
 
 unfix 2
 undump d1
@@ -191,14 +196,14 @@ fix 3 all nvt temp ${T1} ${T1} 0.01
 thermo 5000
 thermo_style custom step v_Timer cpu temp etotal fmax lx ly lz vol press v_msdtotLi v_msdototO
 
-dump dynamics all xyz 5000 Li2SiO3nvt_${T1}.xyz
-dump_modify dynamics every 5000 element Li Si O first yes
+#dump dynamics all xyz 5000 Li2SiO3nvt_${T1}.xyz
+#dump_modify dynamics every 5000 element Li Si O first yes
 #---------------------------------------------------------
-dump            d2 all cfg 100 cfg/run.nvt.*.cfg mass type xs ys zs id type q vx vy vz fx fy fz
+dump            d2 all cfg 2500 cfg/run.nvt_${T1}.*.cfg mass type xs ys zs id type q vx vy vz fx fy fz
 dump_modify     d2 element Li Si O
 #---------------------------------------------------------
 
-run 5000000 # 10 ns
+run 5000000 # 10 [ns]
 
 unfix 3
 unfix msdT1
@@ -207,3 +212,15 @@ unfix msdT2
 ##########################################################
 #------------ End ---------------------------------------#
 ##########################################################
+#------------------------------------------------------#
+# Memo
+# We can derive the Li and Na diffusion coefficients using 
+# the MSD data and then convert them to ionic conductivities using 
+# the Nernst-Einstein equation.
+# MSD = 6*D*t
+# where t is the simulation time, D is diffusion coeffcients.
+#------------------------------------------------------#
+# Memo
+# Li2SiO3 (Cmc2_1 space gropu)
+# a = 9.3772 A, b = 5.4066 A, c = 4.5874
+#------------------------------------------------------#
