@@ -12,8 +12,17 @@ dimension 3
 boundary p p p
 atom_style charge
 
-read_data Ni3-Li2SnO3.data
-#replicate 5 5 5
+# Memo (structure file)
+# Li2SnO3 (unit cell): Li:16, Sn:8, O:24, Total:48 atoms
+# 5x5x4 supercell of Li2SnO3 (4800 ions)
+# For the Li2O Schottky scheme, 10% (Li:240 ions) and 5% (O:120 ions) of Li and O ions, respectively.
+#  (5x1x1 suprcell and  Li2O Schottky defect (Li:12 , O:6))
+# The divalent and trivalent doping concentrations were 6.25%.
+#  (MT2+ on Li site [TM:1 in unit cell]), (MT3+ on Sn site [TM:1 in 2x1x1 supecell])
+#
+read_data Nidope-Li2SnO3_defectLi2O.data
+#
+#replicate 5 5 4 # 5x5x4 supercell of Li2SnO3 (4800 ions) from unit cell
 
 group Li type 1
 group Sn type 2
@@ -158,7 +167,7 @@ fix 2 all npt temp ${T1} ${T1} 0.01 aniso 1.0 1.0 0.1
 thermo 1000
 thermo_style custom step v_Timer cpu temp etotal fmax lx ly lz vol press
 
-run 5000
+run 5000 # 10 [ps]
 
 unfix 2
 
@@ -194,7 +203,7 @@ thermo_style custom step v_Timer cpu temp etotal fmax lx ly lz vol press v_msdto
 dump dynamics all xyz/xyz 2500 Ni3-Li2SnO3nvt_${T1}.xyz
 dump_modify dynamics every 5000 element Li Sn O Ni first yes
 
-run 1000000
+run 1000000 # 2 [ns]
 
 unfix 3
 unfix msdT1
