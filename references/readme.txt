@@ -120,11 +120,11 @@ input file (metal unit, lammps)
 - S. L. Ball, thesis (2014).
   https://dspace.mit.edu/handle/1721.1/104145
   Migration
-
+  
 - B. N. Sorbom, thesis (2010).
   https://dspace.mit.edu/handle/1721.1/120392
   YBCO (Y1Ba2Cu3O7) (need *.dat and table) (failed)
-
+  
 - S. T. T. Lam, thesis (2013).
   https://dspace.mit.edu/handle/1721.1/129108
   (VASP, Packmol, PANNA, Lammps) (failed)
@@ -135,7 +135,7 @@ input file (metal unit, lammps)
 
 - T. Metspalu, Master Thesis (2015)
   https://core.ac.uk/download/pdf/187147604.pdf
-  CLIC_electrical_breakdown
+  CLIC_electrical_breakdown (failed)
   
 - D. Chen et al., Master thesis (2011).
   polyfe (need polyfe.lammps)
@@ -170,10 +170,6 @@ input file (metal unit, lammps)
 - S. K. Achar et al., J. Chem. Theory Comput. 18 (2022) 3593-3606.
   https://doi.org/10.1021/acs.jctc.2c00010
   UiO-66 (It can not be calculated unless it is a Lammps that supports deepmd.)
-  
-- M. Valavi et al., Cem. Concr. Res. 154 (2022) 106712.
-  https://doi.org/10.1016/j.cemconres.2022.106712
-  ERICA (need Structure.data)
   
 - M. Qamar et al., J. Chem. Theory, Comput. XXX (2023) XXX-XXXX.
   https://doi.org/10.1021/acs.jctc.2c01149
@@ -434,6 +430,10 @@ input file (metal unit, lammps)
 - B. A. Demian, thesis (2014).
   https://dspace.mit.edu/handle/1721.1/90011
   (MATLAB)
+  
+- M. Valavi et al., Cem. Concr. Res. 154 (2022) 106712.
+  https://doi.org/10.1016/j.cemconres.2022.106712
+  ERICA (need Structure.data)
 -------------------------------------------------------------------
 plot the temperature of each atom
 
