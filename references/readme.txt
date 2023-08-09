@@ -8,6 +8,11 @@ input file (metal unit, lammps)
   
 - https://www.researchgate.net/profile/Collins-Nana-Andoh/publication/325126856_Binary_Collision_and_Molecular_Dynamics_Simulation_of_Fe-Ni-Cr_Alloys_at_Supercritical_Water_Condition/links/5f6d445c458515b7cf4c4d16/Binary-Collision-and-Molecular-Dynamics-Simulation-of-Fe-Ni-Cr-Alloys-at-Supercritical-Water-Condition.pdf
   Mechanical_Damage_Assessment (Fe system) (Fe-Ni-Cr Alloys)
+  
+- J. A. Greathouse et al., J. Phys.: Condens. Matter 32 (2020) 085401.
+  https://iopscience.iop.org/article/10.1088/1361-648X/ab5377
+  10.1088/1361-648X/ab5377
+  ZrW2O8_core_shell_model (Buckingham potential + Core-shell model (O-O bond: harmonic)
 
 - Y. A. Zulueta et al., Inorg. Chem. 59 (2020) 11841-11846.
   https://doi.org/10.1021/acs.inorgchem.0c01923 (Transition-Metal-Doped Li2SnO3)
@@ -68,11 +73,6 @@ input file (metal unit, lammps)
   YSZ (Yttria stabilized zirconia)
   -------------------------------------------
   https://www.repo.uni-hannover.de/
-  
-- J. A. Greathouse et al., J. Phys.: Condens. Matter 32 (2020) 085401.
-  https://iopscience.iop.org/article/10.1088/1361-648X/ab5377
-  10.1088/1361-648X/ab5377
-  ZrW2O8_core_shell_model (Buckingham potential + Core-shell model (O-O bond: harmonic)
   
 - P. Malakar et al., ACS Appl. Nano Mater. 5 (2022) 16489-16499.
   https://doi.org/10.1021/acsanm.2c03564 (lammps input file)
