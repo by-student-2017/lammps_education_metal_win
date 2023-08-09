@@ -21,14 +21,16 @@ replicate 3 3 3     # 3x3x3 supercell
 
 write_data 333_init.data
 
-group  cores type 1 # O
-group shells type 2 # Os1
+group  cores type 1 # O  , Y =  0.848200 [e] in data.init
+group shells type 2 # Os1, Y = -2.848200 [e] in data.init
 
 comm_modify vel yes # shell atoms store velocities
 
 #-------------------- Force field --------------------------------------------------------
 # 1:O, 2:Os1, 3:Zr1, 4:W1
 # 1:O(core), 2:O(shell) = Os1
+# Y [e]: O:0.848200, Os1:-2.848200, Zr1:4, W1:6
+# Note: The total charge of O + Os is -2.0
 
 pair_style buck/coul/long/cs 13.0      # A, rho, C
 pair_coeff * *       0.0  1.000  0.0   # all-all
@@ -37,7 +39,11 @@ pair_coeff 2 3 9000000.0  0.140  0.0   # Zr1-Os1
 pair_coeff 2 4    1305.22 0.375  0.0   # W1 -Os1
 
 bond_style harmonic
-bond_coeff 1 74.92 0.0 # O-Os1
+bond_coeff 1 74.92 0.0 # O-Os1, k = 74.92 [eV/A^2]
+# Note
+# The other atoms (Zr or W) are "k = 99999 [eV/A^2]", so they are not calculated in "core-shell mode".
+# Note that "Bonds" is set to "O-Os" only in "data.init". (O:1-32, Os:33-64)
+#  (And, the atomic coordinates (x,y,z) of "O" and "Os" paired in "Bonds" are the same.)
 
 kspace_style ewald 0.0001 # 1e-4
 
