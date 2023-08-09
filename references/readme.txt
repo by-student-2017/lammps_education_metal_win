@@ -133,10 +133,6 @@ input file (metal unit, lammps)
   https://dspace.mit.edu/handle/1721.1/108218
   Grain_Boundary_generation (failed)
 
-- B. A. Demian, thesis (2014).
-  https://dspace.mit.edu/handle/1721.1/90011
-  (MATLAB)
-
 - T. Metspalu, Master Thesis (2015)
   https://core.ac.uk/download/pdf/187147604.pdf
   CLIC_electrical_breakdown
@@ -434,6 +430,10 @@ input file (metal unit, lammps)
 - G. S. Jung, thesis (2019).
   https://dspace.mit.edu/handle/1721.1/123228 
   (REBO) (MoS2-WSe2)
+  
+- B. A. Demian, thesis (2014).
+  https://dspace.mit.edu/handle/1721.1/90011
+  (MATLAB)
 -------------------------------------------------------------------
 plot the temperature of each atom
 
