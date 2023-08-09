@@ -13,19 +13,23 @@ boundary p p p
 atom_style charge
 
 # Memo
-# supercells of about 5000 ions
+# Li3OCl (unit cell): Li:3, O:1, Cl:1
+# 10x10x10 supercells (5000 ions)
+# Li3-deltaOCl1-delta, where delta = 0.038 or 0.150, to examine the Li- and Na-ion conductivity.
+#  (An alkali-halide partial Schottky defect concentration of delta = 0.038.) (LiCl Schottky defect)
+#  (5x5x5 -4LiCl -> 10x10x5 -3LiCl -> 10x10x10 (delta = 0.038))
 #
-read_data data.Li3OCl  # Li3OCl or "Li3OX where X = Cl or Br"
+read_data Li3OCl_10x10x10_38LiCl_defect.data
 #
-replicate 2 2 2 
+#replicate 2 2 2 # 10x10x10 supercell of Li3OX (X=Cl or Br) from unit cell
 
 group lithium type 1 
 group O  type 2
 group Cl type 3
 
-mass  1   7 # Li 1+
-mass  2  16 # O  2-
-mass  3  35 # Cl 1-
+mass 1  6.941  # Li 1+
+mass 2 15.9994 # O  2-
+mass 3 35.453  # Cl 1-
 
 set type 1 charge  1.0 # Li 1+
 set type 2 charge -2.0 # O  2-
@@ -52,9 +56,27 @@ pair_coeff 2 2 22764.3    0.149   13.185 #   O-O
 pair_coeff 2 3  8287      0.259   62.2   #   O-Cl
 pair_coeff 3 3  1227.2    0.3214  14.53  #  Cl-Cl
 
-# 1:Li+, 2:O2-, 3:Cl-
+# 1:Li+, 2:O2-, 3:Cl-, 4:Na+, 5:Br-
 # For Li3-xNaxOCl1-yBry, see Supporting Info (https://doi.org/10.1021/acs.jpcc.8b08208)
-
+# e.g., Li3OCl0.5Br0.5, Na3OCl0.5Br0.5, Li2NaOCl, Li2NaOBr, LiNa2OCl, LiNa2OBr, etc
+#
+# Na+
+#pair_coeff 1 4  1074.36   0.159    0.0   #  Li-Na
+#pair_coeff 2 4  1226.84   0.307    0.0   #   O-Na
+#pair_coeff 3 4  2314.70   0.290    0.0   #  Cl-Na
+#pair_coeff 4 4  1788.19   0.159    0.0   #  Na-Na
+#
+# Br-
+#pair_coeff 1 5  1662.80   0.288    0.01  #  Li-Br
+#pair_coeff 2 5  2438.00   0.327  139.60  #   O-Br
+#pair_coeff 3 5  2743.40   0.348  105.42  #  Cl-Br
+#pair_coeff 4 5  2593.10   0.301    0.0   #  Na-Br
+#pair_coeff 5 5  4259.60   0.375  196.30  #  Br-Br
+#
+# shell model case
+# O2-, Y = -2.183 [e], k = 593.72 [eV/A^2]
+# Cl-, Y = -2.485 [e], k =  29.38 [eV/A^2]
+# Br-, Y = -2.094 [e], k =  18.30 [eV/A^2]
 
 # 0.27% Li vacancies (Undoped (LiCl Schottky).)
 # Dopant parameters (Li3OCl) (Mg2+, Ca2+, Sr2+ or Ba2+ at Li+ site)
@@ -185,6 +207,9 @@ unfix msdT1
 ##########################################################
 #------------------------------------------------------#
 # Memo
+# We can derive the Li and Na diffusion coefficients using 
+# the MSD data and then convert them to ionic conductivities using 
+# the Nernst-Einstein equation.
 # MSD = 6*D*t
 # where t is the simulation time, D is diffusion coeffcients.
 #------------------------------------------------------#
