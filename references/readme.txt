@@ -115,7 +115,7 @@ input file (metal unit, lammps)
 
 - S. E. Ferry, thesis (2011).
   https://dspace.mit.edu/handle/1721.1/119031
-  Ni-Al_alloy (need NiAl_50.data)
+  Ni-Al (need NiAl_50.data)
 
 - S. L. Ball, thesis (2014).
   https://dspace.mit.edu/handle/1721.1/104145
