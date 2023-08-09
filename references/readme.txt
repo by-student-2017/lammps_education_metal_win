@@ -9,18 +9,6 @@ input file (metal unit, lammps)
 - https://www.researchgate.net/profile/Collins-Nana-Andoh/publication/325126856_Binary_Collision_and_Molecular_Dynamics_Simulation_of_Fe-Ni-Cr_Alloys_at_Supercritical_Water_Condition/links/5f6d445c458515b7cf4c4d16/Binary-Collision-and-Molecular-Dynamics-Simulation-of-Fe-Ni-Cr-Alloys-at-Supercritical-Water-Condition.pdf
   Mechanical_Damage_Assessment (Fe system) (Fe-Ni-Cr Alloys)
 
-- A. C. C. Dutra et al., Energy Adv., 2 (2023) 653-666.
-  https://doi.org/10.1039/D3YA00075C
-  Li4OCl2
-
-- J. A. Dawson et al., J. Phys. Chem. C 122 (2018) 23978–23984.
-  https://doi.org/10.1021/acs.jpcc.8b08208
-  Li3OCl
-
-- Y. A. Zulueta et a., J. Phys. Chem. C 124 (2020) 4982-4988.
-  https://doi.org/10.1021/acs.jpcc.9b10003
-  Li2SiO3
-
 - Y. A. Zulueta et al., Inorg. Chem. 59 (2020) 11841-11846.
   https://doi.org/10.1021/acs.inorgchem.0c01923 (Transition-Metal-Doped Li2SnO3)
   ---------- ---------- ---------- ---------- ---------- ----------
@@ -29,6 +17,18 @@ input file (metal unit, lammps)
   10.26434/chemrxiv.12523640.v1
   ---------- ---------- ---------- ---------- ---------- ----------
   Metal-Doped_Li2SnO3
+  
+- Y. A. Zulueta et a., J. Phys. Chem. C 124 (2020) 4982-4988.
+  https://doi.org/10.1021/acs.jpcc.9b10003
+  Li2SiO3
+  
+- J. A. Dawson et al., J. Phys. Chem. C 122 (2018) 23978–23984.
+  https://doi.org/10.1021/acs.jpcc.8b08208
+  Li3OCl
+  
+- A. C. C. Dutra et al., Energy Adv., 2 (2023) 653-666.
+  https://doi.org/10.1039/D3YA00075C
+  Li4OCl2
   
 - Z. Wang, J. Phys. Chem. C 124 (2020) 3851–3856.
   https://doi.org/10.1021/acs.jpcc.9b10706
