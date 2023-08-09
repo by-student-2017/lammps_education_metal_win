@@ -65,14 +65,14 @@ input file (metal unit, lammps)
   
 - G. V. Huerta et al., Doctoral Thesis (2019).
   https://www.repo.uni-hannover.de/bitstream/handle/123456789/4482/GesamtRevisedFinal.pdf
-  YSZ
+  YSZ (Yttria stabilized zirconia)
   -------------------------------------------
   https://www.repo.uni-hannover.de/
   
 - J. A. Greathouse et al., J. Phys.: Condens. Matter 32 (2020) 085401.
   https://iopscience.iop.org/article/10.1088/1361-648X/ab5377
   10.1088/1361-648X/ab5377
-  ZrW2O8 (Core-shell model + Buckingham potential + harmonic)
+  ZrW2O8_core_shell_model (Buckingham potential + Core-shell model (O-O bond: harmonic)
   
 - P. Malakar et al., ACS Appl. Nano Mater. 5 (2022) 16489-16499.
   https://doi.org/10.1021/acsanm.2c03564 (lammps input file)
