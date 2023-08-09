@@ -1,49 +1,54 @@
 # b.NEMD for calculating TC
 #log $nlammps.log
+
+#-------------------- All Initialization -------------------------------------------------
 clear
 
-units metal
+#-------------------- Environment Settings -----------------------------------------------
+variable  lx  equal 204.5205688477
+variable  xlo equal   4.26 # 2.46, 4.26
 
-variable lx  equal 204.5205688477
-variable xlo equal   4.26 # 2.46, 4.26
-
-variable T equal 300
-variable dt equal 0.0005
-variable th equal 310
-variable tl equal 290
-variable kB equal 1.3806504e-23
+variable    T equal 300
+variable   dt equal 0.0005
+variable   th equal 310
+variable   tl equal 290
+variable   kB equal 1.3806504e-23
 variable eV2J equal 1.602763e-19
-variable A2m equal 1.0e-10
+variable  A2m equal 1.0e-10
 variable ps2s equal 1.0e-12
 
-atom_style full
+#-------------------- Initialization -----------------------------------------------------
+units metal
 dimension  3
 boundary   f p s
 
-neighbor 0.3 nsq
+#-------------------- Read structure file ------------------------------------------------
+atom_style full
 
 read_data graphene.data 
 
+#-------------------- Force field --------------------------------------------------------
 pair_style airebo 3.0 1 1 
 pair_coeff * * CH.airebo C 
 
+#-------------------- Settings -----------------------------------------------------------
 neighbor 3.0 nsq
 neigh_modify delay 0 every 1 check yes
 
 variable xlength equal "lx"
-variable L1 equal ${xlength} 
-variable dx equal ${L1}/50 
-variable xlo equal "xlo"
-variable xh equal ${xlo} 
-variable xl equal ${xh}+${L1} 
-variable xf1 equal ${xh}+${dx}
-variable xf2 equal ${xl}-${dx}
-variable xh1 equal ${xh}+${dx}
-variable xh2 equal ${xh}+${dx}*5
-variable xc2 equal ${xl}-${dx}*5 
+variable      L1 equal ${xlength} 
+variable      dx equal ${L1}/50 
+variable     xlo equal "xlo"
+variable      xh equal ${xlo} 
+variable      xl equal ${xh}+${L1} 
+variable     xf1 equal ${xh}+${dx}
+variable     xf2 equal ${xl}-${dx}
+variable     xh1 equal ${xh}+${dx}
+variable     xh2 equal ${xh}+${dx}*5
+variable     xc2 equal ${xl}-${dx}*5
 
 region rgbhigh block INF ${xf1} INF INF INF INF units box
-region rgblow block ${xf2} INF INF INF INF INF units box 
+region  rgblow block ${xf2} INF INF INF INF INF units box 
 
 group gbhigh region rgbhigh
 group gblow region rgblow
@@ -62,32 +67,32 @@ compute Tbetween all temp/region 1
 
 group between region 1
 
-timestep ${dt}
-
-thermo 100000
-
-compute ke all ke/atom
-
-variable temp atom c_ke*${eV2J}/(1.5*${kB}) #### T
-variable tempatom atom c_ke*${eV2J}*2/3/${kB}
-
-#velocity between create ${T} 3${n16}${n8} mom yes rot yes dist gaussian
-velocity between create ${T} 301608 mom yes rot yes dist gaussian
-
+#-------------------- Energy Minimization ------------------------------------------------
+# 0 [K], structure optimization
 min_style cg 
 minimize 1e-25 1e-25 5000 10000
 
-fix 111 between nvt temp ${T} ${T} 0.05
+#-------------------- Run the NVT simulation ---------------------------------------------
+reset_timestep 0
 
 timestep ${dt}
 
 thermo 10000
 thermo_modify lost warn
 
+compute ke all ke/atom
+variable     temp atom c_ke*${eV2J}/(1.5*${kB}) # T
+variable tempatom atom c_ke*${eV2J}*2/3/${kB}
+
 #------------------------------------
 dump            d1 all cfg 1000 cfg/run.nvt.*.cfg mass type xs ys zs id type q vx vy vz fx fy fz v_tempatom
 dump_modify     d1 element C
 #------------------------------------
+
+#velocity between create ${T} 3${n16}${n8} mom yes rot yes dist gaussian
+velocity between create ${T} 301608 mom yes rot yes dist gaussian
+
+fix 111 between nvt temp ${T} ${T} 0.05
 
 run 1000000
 
@@ -96,12 +101,15 @@ write_restart $nrestart.1
 unfix 111
 undump d1
 
-fix nve between nve 
+#-------------------- Run the NVE simulation ---------------------------------------------
+reset_timestep 0
 
 #------------------------------------
 dump            d2 all cfg 1000 cfg/run.nve.*.cfg mass type xs ys zs id type q vx vy vz fx fy fz v_tempatom
 dump_modify     d2 element C
 #------------------------------------
+
+fix nve between nve
 
 run 1000000
 
@@ -110,6 +118,7 @@ write_restart $nrestart.2
 unfix nve
 undump d2
 
+#-------------------- Run the simulation -------------------------------------------------
 fix 1 between nve
 
 compute cc1 between chunk/atom bin/1d x lower 0.02 units reduced
@@ -117,8 +126,10 @@ compute cc1 between chunk/atom bin/1d x lower 0.02 units reduced
 fix cc1 between ave/chunk 10 100000 1000000 cc1 v_temp file $ntemp.profile1 ave running
 #fix  hot all langevin ${th} ${th} 0.025 59${n80}${n4} tally yes
 #fix cold all langevin ${tl} ${tl} 0.025 2${n859}${n2} tally yes
+#---------------------------------------------------------------
 fix  hot all langevin ${th} ${th} 0.025 5908004 tally yes
 fix cold all langevin ${tl} ${tl} 0.025 2085902 tally yes
+#---------------------------------------------------------------
 fix_modify  hot temp Thot
 fix_modify cold temp Tcold
 
@@ -137,13 +148,16 @@ undump d3
 
 write_restart $nrestart.data
 
+#-------------------- Run the simulation -------------------------------------------------
 reset_timestep 0
 
 fix 1 between nve 
 #fix  hot all langevin ${th} ${th} 0.025 59${n80}${n4} tally yes
 #fix cold all langevin ${tl} ${tl} 0.025 2${n859}${n2} tally yes
+#---------------------------------------------------------------
 fix  hot all langevin ${th} ${th} 0.025 5908004 tally yes
 fix cold all langevin ${tl} ${tl} 0.025 2085902 tally yes
+#---------------------------------------------------------------
 fix_modify hot temp Thot
 fix_modify cold temp Tcold
 
@@ -158,3 +172,5 @@ dump_modify     d4 element C
 #------------------------------------
 
 run 20000000
+
+#-------------------- End ----------------------------------------------------------------

@@ -59,7 +59,7 @@ input file (metal unit, lammps)
   
 - ERIK FRANSSON, JOHANNES LAURELL H˚AKANSSON, Master’s Thesis in Applied Physics (2014).
   https://core.ac.uk/display/70610056
-  BaZrO3
+  BaZrO3 (need BaZrO3_input.pos)
   -----------------------------------
   https://core.ac.uk/
   
