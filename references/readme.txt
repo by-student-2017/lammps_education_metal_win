@@ -45,9 +45,13 @@ input file (metal unit, lammps)
   ------------------------------------------------
   http://idr.mnit.ac.in/bitstream/123456789/776/1/2015PDE5197-Komal%20Rathi.pdf
   
+- N. D. M. Arachchige, Doctor thesis (2016).
+  https://summit.sfu.ca/item/16590
+  Graphene_uniaxial_tensile_test
+  
 - M. Li et al., Nanomaterials 9 (2019) 347.
   https://doi.org/10.3390/nano9030347 (Graphene, The temperature of each atom)
-  Graphene
+  Graphene_uniaxial_tensile_test_and_NEMD
   
 - Y. Gao et al., Membranes12 (2022) 886.
   https://doi.org/10.3390/membranes12090886
@@ -270,10 +274,6 @@ input file (metal unit, lammps)
   
 - https://doi.org/10.26190/5d1d47a9eb76f
   UZrO
-  
-- N. D. M. Arachchige, Doctor thesis (2016).
-  https://summit.sfu.ca/item/16590
-  uniaxial_tensile_test_graphene
 
 - K. Malone, Master thesis (2019).
   https://repository.mines.edu/handle/11124/173097
