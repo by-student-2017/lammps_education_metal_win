@@ -63,7 +63,7 @@ input file (metal unit, lammps)
   
 - Benjamin T. Dankesreiter, B.S., Master thesis (2021).
   https://ttu-ir.tdl.org/handle/2346/87494
-  DLC (diamond-like carbon) (python code)
+  Diamond_Like_Carbon (DLC) (python code)
   (B series need DLC_pen.txt)
   
 - ERIK FRANSSON, JOHANNES LAURELL H˚AKANSSON, Master’s Thesis in Applied Physics (2014).
@@ -200,7 +200,7 @@ input file (metal unit, lammps)
   
 - Rath, Sibasish and Toppo, Joy Kiran (2015) 
   http://ethesis.nitrkl.ac.in/7560/
-  defect
+  Cu_defect
   
 - Das , A and Singh, G (2014)
   http://ethesis.nitrkl.ac.in/6152/
