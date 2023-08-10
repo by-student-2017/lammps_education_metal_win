@@ -80,7 +80,7 @@ fix 2 all ave/time 1000 1 1000 c_myRDF[*] file Cu_Zr_quench_large_restart.rdf mo
 velocity all create 300.0 873847 rot yes mom yes dist gaussian
 
 #-------------------- Run the simulation -------------------------------------------------
-#fix 1 all npt temp  300 1150 0.1 iso 0.0 0.0 0.2 # heating rate: (1150-300)/(10000*0.002)*1e-15 = 0.425e-13 [K/s]
+#fix 1 all npt temp  300 1150 0.1 iso 0.0 0.0 0.2 # heating
 fix 1 all npt temp  300 ${anneaing_Temp} $(100*dt) iso 0.0 0.0 $(200*dt)
 run 10000
 unfix 1
@@ -90,12 +90,19 @@ fix 1 all npt temp ${anneaing_Temp} ${anneaing_Temp} $(100*dt) iso 0.0 0.0 $(200
 run 50000
 unfix 1
 
-#fix 1 all npt temp 1150  270 0.1 iso 0.0 0.0 0.2 # cooling rate: (1150-270)/(10000*0.002)*1e-15 = 0.44e-13 [K/s]
+#fix 1 all npt temp 1150  270 0.1 iso 0.0 0.0 0.2 # cooling
 fix 1 all npt temp ${anneaing_Temp} ${cooling_Temp} $(100*dt) iso 0.0 0.0 $(200*dt)
 run ${ncycle}
 unfix 1
 
 #-------------------- Output data file ---------------------------------------------------
-write_data CuZr_cooling_10_13.txt # 0.44 x 10^13 [K/s]
+write_data CuZr_cooling_10_13.txt
 
 #-------------------- End ----------------------------------------------------------------
+
+#-----------------------------------------------------------------------------------------
+# Memo
+# Temp difference = 1150 K - 270 K = 880 K
+# Total time taken for cooling = timestep x no of iterations in quenched step = (0.002 x 10000) ps
+# So cooling rate = 880 K / (0.002 x 10000) ps = 4.4x10^13 K/s for the above in.file
+#-----------------------------------------------------------------------------------------

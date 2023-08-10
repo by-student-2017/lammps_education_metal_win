@@ -204,7 +204,7 @@ input file (metal unit, lammps)
   
 - Das , A and Singh, G (2014)
   http://ethesis.nitrkl.ac.in/6152/
-  CuAl_defect
+  Cu-Al_defect
   
 - Kumar, Navratan (2014) 
   http://ethesis.nitrkl.ac.in/6144/
