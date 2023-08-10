@@ -5,7 +5,8 @@
 # Mechanical Tensile Test September 2020
 
 #-------------------- Environment Settings -----------------------------------------------
-variable Tdesird equal 77.0 #or 300K or 600k
+variable  Tdesird equal   77.0 # or 300 K or 600 k
+variable DumpFreq equal   3000 # For print out
 
 #-------------------- Initialization -----------------------------------------------------
 units metal    # units style is selected to be metal
@@ -17,8 +18,8 @@ boundary p p p # xyz boundaries are set to be periodic
 atom_style atomic
 atom_modify map array
 
-#read_restart HEA_MC_882000.restart #read in restart file which is from the MCMD step
 read_restart HEA_thermal_equilibrate.restart # after relaxation
+#read_restart HEA_MC_882000.restart #read in restart file which is from the MCMD step
 
 group Fe type 1
 group Ni type 2
@@ -134,8 +135,9 @@ fix 10 all npt temp ${Tdesird} ${Tdesird} 1.0 x 0.0 0.0 1.0 z 0.0 0.0 1.0 couple
 #dump mydump all atom ${DumpFreq} LoadingFrame_*.dump
 #dump_modify mydump sort id
 #---------------------------------------------------
-dump            d1 all cfg 100 cfg/run.*.cfg mass type xs ys zs id type vx vy vz fx fy fz
+dump            d1 all cfg ${DumpFreq} cfg/run.*.cfg mass type xs ys zs id type vx vy vz fx fy fz
 dump_modify     d1 element Fe Ni Cr Co Mn
+#---------------------------------------------------
 
 run ${Nsteps}
 
