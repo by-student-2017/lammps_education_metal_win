@@ -1,44 +1,55 @@
 # 4.2 Tensile Deformation of Nickel nanowires
+#
 # In.file for 3d tensile simulation (at strain rate 10^11 s^-1)
 
+#-------------------- Initialization -----------------------------------------------------
 echo both
 units metal
 
+#-------------------- Read structure file ------------------------------------------------
 atom_style atomic
 read_data DATAFILE.txt
 
-timestep 0.002
-
+#-------------------- Force field --------------------------------------------------------
 pair_style eam
 pair_coeff * * Ni_u3.eam 
 
-# Energy Minimization
+#-------------------- Energy Minimization ------------------------------------------------
+# 0 [K], structure optimization
 #minimize 1.0e-4 1.0e-5 10000 10000
 
-dump 1 all atom 100 dump.JP4_tensile_review_10_11s-1_40_strain_f1_allatoms.lammpstrj 
+#-------------------- Settings -----------------------------------------------------------
+reset_timestep 0
 
-log log5050_JP4_review_10_11s-1_80_strain_f1_allatoms.dat
-
-# initial velocities
-velocity all create 298 482748 rot yes mom yes dist gaussian
-
-fix 1 all deform 1 y erate 0.1
-fix 2 all npt temp 50.0 50.0 10.0 x 0 0 10.0 z 0 0 10.0 dilate all
-fix 3 all temp/rescale 10 50 50 0.05 1.0
+timestep 0.002 # 2 [fs]
 
 compute 1 all stress/atom 
 compute 2 all temp
-
-dump 2 all custom 100 
-dump.stress_atom_Jp4_review_10_11s1_40_strain_f1_allatoms type x y z c_1[1] c_1[2] c_1[3] c_1[4] c_1[5] c_1[6]
-
 compute 3 all reduce sum c_1[2]
 
-variable stress equal c_3/(3*49062.50)
+variable     stress equal c_3/(3*49062.50)
 variable stress_GPa equal v_stress/10000
 
 thermo 1
 thermo_style custom step temp press vol etotal c_2 v_stress v_stress_GPa
 
+#---------- output file settings -------------------
+#dump 1 all atom 100 dump.JP4_tensile_review_10_11s-1_40_strain_f1_allatoms.lammpstrj
+dump 2 all custom 100 dump.stress_atom_Jp4_review_10_11s1_40_strain_f1_allatoms type x y z c_1[1] c_1[2] c_1[3] c_1[4] c_1[5] c_1[6]
+#---------------------------------------------------
+dump            d1 all cfg 100 cfg/run.*.cfg mass type xs ys zs id type vx vy vz fx fy fz
+dump_modify     d1 element Ni
+#---------------------------------------------------
+log log5050_JP4_review_10_11s-1_80_strain_f1_allatoms.dat
+
+# initial velocities
+velocity all create 298 482748 rot yes mom yes dist gaussian
+
+#-------------------- Run the simulation -------------------------------------------------
+fix 1 all deform 1 y erate 0.1
+fix 2 all npt temp 50.0 50.0 10.0 x 0 0 10.0 z 0 0 10.0 dilate all
+fix 3 all temp/rescale 10 50 50 0.05 1.0
+
 run 2000
 
+#-------------------- End ----------------------------------------------------------------
