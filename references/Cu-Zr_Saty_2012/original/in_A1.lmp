@@ -1,5 +1,5 @@
 # 4.1 Creation of Cu50Zr50 alloy models & quenching procedure
-#
+
 # Here the purpose of simulation is to create a Cu50Zr50 glassy model e.g. a amorphous 
 # structure by first heating a crystalline model of same alloy up to the melting temperature 
 # 2300 K, then holding it for sufficient time to complete phase transformation from solid state 
@@ -9,76 +9,55 @@
 # The in.file which contains all the commands to create a model and to quench it at a 
 # particular cooling rate is given below.
 
-# In.file (for size X=50 Angstrom, Y=30 Angstrom, Z=20 Angstrom & cooling rate 10^14 K/s):
+# # In.file (for size X=50 Angstrom, Y=30 Angstrom, Z=20 Angstrom & cooling rate 10^14 K/s):
 
-#-------------------- Initialization -----------------------------------------------------
 echo both
 units metal
 dimension 3
 boundary p p p
 
-#-------------------- Atom & Lattice description ----------------------------------------
 atom_style atomic
 
 region box block 0 50 0 30 0 20 units box
 create_box 2 box
-
 lattice fcc 3.61
-
 region cu block 0 50 0 30 0 20 units box
-
 create_atoms 1 region cu units box
 
 # creating composition using set command for cu50zr50 alloy
 set region cu type/fraction 2 0.5 12393 
 
-#-------------------- Force field --------------------------------------------------------
+timestep 0.002
+
 pair_style eam/fs 
 pair_coeff * * CuZr_mm.eam.fs Cu Zr
 
-#-------------------- Energy Minimization ------------------------------------------------
-# 0 [K], structure optimization
+# Energy Minimization
 minimize 1.0e-4 1.0e-6 100000 100000
-
-#-------------------- Settings -----------------------------------------------------------
-reset_timestep 0
-
-timestep 0.002 # 2 [fs]
 
 thermo 100
 thermo_style custom step temp vol press etotal
 
-#---------- output file settings -------------------
-#dump 1 all atom 1000 5050_q_3d_s.dump.lammpstrj id type x y z vx vy vz
+dump 1 all atom 1000 5050_q_3d_s.dump.lammpstrj id type x y z vx vy vz
 #dump_modify 1 scale no
-#---------------------------------------------------
-dump            d1 all cfg 1000 cfg/run.*.cfg mass type xs ys zs id type vx vy vz fx fy fz
-dump_modify     d1 element Cu Zr
-#---------------------------------------------------
+
 log log5050_q_3d_s.data
 
 velocity all create 300 8728007 rot yes mom yes dist gaussian
 
-# calculates the radial distribution function (RDF) and output file
+#fixes
 compute myRDF all rdf 100
 fix 1 all ave/time 100 1 100c_myRDF file Cu_zr_melt_3.rdf mode vector 
-
-#-------------------- Run the simulation -------------------------------------------------
-# Heat treatment
-
-fix 2 all npt temp  300.0 2300.0 0.2 iso 0.0 0.0 0.2
+fix 2 all npt temp 300.0 2300.0 0.2 iso 0.0 0.0 0.2
 run 20000
 
 fix 3 all npt temp 2300.0 2300.0 0.2 iso 0.0 0.0 0.2
 run 20000
 
-fix 4 all npt temp 2300.0  300.0 0.2 iso 0.0 0.0 0.2
+fix 4 all npt temp 2300.0 300 0.2 iso 0.0 0.0 0.2
 run 10000
 
-#-------------------- End ----------------------------------------------------------------
-
-#-----------------------------------------------------------------------------------------
 # Temp difference = 2300 K - 300 K = 2000 K
 # Total time taken for cooling = timestep x no of iterations in quenched step = (0.002 x 10000) ps
 # So cooling rate = 2000 K / (0.002 x 10000) ps = 10^14 Ks^-1 for the above in.file
-#-----------------------------------------------------------------------------------------
+

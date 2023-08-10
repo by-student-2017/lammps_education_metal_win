@@ -1,5 +1,5 @@
 # 4.4 Tensile Deformation of Quenched Specimens
-
+#
 # To do deformation for different sizes at a particular strain rate, read data file was 
 # changed according to the size concerned by accessing the data in the dump file obtained after 
 # simulation of quenching. . Similarly, to do deformation at different strain rates for same size
@@ -7,39 +7,52 @@
 
 # # In.file for 3d tensile simulation ( at strain rate 10^11 s^-1)
 
+#-------------------- Initialization -----------------------------------------------------
 echo both
 units metal
 dimension 3
 boundary p p p
 
+#-------------------- Read structure file ------------------------------------------------
 atom_style atomic
+
 read_data 5050_1crystal_3d_large_tensile.dat
 
-timestep 0.001
-
+#-------------------- Force field --------------------------------------------------------
 pair_style eam/fs
 pair_coeff * * CuZr_mm.eam.fs Cu Zr
 
-# Energy minimization
+#-------------------- Energy Minimization ------------------------------------------------
+# 0 [K], structure optimization
 minimize 1.0e-5 1.0e-10 10000 100000
 
-dump 1 all atom 100 dump.uniaxialtensile8_3d_l_one_crystallites.dump.lammpstrj
+#-------------------- Settings -----------------------------------------------------------
+reset_timestep 0
 
+timestep 0.001 # 1 [fs]
+
+thermo 100
+thermo_style custom step temp press vol etotal
+
+#---------- output file settings -------------------------
+#dump 1 all atom 100 dump.uniaxialtensile8_3d_l_one_crystallites.dump.lammpstrj
+#
+compute 1 all stress/atom 
+dump 2 all custom 100 dump.stress_atom_uniaxialtensile8_3d_l_one_crystallites c_1[1] c_1[2] c_1[3] c_1[4] c_1[5] c_1[6]
+#---------------------------------------------------------
+dump            d1 all cfg 10000 cfg/run.*.cfg mass type xs ys zs c_csym c_peratom id type vx vy vz fx fy fz
+dump_modify     d1 element Cu Zr
+#---------------------------------------------------------
 log log5050_uniaxialtensile8_3d_l_one_crysatallites.dat
 
 # initial velocities
 velocity all create 298 482748 rot yes mom yes dist gaussian
 
+#-------------------- Run the simulation -------------------------------------------------
 Fix 1 all deform 100 y erate 0.1
-fix2 all npt temp 300.0 300.0 100.0 x 0 0 100.0 z 0 0 100.0 dilate all
-fix3 all temp/rescale 100 300 300 0.05 1.0
-
-compute 1 all stress/atom 
-
-thermo 100
-thermo_style custom step temp press vol etotal
-
-dump 2 all custom 100 dump.stress_atom_uniaxialtensile8_3d_l_one_crystallites c_1[1] c_1[2] c_1[3] c_1[4] c_1[5] c_1[6]
+fix 2 all npt temp 300.0 300.0 100.0 x 0 0 100.0 z 0 0 100.0 dilate all
+fix 3 all temp/rescale 100 300 300 0.05 1.0
 
 run 1000
 
+#-------------------- End ----------------------------------------------------------------
