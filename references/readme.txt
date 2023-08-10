@@ -148,12 +148,11 @@ input file (metal unit, lammps)
   (VASP, Packmol, PANNA, Lammps) (failed)
   
 - D. Chen et al., Master thesis (2011).
-  polyfe (need polyfe.lammps)
   https://oaktrust.library.tamu.edu/bitstream/handle/1969.1/ETD-TAMU-2011-08-10112/CHEN-THESIS.pdf?sequence=2&isAllowed=y
-  --------------------------------------
-  https://oaktrust.library.tamu.edu/handle/1969.1/2
-
-- https://oaktrust.library.tamu.edu/handle/1969.1/151391
+  polyfe (need polyfe.lammps)
+  
+- J. Wang, Master thesis (2013).
+  https://oaktrust.library.tamu.edu/handle/1969.1/151391
   SWNT (need structure file: SWNT1515_equ.lammps05, SWNT1010_250A_double_equ300.lammps05)
 
 - M. Dong, Master thesis (2020).
