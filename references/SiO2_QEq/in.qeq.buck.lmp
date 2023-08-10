@@ -1,0 +1,88 @@
+# This example demonstrates the use of various fix qeq variants with 
+#   a pair style using charges, in this case pair_style buck/coul/long
+
+#-------------------- Initialization -----------------------------------------------------
+clear
+echo both
+
+# eV,atomic charge,angstroms,ps,kelvin,bars,g/mol 
+units metal
+dimension 3
+boundary p p p
+
+#-------------------- Read structure file ------------------------------------------------
+atom_style      charge
+
+read_data   SiO2.data
+
+#replicate 2 2 2
+
+group Si type 1
+group  O type 2
+
+mass 1 28.0855 # Si 1+
+mass 2 15.9994 # O  2-
+
+set type 1 charge  4.0 # Si 4+
+set type 2 charge -2.0 # O  2-
+
+#-------------------- Force field --------------------------------------------------------
+pair_style buck/coul/long 12.0 
+pair_coeff 1 1     0.0   0.1          0.0    # Si-Si
+pair_coeff 1 2 18003.0   0.2052124  133.5381 # Si-O
+pair_coeff 2 2  1388.77  0.3623188  175.0    #  O-O
+
+# beta-Ga2O3 (Ref.[B44])
+#pair_coeff 1 1 139349.01 0.21       171.08   # Ga-Ga
+#pair_coeff 1 2    412.0  0.30         0.0    # Ga-O
+#pair_coeff 2 2   1388.77 0.36       175.0    #  O-O
+
+#fix 2 all qeq/point    1 10 1.0e-6 100 param.qeq2
+#fix 2 all qeq/dynamic  1 10 1.0e-3 100 param.qeq2
+ fix 2 all qeq/shielded 1 10 1.0e-6 100 param.qeq2
+#fix 2 all qeq/slater   1 10 1.0e-6 100 param.qeq2
+#fix 2 all qeq/fire     1 10 1.0e-3 100 param.qeq2
+
+include buck.inc
+
+#-------------------- Energy Minimization ------------------------------------------------
+# 0 [K], structure optimization
+minimize 1.0e-3 1.0e-6 1000 10000
+
+#-------------------- Settings -----------------------------------------------------------
+reset_timestep 0
+
+timestep 0.002 # 2 [fs] = 2e-15 [s]
+
+thermo 100
+thermo_style custom step temp vol press pe ke etotal
+
+dump        d1 all cfg 100 cfg/run.*.cfg mass type xs ys zs id type vx vy vz fx fy fz
+dump_modify d1 element Si O
+
+# calculates the radial distribution function (RDF) and output file
+compute myRDF all rdf 100
+fix r2 all ave/time 1000 1 1000 c_myRDF[*] file Si_O_quench_large_restart.rdf mode vector
+
+velocity all create 300.0 1281937 rot yes mom yes dist gaussian
+
+#-------------------- Run the simulation -------------------------------------------------
+#fix 1 all npt temp  300 1150 $(100*dt) iso 0.0 0.0 $(200*dt) 
+run 10000
+unfix 1
+
+#fix 1 all npt temp 1150 1150 $(100*dt) iso 0.0 0.0 $(200*dt) 
+run 50000
+unfix 1
+
+#fix 1 all npt temp 1150  270 $(100*dt) iso 0.0 0.0 $(200*dt) 
+run 50000
+unfix 1
+
+unfix 2
+
+#-------------------- Output data file ---------------------------------------------------
+write_data Si-O_cooling_10_13.txt # 0.44 x 10^-13 [K/s]
+
+print "All done !"
+#-------------------- End ----------------------------------------------------------------
