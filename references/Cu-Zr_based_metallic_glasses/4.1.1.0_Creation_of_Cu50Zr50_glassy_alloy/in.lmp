@@ -1,0 +1,77 @@
+# 4.1 Creation of Cu-Zr amorphous alloy
+#  4.1.1 Creation of Cu50Zr50 glassy alloy
+# There are three steps for the formation of Cu50Zr50 glassy alloy. In the first step heat the 
+# crystalline material up to the temperature of 2300K, after that hold it for 20 ps and then 
+# finally quench the model alloy to the room temperature (300 K).
+# In order to create a glassy model an MD code is written and executed in LAMMPS. The 
+# following ‘in.file’ consists of set of commands that will create a glassy model.
+
+# In.file (for size X=50Å, Y=100Å, Z=100Å & cooling rate 1014 K/S)
+
+#-------------------- Initialization -----------------------------------------------------
+echo both
+units metal
+dimension 3
+boundary p p p
+
+#-------------------- Atom & Lattice description ----------------------------------------
+atom_style atomic
+
+region box block 0 50 0 100 0 50 units box
+create_box 2 box
+
+lattice fcc 3.61
+
+region cu block 0 50 0 100 0 50 units box
+
+create_atoms 1 region cu units box
+
+# creating composition using set command for Cu50Zr50 alloy
+set region cu type/fraction 2 0.5 12393
+
+#-------------------- Force field --------------------------------------------------------
+pair_style eam/fs
+pair_coeff * * Cu-Zr.eam.fs Cu Zr
+
+#-------------------- Energy Minimization ------------------------------------------------
+# 0 [K], structure optimization
+minimize 1.0e-3 1.0e-6 1000 10000
+
+#-------------------- Settings -----------------------------------------------------------
+reset_timestep 0
+
+timestep 0.002 # 2 [fs]
+
+thermo 100
+thermo_style custom step temp vol press etotal
+
+#---------- output file settings -------------------------
+#dump 1 all atom 10000 5050_ajn_large.lammpstrj
+#dump_modify 1 scale no log log5050_ajn_large.data
+#---------------------------------------------------------
+dump            d1 all cfg 10000 cfg/run.*.cfg mass type xs ys zs c_csym c_peratom id type vx vy vz fx fy fz
+dump_modify     d1 element Cu Zr
+#---------------------------------------------------------
+
+velocity all create 300.0 873847 rot yes mom yes dist gaussian
+
+# calculates the radial distribution function (RDF) and output file
+compute myRDF all rdf 100
+fix 2 all ave/time 1000 1 1000 c_myRDF[*] file Cu_zr_quench_large.rdf mode vector
+
+#-------------------- Run the simulation -------------------------------------------------
+# Heat treatment
+
+fix 1 all npt temp  300 2300 0.1 iso 0.0 0.0 0.2
+run 10000
+unfix 1
+
+fix 1 all npt temp 2300 2300 0.1 iso 0.0 0.0 0.2
+run 20000
+unfix 1
+
+fix 1 all npt temp 2300  300 0.1 iso 0.0 0.0 0.2
+run 10000
+unfix 1
+
+#-------------------- End ----------------------------------------------------------------

@@ -1,0 +1,79 @@
+# 4.2 Creation of Cu-Zr-Al glassy alloys
+#  4.2.1 Creation of Cu49Zr49Al2 alloy
+# There are three steps for the formation of Cu49Zr49Al2 glassy alloy. In first step heat
+# the crystalline material up to the temperature of 2300K followed by holding for 20 ps and 
+# then finally quenching the model to the room temperature (300 K).
+# In order to create a glassy model an MD code is written and executed in LAMMPS. The 
+# following ‘in.file’ consists of set of commands that will create a glassy model. 
+
+# In.file (for size X=50Å, Y=100Å, Z=100Å & cooling rate 1014 K/S)
+
+#-------------------- Initialization -----------------------------------------------------
+echo both
+units metal
+dimension 3
+boundary p p p
+
+#-------------------- Atom & Lattice description ----------------------------------------
+atom_style atomic
+
+region box block 0 50 0 100 0 50 units box
+create_box 3 box
+
+lattice fcc 3.61
+
+region cu block 0 50 0 100 0 50 units box
+
+create_atoms 1 region cu units box
+
+# creating composition by using set command for cuzral alloy 
+set region cu type/fraction 2 0.49 12393
+set region cu type/fraction 3 0.02 12393
+
+#-------------------- Force field --------------------------------------------------------
+pair_style eam/alloy
+pair_coeff * * CuZrAl_Zhou04.eam.alloy Cu Zr Al
+
+#-------------------- Energy Minimization ------------------------------------------------
+# 0 [K], structure optimization
+minimize 1.0e-4 1.0e-6 10000 100000
+
+#-------------------- Settings -----------------------------------------------------------
+reset_timestep 0
+
+timestep 0.002 # 2 [fs]
+
+thermo 100
+thermo_style custom step temp vol press etotal
+
+#---------- output file settings -------------------------
+#dump 1 all atom 10000 ternary_cuzral.dump.lammpstrj
+#dump_modify 1 scale no
+#---------------------------------------------------------
+dump            d1 all cfg 10000 cfg/run.*.cfg mass type xs ys zs c_csym c_peratom id type vx vy vz fx fy fz
+dump_modify     d1 element Cu Zr Al
+#---------------------------------------------------------
+log logcuzral2.data
+
+# calculates the radial distribution function (RDF) and output file
+compute myRDF all rdf 1000
+fix 11 all ave/time 1000 1 1000 c_myRDF[*] file cuzral2.rdf mode vector
+
+velocity all create 300.0 873847 rot yes mom yes dist gaussian
+
+#-------------------- Run the simulation -------------------------------------------------
+# Heat treatment
+
+fix 1 all npt temp  300 2300 0.2 iso 0.0 0.0 0.2
+run 10000
+unfix 1
+
+fix 1 all npt temp 2300 2300 0.2 iso 0.0 0.0 0.2
+run 20000
+unfix 1
+
+fix 1 all npt temp 2300  300 0.2 iso 0.0 0.0 0.2
+run 10000
+unfix 1 
+
+#-------------------- End ----------------------------------------------------------------
