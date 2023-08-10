@@ -1,0 +1,57 @@
+# Appendix A: LAMMPS Codes
+# https://tigerprints.clemson.edu/cgi/viewcontent.cgi?article=3761&context=all_dissertations
+
+# Relaxation
+
+################################################
+# initialize
+################################################
+
+units metal
+dimension 3
+boundary p p p
+atom_style atomic
+atom_modify map array
+
+# read in input file
+read_data hea1.data
+
+mass 1 55.85
+mass 2 58.69
+mass 3 52.00
+mass 4 58.93
+mass 5 54.94
+
+################################################
+# Potential file
+################################################
+pair_style meam/c
+pair_coeff * * library.meam Co Ni Cr Fe Mn hea.meam Fe Ni Cr Co Mn
+
+neighbor 2.0 bin
+neigh_modify delay 10 check yes
+variable Tdesird equal 77.0
+variable Nsteps equal 300000
+variable DumpFreq equal 3000
+
+reset_timestep 0
+
+thermo 100
+thermo_style custom step temp pe etotal pxx pyy pzz pxy pxz pyz press lx ly lz
+
+velocity all create ${Tdesird} 95812384
+fix 3 all npt temp ${Tdesird} ${Tdesird} 1.0 aniso 0.0 0.0 1.0
+
+dump mydump all atom ${DumpFreq}AnnealOut_*.dump
+dump_modify mydump sort id
+
+run ${Nsteps}
+
+unfix 3
+
+print "Print restart"
+write_restart HEA_thermal_equilibrate.restart
+
+################################################
+# End
+################################################

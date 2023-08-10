@@ -1,5 +1,9 @@
 -------------------------------------------------------------------
 input file (metal unit, lammps)
+
+- M. Shabani, Doctor thesis (2020).
+  https://tigerprints.clemson.edu/cgi/viewcontent.cgi?article=3761&context=all_dissertations
+  High_Entropy_Alloys (Fe-Ni-Cr-Co-Mn) (need structure file: hea1.data)
   
 - C.N. Andoh et al., J. Appl. Sci. Tech. 22 (2017) 1-13.
   https://www.researchgate.net/profile/Collins-Nana-Andoh/publication/327390429_MOLECULAR_DYNAMICS_SIMULATION_OF_MECHANICAL_DEFORMATION_OF_AUSTENITIC_STAINLESS_STEELS_Fe-Ni-Cr_ALLOYS_AT_SUPERCRITICAL_WATER_CONDITIONS/links/62ae336c938bee3e3f3f2253/MOLECULAR-DYNAMICS-SIMULATION-OF-MECHANICAL-DEFORMATION-OF-AUSTENITIC-STAINLESS-STEELS-Fe-Ni-Cr-ALLOYS-AT-SUPERCRITICAL-WATER-CONDITIONS.pdf
@@ -107,6 +111,7 @@ input file (metal unit, lammps)
   
 - K.-J. Carter, Bachelor Thesis (2017).
   https://dspace.mit.edu/handle/1721.1/112482
+  https://dspace.mit.edu/bitstream/handle/1721.1/112482/1011413174-MIT.pdf
   Irradiation
 
 - S. Townsend, thesis (2018).
@@ -440,6 +445,10 @@ input file (metal unit, lammps)
 - M. Valavi et al., Cem. Concr. Res. 154 (2022) 106712.
   https://doi.org/10.1016/j.cemconres.2022.106712
   ERICA (need Structure.data)
+  
+- T. A. Burt, Master thesis (2017).
+  https://shareok.org/handle/11244/52763
+  Burt_2017 (need structure file: dummy10.lammps) (real unit)
 -------------------------------------------------------------------
 plot the temperature of each atom
 

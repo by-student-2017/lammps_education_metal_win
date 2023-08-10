@@ -1,0 +1,132 @@
+# Appendix A: LAMMPS Codes
+# https://tigerprints.clemson.edu/cgi/viewcontent.cgi?article=3761&context=all_dissertations
+
+#Mechanical Testing
+
+# Mechanical Tensile Test September 2020
+
+################################################
+# Initializing 
+################################################
+
+units metal #units style is selected to be metal
+# For style metal these are dt = 0.001 picoseconds,skin = 2.0 Angstroms
+dimension 3 #running 3D simulation which is LAMMPS default
+boundary p p p #xyz boundaries are set to be periodic
+atom_style atomic
+atom_modify map array
+
+################################################
+# Create System
+################################################
+
+#read in restart file which is from the MCMD step
+read_restart HEA_MC_882000.restart
+
+mass 1 55.85 #Iron
+mass 2 58.69 #Nickel
+mass 3 52.00 #Chromium
+mass 4 58.93 #Cobalt
+mass 5 54.94 #Mangenese
+
+################################################
+# Potential file
+################################################
+
+pair_style meam/c #modified embedded-atom method
+pair_coeff * * library.meam Co Ni Cr Fe Mn hea.meam Fe Ni Cr Co Mn
+
+neighbor 2.0 bin
+neigh_modify delay 10 check yes
+
+variable Tdesird equal 77.0 #or 300K or 600k
+###########################
+# Equilibrating
+###########################
+
+thermo 100
+thermo_style custom step temp ke etotal press lx ly lz
+
+velocity all create ${Tdesird} 5812775
+fix 1 all npt temp ${Tdesird} ${Tdesird} 1.0 iso 0.0 
+0.0 1.0 #isothermal-isobaric ensembles
+run 40000 #timestep= 0.001 picoseconds,40 picoseconds 
+unfix 1
+
+#################################################
+# Mechanical Deformation Run
+#################################################
+
+reset_timestep 0
+change_box all boundary p s p #changing the boundary conditions
+
+################################################
+#Top and bottom clamped regions
+#The other atoms are mobile 
+################################################
+
+variable bottomy equal -310 #slightly changes for each GB
+variable topy equal 310 #slightly changes for each GB
+variable lbox equal ${topy}-${bottomy} #length of the box in y
+variable limitbottom equal ${bottomy}+25 #25 A fixed
+variable limittop equal ${topy}-25 #25 A fixed
+
+#defining the top and bottom fixed regions
+region lower block INF INF INF ${limitbottom} INF INF units box 
+
+#the geometry is defined in simulation box units
+# A box value selects standard distance units as defined by the units 
+#command, e.g. Angstroms for units = real or metal. A lattice value 
+#means the distance units are in lattice spacings. The lattice command 
+#must have been previously used to define the lattice spacings.
+
+region upper block INF INF ${limittop} INF INF INF units box 
+
+group lower region lower
+group upper region upper
+#grouping the upper and lower fixed regions
+group boundary union lower upper
+#defining the dynamic atoms
+group mobile subtract all boundary
+
+######################################
+variable strrate equal 0.0005 #strain rate=0.0005/psec=5*(10^8)/s
+variable vyvalue equal ${strrate}*${lbox-50} #velocity A/psec
+#240000 steps are sufficient to get to strain of 0.12
+#considering the experimental results strain 0.5
+#Nsteps (0.5/strain rate)/dt
+variable Nsteps equal 1000000 
+variable ThermoOut equal 1000
+variable DumpFreq equal 2000
+variable NoutAvg equal ${ThermoOut}/100
+
+thermo ${ThermoOut}
+thermo_style custom step temp ke etotal press pxx pyy pzz lx ly lz
+
+#each component of the force on atoms of the group are set to 0
+fix 2 boundary setforce 0.0 0.0 0.0
+#lower set velocity is set to zero as the lower part is not moving
+#The units keyword is used by set and ramp. If units = box, the 
+#velocities and coordinates specified in the velocity command are 
+#in the standard units described by the units command (e.g. 
+#Angstroms/fs for real units). If units = lattice, velocities are 
+#in units of lattice spacings per time (e.g. spacings/fs) and 
+#coordinates are in lattice spacings.
+velocity lower set 0 0 0 units box
+#the upper gripped part has a velocity in the y direction
+velocity upper set 0 ${vyvalue} 0 units box
+#the mobile part velovity ramps up 
+velocity mobile ramp vy 0.0 ${vyvalue} y ${bottomy} ${topy} sum yes 
+units box
+
+fix 10 all npt temp ${Tdesird} ${Tdesird} 1.0 x 0.0 0.0 1.0 
+z 0.0 0.0 1.0 couple xz
+
+dump mydump all atom ${DumpFreq} LoadingFrame_*.dump
+dump_modify mydump sort id
+
+run ${Nsteps}
+
+#################################################
+# End
+#################################################
