@@ -105,6 +105,10 @@ input file (metal unit, lammps)
   https://dspace.mit.edu/handle/1721.1/112482
   https://dspace.mit.edu/bitstream/handle/1721.1/112482/1011413174-MIT.pdf
   Irradiation
+  
+- Z. Huang, Master thesis (2016).
+  https://trace.tennessee.edu/utk_gradthes/3776/
+  Radiation_Defects
 
 - D. Chen et al., Doctor Thesis (2014).
   https://oaktrust.library.tamu.edu/handle/1969.1/154160
@@ -219,6 +223,7 @@ input file (metal unit, lammps)
   
 - Mehta, Gaurav and Patra, Hrushikesh (2013) 
   http://ethesis.nitrkl.ac.in/4903/
+  Nickel_Nanowire
   
 - Dhal, Satyanarayan and Yadlapalli, Raja (2012) 
   http://ethesis.nitrkl.ac.in/3349/
@@ -255,15 +260,9 @@ input file (metal unit, lammps)
   https://ntnuopen.ntnu.no/ntnu-xmlui/handle/11250/2350291
   cantilever
 
-- Z. Huang, Master thesis (2016).
-  https://trace.tennessee.edu/utk_gradthes/3776/
-  Radiation_Defects
-
 - N. Boumerdassi, Master Thesis (2014).
   https://repositories.lib.utexas.edu/handle/2152/26395
   Ag_nanocluster
-
-- https://opendata.uni-halle.de/bitstream/1981185920/87709/1/Thesis_FDEMYDIUK_GermanCovers.pdf
 
 - M.-K. Choi (2022)
   https://conservancy.umn.edu/handle/11299/250214 (MoS2, zip file)

@@ -1,0 +1,41 @@
+# 4.1_Creation_of_Nickel_nanowire_models: 
+# Here the aim of simulation is to create a Nickel Nanowire model e.g. a crystalline structure at room temperature.
+# The in.file which contains all the commands to create a Nickel Nanowire model is given below:
+
+# In.file (for Nickel Nanowire size diameter = 25 Angstrom, height =100 Angstrom):
+
+echo both
+units metal
+Dimension 3
+Boundary p p p
+
+atom_style atomic 
+region mycylinder cylinder y 0 0 25 0 100 units box 
+create_box 1 mycylinder 
+lattice fcc 3.52
+region Ni cylinder y 0 0 25 0 100 units box 
+create_atoms 1 region Ni units box 
+
+timestep 0.002 
+
+pair_style eam
+pair_coeff * * Ni_u3.eam
+
+# Energy Minimization
+minimize 1.0e-4 1.0e-5 10000 10000
+
+thermo 1
+thermo_style custom step temp vol press etotal pe ke
+
+dump 1 all atom 100 Ni_crystal_3d_s_dump.lammpstrj 
+
+dump_modify 1 scale no 
+log logNi_crystal_3d_s.data
+
+velocity all create 500 873847 rot yes mom yes dist gaussian 
+
+#fixes
+fix 1 all npt temp 500 500 0.1 iso 0.0 0.0 0.1 
+run 20000
+unfix 1
+
