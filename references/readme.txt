@@ -4,7 +4,7 @@ input file (metal unit, lammps)
 - M. Shabani, Doctor thesis (2020).
   https://tigerprints.clemson.edu/cgi/viewcontent.cgi?article=3761&context=all_dissertations
   High_Entropy_Alloys (Fe-Ni-Cr-Co-Mn) (need structure file: hea1.data)
-  
+
 - C.N. Andoh et al., J. Appl. Sci. Tech. 22 (2017) 1-13.
   https://www.researchgate.net/profile/Collins-Nana-Andoh/publication/327390429_MOLECULAR_DYNAMICS_SIMULATION_OF_MECHANICAL_DEFORMATION_OF_AUSTENITIC_STAINLESS_STEELS_Fe-Ni-Cr_ALLOYS_AT_SUPERCRITICAL_WATER_CONDITIONS/links/62ae336c938bee3e3f3f2253/MOLECULAR-DYNAMICS-SIMULATION-OF-MECHANICAL-DEFORMATION-OF-AUSTENITIC-STAINLESS-STEELS-Fe-Ni-Cr-ALLOYS-AT-SUPERCRITICAL-WATER-CONDITIONS.pdf
   https://www.academia.edu/download/57943795/1._Andoh_Pap_2.pdf
@@ -68,15 +68,11 @@ input file (metal unit, lammps)
   
 - ERIK FRANSSON, JOHANNES LAURELL H˚AKANSSON, Master’s Thesis in Applied Physics (2014).
   https://core.ac.uk/display/70610056
-  BaZrO3 (need BaZrO3_input.pos)
+  BaZrO3
   
 - G. V. Huerta et al., Doctoral Thesis (2019).
   https://www.repo.uni-hannover.de/bitstream/handle/123456789/4482/GesamtRevisedFinal.pdf
   YSZ (Yttria stabilized zirconia)
-  
-- P. Malakar et al., ACS Appl. Nano Mater. 5 (2022) 16489-16499.
-  https://doi.org/10.1021/acsanm.2c03564 (lammps input file)
-  Crack (It cannot be calculated unless it is a Lammps that supports the SW potential file of "MoS2".)
   
 - R. G. Patel et al., J. Comput. Phys. 449 (2022) 110754.
   https://doi.org/10.1016/j.jcp.2021.110754
@@ -110,6 +106,23 @@ input file (metal unit, lammps)
   https://dspace.mit.edu/bitstream/handle/1721.1/112482/1011413174-MIT.pdf
   Irradiation
 
+- D. Chen et al., Doctor Thesis (2014).
+  https://oaktrust.library.tamu.edu/handle/1969.1/154160
+  radiation (need datafile.lammps) (Structure of (013)[100]Σ = 5 symmetric-tilt grain boundary)
+  -----------------------------------------------------------------------------------------------
+  The cell has a dimension of 14nm×14nm×14nm, which contains about 250000 atoms.
+  The damage cascade is created by bombardment with one 3 keV Fe atom, which is incident at 
+    9 degrees away from the cell normal direction. This avoids ion channeling and helps to 
+    confine the damage cascade within the cell. The cell further contains a grain boundary, 
+    which is created by putting two bcc-Fe domains together. Prior to the ion bombardment, 
+    the bcc alpha-Fe is structurally relaxed to achieve energy minimization. Simulation is 
+    performed with the cell temperature at 450K. 
+  -----------------------------------------------------------------------------------------------
+
+- T. Metspalu, Master Thesis (2015)
+  https://core.ac.uk/download/pdf/187147604.pdf
+  CLIC_electrical_breakdown (failed)
+
 - S. Townsend, thesis (2018).
   https://dspace.mit.edu/handle/1721.1/119936
   Biggest_Trudging
@@ -129,14 +142,6 @@ input file (metal unit, lammps)
 - S. T. T. Lam, thesis (2013).
   https://dspace.mit.edu/handle/1721.1/129108
   (VASP, Packmol, PANNA, Lammps) (failed)
-
-- K. C. Alexander, thesis (2011).
-  https://dspace.mit.edu/handle/1721.1/108218
-  Grain_Boundary_generation (failed)
-
-- T. Metspalu, Master Thesis (2015)
-  https://core.ac.uk/download/pdf/187147604.pdf
-  CLIC_electrical_breakdown (failed)
   
 - D. Chen et al., Master thesis (2011).
   polyfe (need polyfe.lammps)
@@ -150,19 +155,6 @@ input file (metal unit, lammps)
 - M. Dong, Master thesis (2020).
   https://oaktrust.library.tamu.edu/handle/1969.1/191617
   Green-Kubo_bulk_h-BN
-
-- D. Chen et al., Doctor Thesis (2014).
-  https://oaktrust.library.tamu.edu/handle/1969.1/154160
-  radiation (need datafile.lammps) (Structure of (013)[100]Σ = 5 symmetric-tilt grain boundary)
-  -----------------------------------------------------------------------------------------------
-  The cell has a dimension of 14nm×14nm×14nm, which contains about 250000 atoms.
-  The damage cascade is created by bombardment with one 3 keV Fe atom, which is incident at 
-    9 degrees away from the cell normal direction. This avoids ion channeling and helps to 
-    confine the damage cascade within the cell. The cell further contains a grain boundary, 
-    which is created by putting two bcc-Fe domains together. Prior to the ion bombardment, 
-    the bcc alpha-Fe is structurally relaxed to achieve energy minimization. Simulation is 
-    performed with the cell temperature at 450K. 
-  -----------------------------------------------------------------------------------------------
 
 - A. Rohskopf et al., Comput. Mater. Sci. 184 (2020) 109884.
   https://doi.org/10.1016/j.commatsci.2020.109884
@@ -254,10 +246,6 @@ input file (metal unit, lammps)
 - I. Khaled, Doctor Thesis (2012).
   https://prism.ucalgary.ca/bitstreams/a9233500-b1ea-445c-80c6-38bd8e046344/download
   Nanopatterning (need data.nanopatt)
-
-- M. B. Larbi, Master Thesis (2015).
-  https://mospace.umsystem.edu/xmlui/handle/10355/47997
-  a-BxCy (need data.4.6b-c)
   
 - A. Saltos, Doctor Thesis (2020).
   https://mospace.umsystem.edu/xmlui/handle/10355/83797
@@ -316,6 +304,10 @@ input file (metal unit, lammps)
   https://ttu-ir.tdl.org/handle/2346/85090
   Grain_Boundary (CuH)
   
+- K. C. Alexander, thesis (2011).
+  https://dspace.mit.edu/handle/1721.1/108218
+  Grain_Boundary_generation (failed)
+  
 - Z. Zhang, Master thesis (2017).
   https://ttu-ir.tdl.org/handle/2346/73470
   nanoprotrusion
@@ -335,16 +327,20 @@ input file (metal unit, lammps)
 - P. Alexander, Doctor thesis (2023).
   https://research-information.bris.ac.uk/ws/portalfiles/portal/364060220/Final_Copy_2023_05_09_Petkov_A_PhD.pdf 
   beta-Ga2O3 (MATLAB code)
-
-- T. Siby, Doctor thesis (2017).
-  http://210.212.194.26/jspui/handle/123456789/14231 
-  hBN
   
 - Lammps Examples
   SiO2_QEq
 
 - Lammps Examples
   Al2O3_streitz
+  
+- P. Malakar et al., ACS Appl. Nano Mater. 5 (2022) 16489-16499.
+  https://doi.org/10.1021/acsanm.2c03564 (lammps input file)
+  Crack_test_version (It cannot be calculated unless it is a Lammps that supports the SW potential file of "MoS2".)
+
+- T. Siby, Doctor thesis (2017).
+  http://210.212.194.26/jspui/handle/123456789/14231 (do not get pdf)
+  hBN
 -------------------------------------------------------------------
 - J. William, Thesis (2021).
   https://openscience.ub.uni-mainz.de/handle/20.500.12030/6656 
