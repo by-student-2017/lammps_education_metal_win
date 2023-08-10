@@ -2,56 +2,72 @@
 # https://tigerprints.clemson.edu/cgi/viewcontent.cgi?article=3761&context=all_dissertations
 
 # Relaxation
+#-------------------- All Initialization -------------------------------------------------
+clear
+echo both
 
-################################################
-# initialize
-################################################
+#-------------------- Environment Settings -----------------------------------------------
+variable  Tdesird equal   77.0 # Temperature [K]
+variable   Nsteps equal 300000 # Number of simulation cycles
+variable DumpFreq equal   3000 # For print out
 
+#-------------------- Initialization -----------------------------------------------------
+# eV,atomic charge,angstroms,ps,kelvin,bars,g/mol 
 units metal
 dimension 3
 boundary p p p
+
+#-------------------- Read structure file ------------------------------------------------
 atom_style atomic
 atom_modify map array
 
 # read in input file
 read_data hea1.data
 
-mass 1 55.85
-mass 2 58.69
-mass 3 52.00
-mass 4 58.93
-mass 5 54.94
+#replicate 2 2 2
 
-################################################
-# Potential file
-################################################
+group Fe type 1
+group Ni type 2
+group Cr type 3
+group Co type 4
+group Mn type 5
+
+mass 1 55.85 # Fe
+mass 2 58.69 # Ni
+mass 3 52.00 # Cr
+mass 4 58.93 # Co
+mass 5 54.94 # Mn
+
+#-------------------- Force field --------------------------------------------------------
 pair_style meam/c
 pair_coeff * * library.meam Co Ni Cr Fe Mn hea.meam Fe Ni Cr Co Mn
 
+#-------------------- Settings -----------------------------------------------------------
 neighbor 2.0 bin
 neigh_modify delay 10 check yes
-variable Tdesird equal 77.0
-variable Nsteps equal 300000
-variable DumpFreq equal 3000
 
 reset_timestep 0
 
 thermo 100
 thermo_style custom step temp pe etotal pxx pyy pzz pxy pxz pyz press lx ly lz
 
-velocity all create ${Tdesird} 95812384
-fix 3 all npt temp ${Tdesird} ${Tdesird} 1.0 aniso 0.0 0.0 1.0
+#---------- output file settings -------------------
+#dump mydump all atom ${DumpFreq}AnnealOut_*.dump
+#dump_modify mydump sort id
+#---------------------------------------------------
+dump            d1 all cfg 100 cfg/run.*.cfg mass type xs ys zs id type vx vy vz fx fy fz
+dump_modify     d1 element Fe Ni Cr Co Mn
 
-dump mydump all atom ${DumpFreq}AnnealOut_*.dump
-dump_modify mydump sort id
+velocity all create ${Tdesird} 95812384
+
+fix 3 all npt temp ${Tdesird} ${Tdesird} 1.0 aniso 0.0 0.0 1.0
 
 run ${Nsteps}
 
 unfix 3
 
-print "Print restart"
+#-------------------- Output data file ---------------------------------------------------
 write_restart HEA_thermal_equilibrate.restart
+print "Print restart"
 
-################################################
-# End
-################################################
+#-------------------- End ----------------------------------------------------------------

@@ -2,131 +2,141 @@
 # https://tigerprints.clemson.edu/cgi/viewcontent.cgi?article=3761&context=all_dissertations
 
 #Mechanical Testing
-
 # Mechanical Tensile Test September 2020
 
-################################################
-# Initializing 
-################################################
+#-------------------- Environment Settings -----------------------------------------------
+variable Tdesird equal 77.0 #or 300K or 600k
 
-units metal #units style is selected to be metal
-# For style metal these are dt = 0.001 picoseconds,skin = 2.0 Angstroms
-dimension 3 #running 3D simulation which is LAMMPS default
-boundary p p p #xyz boundaries are set to be periodic
+#-------------------- Initialization -----------------------------------------------------
+units metal    # units style is selected to be metal
+               # For style metal these are dt = 0.001 picoseconds, skin = 2.0 Angstroms
+dimension 3    # running 3D simulation which is LAMMPS default
+boundary p p p # xyz boundaries are set to be periodic
+
+#-------------------- Read structure file ------------------------------------------------
 atom_style atomic
 atom_modify map array
 
-################################################
-# Create System
-################################################
+#read_restart HEA_MC_882000.restart #read in restart file which is from the MCMD step
+read_restart HEA_thermal_equilibrate.restart # after relaxation
 
-#read in restart file which is from the MCMD step
-read_restart HEA_MC_882000.restart
+group Fe type 1
+group Ni type 2
+group Cr type 3
+group Co type 4
+group Mn type 5
 
-mass 1 55.85 #Iron
-mass 2 58.69 #Nickel
-mass 3 52.00 #Chromium
-mass 4 58.93 #Cobalt
-mass 5 54.94 #Mangenese
+mass 1 55.85 # Fe, Iron
+mass 2 58.69 # Ni, Nickel
+mass 3 52.00 # Cr, Chromium
+mass 4 58.93 # Co, Cobalt
+mass 5 54.94 # Mn, Mangenese
 
-################################################
-# Potential file
-################################################
-
-pair_style meam/c #modified embedded-atom method
+#-------------------- Force field --------------------------------------------------------
+pair_style meam/c # modified embedded-atom method
 pair_coeff * * library.meam Co Ni Cr Fe Mn hea.meam Fe Ni Cr Co Mn
 
+#-------------------- Settings -----------------------------------------------------------
 neighbor 2.0 bin
 neigh_modify delay 10 check yes
 
-variable Tdesird equal 77.0 #or 300K or 600k
-###########################
-# Equilibrating
-###########################
+timestep= 0.001 # 1 [fs]
 
 thermo 100
 thermo_style custom step temp ke etotal press lx ly lz
 
 velocity all create ${Tdesird} 5812775
-fix 1 all npt temp ${Tdesird} ${Tdesird} 1.0 iso 0.0 
-0.0 1.0 #isothermal-isobaric ensembles
-run 40000 #timestep= 0.001 picoseconds,40 picoseconds 
+
+#-------------------- Equilibrating -------------------------------------------------------
+fix 1 all npt temp ${Tdesird} ${Tdesird} 1.0 iso 0.0 0.0 1.0 # isothermal-isobaric ensembles
+
+run 40000 # 40 [ps]
+
 unfix 1
 
-#################################################
-# Mechanical Deformation Run
-#################################################
-
+#-------------------- Mechanical Deformation Run ------------------------------------------
 reset_timestep 0
-change_box all boundary p s p #changing the boundary conditions
 
-################################################
-#Top and bottom clamped regions
-#The other atoms are mobile 
-################################################
+change_box all boundary p s p # changing the boundary conditions
 
-variable bottomy equal -310 #slightly changes for each GB
-variable topy equal 310 #slightly changes for each GB
-variable lbox equal ${topy}-${bottomy} #length of the box in y
-variable limitbottom equal ${bottomy}+25 #25 A fixed
-variable limittop equal ${topy}-25 #25 A fixed
+#---------------------------------------------------------------------
+# Top and bottom clamped regions
+# The other atoms are mobile 
+#---------------------------------------------------------------------
 
-#defining the top and bottom fixed regions
+variable     bottomy equal -310 # slightly changes for each GB
+variable        topy equal  310 # slightly changes for each GB
+variable        lbox equal ${topy}-${bottomy} # length of the box in y
+variable limitbottom equal ${bottomy}+25      # 25 A fixed
+variable    limittop equal ${topy}-25         # 25 A fixed
+
+# defining the top and bottom fixed regions
 region lower block INF INF INF ${limitbottom} INF INF units box 
 
-#the geometry is defined in simulation box units
+#---------------------------------------------------------------------
+# the geometry is defined in simulation box units
 # A box value selects standard distance units as defined by the units 
-#command, e.g. Angstroms for units = real or metal. A lattice value 
-#means the distance units are in lattice spacings. The lattice command 
-#must have been previously used to define the lattice spacings.
+# command, e.g. Angstroms for units = real or metal. A lattice value 
+# means the distance units are in lattice spacings. The lattice command 
+# must have been previously used to define the lattice spacings.
+#---------------------------------------------------------------------
 
 region upper block INF INF ${limittop} INF INF INF units box 
 
 group lower region lower
 group upper region upper
-#grouping the upper and lower fixed regions
+
+# grouping the upper and lower fixed regions
 group boundary union lower upper
-#defining the dynamic atoms
+
+# defining the dynamic atoms
 group mobile subtract all boundary
 
-######################################
-variable strrate equal 0.0005 #strain rate=0.0005/psec=5*(10^8)/s
-variable vyvalue equal ${strrate}*${lbox-50} #velocity A/psec
-#240000 steps are sufficient to get to strain of 0.12
-#considering the experimental results strain 0.5
-#Nsteps (0.5/strain rate)/dt
-variable Nsteps equal 1000000 
+variable strrate equal 0.0005 # strain rate=0.0005/psec=5*(10^8)/s
+variable vyvalue equal ${strrate}*${lbox-50} # velocity A/psec
+
+#---------------------------------------------------------------------
+# 240000 steps are sufficient to get to strain of 0.12
+# considering the experimental results strain 0.5
+# Nsteps (0.5/strain rate)/dt
+#---------------------------------------------------------------------
+variable    Nsteps equal 1000000 
 variable ThermoOut equal 1000
-variable DumpFreq equal 2000
-variable NoutAvg equal ${ThermoOut}/100
+variable  DumpFreq equal 2000
+variable   NoutAvg equal ${ThermoOut}/100
 
 thermo ${ThermoOut}
 thermo_style custom step temp ke etotal press pxx pyy pzz lx ly lz
 
-#each component of the force on atoms of the group are set to 0
+# each component of the force on atoms of the group are set to 0
 fix 2 boundary setforce 0.0 0.0 0.0
-#lower set velocity is set to zero as the lower part is not moving
-#The units keyword is used by set and ramp. If units = box, the 
-#velocities and coordinates specified in the velocity command are 
-#in the standard units described by the units command (e.g. 
-#Angstroms/fs for real units). If units = lattice, velocities are 
-#in units of lattice spacings per time (e.g. spacings/fs) and 
-#coordinates are in lattice spacings.
+
+#---------------------------------------------------------------------
+# lower set velocity is set to zero as the lower part is not moving
+# The units keyword is used by set and ramp. If units = box, the 
+# velocities and coordinates specified in the velocity command are 
+# in the standard units described by the units command (e.g. 
+# Angstroms/fs for real units). If units = lattice, velocities are 
+# in units of lattice spacings per time (e.g. spacings/fs) and 
+# coordinates are in lattice spacings.
+#---------------------------------------------------------------------
 velocity lower set 0 0 0 units box
-#the upper gripped part has a velocity in the y direction
+
+# the upper gripped part has a velocity in the y direction
 velocity upper set 0 ${vyvalue} 0 units box
-#the mobile part velovity ramps up 
-velocity mobile ramp vy 0.0 ${vyvalue} y ${bottomy} ${topy} sum yes 
-units box
 
-fix 10 all npt temp ${Tdesird} ${Tdesird} 1.0 x 0.0 0.0 1.0 
-z 0.0 0.0 1.0 couple xz
+# the mobile part velovity ramps up 
+velocity mobile ramp vy 0.0 ${vyvalue} y ${bottomy} ${topy} sum yes units box
 
-dump mydump all atom ${DumpFreq} LoadingFrame_*.dump
-dump_modify mydump sort id
+fix 10 all npt temp ${Tdesird} ${Tdesird} 1.0 x 0.0 0.0 1.0 z 0.0 0.0 1.0 couple xz
+
+#---------- output file settings -------------------
+#dump mydump all atom ${DumpFreq} LoadingFrame_*.dump
+#dump_modify mydump sort id
+#---------------------------------------------------
+dump            d1 all cfg 100 cfg/run.*.cfg mass type xs ys zs id type vx vy vz fx fy fz
+dump_modify     d1 element Fe Ni Cr Co Mn
 
 run ${Nsteps}
 
-#################################################
-# End
-#################################################
+#-------------------- End ----------------------------------------------------------------
