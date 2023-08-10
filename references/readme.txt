@@ -314,7 +314,7 @@ input file (metal unit, lammps)
 
 - Dhal, Satyanarayan and Yadlapalli, Raja (2012) 
   http://ethesis.nitrkl.ac.in/3349/
-  Cu-Zr_Satya_2012
+  Cu-Zr_2012S
 
 - Kumar , Ajnish (2013)
   http://ethesis.nitrkl.ac.in/4907/
@@ -322,7 +322,7 @@ input file (metal unit, lammps)
 
 - A. Kabi, Master thesis (2015).
   http://ethesis.nitrkl.ac.in/6991/ 
-  Cu-Zr_Kabi_2015
+  Cu-Zr_2015K
   (Tensil (A2) or Compressive (A3) defromation of quenched specimen (A1))
   
 - P. Alexander, Doctor thesis (2023).
