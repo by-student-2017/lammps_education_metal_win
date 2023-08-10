@@ -4,47 +4,101 @@
 # Streitz Mintmire (coul/streitz) does not include 2004 Zhou modifications
 # Contributing authors: Ray Shan, Chris Weinberger (Sandia)
 
-units		metal
-atom_style	charge
-dimension       3
-boundary        p p p
+#-------------------- Initialization -----------------------------------------------------
+clear
+echo both
 
-read_data    	data.streitz
+# eV,atomic charge,angstroms,ps,kelvin,bars,g/mol 
+units metal
+dimension 3
+boundary p p p
 
-group    	type1 type 1
-compute   	charge1 type1 property/atom q
-compute   	q1 type1 reduce ave c_charge1
-group    	type2 type 2
-compute   	charge2 type2 property/atom q
-compute   	q2 type2 reduce ave c_charge2
+#-------------------- Read structure file ------------------------------------------------
+atom_style charge
 
-variable   	qcat equal 2.8
-variable  	qani equal -${qcat}*count(type1)/count(type2)
-set   		group type1 charge ${qcat}
-set   		group type2 charge ${qani}
-variable   	qsum equal count(type1)*c_q1+count(type2)*c_q2
+read_data Al2O3.data
 
+#replicate 2 2 2
+
+group Al type 1
+group  O type 2
+
+mass 1 26.981539 # Al 4+
+mass 2 15.9994   # O  2-
+
+set type 1 charge  3.0 # Al 3+
+set type 2 charge -2.0 # O  2-
+
+#-------------------- Force field --------------------------------------------------------
+#--------------------------------------------------------------------
 # Ewald sum for coul/streitz
-pair_style  	hybrid/overlay coul/streitz 12.0 ewald eam/alloy
-kspace_style  	ewald 1e-6
-
+pair_style   hybrid/overlay coul/streitz 12.0 ewald eam/alloy
+kspace_style ewald 1e-6
+#--------------------------------------------------------------------
 # Wolf sum for coul/streitz
-#pair_style  	hybrid/overlay coul/streitz 12.0 wolf 0.31 eam/alloy
+#pair_style   hybrid/overlay coul/streitz 12.0 wolf 0.31 eam/alloy
+#--------------------------------------------------------------------
 
-pair_coeff   	* * coul/streitz AlO.streitz Al O
-pair_coeff   	* * eam/alloy AlO.eam.alloy Al O
+pair_coeff * * coul/streitz AlO.streitz   Al O
+pair_coeff * * eam/alloy    AlO.eam.alloy Al O
 
-neighbor	1.0 bin
-neigh_modify	every 10 delay 0 check yes
-timestep        0.0004
+fix q1 all qeq/slater 1 12.0 1.0e-6 100 coul/streitz
 
-thermo_style	custom step temp etotal pe evdwl ecoul elong &
-                c_q1 c_q2 v_qsum press spcpu
-thermo_modify  	norm yes
-thermo   	10
+#-------------------- Energy Minimization ------------------------------------------------
+# 0 [K], structure optimization
+minimize 1.0e-3 1.0e-6 1000 10000
 
-velocity  	all create 300.0 42128
-fix     	1 all qeq/slater 1 12.0 1.0e-6 100 coul/streitz
-fix     	2 all nve
+#-------------------- Settings -----------------------------------------------------------
+reset_timestep 0
 
-run    		100
+timestep 0.0004 # 0.4 [fs] = 0.4e-15 [s]
+
+neighbor     1.0 bin
+neigh_modify every 10 delay 0 check yes
+
+group     type1   type  1
+compute   charge1 type1 property/atom q
+compute   q1      type1 reduce ave c_charge1
+
+group     type2   type  2
+compute   charge2 type2 property/atom q
+compute   q2      type2 reduce ave c_charge2
+
+variable  qcat    equal 2.8
+variable  qani    equal -${qcat}*count(type1)/count(type2)
+
+set group type1   charge ${qcat}
+set group type2   charge ${qani}
+
+variable  qsum    equal count(type1)*c_q1+count(type2)*c_q2
+
+thermo 100
+thermo_style  custom step temp etotal pe evdwl ecoul elong c_q1 c_q2 v_qsum press spcpu
+thermo_modify norm yes
+
+dump        d1 all cfg 100 cfg/run.*.cfg mass type xs ys zs id type vx vy vz fx fy fz
+dump_modify d1 element Al O
+
+# calculates the radial distribution function (RDF) and output file
+compute myRDF all rdf 100
+fix r1 all ave/time 1000 1 1000 c_myRDF[*] file Al_O_quench_large_restart.rdf mode vector
+
+velocity all create 300.0 1281937 rot yes mom yes dist gaussian
+#-------------------- Run the simulation -------------------------------------------------
+fix 3 all npt temp  300 1150 $(50*dt) iso 0.0 0.0 $(100*dt) 
+run 10000
+unfix 3
+
+fix 3 all npt temp 1150 1150 $(50*dt) iso 0.0 0.0 $(100*dt) 
+run 50000
+unfix 3
+
+fix 3 all npt temp 1150  270 $(50*dt) iso 0.0 0.0 $(100*dt) 
+run 50000
+unfix 3
+
+#-------------------- Output data file ---------------------------------------------------
+write_data Al-O_cooling_10_14.txt # 0.85 x 10^-14 [K/s]
+
+print "All done !"
+#-------------------- End ----------------------------------------------------------------
