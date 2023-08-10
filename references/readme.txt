@@ -69,14 +69,10 @@ input file (metal unit, lammps)
 - ERIK FRANSSON, JOHANNES LAURELL H˚AKANSSON, Master’s Thesis in Applied Physics (2014).
   https://core.ac.uk/display/70610056
   BaZrO3 (need BaZrO3_input.pos)
-  -----------------------------------
-  https://core.ac.uk/
   
 - G. V. Huerta et al., Doctoral Thesis (2019).
   https://www.repo.uni-hannover.de/bitstream/handle/123456789/4482/GesamtRevisedFinal.pdf
   YSZ (Yttria stabilized zirconia)
-  -------------------------------------------
-  https://www.repo.uni-hannover.de/
   
 - P. Malakar et al., ACS Appl. Nano Mater. 5 (2022) 16489-16499.
   https://doi.org/10.1021/acsanm.2c03564 (lammps input file)
