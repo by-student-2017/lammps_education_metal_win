@@ -206,10 +206,6 @@ input file (metal unit, lammps)
   http://ethesis.nitrkl.ac.in/6152/
   CuAl_defect
   
-- Kumar , Ajnish (2013)
-  http://ethesis.nitrkl.ac.in/4907/
-  Cu-Zr_based_metallic_glasses
-  
 - Kumar, Navratan (2014) 
   http://ethesis.nitrkl.ac.in/6144/
   Fe0.05Cr_alloy
@@ -219,14 +215,11 @@ input file (metal unit, lammps)
   PdPt
   
 - Gupta, Pradeep (2019) 
-  http://ethesis.nitrkl.ac.in/10087/
+  http://ethesis.nitrkl.ac.in/10087/ (do not download)
   
 - Mehta, Gaurav and Patra, Hrushikesh (2013) 
   http://ethesis.nitrkl.ac.in/4903/
   Nickel_Nanowire
-  
-- Dhal, Satyanarayan and Yadlapalli, Raja (2012) 
-  http://ethesis.nitrkl.ac.in/3349/
   
 - A. Albano, Doctor Thesis (2021).
   https://etheses.bham.ac.uk/id/eprint/11999/
@@ -319,10 +312,19 @@ input file (metal unit, lammps)
   https://harvest.usask.ca/handle/10388/ETD-2013-10-1264
   ZrH2
 
+- Dhal, Satyanarayan and Yadlapalli, Raja (2012) 
+  http://ethesis.nitrkl.ac.in/3349/
+  Cu-Zr_Satya_2012
+
+- Kumar , Ajnish (2013)
+  http://ethesis.nitrkl.ac.in/4907/
+  Cu-Zr_based_metallic_glasses
+
 - A. Kabi, Master thesis (2015).
   http://ethesis.nitrkl.ac.in/6991/ 
-  Cu-Zr (Tensil (A2) or Compressive (A3) defromation of quenched specimen (A1))
-
+  Cu-Zr_Kabi_2015
+  (Tensil (A2) or Compressive (A3) defromation of quenched specimen (A1))
+  
 - P. Alexander, Doctor thesis (2023).
   https://research-information.bris.ac.uk/ws/portalfiles/portal/364060220/Final_Copy_2023_05_09_Petkov_A_PhD.pdf 
   beta-Ga2O3 (MATLAB code)
