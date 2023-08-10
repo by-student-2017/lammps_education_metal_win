@@ -10,18 +10,10 @@ units metal
 
 dimension 3
 boundary p p p
-atom_style charge
 
-# Memo
-# Li3OCl (unit cell): Li:3, O:1, Cl:1
-# 10x10x10 supercells (5000 ions)
-# Li3-deltaOCl1-delta, where delta = 0.038 or 0.150, to examine the Li- and Na-ion conductivity.
-#  (An alkali-halide partial Schottky defect concentration of delta = 0.038.) (LiCl Schottky defect)
-#  (5x5x5 -4LiCl -> 10x10x5 -3LiCl -> 10x10x10 (delta = 0.038))
-#
-read_data Li3OCl_10x10x10_38LiCl_defect.data
-#
-#replicate 2 2 2 # 10x10x10 supercell of Li3OX (X=Cl or Br) from unit cell
+atom_style charge
+read_data Li3OCl.data
+replicate 10 10 10
 
 group lithium type 1 
 group O  type 2
@@ -56,10 +48,23 @@ pair_coeff 2 2 22764.3    0.149   13.185 #   O-O
 pair_coeff 2 3  8287      0.259   62.2   #   O-Cl
 pair_coeff 3 3  1227.2    0.3214  14.53  #  Cl-Cl
 
-fix 1 qeq qeq/shielded 1 8 1.0e-6 100 param.qeq
-# The fix qeq/reaxff command can be used to perform charge equilibration with 
-# the ReaxFF force field, although fix qeq/shielded yields the same results as 
-# fix qeq/reaxff if Nevery, cutoff, and tolerance are the same. 
+fix q1 O qeq/dynamic  1 10.0 1e-3 100  param.qeq
+#------------------------------------------------------------------------------
+# fix ID group-ID style Nevery cutoff tolerance maxiter qfile
+#------------------------------------------------------------------------------
+#fix q1 all qeq/dynamic  1 10.0 1e-3 100  param.qeq
+#fix q1 all qeq/point    1 10.0 1e-6 100  param.qeq
+#------------------------------------------------------------------------------
+#fix q1 all qeq/shielded 1 10.0 1e-6 100  param.qeq
+#fix q1 all qeq/reax     1  0.0 10.0 1e-6 param.qeq.reax
+#------------------------------------------------------------------------------
+# 1) Fix qeq/shielded generates the same results compared to fix qeq/reax when
+#    used with pair_style reax/c, provided that the QEq parameters are the same.
+#
+# 2) Fix qeq/point and fix qeq/dynamic generate comparable results provided that
+#    the QEq parameters are the same.  These two styles can also be used with 
+#    pair_style reax/c.
+#------------------------------------------------------------------------------
 
 # 1:Li+, 2:O2-, 3:Cl-, 4:Na+, 5:Br-
 # For Li3-xNaxOCl1-yBry, see Supporting Info (https://doi.org/10.1021/acs.jpcc.8b08208)
