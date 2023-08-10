@@ -41,7 +41,7 @@ input file (metal unit, lammps)
   
 - Z. Wang, J. Phys. Chem. C 124 (2020) 3851–3856.
   https://doi.org/10.1021/acs.jpcc.9b10706
-  CNT
+  Carbon_Nanotubes (CNTs)
   ------------------------------------------------
   http://idr.mnit.ac.in/bitstream/123456789/776/1/2015PDE5197-Komal%20Rathi.pdf
   
@@ -167,10 +167,6 @@ input file (metal unit, lammps)
 - S. K. Achar et al., J. Chem. Theory Comput. 18 (2022) 3593-3606.
   https://doi.org/10.1021/acs.jctc.2c00010
   UiO-66 (It can not be calculated unless it is a Lammps that supports deepmd.)
-  
-- M. Qamar et al., J. Chem. Theory, Comput. XXX (2023) XXX-XXXX.
-  https://doi.org/10.1021/acs.jctc.2c01149
-  anc
   
 - C. Wilkinson et al., SoftwareX 14 (2021) 100683.
   https://doi.org/10.1016/j.softx.2021.100683
@@ -442,6 +438,10 @@ input file (metal unit, lammps)
 - T. A. Burt, Master thesis (2017).
   https://shareok.org/handle/11244/52763
   Burt_2017 (need structure file: dummy10.lammps) (real unit)
+  
+- M. Qamar et al., J. Chem. Theory, Comput. XXX (2023) XXX-XXXX.
+  https://doi.org/10.1021/acs.jctc.2c01149
+  anc
 -------------------------------------------------------------------
 plot the temperature of each atom
 
