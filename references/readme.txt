@@ -341,6 +341,9 @@ input file (metal unit, lammps)
   
 - Lammps Examples
   SiO2_QEq
+
+- Lammps Examples
+  Al2O3_streitz
 -------------------------------------------------------------------
 - J. William, Thesis (2021).
   https://openscience.ub.uni-mainz.de/handle/20.500.12030/6656 
