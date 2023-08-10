@@ -236,10 +236,6 @@ input file (metal unit, lammps)
   https://scholarworks.uvm.edu/graddis/1323/
   Cu-Ag_2D (need Data-2DCu-20grs-noKk-TBS92A.in) (python and fortran code)
   
-- I. Khaled, Doctor Thesis (2012).
-  https://prism.ucalgary.ca/bitstreams/a9233500-b1ea-445c-80c6-38bd8e046344/download
-  Nanopatterning (need data.nanopatt)
-  
 - A. Saltos, Doctor Thesis (2020).
   https://mospace.umsystem.edu/xmlui/handle/10355/83797
   Greens_Function_Method (need Ugamma101010.pos) (MCNP and OpenMC code)
