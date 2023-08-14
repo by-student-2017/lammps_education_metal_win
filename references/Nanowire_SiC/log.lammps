@@ -1,0 +1,76 @@
+LAMMPS (22 Dec 2022)
+OMP_NUM_THREADS environment is not set. Defaulting to 1 thread. (src/comm.cpp:98)
+  using 1 OpenMP thread(s) per MPI task
+Loaded 1 plugins from C:\Program Files\LAMMPS 64-bit 23Jun2022\plugins
+Loaded 0 plugins from C:\Program Files\LAMMPS 64-bit 23Jun2022-MPI\plugins
+Loaded 1 plugins from C:\Program Files\LAMMPS 64-bit 22Dec2022-MSMPI\plugins
+Loaded 1 plugins from C:\Program Files\LAMMPS 64-bit 28Mar2023-MPI\plugins
+# Example of an input file
+# C.1 SiC (3C) nanowire using MEAM potential
+
+#-------------------- Zincblende SiC (3C) nanowire ---------------------------------------
+units metal
+dimension 3
+boundary p p p
+atom_style atomic
+
+#-------------------- Lattice constants --------------------------------------------------
+variable latconst_a equal 4.3596
+variable latconst_c equal sqrt(3)*latconst_a
+variable c_3C equal sqrt(3)
+
+#-------------------- Change radius of nanowire ------------------------------------------
+variable  rad_p equal 4.0
+variable  rad_n equal -1*${rad_p}
+variable  rad_n equal -1*4
+variable height equal 6*${c_3C}
+variable height equal 6*1.73205080756888
+
+#-------------------- Geometric constants dependent on radius ----------------------------
+variable SiC_yp equal sqrt(3)/2*${rad_p}
+variable SiC_yp equal sqrt(3)/2*4
+variable SiC_yn equal sqrt(3)/2*${rad_n}
+variable SiC_yn equal sqrt(3)/2*-4
+variable SiC_xp equal 0.5*${rad_p}
+variable SiC_xp equal 0.5*4
+variable SiC_xn equal 0.5*${rad_n}
+variable SiC_xn equal 0.5*-4
+
+#-------------------- Create simulation box ----------------------------------------------
+lattice fcc ${latconst_a}
+lattice fcc 4.3596
+Lattice spacing in x,y,z = 4.3596 4.3596 4.3596
+region simbox block -5 5 -5 5 -0.01 ${height}
+region simbox block -5 5 -5 5 -0.01 10.3923048454133
+create_box 2 simbox
+Created orthogonal box = (-21.798 -21.798 -0.043596) to (21.798 21.798 45.306292)
+  1 by 2 by 2 MPI processor grid
+
+#-------------------- Defining nanowire --------------------------------------------------
+region nprism1 prism 0 ${rad_p} -0.01 ${SiC_yp} -0.01 ${height} ${SiC_xn} 0 0
+region nprism1 prism 0 4 -0.01 ${SiC_yp} -0.01 ${height} ${SiC_xn} 0 0
+region nprism1 prism 0 4 -0.01 3.46410161513775 -0.01 ${height} ${SiC_xn} 0 0
+region nprism1 prism 0 4 -0.01 3.46410161513775 -0.01 10.3923048454133 ${SiC_xn} 0 0
+region nprism1 prism 0 4 -0.01 3.46410161513775 -0.01 10.3923048454133 -2 0 0
+region nprism2 prism ${rad_n} 0 -0.01 ${SiC_yp} -0.01 ${height} ${SiC_xp} 0 0
+region nprism2 prism -4 0 -0.01 ${SiC_yp} -0.01 ${height} ${SiC_xp} 0 0
+region nprism2 prism -4 0 -0.01 3.46410161513775 -0.01 ${height} ${SiC_xp} 0 0
+region nprism2 prism -4 0 -0.01 3.46410161513775 -0.01 10.3923048454133 ${SiC_xp} 0 0
+region nprism2 prism -4 0 -0.01 3.46410161513775 -0.01 10.3923048454133 2 0 0
+region nprism3 prism ${SiC_xn} ${SiC_xp} ${SiC_yn} -0.01 -0.01 ${height} ${SiC_xn} 0 0
+region nprism3 prism -2 ${SiC_xp} ${SiC_yn} -0.01 -0.01 ${height} ${SiC_xn} 0 0
+region nprism3 prism -2 2 ${SiC_yn} -0.01 -0.01 ${height} ${SiC_xn} 0 0
+region nprism3 prism -2 2 -3.46410161513775 -0.01 -0.01 ${height} ${SiC_xn} 0 0
+region nprism3 prism -2 2 -3.46410161513775 -0.01 -0.01 10.3923048454133 ${SiC_xn} 0 0
+region nprism3 prism -2 2 -3.46410161513775 -0.01 -0.01 10.3923048454133 -2 0 0
+region nprism4 prism ${SiC_xn} ${SiC_xp} ${SiC_yn} -0.01 -0.01 ${height} ${SiC_xp} 0 0
+region nprism4 prism -2 ${SiC_xp} ${SiC_yn} -0.01 -0.01 ${height} ${SiC_xp} 0 0
+region nprism4 prism -2 2 ${SiC_yn} -0.01 -0.01 ${height} ${SiC_xp} 0 0
+region nprism4 prism -2 2 -3.46410161513775 -0.01 -0.01 ${height} ${SiC_xp} 0 0
+region nprism4 prism -2 2 -3.46410161513775 -0.01 -0.01 10.3923048454133 ${SiC_xp} 0 0
+region nprism4 prism -2 2 -3.46410161513775 -0.01 -0.01 10.3923048454133 2 0 0
+
+region nanowire union 4 nprism1 nprism2 nprism3 nprism4
+
+#-------------------- Creating the zb lattice (normalized z[111]-direction) --------------
+lattice custom ${latconst_a}   orient x 1 1 -2 orient y -1 1 0 orient z 1 1 1   a1 1.0 0.0 0.0   a2 0.0 1.0 0.0   a3 0.0 0.0 1.0   basis 0.0 0.0 0.0 basis 0.0 0.5 0.5   basis 0.5 0.0 0.5 basis 0.5 0.5 0.0   basis 0.25 0.2

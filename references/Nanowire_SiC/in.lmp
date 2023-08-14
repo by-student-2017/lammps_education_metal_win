@@ -1,39 +1,34 @@
 # Example of an input file
 # C.1 SiC (3C) nanowire using MEAM potential
 
-#---Zincblende SiC (3C) nanowire---
+#-------------------- Zincblende SiC (3C) nanowire ---------------------------------------
 units metal
 dimension 3
 boundary p p p
 atom_style atomic
 
-
-#---Lattice constants
+#-------------------- Lattice constants --------------------------------------------------
 variable latconst_a equal 4.3596
 variable latconst_c equal sqrt(3)*latconst_a
 variable c_3C equal sqrt(3)
 
-
-#---Change radius of nanowire---
-variable rad_p equal 4.0
-variable rad_n equal -1*${rad_p}
+#-------------------- Change radius of nanowire ------------------------------------------
+variable  rad_p equal 4.0
+variable  rad_n equal -1*${rad_p}
 variable height equal 6*${c_3C}
 
-
-#---Geometric constants dependent on radius---
+#-------------------- Geometric constants dependent on radius ----------------------------
 variable SiC_yp equal sqrt(3)/2*${rad_p}
 variable SiC_yn equal sqrt(3)/2*${rad_n}
 variable SiC_xp equal 0.5*${rad_p}
 variable SiC_xn equal 0.5*${rad_n}
 
-
-#---Create simulation box---
+#-------------------- Create simulation box ----------------------------------------------
 lattice fcc ${latconst_a}
 region simbox block -5 5 -5 5 -0.01 ${height}
 create_box 2 simbox
 
-
-#---Defining nanowire ---
+#-------------------- Defining nanowire --------------------------------------------------
 region nprism1 prism 0 ${rad_p} -0.01 ${SiC_yp} -0.01 ${height} ${SiC_xn} 0 0
 region nprism2 prism ${rad_n} 0 -0.01 ${SiC_yp} -0.01 ${height} ${SiC_xp} 0 0
 region nprism3 prism ${SiC_xn} ${SiC_xp} ${SiC_yn} -0.01 -0.01 ${height} ${SiC_xn} 0 0
@@ -41,8 +36,7 @@ region nprism4 prism ${SiC_xn} ${SiC_xp} ${SiC_yn} -0.01 -0.01 ${height} ${SiC_x
 
 region nanowire union 4 nprism1 nprism2 nprism3 nprism4
 
-
-#---Creating the zb lattice (normalized z[111]-direction)
+#-------------------- Creating the zb lattice (normalized z[111]-direction) --------------
 lattice custom ${latconst_a} &
   orient x 1 1 -2 orient y -1 1 0 orient z 1 1 1 &
   a1 1.0 0.0 0.0 &
@@ -53,57 +47,31 @@ lattice custom ${latconst_a} &
   basis 0.25 0.25 0.25 basis 0.25 0.75 0.75 &
   basis 0.75 0.25 0.75 basis 0.75 0.75 0.25
 
-
-#---Adding atoms---
+#-------------------- Adding atoms -------------------------------------------------------
 create_atoms 2 region nanowire &
   basis 1 1 basis 2 1 basis 3 1 basis 4 1 &
   basis 5 2 basis 6 2 basis 7 2 basis 7 2
 
 group nanowire region nanowire
 
-
-#---Defining Atomic potential---
-mass 1 28.085
-mass 2 12.011
+#-------------------- Defining Atomic ----------------------------------------------------
+mass 1 28.085 # Si
+mass 2 12.011 # C
 
 group Si type 1
-group C type 2
+group  C type 2
 
+#-------------------- Force field --------------------------------------------------------
 pair_style meam/c
 pair_coeff * * library.meam Si C SiC.meam Si C
 
-
-#---Initial velocities
-velocity all create 0.01 511124 rot yes mom yes
-
-
-#---Compute stress---
-compute stress all stress/atom NULL
-compute stress3 all reduce sum c_stress[3]
-
-variable stress equal c_stress3
-variable volu equal vol
-variable Lx equal lx
-variable Ly equal ly
-variable Lz equal lz
-
-compute epatom all pe/atom
-
-variable epot equal pe
-
-
-#---Print to screen---
-thermo 100
-thermo_style custom step vol temp pe lx ly lz pzz c_stress3
-
-
-#---Bar stat---
-timestep 0.0001
-
-fix RELAXBOX all box/relax iso 0.0
+#-------------------- Bar stat -----------------------------------------------------------
+timestep 0.0001 # 1 [fs]
 
 dump            d1 all cfg 1000 cfg/run.relax.*.cfg mass type xs ys zs id type vx vy vz fx fy fz
 dump_modify     d1 element Si C
+
+fix RELAXBOX all box/relax iso 0.0
 
 min_style sd
 minimize 1e-25 1e-25 50000 100000
@@ -111,31 +79,50 @@ minimize 1e-25 1e-25 50000 100000
 unfix RELAXBOX
 undump d1
 
-#---LOADING OF NANOWIRE---
+#-------------------- LOADING OF NANOWIRE ------------------------------------------------
+reset_timestep 0
 
-#---Timeintegration---
-fix NVT all nvt temp 0.01 0.01 0.1
+timestep 0.001 # 1 [fs]
 
-#----Start loading, strain rate 1e8 (1e-4)---
-fix LOAD nanowire deform 1 z erate 0.0001 units box
+# Compute stress
+compute stress  all stress/atom NULL
+compute stress3 all reduce sum c_stress[3]
+
+variable stress equal c_stress3
+variable volu equal vol
+variable   Lx equal lx
+variable   Ly equal ly
+variable   Lz equal lz
+
+compute epatom all pe/atom
+
+variable epot equal pe
+
+# Screen output
+thermo 100
+thermo_style custom step vol temp pe lx ly lz pzz c_stress3
 
 #---dump data to files----
 dump 1 all custom 1000 SiC_3C.relax id type x y z c_stress[3] c_epatom
 dump_modify 1 append yes
-
+#-------------------------
 dump            d2 all cfg 1000 cfg/run.nvt.*.cfg mass type xs ys zs id type vx vy vz fx fy fz
 dump_modify     d2 element Si C
-
+#-------------------------
 fix 1 all print 1000 "${stress} ${epot}" file SiC_3C.txt screen no
 
-#----Screen output----
-thermo 100
-thermo_style custom step vol temp pe lx ly lz pzz c_stress3
+# Initial velocities
+velocity all create 0.01 511124 rot yes mom yes
 
-#----MD run (Loading)-------
-timestep 0.001
+#-------------------- MD run (Loading) ---------------------------------------------------
+
+# Timeintegration
+fix NVT all nvt temp 0.01 0.01 $(100*dt)
+
+# Start loading, strain rate 1e8 (1e-4)
+fix LOAD nanowire deform 1 z erate 0.0001 units box
 
 run 3000000
 
-# SIMULATION DONE
+#-------------------- SIMULATION DONE ----------------------------------------------------
 print "All done"
