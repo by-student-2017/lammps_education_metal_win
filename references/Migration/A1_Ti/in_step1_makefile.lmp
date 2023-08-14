@@ -1,0 +1,91 @@
+# Input file for Vacancy Migration Energy in Ti
+# with zero applied pressure
+
+# The following section describes how a vacancy in copper is created and 
+# moved in order to create the initial and final states that 
+# are then used as inputs to the nudged elastic band file.
+
+# --------------- INITIALIZATION ------------------
+clear
+units metal
+dimension 3
+boundary p p p
+atom_style atomic
+atom_modify map array sort 0 0.0
+
+# ------------------ ATOM DEFINITION -------------------
+variable ao equal 2.9575
+lattice hcp ${ao} origin 0 0 0
+region simbox block -4 4 -4 4 -4 4
+create_box 1 simbox
+create_atoms 1 region simbox
+
+change_box all triclinic
+
+# ------------------------ FORCE FIELDS -----------------------
+pair_style eam/alloy
+pair_coeff * * Zope-Ti-Al-2003.eam.alloy Ti
+
+#neighbor 2.0 bin
+#neigh_modify delay 10 check yes
+
+#---------------------------Settings----------------------------
+compute       csym all centro/atom fcc
+compute        eng all pe/atom
+compute     eatoms all reduce sum c_eng
+compute atomstress all stress/atom NULL
+
+#----------------------Run Minimization-------------------------
+reset_timestep 0
+thermo 100
+thermo_style custom step pe lx ly lz press pxx pyy pzz c_eatoms
+dump 1 all cfg 1000 cfg/dump.relax.*.cfg mass type xs ys zs id c_csym c_eng #vx vy vz fx fy fz
+dump_modify 1 element Ti
+min_style cg
+minimize 1e-15 1e-15 5000 5000
+
+#-----------------------Pressure------------------------------
+#external pressure in bar
+variable pres equal 0
+
+#Apply pressure
+fix fxp all box/relax iso ${pres}
+
+#---------------------Phase 1 ----------------------------
+# Vacancy Creation at (ao, 0, 0)
+#r2 is the radius of the copper atom
+variable r2 equal (${ao})/2
+region select sphere ${ao} 0 0 ${r2} units box
+delete_atoms region select compress yes
+
+# Relax Atoms to lowest energy state
+reset_timestep 0
+dump L1p1 all cfg 5000 cfg/dump.p1.*.cfg mass type xs ys zs c_csym c_eng #vx vy vz fx fy fz
+dump_modify L1p1 element Ti
+
+#Relaxation of moving atom to initial NEB location
+minimize 1e-15 1e-15 5000 5000
+undump L1p1
+
+## Store the positions with the vacancy in position NEB final
+#write_dump all custom final.txt id type x y z fx fy fz c_csym c_eng
+write_data p_out.atom.final
+
+#-----------------Phase 2---------------------------
+## Move the atom to position NEB start (0, 0, 0)
+region rmv1 sphere 0 0 0 ${r2} units box
+group mv1 region rmv1
+displace_atoms mv1 move ${ao} 0 0 units box
+
+#Relax the atoms in the NEB initial position
+reset_timestep 0
+dump L1p2 all cfg 5000 cfg/dump.p2.*.cfg mass type xs ys zs c_csym c_eng #vx vy vz fx fy fz
+dump_modify L1p2 element Ti
+minimize 1e-15 1e-15 5000 5000
+undump L1p2
+#write_dump all custom initial.txt id type x y z fx fy fz c_csym c_eng
+write_data p_out.atom.initial
+
+#variable Enebi equal "c_eatoms" computes the final energy of the cell
+# system after the vacancy is in pos NEB initial
+variable Enebi equal "c_eatoms"
