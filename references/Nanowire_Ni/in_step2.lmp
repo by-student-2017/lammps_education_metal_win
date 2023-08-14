@@ -23,15 +23,20 @@ reset_timestep 0
 
 timestep 0.002 # 2 [fs]
 
-compute 1 all stress/atom 
+compute 1 all stress/atom NULL
 compute 2 all temp
 compute 3 all reduce sum c_1[2]
 
 variable     stress equal c_3/(3*49062.50)
 variable stress_GPa equal v_stress/10000
 
+variable    tmp equal ly
+variable     lo equal ${tmp}
+variable strain equal (ly-v_lo)/v_lo
+
 thermo 100
-thermo_style custom step temp press vol etotal c_2 v_stress v_stress_GPa
+thermo_style custom step temp press vol etotal c_2 v_strain v_stress v_stress_GPa
+fix fo1 all ave/time 1 100 100 c_2 v_strain v_stress v_stress_GPa file stress_vs_strain.txt
 
 #---------- output file settings -------------------
 #dump 1 all atom 100 dump.JP4_tensile_review_10_11s-1_40_strain_f1_allatoms.lammpstrj
