@@ -1,0 +1,66 @@
+# 4.2 Tensile Deformation of Nickel nanowire
+#   3d tensile simulation (at strain rate 10^11 s^-1)
+
+#-------------------- Environment Settings -----------------------------------------------
+variable    Tinit equal  298.0 # Initial Temperature [K]
+variable  Tdesird equal   50.0 # Desired Temperature [K]
+
+variable   Nsteps equal   2000 # Number of simulation cycles
+variable DumpFreq equal    100 # For print out
+
+variable    dt_ps equal  0.002 # 0.002 [ps] = 2 [fs]
+
+variable  es_rate equal    0.1 # engineering strain rate (1/time units)
+
+#-------------------- Initialization -----------------------------------------------------
+echo both
+units metal
+
+#-------------------- Read structure file ------------------------------------------------
+atom_style atomic
+read_data DATAFILE.txt
+
+#-------------------- Force field --------------------------------------------------------
+pair_style eam
+pair_coeff * * Ni_u3.eam 
+
+#-------------------- Settings -----------------------------------------------------------
+timestep ${dt_ps}
+
+compute 1 all stress/atom NULL
+compute 2 all temp
+compute 3 all reduce sum c_1[2]
+
+variable     stress equal c_3/(3*49062.50)
+variable stress_GPa equal v_stress/10000
+
+variable    tmp equal ly
+variable     lo equal ${tmp}
+variable strain equal (ly-v_lo)/v_lo
+
+thermo ${DumpFreq}
+thermo_style custom step temp press vol etotal c_2 v_strain v_stress v_stress_GPa
+
+#---------- output file settings -------------------
+fix fo1 all ave/time 1 3 3 c_2 v_strain v_stress v_stress_GPa file stress_vs_strain.txt
+
+#---------- output file settings -------------------
+#dump 1 all atom 100 dump.JP4_tensile_review_10_11s-1_40_strain_f1_allatoms.lammpstrj
+dump 2 all custom ${DumpFreq} dump.stress_atom_Jp4_review_10_11s1_40_strain_f1_allatoms type x y z c_1[1] c_1[2] c_1[3] c_1[4] c_1[5] c_1[6]
+#---------------------------------------------------
+dump            d1 all cfg ${DumpFreq} cfg/run.*.cfg mass type xs ys zs id type vx vy vz fx fy fz
+dump_modify     d1 element Ni
+#---------------------------------------------------
+log log5050_JP4_review_10_11s-1_80_strain_f1_allatoms.dat
+
+# initial velocities
+velocity all create ${Tinit} 482748 rot yes mom yes dist gaussian
+
+#-------------------- Run the simulation -------------------------------------------------
+fix 1 all deform 1 y erate ${es_rate}
+fix 2 all npt temp ${Tinit} ${Tdesird} $(5000*dt) x 0 0 $(5000*dt) z 0 0 $(5000*dt) dilate all
+fix 3 all temp/rescale 10 ${Tinit} ${Tdesird} 0.05 1.0
+
+run ${Nsteps}
+
+#-------------------- End ----------------------------------------------------------------
