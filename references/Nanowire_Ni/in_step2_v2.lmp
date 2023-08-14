@@ -19,6 +19,7 @@ units metal
 
 #-------------------- Read structure file ------------------------------------------------
 atom_style atomic
+
 read_data DATAFILE.txt
 
 #-------------------- Force field --------------------------------------------------------
@@ -33,7 +34,15 @@ compute 2 all temp
 compute 3 all reduce sum c_1[2]
 
 # volume of nanowire (not box !) = 3.14*(25/2)^2*100 (D = 25 Anggstrom, L = 100 Angstrom)
-variable     stress equal c_3/(3*(3.14*(25/2)^2*100))
+#variable     stress equal c_3/(3*(3.14*(25/2)^2*100))
+#-----------------------------------------------------
+# atom radii per type (Ni: 135 pm)
+variable r atom 1.35
+compute v1 all voronoi/atom radius v_r
+compute r0 all reduce sum c_v1[1]
+variable         t3 equal c_r0
+variable     stress equal c_3/(3*v_t3)
+#-----------------------------------------------------
 variable stress_GPa equal v_stress/1e4
 
 variable    tmp equal ly
