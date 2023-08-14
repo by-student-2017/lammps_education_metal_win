@@ -2,50 +2,19 @@
 
 variable energy equal 100
 
+variable orientation string 100
 variable surf_temp equal 300
-
-variable relax equal 10000
+variable     relax equal 10000
 
 variable POT string  FeNiCrCoCu-heafixed.setfl
 
 variable seed equal 1234567
 
-variable orientation string 100
-variable Lx equal 3.615
-variable Ly equal 3.615
-variable Lz equal 3.615
-
-variable low  equal 0.1
-variable high equal 3.5
-
-# ------------- Simulation box size -------------------
-if "${orientation} == 100" then &
-  "variable sizeX equal v_Lx " &
-  "variable sizeY equal v_Ly " &
-  "variable sizeZ equal v_Lz " &
-elif "${orientation} == 110" &
-  "variable sizeX equal 'v_Lx'" &
-  "variable sizeY equal 'ceil( v_Ly/sqrt(2) )'" &
-  "variable sizeZ equal 'ceil( v_Lz/sqrt(2) )'" &
-elif "${orientation} == 111" &
-  "variable sizeX equal 'ceil( v_Lx/sqrt(8/3) )'" &
-  "variable sizeY equal 'ceil( v_Ly/sqrt(2) )'" &
-  "variable sizeZ equal 'ceil( v_Lz/sqrt(3) )'" &
-else " print ’ Unknown orientation ! ’" " quit "
-# Simulation box size dependent variables
-variable Z_ion equal v_sizeZ*5/4 # Room for the ion
-
-variable sizeX2 equal v_sizeX/2 # Middle of initial box size X
-variable sizeY2 equal v_sizeY/2 # Middle of initial box size Y
-variable sizeZ2 equal v_sizeZ/2 # Middle of initial box size Z
-
-variable X_1 equal $(v_sizeX -1)
-variable Y_1 equal $(v_sizeY -1)
-
-# Defining simulation box
-region regioon block 0 ${sizeX} 0 ${sizeY} 0 ${sizeZ}
-create_box 1 regioon
-
+# ------------- INITIALIZATION -------------------------------------------------
+units metal
+dimension 3
+#boundary p p p
+atom_style atomic
 
 # ------------- ION SPEED --------------------------------------------------------
 # Ion energy in eV - s ( divided by 100 because of the default A / ps unit )
@@ -53,14 +22,32 @@ variable m_Cu   equal $( 63.546*(1/12)*1.998467052*10^-26 )
 variable iSpeed equal $( sqrt(2*v_energy*1.602176565*10^-19/(v_m_Cu))/100 )
 
 
+# ------------- READING IN PRE - RELAXED STATE -------------------------------------
+read_data RELAX.orient${orientation}.${surf_temp}K.$((v_relax*2))TS.data
+
 # ------------- EAM POTENTIAL -----------------------------------------------------
 pair_style eam/alloy # Potential type
 pair_coeff * * ${POT} Cu # Potential file
 
+# ------------- Cell Data
+variable sizeX  equal lx # Middle of initial box size X
+variable sizeY  equal ly # Middle of initial box size Y
+variable sizeZ  equal lz # Middle of initial box size Z
+variable sizeX2 equal v_sizeX/2 # Middle of initial box size X
+variable sizeY2 equal v_sizeY/2 # Middle of initial box size Y
+variable sizeZ2 equal v_sizeZ/2 # Middle of initial box size Z
+variable X_1 equal v_sizeX-1
+variable Y_1 equal v_sizeY-1
 
-# ------------- READING IN PRE - RELAXED STATE -------------------------------------
-#read_dump Relax/${POT}/${surf_temp}Kelvins/RELAX.orient${orientation}.${surf_temp}K.$((v_relax*2))TS.DUMP$((v_relax*2)) x y z vx vy vz box yes add yes
-read_dump RELAX.orient${orientation}.${surf_temp}K.$((v_relax*2))TS.DUMP $((v_relax*2)) x y z vx vy vz box yes add yes
+# Defining simulation box
+region regioon block 0 ${sizeX} 0 ${sizeY} 0 ${sizeZ}
+
+variable Z_ion equal v_sizeZ*5/4 # Room for the ion
+
+variable latparamZ equal 6.0
+
+variable low  equal   0.0
+variable high equal   5.0
 
 
 # ------------- RANDOM VARIABLES : COORDINATES , ANGLES , VELOCITY COMPONENTS ------
@@ -85,7 +72,7 @@ variable iSpeedY     equal $( cos( v_RandomPhi ) * v_iSpeedXY )
 variable RanDX       equal $( random( 0 , v_sizeX , v_seed ) )
 variable RanDY       equal $( random( 0 , v_sizeY , v_seed ) )
 
-displace_atoms all move ${RanDX} ${RanDY} 0
+displace_atoms all move ${RanDX} ${RanDY} 0 units box
 
 
 # ------------- ION CREATION --------------------------------------------------------
@@ -120,14 +107,13 @@ change_box all boundary p p fs
 # ------------- SETTING ION VELOCITY ---------------------------------------------------
 velocity ion set ${iSpeedX} ${iSpeedY} -${iSpeedZ} mom yes rot no units box
 
+
 # ------------- RUN SETTINGS -----------------------------------------------------------
 compute IonKin ion ke
 compute IonZ ion reduce max z
 
 # Displayed parameters
 thermo_style custom step cpu dt time ke c_IonKin c_IonZ
-
-reset_timestep 0
 
 fix adaptive_timestep all dt/reset 10 1.0e-5 0.002 0.1 units box
 fix 3 bomb_surf nve
@@ -146,10 +132,13 @@ fix BAL all balance 200 1.05 rcb
 
 
 # ------------- RUN ----------------------------------------------------------------------
-thermo 25 # Show parameters every ... timesteps
+thermo 25 # Show parameters everys
 
-# Dump location of every atom after every 10 timesteps .
+# Dump location of every atom after every 10 timesteps.
 dump 3 all custom 10 BOMBDUMP.dump id x y z
+#------------------------------------------
+dump            d1 all cfg 10 cfg/run.bomb.*.cfg mass type xs ys zs id type vx vy vz fx fy fz
+dump_modify     d1 element Cu
 
 if " ${energy} == 100" then "variable bombrun equal 2000" &
   elif " ${energy} == 200"  "variable bombrun equal 2250" &
@@ -179,11 +168,10 @@ variable Depth   equal $( v_Z_surf - v_Z_final )
 region sputterbox block INF INF INF INF ${Z_ion} INF
 group sputtergroup region sputterbox
 
-variable NRA equal count( sputtergroup )
-variable NRAtot equal count( atoms )
+variable NRA equal $( count(sputtergroup) )
+variable NRAtot equal $( count(atoms) )
 
 # Logging the results of the run
-#print " ${POT} ${orientation} ${count} ${seed} ${surf_temp} ${energy} ${RandomAlpha} ${RandomPhi} ${RandomX} ${RandomY} ${NRAtot} ${Depth} $ {NRA}" append Logs/Sputter.log screen no
-print " ${POT} ${orientation} ${count} ${seed} ${surf_temp} ${energy} ${RandomAlpha} ${RandomPhi} ${RandomX} ${RandomY} ${NRAtot} ${Depth} $ {NRA}" append Sputter.log screen no
+print "${POT} ${orientation} ${seed} ${surf_temp} ${energy} ${RandomAlpha} ${RandomPhi} ${RandomX} ${RandomY} ${NRAtot} ${Depth} ${NRA}" append Sputter.log screen no
 
 # ------------- END OF SCRIPT -------------------------------------------------------------

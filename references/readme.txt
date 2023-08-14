@@ -133,7 +133,7 @@ input file (metal unit, lammps)
 
 - T. Metspalu, Master Thesis (2015)
   https://core.ac.uk/download/pdf/187147604.pdf
-  CLIC_electrical_breakdown (failed)
+  CLIC_electrical_breakdown (test version)
 
 - S. Townsend, thesis (2018).
   https://dspace.mit.edu/handle/1721.1/119936
