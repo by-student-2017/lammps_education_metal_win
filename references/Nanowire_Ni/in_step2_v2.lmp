@@ -32,7 +32,8 @@ compute 1 all stress/atom NULL
 compute 2 all temp
 compute 3 all reduce sum c_1[2]
 
-variable     stress equal c_3/(3*49062.50)
+# volume of nanowire (not box !) = 3.14*(25/2)^2*100 (D = 25 Anggstrom, L = 100 Angstrom)
+variable     stress equal c_3/(3*(3.14*(25/2)^2*100))
 variable stress_GPa equal v_stress/10000
 
 variable    tmp equal ly
@@ -65,3 +66,12 @@ fix 3 all temp/rescale 10 ${Tdesird} ${Tdesird} 0.05 1.0
 run ${Nsteps}
 
 #-------------------- End ----------------------------------------------------------------
+
+#-----------------------------------------------------------------------------------------
+# Note
+# compute        peratom all stress/atom NULL
+# compute        p all reduce sum c_peratom[1] c_peratom[2] c_peratom[3]
+# variable       press equal -(c_p[1]+c_p[2]+c_p[3])/(3*vol)
+# thermo_style   custom step temp etotal press v_press
+# metal unit: press = bar = 0.1 MPa, length = Angstrom = 1e-10 m
+#-----------------------------------------------------------------------------------------
