@@ -101,9 +101,13 @@ input file (metal unit, lammps)
   https://lup.lub.lu.se/student-papers/search/publication/9102580
   Nanocutting
   
+- Mehta, Gaurav and Patra, Hrushikesh (2013) 
+  http://ethesis.nitrkl.ac.in/4903/
+  Nanowire_Ni
+  
 - A. Vesti, Master Thesis (2019).
   https://lup.lub.lu.se/luur/download?func=downloadFile&recordOId=8977878&fileOId=8977883
-  SiC_nanowires
+  Nanowire_SiC
   
 - K.-J. Carter, Bachelor Thesis (2017).
   https://dspace.mit.edu/handle/1721.1/112482
@@ -216,10 +220,6 @@ input file (metal unit, lammps)
 - Gupta, Pradeep (2019) 
   http://ethesis.nitrkl.ac.in/10087/ (do not download)
   
-- Mehta, Gaurav and Patra, Hrushikesh (2013) 
-  http://ethesis.nitrkl.ac.in/4903/
-  Nickel_Nanowire
-  
 - A. Albano, Doctor Thesis (2021).
   https://etheses.bham.ac.uk/id/eprint/11999/
   hybrid_meso_atomic
@@ -293,7 +293,7 @@ input file (metal unit, lammps)
   
 - Z. Zhang, Master thesis (2017).
   https://ttu-ir.tdl.org/handle/2346/73470
-  nanoprotrusion
+  Nanoprotrusion
   
 - S. Soltanibajestani, Master thesis (2017).
   https://scholarcommons.scu.edu/mech_mstr/9/
