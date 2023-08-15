@@ -135,6 +135,13 @@ pair_coeff      * * ../potentials/eam/Fe-Ni-Cr_fcc.eam.fs Fe Ni Cr
 3. (click) Adjust range
 
 ------------------------------------------------------------------------------
+# Help create grain boundaries
+
+- Build GB: https://aimsgb.org/ (Most recommend web page: Find GB -> Build GB (e.g., using Fe.cif from Material project))
+- GB_code: https://github.com/oekosheri/GB_code
+- GBstudio: home page disappeared
+
+------------------------------------------------------------------------------
 # units and potential
 
 ## units metal
