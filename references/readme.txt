@@ -130,6 +130,7 @@ input file (metal unit, lammps)
     the bcc alpha-Fe is structurally relaxed to achieve energy minimization. Simulation is 
     performed with the cell temperature at 450K. 
   -----------------------------------------------------------------------------------------------
+  Recommend !!!
   Build GB: https://aimsgb.org/
   J. Cheng et al., Comput. Mater. Sci., 155, 92-103, (2018).
   Find GB -> Build GB (e.g., using Fe.cif from Material project)
