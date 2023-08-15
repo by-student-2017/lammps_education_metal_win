@@ -120,7 +120,7 @@ input file (metal unit, lammps)
 
 - D. Chen et al., Doctor Thesis (2014).
   https://oaktrust.library.tamu.edu/handle/1969.1/154160
-  radiation (need datafile.lammps) (Structure of (013)[100]Σ = 5 symmetric-tilt grain boundary)
+  Radiation (need datafile.lammps) (Structure of (013)[100]Σ = 5 symmetric-tilt grain boundary)
   -----------------------------------------------------------------------------------------------
   The cell has a dimension of 14nm×14nm×14nm, which contains about 250000 atoms.
   The damage cascade is created by bombardment with one 3 keV Fe atom, which is incident at 
