@@ -1,0 +1,102 @@
+# ------------- VARIABLES -----------------------------
+variable  surf_temp equal   300 # Temperature [K]
+
+variable      relax equal 10000 # number of relaxation cycles
+
+variable   latparam equal 3.615 # Assumed lattice parameter (Cu)
+
+variable orientation string 100 # Cu[100]
+variable Lx equal 3.615
+variable Ly equal 3.615
+variable Lz equal 3.615
+
+# ------------- INITIALIZATION -------------------------
+units metal
+dimension 3
+boundary p p p
+atom_style atomic
+
+
+# ------------- Simulation box size -------------------
+if "${orientation} == 100" then &
+  "variable sizeX equal v_Lx " &
+  "variable sizeY equal v_Ly " &
+  "variable sizeZ equal v_Lz " &
+elif "${orientation} == 110" &
+  "variable sizeX equal 'v_Lx'" &
+  "variable sizeY equal 'ceil( v_Ly/sqrt(2) )'" &
+  "variable sizeZ equal 'ceil( v_Lz/sqrt(2) )'" &
+elif "${orientation} == 111" &
+  "variable sizeX equal 'ceil( v_Lx/sqrt(8/3) )'" &
+  "variable sizeY equal 'ceil( v_Ly/sqrt(2) )'" &
+  "variable sizeZ equal 'ceil( v_Lz/sqrt(3) )'" &
+else " print ’ Unknown orientation ! ’" " quit "
+
+# Simulation box size dependent variables
+variable Z_ion equal v_sizeZ*(5/4)
+
+# ------------- ATOM DEFINITION & REGIONS -------------
+# Orienting according to the crystallographic orientation
+if "${orientation} == 100" then &
+" lattice fcc ${latparam} orient x 1 0  0 orient y  0 1 0 orient z 0 0 1" & 
+elif " ${orientation} == 110" &
+" lattice fcc ${latparam} orient x 0 0 -1 orient y -1 1 0 orient z 1 1 0" &
+elif " ${orientation} == 111" &
+" lattice fcc ${latparam} orient x 1 1 -2 orient y -1 1 0 orient z 1 1 1" &
+else " print ’ Unknown orientation ! ’" " quit "
+
+# Defining the region that is going to be bombarded
+region regioon block 0 ${sizeX} 0 ${sizeY} 0 ${sizeZ}
+create_box 2 regioon          # for Cu(base) and Cu(ion)
+create_atoms 1 region regioon # for Cu(base)
+group pind region regioon
+
+replicate 3 3 3 # 3x3x3 supercell from above cell.
+
+# ------------- EAM POTENTIAL --------------------------
+pair_style eam/alloy
+pair_coeff * * FeNiCrCoCu-heafixed.setfl Cu Cu
+#pair_coeff * * FeNiCrCoCu-with-ZBL.eam.alloy Cu Cu
+
+# ------------- EQUILIBRATION AND SETTINGS -------------
+compute Pot all pe/atom
+compute Kin all ke/atom
+
+# Initial velocities / temperature
+velocity pind create ${surf_temp} 482748 mom yes rot no # Giving the surface a temperature
+
+fix 1 pind npt temp ${surf_temp} ${surf_temp} 1 iso 0 0 1
+
+# ------------- RELAXATION 1 -----------------------------
+reset_timestep 0
+
+timestep 0.002 # Timestep of 1 to 5 femtoseconds
+
+thermo 50 # Printing out information after every
+
+# Displayed parameters
+thermo_style custom step cpu vol lz press pxx pyy pzz pe etotal temp dt
+
+dump            d1 all cfg 1000 cfg/run.npt1.*.cfg mass type xs ys zs id type vx vy vz fx fy fz
+dump_modify     d1 element Cu Cu
+
+run ${relax} # Relax
+
+undump d1
+
+# ------------- RELAXATION 2 -----------------------------
+change_box all z delta -1.5 ${Z_ion}
+
+dump            d2 all cfg 1000 cfg/run.npt2.*.cfg mass type xs ys zs id type vx vy vz fx fy fz
+dump_modify     d2 element Cu Cu
+
+run ${relax} # Relax
+
+#write_dump all custom Relax/${POT}/${surf_temp}Kelvins/RELAX.orient${orientation}.${surf_temp}K.$((v_relax*2))TS.DUMP id type x y z vx vy vz fx fy fz
+write_dump all custom RELAX.orient${orientation}.${surf_temp}K.$((v_relax*2))TS.DUMP id type x y z vx vy vz fx fy fz
+write_data RELAX.orient${orientation}.${surf_temp}K.$((v_relax*2))TS.data
+
+variable NRA equal $( count(pind) )
+
+
+# ------------- END OF SCRIPT -----------------------------
