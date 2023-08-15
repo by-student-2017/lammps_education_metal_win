@@ -116,11 +116,11 @@ input file (metal unit, lammps)
   
 - Z. Huang, Master thesis (2016).
   https://trace.tennessee.edu/utk_gradthes/3776/
-  Radiation_Defects
+  Radiation_defects
 
 - D. Chen et al., Doctor Thesis (2014).
   https://oaktrust.library.tamu.edu/handle/1969.1/154160
-  Radiation (need datafile.lammps) (Structure of (013)[100]Σ = 5 symmetric-tilt grain boundary)
+  Radiation_grain_boundary (need datafile.lammps) (Structure of (013)[100]Σ = 5 symmetric-tilt grain boundary)
   -----------------------------------------------------------------------------------------------
   The cell has a dimension of 14nm×14nm×14nm, which contains about 250000 atoms.
   The damage cascade is created by bombardment with one 3 keV Fe atom, which is incident at 
@@ -134,10 +134,6 @@ input file (metal unit, lammps)
 - T. Metspalu, Master Thesis (2015)
   https://core.ac.uk/download/pdf/187147604.pdf
   CLIC_electrical_breakdown (test version)
-
-- S. Townsend, thesis (2018).
-  https://dspace.mit.edu/handle/1721.1/119936
-  Biggest_Trudging
 
 - S. E. Ferry, thesis (2011).
   https://dspace.mit.edu/handle/1721.1/119031
@@ -437,6 +433,10 @@ input file (metal unit, lammps)
 - M. Qamar et al., J. Chem. Theory, Comput. XXX (2023) XXX-XXXX.
   https://doi.org/10.1021/acs.jctc.2c01149
   anc
+  
+- S. Townsend, thesis (2018).
+  https://dspace.mit.edu/handle/1721.1/119936
+  Biggest_Trudging (failed)
 -------------------------------------------------------------------
 plot the temperature of each atom
 

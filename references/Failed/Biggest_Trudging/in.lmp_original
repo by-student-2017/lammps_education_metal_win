@@ -1,11 +1,11 @@
-# A sample input file for the LAMMPS simulation, from the "Biggest Trudging" case:
-
+# A sample input file for the LAMMPS simulation, from the "Biggest Trudging" case
+#-------------------- Initialization -----------------------------------------------------
 #processors 3 1 3
 
+# SI units: kg, m, s, J, m/s, N, N/m, K, Pa, Ps*s, C, C*m, V/m, kg/m^dim
 units si
-dimension 3
-
 newton off
+dimension 3
 boundary p p f
 
 atom_style sphere
@@ -14,18 +14,19 @@ comm_modify mode single vel yes
 
 neighbor 0.0005 nsq
 
-variable d equal 0.0008
-variable err equal 0.2
-variable dl equal d*(1-err)/1.05/(1+err)
-variable dh equal d*(1+err)/1.05/(1+err)
-variable rho equal 2500
+variable    d equal 0.0008
+variable  err equal 0.2
+variable   dl equal d*(1-err)/1.05/(1+err)
+variable   dh equal d*(1+err)/1.05/(1+err)
+variable  rho equal 2500
 variable latt equal vd*1.0
-variable L equal 275
-variable q equal 1
-variable tau equal 10^-4/(9.8/d)^0.5 * 1
+variable    L equal 275
+variable    q equal 1
+variable  tau equal 10^-4/(9.8/d)^0.5*1 # seconds
 
 timestep tau
 
+#-------------------- Atom & Lattice description ----------------------------------------
 lattice sc d
 
 read_restart BigWheel1200000.restart
@@ -39,11 +40,13 @@ region plate region inner block 41 80 0 1 152.5 156.5
 
 create_box 4 world
 
-variable     kn equal 2*10^5 * 3.14/6 * rho * d * d * 9.8 * 10
-variable     kt equal kn * 2/7
-variable gamman equal 50 * (9.8/d)^0.5 * 100
-variable gammat equal 50 * (9.8/d)^0.5 * 0
+#-------------------- Settings -----------------------------------------------------------
+variable     kn equal 2*10^5*3.14/6*rho*d*d*9.8*10
+variable     kt equal kn*2/7
+variable gamman equal 50*(9.8/d)^0.5*100
+variable gammat equal 50*(9.8/d)^0.5*0
 
+#-------------------- Force field --------------------------------------------------------
 pair_style gran/hooke/history kn kt gamman gammat 0.4 1
 pair_coeff * *
 
@@ -149,3 +152,5 @@ run 20000
 next a
 
 jump SELF loopa
+
+#-------------------- End ----------------------------------------------------------------
