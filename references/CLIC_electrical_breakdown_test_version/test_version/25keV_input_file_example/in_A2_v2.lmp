@@ -1,0 +1,266 @@
+# Note (from lammps manual)
+#  In addition to electronic stopping, atomic cascades and irradiation simulations require 
+# the use of an adaptive timestep (see fix dt/reset) and the repulsive ZBL potential (see ZBL potential) or similar. 
+#  It is also common to use in such simulations a thermostat (fix_nvt) in the borders of the simulation cell.
+
+# ------------- SIMULATION BOX SIZE DEPENDENT VARIABLES -------------------------
+
+variable energy      equal   25000 # 25000 eV = 25 keV
+
+variable orientation string    100 # Cu[100]
+variable   surf_temp equal     300 # Temperature [K]
+variable       relax equal   10000 # number of relaxation cycles
+
+variable POT string  FeNiCrCoCu-with-ZBL.eam.alloy # EAM + ZBL potential of High entropy alloy (HEA)
+
+variable        seed equal 1234567 # random seed
+
+# ------------- INITIALIZATION -------------------------------------------------
+units metal
+dimension 3
+boundary p p p
+atom_style atomic
+
+
+# ------------- READING IN PRE - RELAXED STATE -------------------------------------
+read_data RELAX.orient${orientation}.${surf_temp}K.$((v_relax*2))TS.data
+
+variable sizeX  equal lx # initial box size X
+variable sizeY  equal ly # initial box size Y
+variable sizeZ  equal lz # initial box size Z
+
+variable sizeX2 equal v_sizeX/2 # Middle of initial box size X
+variable sizeY2 equal v_sizeY/2 # Middle of initial box size Y
+variable sizeZ2 equal v_sizeZ/2 # Middle of initial box size Z
+
+variable X_1 equal v_sizeX-1
+variable Y_1 equal v_sizeY-1
+
+variable Z_ion equal zhi*0.9 # Room for the ion
+
+variable latparamZ equal 1.0
+
+variable low  equal   0.0
+variable high equal   3.0
+
+
+# ------------- ION SPEED --------------------------------------------------------
+# Ion energy in eV - s ( divided by 100 because of the default A / ps unit ) (see Eq.(16) and Eq.(17).)
+variable m_Cu   equal $( 63.546*(1/12)*1.998467052*10^-26 )
+variable iSpeed equal $( sqrt(2*v_energy*1.602176565*10^-19/(v_m_Cu))/100 )
+
+
+# ------------- RANDOM VARIABLES : COORDINATES , ANGLES , VELOCITY COMPONENTS ------
+# Random X value in the middle of the simulation box (+ -1/2 lattice )
+variable RanX        equal $( random( v_sizeX2 -1/2 , v_sizeX2 +1/2 , v_seed ) )
+variable RanY        equal $( random( v_sizeY2 -1/2 , v_sizeY2 +1/2 , v_seed ) )
+variable RandomX     equal ${RanX} # Fixing the random value
+variable RandomY     equal ${RanY}
+
+# Random incident angle
+variable RanAlpha    equal $( random( v_low , v_high , v_seed ) )
+variable RandomAlpha equal ${RanAlpha}
+variable RanPhi      equal $( acos(1 - 2*random(0 ,1 , v_seed ) ) * 360 / PI )
+variable RandomPhi   equal ${RanPhi}
+variable iSpeedZ     equal $( v_iSpeed * cos(v_RandomAlpha * PI /180) )
+variable iSpeedXY    equal $( sqrt( ( v_iSpeed * v_iSpeed ) - ( v_iSpeedZ * v_iSpeedZ ) ) )
+variable iSpeedX     equal $( sin( v_RandomPhi ) * v_iSpeedXY )
+variable iSpeedY     equal $( cos( v_RandomPhi ) * v_iSpeedXY )
+
+
+# ------------- RANDOM BOX SHIFTING -------------------------------------------------
+variable RanDX       equal $( random( 0 , v_sizeX , v_seed ) )
+variable RanDY       equal $( random( 0 , v_sizeY , v_seed ) )
+
+displace_atoms all move ${RanDX} ${RanDY} 0 units box
+
+
+# ------------- ION CREATION --------------------------------------------------------
+create_atoms 2 single ${RandomX} ${RandomY} ${Z_ion} # Creating one ion
+
+region iooniregioon sphere ${RandomX} ${RandomY} ${Z_ion} 0.1
+group ion region iooniregioon # Defining a ion region
+
+
+# ------------- NEW REGIONS ----------------------------------------------------------
+region atomregion block INF INF INF INF INF INF
+group atoms region atomregion
+
+region bottomregioon block 0 ${sizeX} 0 ${sizeY} INF 2
+group bottom region bottomregioon
+
+region anttiwalls block 1 ${X_1} 1 ${Y_1} -1 INF
+group antiwalls region anttiwalls
+group walls subtract atoms antiwalls
+
+# Finding the group of atoms that is going to be integrated over time
+group integraalgrupp1 subtract atoms bottom
+group integral union integraalgrupp1 ion
+
+# Bombarded target atoms + ion - bottom - walls
+group bomb_surf subtract integral walls
+
+# Defining simulation box
+region regioon block INF INF INF INF INF INF
+
+# Bottom is fixed , top is shrink - wrapped
+change_box all boundary p p fs # It is used when the atom jumps out of the initial box.
+#change_box all boundary p p f # no wrapped
+
+# ------------- EAM + ZBL POTENTIAL -----------------------------------------------------
+pair_style eam/alloy
+pair_coeff * * ${POT} Cu Cu
+
+
+# ------------- SETTING ION VELOCITY ---------------------------------------------------
+velocity ion set ${iSpeedX} ${iSpeedY} -${iSpeedZ} mom yes rot no units box
+
+
+# ------------- RUN SETTINGS -----------------------------------------------------------
+compute IonKin ion ke
+compute IonZ ion reduce max z
+
+# Displayed parameters
+thermo_style custom step cpu dt time ke c_IonKin c_IonZ
+
+fix adaptive_timestep all dt/reset 10 1.0e-5 0.002 0.1 units box
+fix 3 bomb_surf nve
+fix thermowalls walls nvt temp ${surf_temp} ${surf_temp} 1
+
+# Check for building the regular neighbor lists more frequently to avoid errors
+neigh_modify check yes every 1 delay 0 
+
+
+# ------------- ELECTRONIC STOPPING POWER -----------------------------------------------
+fix STOP all electron/stopping 10.0 elstop-table.txt region regioon
+
+#fix STOP all electron/stopping/fit ${Ecut_atom_type1} ${c1_atom_type1} ${c2_atom_type1} &
+#  ${Ecut_atom_type2} ${c1_atom_type2} ${c2_atom_type2} region regioon
+
+
+# ------------- BALANCING PROCESSOR LOAD ------------------------------------------------
+comm_style tiled
+fix BAL all balance 200 1.05 rcb
+
+
+# ------------- RUN ----------------------------------------------------------------------
+thermo 25 # Show parameters everys
+
+# Dump location of every atom after every 10 timesteps.
+dump 3 all custom 10 BOMBDUMP.dump id x y z
+#------------------------------------------
+compute kea all ke/atom
+dump            d1 all cfg 10 cfg/run.bomb.*.cfg mass type xs ys zs id type vx vy vz fx fy fz c_kea
+dump_modify     d1 element Cu Cu_ion
+
+if " ${energy} == 100" then "variable bombrun equal 2000" &
+  elif " ${energy} == 200"  "variable bombrun equal 2250" &
+  elif " ${energy} == 500"  "variable bombrun equal 2500" &
+  elif " ${energy} == 1000" "variable bombrun equal 3000" &
+  elif " ${energy} == 2000" "variable bombrun equal 3500" &
+  elif " ${energy} == 5000" "variable bombrun equal 4000" &
+else " variable bombrun equal 2000"
+
+run ${bombrun}
+
+unfix adaptive_timestep
+unfix 3
+unfix thermowalls
+unfix STOP
+unfix BAL
+undump 3
+
+
+# ------------- PENETRATION DEPTH --------------------------------------------------------
+variable Z_final equal c_IonZ
+variable Z_surf  equal $( v_sizeZ * v_latparamZ )
+variable Depth   equal $( v_Z_surf - v_Z_final )
+
+
+# ------------- SPUTTERING YIELD ---------------------------------------------------------
+region sputterbox block INF INF INF INF ${Z_ion} INF
+group sputtergroup region sputterbox
+
+variable NRA equal $( count(sputtergroup) )
+variable NRAtot equal $( count(atoms) )
+
+# Logging the results of the run
+print "${POT} ${orientation} ${seed} ${surf_temp} ${energy} ${RandomAlpha} ${RandomPhi} ${RandomX} ${RandomY} ${NRAtot} ${Depth} ${NRA}" append Sputter.log screen no
+
+
+# ------------- END OF SCRIPT -------------------------------------------------------------
+
+#-----------------------------------------------------------------------------------------
+# Memo (S. N. Markin et al., Phys. Rev. B 80 (2009) 205105.
+#   Energy loss of a point charge in a free-electron gas (FEG) is expected to be proportional to 
+# the ion velocity (in Ion velocity (v) < Fermi velocity (vF) case).
+# This is based on the assumption that excitation of electron-hole pairs from the valence/conduction band
+# occurs via binary collisions of ions with an electron in a FEG. 
+#
+# The stopping power S = -dE/dx in a free electron gas (FEG) reads [6-8]
+#   S = Q*(Z1,rs)*V   (1)
+# where the friction coefficinet Q depends on the atomic charge of the projectile, Z1, and on
+# the density parameter, rs, which is related to the electron density ne via 4/3*pi*rs^3 = 1/ne.
+# The electronic stoppin cross section, epsilon, is closely related to S, via epsilon = S/n,
+# with the atomic density of the target, n.
+#
+# Experimental investigations of the energy loss of slow ions in metallic targets in transmission [8-10] and
+# in backscattering [11] geometries discovered a pronounced deviation from velocity proportionality as 
+# expected from Eq.(1). These studies revealed that in transition metals a velocity threshold vth exists for
+# the excitation of d electrons, which contribute to electronic stopping only fro ion velocities v > vth.
+#
+# [6] P. M. Echenique et al., Solid State Phys. 43 (1990) 229-308.
+#  https://doi.org/10.1016/S0081-1947(08)60325-2
+# [7] G. M.-Tamayo, et al., Phys. Rev. A 54 (1996) 3131.
+#  https://doi.org/10.1103/PhysRevA.54.3131
+# [8] J. E. Valdes et al., Phys. Rev. A 49 (1994) 1083.
+#  https://doi.org/10.1103/PhysRevA.49.1083
+# [9] E. A. Figueroa et al., Phys. Rev. A 75 (2007) 010901.
+#  https://doi.org/10.1103/PhysRevA.75.035802
+# [10] C. Celedon et al., Microelectron. J. 39 (2008) 1358-1359.
+#  https://doi.org/10.1016/j.mejo.2008.01.037
+# [11] S. N. Markin et al., Phys. Rev. B 78 (2008) 195122.
+#  https://doi.org/10.1103/PhysRevB.78.195122
+#-----------------------------------------------------------------------------------------
+# Note
+# The linear Stopping Power (SP) of a particle moving inside the (target) material is 
+# quantitatively equal to the loss of energy E per unit path length x:
+#   S(E) = - dE/dx,
+# which is conventionally indicated with eV/A, MeV/mm or similar units.
+#
+# At energies lower than 100 keV/nucleon, it is difficult to determine ESP theoretically,
+# which is why empirical fit functions are preferred in low-energy situations. The most
+# thorough fit curves for ESP for specific elements can be obtained from SRIM database,
+# which have been averaged upon numerous experimental results.
+#-----------------------------------------------------------------------------------------
+# The electronic stopping table can be obtained from scientific publications.
+# [SRIM] http://www.srim.org/
+# [CasP] http://www.casp-program.org/
+# [PASS] https://www.sdu.dk/en/DPASS
+#-----------------------------------------------------------------------------------------
+# Electronic Stopping Power of Matter for Ions
+# https://www-nds.iaea.org/stopping/stopping_K_U.html
+# Electronic stopping power [MeV/(mg/cm^2)]
+# Energy per Nucleon [MeV]
+#-----------------------------------------------------------------------------------------
+# Stopping Power of Electrons and Positrons for C, Al, Cu, Ag, Au, Pb, Fe, U, Ge, Si and Mo
+# https://www.researchgate.net/publication/47498500_Stopping_Power_of_Electrons_and_Positrons_for_C_Al_Cu_Ag_Au_Pb_Fe_U_Ge_Si_and_Mo
+#-----------------------------------------------------------------------------------------
+# Stopping-Power & Range Tables for Electrons, Protons, and Helium Ions
+# NIST Standard Reference Database 124
+# https://dx.doi.org/10.18434/T4NC7P
+# https://www.nist.gov/pml/stopping-power-range-tables-electrons-protons-and-helium-ions
+#-----------------------------------------------------------------------------------------
+# Note: fix STOP all electron/stopping/fit 3.49 1.8e-3 9.0e-8 7.57 4.2e-3 5.0e-8 region regioon
+# These coefficients can be determined by fitting a quadratic polynomial to electronic stopping data predicted by, 
+# for example, SRIM or TD-DFT. Multiple ‘Ecut c1 c2’ values can be provided for multi-species simulations in 
+# the order of the atom types. There is an examples/PACKAGES/electron_stopping/ directory, 
+# which illustrates uses of this command. Details of this implementation are further described in Stewart2018 and Lee2020.
+# [Stewart2018] J.A. Stewart, et al. (2018) Journal of Applied Physics, 123(16), 165902.
+#  https://doi.org/10.1063/1.5022471
+# [Lee2020] C.W. Lee, et al. (2020) Physical Review B, 102(2), 024107.
+#  https://doi.org/10.1103/PhysRevB.102.024107 (TD-DFT)
+#  A quadratic polynominal given as (vi^2 - 2*vcoh^2)/(vcoh^2-2*vcoh^2)
+#  Ths vi is the velocity of atom i. Ths vcoh [Angstrom/ps] is derived from the cohesive energy (Ecoh) [eV].
+#  Ecut = 1.5*Ecoh.
+#-----------------------------------------------------------------------------------------

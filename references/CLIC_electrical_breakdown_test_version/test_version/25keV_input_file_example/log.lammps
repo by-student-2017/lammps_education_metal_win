@@ -1,0 +1,462 @@
+LAMMPS (22 Dec 2022)
+OMP_NUM_THREADS environment is not set. Defaulting to 1 thread. (src/comm.cpp:98)
+  using 1 OpenMP thread(s) per MPI task
+Loaded 1 plugins from C:\Program Files\LAMMPS 64-bit 23Jun2022\plugins
+Loaded 0 plugins from C:\Program Files\LAMMPS 64-bit 23Jun2022-MPI\plugins
+Loaded 1 plugins from C:\Program Files\LAMMPS 64-bit 22Dec2022-MSMPI\plugins
+Loaded 1 plugins from C:\Program Files\LAMMPS 64-bit 28Mar2023-MPI\plugins
+# Note (from lammps manual)
+#  In addition to electronic stopping, atomic cascades and irradiation simulations require
+# the use of an adaptive timestep (see fix dt/reset) and the repulsive ZBL potential (see ZBL potential) or similar.
+#  It is also common to use in such simulations a thermostat (fix_nvt) in the borders of the simulation cell.
+
+# ------------- SIMULATION BOX SIZE DEPENDENT VARIABLES -------------------------
+
+variable energy      equal   25000 # 25000 eV = 25 keV
+
+variable orientation string    100 # Cu[100]
+variable   surf_temp equal     300 # Temperature [K]
+variable       relax equal   10000 # number of relaxation cycles
+
+variable POT string  FeNiCrCoCu-with-ZBL.eam.alloy # EAM + ZBL potential of High entropy alloy (HEA)
+
+variable        seed equal 1234567 # random seed
+
+# ------------- INITIALIZATION -------------------------------------------------
+units metal
+dimension 3
+boundary p p p
+atom_style atomic
+
+
+# ------------- READING IN PRE - RELAXED STATE -------------------------------------
+read_data RELAX.orient${orientation}.${surf_temp}K.$((v_relax*2))TS.data
+read_data RELAX.orient100.${surf_temp}K.$((v_relax*2))TS.data
+read_data RELAX.orient100.300K.$((v_relax*2))TS.data
+read_data RELAX.orient100.300K.20000TS.data
+Reading data file ...
+  orthogonal box = (-2.2950215 -2.2950215 -9.9530418) to (41.499696 41.499696 99.155427)
+  1 by 1 by 4 MPI processor grid
+  reading atoms ...
+  13824 atoms
+  reading velocities ...
+  13824 velocities
+  read_data CPU = 0.093 seconds
+
+variable sizeX  equal lx # initial box size X
+variable sizeY  equal ly # initial box size Y
+variable sizeZ  equal lz # initial box size Z
+
+variable sizeX2 equal v_sizeX/2 # Middle of initial box size X
+variable sizeY2 equal v_sizeY/2 # Middle of initial box size Y
+variable sizeZ2 equal v_sizeZ/2 # Middle of initial box size Z
+
+variable X_1 equal v_sizeX-1
+variable Y_1 equal v_sizeY-1
+
+variable Z_ion equal zhi*0.9 # Room for the ion
+
+variable latparamZ equal 1.0
+
+variable low  equal   0.0
+variable high equal   3.0
+
+
+# ------------- ION SPEED --------------------------------------------------------
+# Ion energy in eV - s ( divided by 100 because of the default A / ps unit ) (see Eq.(16) and Eq.(17).)
+variable m_Cu   equal $( 63.546*(1/12)*1.998467052*10^-26 )
+variable m_Cu   equal 1.058288227386602937e-25
+variable iSpeed equal $( sqrt(2*v_energy*1.602176565*10^-19/(v_m_Cu))/100 )
+variable iSpeed equal 2751.3016409926840424
+
+
+# ------------- RANDOM VARIABLES : COORDINATES , ANGLES , VELOCITY COMPONENTS ------
+# Random X value in the middle of the simulation box (+ -1/2 lattice )
+variable RanX        equal $( random( v_sizeX2 -1/2 , v_sizeX2 +1/2 , v_seed ) )
+variable RanX        equal 21.617176276712548599
+variable RanY        equal $( random( v_sizeY2 -1/2 , v_sizeY2 +1/2 , v_seed ) )
+variable RanY        equal 21.840678197412621842
+variable RandomX     equal ${RanX} # Fixing the random value
+variable RandomX     equal 21.6171762767125 
+variable RandomY     equal ${RanY}
+variable RandomY     equal 21.8406781974126
+
+# Random incident angle
+variable RanAlpha    equal $( random( v_low , v_high , v_seed ) )
+variable RanAlpha    equal 1.1091545820236206055
+variable RandomAlpha equal ${RanAlpha}
+variable RandomAlpha equal 1.10915458202362
+variable RanPhi      equal $( acos(1 - 2*random(0 ,1 , v_seed ) ) * 360 / PI )
+variable RanPhi      equal 204.48343110537436473
+variable RandomPhi   equal ${RanPhi}
+variable RandomPhi   equal 204.483431105374
+variable iSpeedZ     equal $( v_iSpeed * cos(v_RandomAlpha * PI /180) )
+variable iSpeedZ     equal 2750.7861352122836252
+variable iSpeedXY    equal $( sqrt( ( v_iSpeed * v_iSpeed ) - ( v_iSpeedZ * v_iSpeedZ ) ) )
+variable iSpeedXY    equal 53.257469456423891074
+variable iSpeedX     equal $( sin( v_RandomPhi ) * v_iSpeedXY )
+variable iSpeedX     equal -14.713325418031693914
+variable iSpeedY     equal $( cos( v_RandomPhi ) * v_iSpeedXY )
+variable iSpeedY     equal -51.184725339157843393
+
+
+# ------------- RANDOM BOX SHIFTING -------------------------------------------------
+variable RanDX       equal $( random( 0 , v_sizeX , v_seed ) )
+variable RanDX       equal 35.518622628285108078
+variable RanDY       equal $( random( 0 , v_sizeY , v_seed ) )
+variable RanDY       equal 6.1206644061919091016
+
+displace_atoms all move ${RanDX} ${RanDY} 0 units box
+displace_atoms all move 35.5186226282851 ${RanDY} 0 units box
+displace_atoms all move 35.5186226282851 6.12066440619191 0 units box
+Displacing atoms ...
+
+
+# ------------- ION CREATION --------------------------------------------------------
+create_atoms 2 single ${RandomX} ${RandomY} ${Z_ion} # Creating one ion
+create_atoms 2 single 21.6171762767125 ${RandomY} ${Z_ion} 
+create_atoms 2 single 21.6171762767125 21.8406781974126 ${Z_ion} 
+create_atoms 2 single 21.6171762767125 21.8406781974126 89.23988407966 
+Created 1 atoms
+  using lattice units in orthogonal box = (-2.2950215 -2.2950215 -9.9530418) to (41.499696 41.499696 99.155427)
+  create_atoms CPU = 0.000 seconds
+
+region iooniregioon sphere ${RandomX} ${RandomY} ${Z_ion} 0.1
+region iooniregioon sphere 21.6171762767125 ${RandomY} ${Z_ion} 0.1
+region iooniregioon sphere 21.6171762767125 21.8406781974126 ${Z_ion} 0.1
+region iooniregioon sphere 21.6171762767125 21.8406781974126 89.23988407966 0.1
+group ion region iooniregioon # Defining a ion region
+1 atoms in group ion
+
+
+# ------------- NEW REGIONS ----------------------------------------------------------
+region atomregion block INF INF INF INF INF INF
+group atoms region atomregion
+13825 atoms in group atoms
+
+region bottomregioon block 0 ${sizeX} 0 ${sizeY} INF 2
+region bottomregioon block 0 43.7947179918863 0 ${sizeY} INF 2
+region bottomregioon block 0 43.7947179918863 0 43.7947179918863 INF 2
+group bottom region bottomregioon
+1086 atoms in group bottom
+
+region anttiwalls block 1 ${X_1} 1 ${Y_1} -1 INF
+region anttiwalls block 1 42.7947179918863 1 ${Y_1} -1 INF
+region anttiwalls block 1 42.7947179918863 1 42.7947179918863 -1 INF
+group antiwalls region anttiwalls
+11186 atoms in group antiwalls
+group walls subtract atoms antiwalls
+2639 atoms in group walls
+
+# Finding the group of atoms that is going to be integrated over time
+group integraalgrupp1 subtract atoms bottom
+12739 atoms in group integraalgrupp1
+group integral union integraalgrupp1 ion
+12739 atoms in group integral
+
+# Bombarded target atoms + ion - bottom - walls
+group bomb_surf subtract integral walls
+10783 atoms in group bomb_surf
+
+# Defining simulation box
+region regioon block INF INF INF INF INF INF
+
+# Bottom is fixed , top is shrink - wrapped
+change_box all boundary p p fs # It is used when the atom jumps out of the initial box.
+Changing box ...
+WARNING: Resetting image flags for non-periodic dimensions (src/domain.cpp:1869)
+#change_box all boundary p p f # no wrapped
+
+# ------------- EAM + ZBL POTENTIAL -----------------------------------------------------
+pair_style eam/alloy
+pair_coeff * * ${POT} Cu Cu
+pair_coeff * * FeNiCrCoCu-with-ZBL.eam.alloy Cu Cu
+
+
+# ------------- SETTING ION VELOCITY ---------------------------------------------------
+velocity ion set ${iSpeedX} ${iSpeedY} -${iSpeedZ} mom yes rot no units box
+velocity ion set -14.7133254180317 ${iSpeedY} -${iSpeedZ} mom yes rot no units box
+velocity ion set -14.7133254180317 -51.1847253391578 -${iSpeedZ} mom yes rot no units box
+velocity ion set -14.7133254180317 -51.1847253391578 -2750.78613521228 mom yes rot no units box
+
+
+# ------------- RUN SETTINGS -----------------------------------------------------------
+compute IonKin ion ke
+compute IonZ ion reduce max z
+
+# Displayed parameters
+thermo_style custom step cpu dt time ke c_IonKin c_IonZ
+
+fix adaptive_timestep all dt/reset 10 1.0e-5 0.002 0.1 units box
+fix 3 bomb_surf nve
+fix thermowalls walls nvt temp ${surf_temp} ${surf_temp} 1
+fix thermowalls walls nvt temp 300 ${surf_temp} 1
+fix thermowalls walls nvt temp 300 300 1
+
+# Check for building the regular neighbor lists more frequently to avoid errors
+neigh_modify check yes every 1 delay 0
+
+
+# ------------- ELECTRONIC STOPPING POWER -----------------------------------------------
+fix STOP all electron/stopping 10.0 elstop-table.txt region regioon
+
+#fix STOP all electron/stopping/fit ${Ecut_atom_type1} ${c1_atom_type1} ${c2_atom_type1} #  ${Ecut_atom_type2} ${c1_atom_type2} ${c2_atom_type2} region regioon
+
+
+# ------------- BALANCING PROCESSOR LOAD ------------------------------------------------
+comm_style tiled
+fix BAL all balance 200 1.05 rcb
+
+
+# ------------- RUN ----------------------------------------------------------------------
+thermo 25 # Show parameters everys
+
+# Dump location of every atom after every 10 timesteps.
+dump 3 all custom 10 BOMBDUMP.dump id x y z
+#------------------------------------------
+compute kea all ke/atom
+dump            d1 all cfg 10 cfg/run.bomb.*.cfg mass type xs ys zs id type vx vy vz fx fy fz c_kea
+dump_modify     d1 element Cu Cu_ion
+
+if " ${energy} == 100" then "variable bombrun equal 2000"   elif " ${energy} == 200"  "variable bombrun equal 2250"   elif " ${energy} == 500"  "variable bombrun equal 2500"   elif " ${energy} == 1000" "variable bombrun equal 3000"   elif " ${energy} == 2000" "variable bombrun equal 3500"   elif " ${energy} == 5000" "variable bombrun equal 4000" else " variable bombrun equal 2000"
+ variable bombrun equal 2000
+
+run ${bombrun}
+run 2000
+Neighbor list info ...
+  update: every = 1 steps, delay = 0 steps, check = yes
+  max neighbors/atom: 2000, page size: 100000
+  master list distance cutoff = 7.80375
+  ghost atom cutoff = 7.80375
+  binsize = 3.901875, bins = 12 12 26
+  2 neighbor lists, perpetual/occasional/extra = 1 1 0
+  (1) pair eam/alloy, perpetual
+      attributes: half, newton on
+      pair build: half/bin/atomonly/newton
+      stencil: half/bin/3d
+      bin: standard
+  (2) fix electron/stopping, occasional
+      attributes: full, newton on
+      pair build: full/bin/atomonly
+      stencil: full/bin/3d
+      bin: standard
+Per MPI rank memory allocation (min/avg/max) = 7.919 | 7.95 | 7.979 Mbytes
+   Step          CPU             Dt            Time          KinEng        c_IonKin        c_IonZ    
+         0   0              3.6346433e-05  0              25266.631      24713.01       89.239884    
+        25   0.169395       3.6658054e-05  0.00091173253  24741.858      24188.001      86.745056    
+        50   0.357258       3.7158246e-05  0.0018330396   24199.086      23644.973      84.251675    
+        75   0.51741        3.7530427e-05  0.0027655851   23421.965      22865.711      81.75835     
+       100   0.707114       3.9259743e-05  0.0037101587   21819.327      21181.383      79.274808    
+       125   0.871042       3.9052133e-05  0.0046861365   21652.483      20398.964      76.830591    
+       150   1.051696       3.989726e-05   0.005675032    22000.518      20509.878      74.475182    
+       175   1.230238       4.2480285e-05  0.0066870007   21435.566      18969.873      72.182663    
+       200   1.422325       4.2019749e-05  0.0077349811   20922.237      18490.23       70.023663    
+       225   1.574433       4.244155e-05   0.0087897093   20381.846      18067.107      67.8371      
+       250   1.741335       4.3176247e-05  0.0098568742   19672.176      17512.955      65.644812    
+       275   1.894346       4.3606955e-05  0.010941338    18954.036      16969.723      63.513274    
+       300   2.075152       4.4288938e-05  0.012039641    18506.145      16644.038      61.386185    
+       325   2.232181       4.6013469e-05  0.01315746     16700.82       14001.036      59.278772    
+       350   2.399949       4.7344937e-05  0.014328057    17531.937      14564.72       57.275749    
+       375   2.569497       5.6646728e-05  0.015569591    16951.272      3884.823       56.098901    
+       400   2.773526       5.7300501e-05  0.016990086    16048.006      3548.1185      56.155435    
+       425   2.926237       5.8187659e-05  0.018431417    15511.304      3425.4852      55.979039    
+       450   3.096143       5.9292178e-05  0.01989646     14805.404      3260.1254      55.75966     
+       475   3.257579       6.0211863e-05  0.021388148    13688.642      2646.2221      55.564418    
+       500   3.450472       6.2234698e-05  0.022920491    13498.391      2565.3301      55.054184    
+       525   3.605444       6.3086764e-05  0.024486796    12720.893      2072.0979      54.527099    
+       550   3.781828       6.4878546e-05  0.026079896    12148.386      2031.2323      54.056638    
+       575   3.940992       6.5570345e-05  0.027709059    11610.301      1928.5909      53.579536    
+       600   4.140968       6.7648046e-05  0.029365761    10906.396      1809.7847      53.114138    
+       625   4.298847       6.8498776e-05  0.031066182    10314.878      1692.4636      52.651886    
+       650   4.474004       7.0287662e-05  0.032800317    9743.1404      1602.6414      52.200747    
+       675   4.635159       7.2096478e-05  0.034573929    8996.8741      1048.5769      51.831554    
+       700   4.825423       7.3823201e-05  0.036385565    8712.5095      1057.306       51.772401    
+       725   4.980784       7.4936053e-05  0.03824429     8219.7367      940.67853      51.725672    
+       750   5.151548       7.7816973e-05  0.040143259    7618.5769      856.24921      51.637709    
+       775   5.304483       7.8888103e-05  0.042096314    7096.324       671.62144      51.583687    
+       800   5.503645       8.1643437e-05  0.044099806    6732.2972      654.69832      51.673267    
+       825   5.661744       0.00011451948  0.046326811    6318.5662      570.79973      51.791727    
+       850   5.843561       0.00011947482  0.049224039    5609.6911      460.4788       51.934451    
+       875   5.998893       0.00012507724  0.052284224    5009.2294      375.5082       52.037235    
+       900   6.168992       0.00013322304  0.055494744    4421.8831      246.98881      52.155764    
+       925   6.346023       0.00014406325  0.058921264    3856.7712      190.03828      52.074377    
+       950   6.52376        0.00023223138  0.062584689    2743.4386      111.95378      51.987213    
+       975   6.678581       0.00019462844  0.067702036    2520.1856      46.584915      52.054545    
+      1000   6.860877       0.00022808017  0.072816696    1953.1125      9.889801       52.051901    
+      1025   7.020592       0.00035128439  0.079297087    1521.6914      3.6534794      52.028986    
+      1050   7.192193       0.00096036819  0.091283109    1133.4111      0.82789062     52.098945    
+      1075   7.331482       0.002          0.1298856      1027.0239      0.10259247     52.180352    
+      1100   7.497175       0.002          0.1798856      1017.2335      0.047061745    52.045642    
+      1125   7.65026        0.002          0.2298856      1021.6914      0.15526075     52.032309    
+      1150   7.815584       0.002          0.2798856      1006.5564      0.10388874     51.904571    
+      1175   7.956841       0.002          0.3298856      1004.0227      0.012507975    51.720373    
+      1200   8.132127       0.002          0.3798856      1000.2804      0.17550426     51.735329    
+      1225   8.265025       0.002          0.4298856      999.95398      0.24966448     51.822599    
+      1250   8.4261         0.002          0.4798856      997.03271      0.064809335    52.057123    
+      1275   8.568333       0.002          0.5298856      999.89648      0.11093207     52.122597    
+      1300   8.723669       0.002          0.5798856      991.69025      0.089926361    51.941373    
+      1325   8.850242       0.002          0.6298856      994.82735      0.0012429001   51.884268    
+      1350   9.007368       0.002          0.6798856      997.50716      0.12472478     51.892209    
+      1375   9.150663       0.002          0.7298856      992.50242      0.13977116     52.010309    
+      1400   9.314366       0.002          0.7798856      995.7043       0.095093022    52.283019    
+      1425   9.446286       0.002          0.8298856      995.96383      0.014023786    52.367515    
+      1450   9.607035       0.002          0.8798856      989.19032      0.19191606     52.458745    
+      1475   9.73318        0.002          0.9298856      996.90387      0.25885341     52.854907    
+      1500   9.893734       0.002          0.9798856      993.18173      0.07152911     52.993337    
+      1525   10.144284      0.002          1.0298856      993.27675      0.040345039    52.764868    
+      1550   10.287549      0.002          1.0798856      977.69379      0.077667992    52.795889    
+      1575   10.428638      0.002          1.1298856      980.15548      0.073496386    52.75599     
+      1600   10.58609       0.002          1.1798856      986.5037       0.032549863    52.579338    
+      1625   10.714318      0.002          1.2298856      986.91739      0.0070538073   52.53702     
+      1650   10.869676      0.002          1.2798856      986.68209      0.1620117      52.731438    
+      1675   10.993152      0.002          1.3298856      986.4591       0.017106857    52.80877     
+      1700   11.231368      0.002          1.3798856      982.72191      0.040626051    52.705427    
+      1725   11.371675      0.002          1.4298856      979.33822      0.14431679     52.744647    
+      1750   11.509843      0.002          1.4798856      974.73246      0.23310813     53.189479    
+      1775   11.649359      0.002          1.5298856      972.23033      0.25761713     53.126795    
+      1800   11.805854      0.002          1.5798856      978.82674      0.09081634     52.993372    
+      1825   11.930141      0.002          1.6298856      976.00908      0.088791941    53.194355    
+      1850   12.072046      0.002          1.6798856      970.06027      0.062248398    53.266495    
+      1875   12.21109       0.002          1.7298856      979.07177      0.061824293    53.30058     
+      1900   12.356346      0.002          1.7798856      978.30578      0.03340742     53.474595    
+      1925   12.497245      0.002          1.8298856      977.901        0.031163886    53.407861    
+      1950   12.659461      0.002          1.8798856      971.38439      0.091057297    53.446916    
+      1975   12.801015      0.002          1.9298856      969.67185      0.23848674     53.58883     
+      2000   12.962089      0.002          1.9798856      970.06468      0.36105758     53.47094     
+Loop time of 12.9621 on 4 procs for 2000 steps with 13825 atoms
+
+Performance: 26.662 ns/day, 0.900 hours/ns, 154.296 timesteps/s, 2.133 Matom-step/s
+66.9% CPU use with 4 MPI tasks x 1 OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 6.8975     | 7.1353     | 7.2357     |   5.2 | 55.05
+Neigh   | 0.4719     | 0.52653    | 0.55051    |   4.4 |  4.06
+Comm    | 0.20808    | 0.32676    | 0.6361     |  31.4 |  2.52
+Output  | 3.2881     | 3.4264     | 3.5657     |   5.6 | 26.43
+Modify  | 1.3267     | 1.371      | 1.4334     |   3.3 | 10.58
+Other   |            | 0.176      |            |       |  1.36
+
+Nlocal:        3456.25 ave        3492 max        3425 min
+Histogram: 2 0 0 0 0 0 0 0 1 1
+Nghost:         6156.5 ave        7291 max        5053 min
+Histogram: 2 0 0 0 0 0 0 0 0 2
+Neighs:         260525 ave      271044 max      234186 min
+Histogram: 1 0 0 0 0 0 0 0 1 2
+FullNghs:       521050 ave      544960 max      499428 min
+Histogram: 1 0 1 0 0 0 1 0 0 1
+
+Total # of neighbors = 2084200
+Ave neighs/atom = 150.75588
+Neighbor list builds = 128
+Dangerous builds = 0
+
+unfix adaptive_timestep
+unfix 3
+unfix thermowalls
+unfix STOP
+unfix BAL
+undump 3
+
+
+# ------------- PENETRATION DEPTH --------------------------------------------------------
+variable Z_final equal c_IonZ
+variable Z_surf  equal $( v_sizeZ * v_latparamZ )
+variable Z_surf  equal 96.614374022476397386
+variable Depth   equal $( v_Z_surf - v_Z_final )
+variable Depth   equal 43.143433614740395399
+
+
+# ------------- SPUTTERING YIELD ---------------------------------------------------------
+region sputterbox block INF INF INF INF ${Z_ion} INF
+region sputterbox block INF INF INF INF 77.9951990438926 INF
+group sputtergroup region sputterbox
+1177 atoms in group sputtergroup
+
+variable NRA equal $( count(sputtergroup) )
+variable NRA equal 1177
+variable NRAtot equal $( count(atoms) )
+variable NRAtot equal 13825
+
+# Logging the results of the run
+print "${POT} ${orientation} ${seed} ${surf_temp} ${energy} ${RandomAlpha} ${RandomPhi} ${RandomX} ${RandomY} ${NRAtot} ${Depth} ${NRA}" append Sputter.log screen no
+
+
+# ------------- END OF SCRIPT -------------------------------------------------------------
+
+#-----------------------------------------------------------------------------------------
+# Memo (S. N. Markin et al., Phys. Rev. B 80 (2009) 205105.
+#   Energy loss of a point charge in a free-electron gas (FEG) is expected to be proportional to
+# the ion velocity (in Ion velocity (v) < Fermi velocity (vF) case).
+# This is based on the assumption that excitation of electron-hole pairs from the valence/conduction band
+# occurs via binary collisions of ions with an electron in a FEG.
+#
+# The stopping power S = -dE/dx in a free electron gas (FEG) reads [6-8]
+#   S = Q*(Z1,rs)*V   (1)
+# where the friction coefficinet Q depends on the atomic charge of the projectile, Z1, and on
+# the density parameter, rs, which is related to the electron density ne via 4/3*pi*rs^3 = 1/ne.
+# The electronic stoppin cross section, epsilon, is closely related to S, via epsilon = S/n,
+# with the atomic density of the target, n.
+#
+# Experimental investigations of the energy loss of slow ions in metallic targets in transmission [8-10] and
+# in backscattering [11] geometries discovered a pronounced deviation from velocity proportionality as
+# expected from Eq.(1). These studies revealed that in transition metals a velocity threshold vth exists for
+# the excitation of d electrons, which contribute to electronic stopping only fro ion velocities v > vth.
+#
+# [6] P. M. Echenique et al., Solid State Phys. 43 (1990) 229-308.
+#  https://doi.org/10.1016/S0081-1947(08)60325-2
+# [7] G. M.-Tamayo, et al., Phys. Rev. A 54 (1996) 3131.
+#  https://doi.org/10.1103/PhysRevA.54.3131
+# [8] J. E. Valdes et al., Phys. Rev. A 49 (1994) 1083.
+#  https://doi.org/10.1103/PhysRevA.49.1083
+# [9] E. A. Figueroa et al., Phys. Rev. A 75 (2007) 010901.
+#  https://doi.org/10.1103/PhysRevA.75.035802
+# [10] C. Celedon et al., Microelectron. J. 39 (2008) 1358-1359.
+#  https://doi.org/10.1016/j.mejo.2008.01.037
+# [11] S. N. Markin et al., Phys. Rev. B 78 (2008) 195122.
+#  https://doi.org/10.1103/PhysRevB.78.195122
+#-----------------------------------------------------------------------------------------
+# Note
+# The linear Stopping Power (SP) of a particle moving inside the (target) material is
+# quantitatively equal to the loss of energy E per unit path length x:
+#   S(E) = - dE/dx,
+# which is conventionally indicated with eV/A, MeV/mm or similar units.
+#
+# At energies lower than 100 keV/nucleon, it is difficult to determine ESP theoretically,
+# which is why empirical fit functions are preferred in low-energy situations. The most
+# thorough fit curves for ESP for specific elements can be obtained from SRIM database,
+# which have been averaged upon numerous experimental results.
+#-----------------------------------------------------------------------------------------
+# The electronic stopping table can be obtained from scientific publications.
+# [SRIM] http://www.srim.org/
+# [CasP] http://www.casp-program.org/
+# [PASS] https://www.sdu.dk/en/DPASS
+#-----------------------------------------------------------------------------------------
+# Electronic Stopping Power of Matter for Ions
+# https://www-nds.iaea.org/stopping/stopping_K_U.html
+# Electronic stopping power [MeV/(mg/cm^2)]
+# Energy per Nucleon [MeV]
+#-----------------------------------------------------------------------------------------
+# Stopping Power of Electrons and Positrons for C, Al, Cu, Ag, Au, Pb, Fe, U, Ge, Si and Mo
+# https://www.researchgate.net/publication/47498500_Stopping_Power_of_Electrons_and_Positrons_for_C_Al_Cu_Ag_Au_Pb_Fe_U_Ge_Si_and_Mo
+#-----------------------------------------------------------------------------------------
+# Stopping-Power & Range Tables for Electrons, Protons, and Helium Ions
+# NIST Standard Reference Database 124
+# https://dx.doi.org/10.18434/T4NC7P
+# https://www.nist.gov/pml/stopping-power-range-tables-electrons-protons-and-helium-ions
+#-----------------------------------------------------------------------------------------
+# Note: fix STOP all electron/stopping/fit 3.49 1.8e-3 9.0e-8 7.57 4.2e-3 5.0e-8 region regioon
+# These coefficients can be determined by fitting a quadratic polynomial to electronic stopping data predicted by,
+# for example, SRIM or TD-DFT. Multiple ‘Ecut c1 c2’ values can be provided for multi-species simulations in
+# the order of the atom types. There is an examples/PACKAGES/electron_stopping/ directory,
+# which illustrates uses of this command. Details of this implementation are further described in Stewart2018 and Lee2020.
+# [Stewart2018] J.A. Stewart, et al. (2018) Journal of Applied Physics, 123(16), 165902.
+#  https://doi.org/10.1063/1.5022471
+# [Lee2020] C.W. Lee, et al. (2020) Physical Review B, 102(2), 024107.
+#  https://doi.org/10.1103/PhysRevB.102.024107 (TD-DFT)
+#  A quadratic polynominal given as (vi^2 - 2*vcoh^2)/(vcoh^2-2*vcoh^2)
+#  Ths vi is the velocity of atom i. Ths vcoh [Angstrom/ps] is derived from the cohesive energy (Ecoh) [eV].
+#  Ecut = 1.5*Ecoh.
+#-----------------------------------------------------------------------------------------
+Total wall time: 0:00:13
