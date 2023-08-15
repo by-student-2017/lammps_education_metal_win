@@ -104,8 +104,8 @@ group bomb_surf subtract integral walls
 region regioon block INF INF INF INF INF INF
 
 # Bottom is fixed , top is shrink - wrapped
-change_box all boundary p p fs
-
+#change_box all boundary p p fs # It is used when the atom jumps out of the initial box.
+change_box all boundary p p f # no wrapped
 
 # ------------- EAM + ZBL POTENTIAL -----------------------------------------------------
 pair_style eam/alloy
@@ -133,7 +133,10 @@ neigh_modify check yes every 1 delay 0
 
 # ------------- ELECTRONIC STOPPING POWER -----------------------------------------------
 fix STOP all electron/stopping 10.0 elstop-table.txt region regioon
-#fix STOP all electron/stopping/fit 3.49 1.8e-3 9.0e-8 7.57 4.2e-3 5.0e-8
+
+#fix STOP all electron/stopping/fit ${Ecut_atom_type1} ${c1_atom_type1} ${c2_atom_type1} &
+#  ${Ecut_atom_type2} ${c1_atom_type2} ${c2_atom_type2} region regioon
+
 
 # ------------- BALANCING PROCESSOR LOAD ------------------------------------------------
 comm_style tiled
@@ -144,7 +147,7 @@ fix BAL all balance 200 1.05 rcb
 thermo 25 # Show parameters everys
 
 # Dump location of every atom after every 10 timesteps.
-#dump 3 all custom 10 BOMBDUMP.dump id x y z
+dump 3 all custom 10 BOMBDUMP.dump id x y z
 #------------------------------------------
 compute kea all ke/atom
 dump            d1 all cfg 10 cfg/run.bomb.*.cfg mass type xs ys zs id type vx vy vz fx fy fz c_kea
@@ -247,4 +250,17 @@ print "${POT} ${orientation} ${seed} ${surf_temp} ${energy} ${RandomAlpha} ${Ran
 # NIST Standard Reference Database 124
 # https://dx.doi.org/10.18434/T4NC7P
 # https://www.nist.gov/pml/stopping-power-range-tables-electrons-protons-and-helium-ions
+#-----------------------------------------------------------------------------------------
+# Note: fix STOP all electron/stopping/fit 3.49 1.8e-3 9.0e-8 7.57 4.2e-3 5.0e-8 region regioon
+# These coefficients can be determined by fitting a quadratic polynomial to electronic stopping data predicted by, 
+# for example, SRIM or TD-DFT. Multiple ‘Ecut c1 c2’ values can be provided for multi-species simulations in 
+# the order of the atom types. There is an examples/PACKAGES/electron_stopping/ directory, 
+# which illustrates uses of this command. Details of this implementation are further described in Stewart2018 and Lee2020.
+# [Stewart2018] J.A. Stewart, et al. (2018) Journal of Applied Physics, 123(16), 165902.
+#  https://doi.org/10.1063/1.5022471
+# [Lee2020] C.W. Lee, et al. (2020) Physical Review B, 102(2), 024107.
+#  https://doi.org/10.1103/PhysRevB.102.024107 (TD-DFT)
+#  A quadratic polynominal given as (vi^2 - 2*vcoh^2)/(vcoh^2-2*vcoh^2)
+#  Ths vi is the velocity of atom i. Ths vcoh [Angstrom/ps] is derived from the cohesive energy (Ecoh) [eV].
+#  Ecut = 1.5*Ecoh.
 #-----------------------------------------------------------------------------------------
