@@ -1,22 +1,23 @@
-# Appendix
-# <111> loop box code
-
+# (Initial condition of the simulation box) <111> loop box code
+#-------------------- Initialization -----------------------------------------------------
 units metal
 dimension 3
 boundary p p p
 
+#-------------------- Atom & Lattice description ----------------------------------------
+atom_style atomic
 atom_modify map array
+
 variable lattice equal 2.8654
+
 variable WN equal 46
 variable LN equal 57
 variable HN equal 33
 
-variable W equal sqrt(3)*${lattice}*${WN}
-variable L equal sqrt(2)*${lattice}*${LN}
-variable H equal sqrt(6)*${lattice}*${HN}
+variable  W equal sqrt(3)*${lattice}*${WN}
+variable  L equal sqrt(2)*${lattice}*${LN}
+variable  H equal sqrt(6)*${lattice}*${HN}
 
-units metal
-atom_style atomic
 lattice bcc ${lattice} orient x 1 1 1 orient y 1 -1 0 orient z 1 1 -2 origin 0.001 0.001 0.001
 
 region main block 0.0 $W 0.0 $L 0.0 $H units box
@@ -51,13 +52,24 @@ create_atoms 1 region main
 mass 1 55.847 # Fe
 mass 2 4.0026 # He
 
-# Force Fields
+#-------------------- Force field --------------------------------------------------------
 pair_style hybrid table linear 10000 eam/fs
 pair_coeff * * eam/fs Fe-C_Hepburn_Ackland.eam.fs Fe NULL
 pair_coeff 1 2 table  FeHe-Juslin2008.table FeHe
 pair_coeff 2 2 table  He_He_JW2013.table HeHe
 
-minimize 0 0 10000 10000
+#-------------------- Energy Minimization ------------------------------------------------
+# 0 K, structure optimization
+minimize 1.0e-6 1.0e-6 10000 10000
+
+#-------------------- Settings -----------------------------------------------------------
+reset_timestep 0
+
+timestep 0.001 # 1 [fs]
+
+thermo 1000
+thermo_style custom step temp pe etotal press vol lx ly lz
+thermo_modify lost error
 
 dump 1 all atom 1000 minimized.all
 dump 2 loop atom 1000 minimized.loop
@@ -65,15 +77,9 @@ dump 2 loop atom 1000 minimized.loop
 dump            d1 all cfg 100 cfg/run.nvt.*.cfg mass type xs ys zs id type vx vy vz fx fy fz
 dump_modify     d1 element Fe He
 
-timestep 0.001
-
 velocity all create 1543.0 25232351 dist gaussian
 
-thermo_style custom step temp pe etotal press vol lx ly lz
-
-thermo 1000
-thermo_modify lost error
-
+#-------------------- Run the simulation -------------------------------------------------
 fix 1 all nvt temp 773.0 773.0 1
 
 thermo 100
@@ -81,3 +87,5 @@ thermo 100
 run 1000
 
 unfix 1
+
+#-------------------- End ----------------------------------------------------------------
