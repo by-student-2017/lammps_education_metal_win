@@ -6,7 +6,7 @@ variable orientation string 100
 variable surf_temp equal 300
 variable     relax equal 10000
 
-variable POT string  FeNiCrCoCu-heafixed.setfl
+variable POT string  FeNiCrCoCu-with-ZBL.eam.alloy
 
 variable seed equal 1234567
 
@@ -17,7 +17,7 @@ dimension 3
 atom_style atomic
 
 # ------------- ION SPEED --------------------------------------------------------
-# Ion energy in eV - s ( divided by 100 because of the default A / ps unit )
+# Ion energy in eV - s ( divided by 100 because of the default A / ps unit ) (see Eq.(16) and Eq.(17).)
 variable m_Cu   equal $( 63.546*(1/12)*1.998467052*10^-26 )
 variable iSpeed equal $( sqrt(2*v_energy*1.602176565*10^-19/(v_m_Cu))/100 )
 
@@ -44,10 +44,10 @@ region regioon block 0 ${sizeX} 0 ${sizeY} 0 ${sizeZ}
 
 variable Z_ion equal v_sizeZ*5/4 # Room for the ion
 
-variable latparamZ equal 6.0
+variable latparamZ equal 10.0
 
 variable low  equal   0.0
-variable high equal   5.0
+variable high equal   3.0
 
 
 # ------------- RANDOM VARIABLES : COORDINATES , ANGLES , VELOCITY COMPONENTS ------
@@ -178,12 +178,46 @@ print "${POT} ${orientation} ${seed} ${surf_temp} ${energy} ${RandomAlpha} ${Ran
 
 #-----------------------------------------------------------------------------------------
 # Memo (S. N. Markin et al., Phys. Rev. B 80 (2009) 205105.
-# The stopping power S = -dE/dx in a free electron gas (FEG) reads
-#   S = Q*(Z1,rs)*V
+#   Energy loss of a point charge in a free-electron gas (FEG) is expected to be proportional to 
+# the ion velocity (in Ion velocity (v) < Fermi velocity (vF) case).
+# This is based on the assumption that excitation of electron-hole pairs from the valence/conduction band
+# occurs via binary collisions of ions with an electron in a FEG. 
+#
+# The stopping power S = -dE/dx in a free electron gas (FEG) reads [6-8]
+#   S = Q*(Z1,rs)*V   (1)
 # where the friction coefficinet Q depends on the atomic charge of the projectile, Z1, and on
 # the density parameter, rs, which is related to the electron density ne via 4/3*pi*rs^3 = 1/ne.
 # The electronic stoppin cross section, epsilon, is closely related to S, via epsilon = S/n,
 # with the atomic density of the target, n.
+#
+# Experimental investigations of the energy loss of slow ions in metallic targets in transmission [8-10] and
+# in backscattering [11] geometries discovered a pronounced deviation from velocity proportionality as 
+# expected from Eq.(1). These studies revealed that in transition metals a velocity threshold vth exists for
+# the excitation of d electrons, which contribute to electronic stopping only fro ion velocities v > vth.
+#
+# [6] P. M. Echenique et al., Solid State Phys. 43 (1990) 229-308.
+#  https://doi.org/10.1016/S0081-1947(08)60325-2
+# [7] G. M.-Tamayo, et al., Phys. Rev. A 54 (1996) 3131.
+#  https://doi.org/10.1103/PhysRevA.54.3131
+# [8] J. E. Valdes et al., Phys. Rev. A 49 (1994) 1083.
+#  https://doi.org/10.1103/PhysRevA.49.1083
+# [9] E. A. Figueroa et al., Phys. Rev. A 75 (2007) 010901.
+#  https://doi.org/10.1103/PhysRevA.75.035802
+# [10] C. Celedon et al., Microelectron. J. 39 (2008) 1358-1359.
+#  https://doi.org/10.1016/j.mejo.2008.01.037
+# [11] S. N. Markin et al., Phys. Rev. B 78 (2008) 195122.
+#  https://doi.org/10.1103/PhysRevB.78.195122
+#-----------------------------------------------------------------------------------------
+# Note
+# The linear Stopping Power (SP) of a particle moving inside the (target) material is 
+# quantitatively equal to the loss of energy E per unit path length x:
+#   S(E) = - dE/dx,
+# which is conventionally indicated with eV/A, MeV/mm or similar units.
+#
+# At energies lower than 100 keV/nucleon, it is difficult to determine ESP theoretically,
+# which is why empirical fit functions are preferred in low-energy situations. The most
+# thorough fit curves for ESP for specific elements can be obtained from SRIM database,
+# which have been averaged upon numerous experimental results.
 #-----------------------------------------------------------------------------------------
 # Note
 #  In addition to electronic stopping, atomic cascades and irradiation simulations require 
