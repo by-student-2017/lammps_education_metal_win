@@ -30,14 +30,16 @@ variable iSpeed equal $( sqrt(2*v_energy*1.602176565*10^-19/(v_m_Cu))/100 )
 # ------------- READING IN PRE - RELAXED STATE -------------------------------------
 read_data RELAX.orient${orientation}.${surf_temp}K.$((v_relax*2))TS.data
 
+
 # ------------- EAM POTENTIAL -----------------------------------------------------
-pair_style eam/alloy # Potential type
-pair_coeff * * ${POT} Cu # Potential file
+pair_style eam/alloy
+pair_coeff * * ${POT} Cu
+
 
 # ------------- Cell Data
-variable sizeX  equal lx # Middle of initial box size X
-variable sizeY  equal ly # Middle of initial box size Y
-variable sizeZ  equal lz # Middle of initial box size Z
+variable sizeX  equal lx # initial box size X
+variable sizeY  equal ly # initial box size Y
+variable sizeZ  equal lz # initial box size Z
 variable sizeX2 equal v_sizeX/2 # Middle of initial box size X
 variable sizeY2 equal v_sizeY/2 # Middle of initial box size Y
 variable sizeZ2 equal v_sizeZ/2 # Middle of initial box size Z
@@ -142,7 +144,8 @@ thermo 25 # Show parameters everys
 # Dump location of every atom after every 10 timesteps.
 dump 3 all custom 10 BOMBDUMP.dump id x y z
 #------------------------------------------
-dump            d1 all cfg 10 cfg/run.bomb.*.cfg mass type xs ys zs id type vx vy vz fx fy fz
+compute kea all ke/atom
+dump            d1 all cfg 10 cfg/run.bomb.*.cfg mass type xs ys zs id type vx vy vz fx fy fz c_kea
 dump_modify     d1 element Cu
 
 if " ${energy} == 100" then "variable bombrun equal 2000" &
