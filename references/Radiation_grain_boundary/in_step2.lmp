@@ -1,0 +1,47 @@
+# Appendix A, 2) Input file of radiation simulation
+#-------------------- Initialization -----------------------------------------------------
+clear
+# Processors n m o  # define the proc. grid
+
+units metal 
+dimension 3         # Dimensions of space for simulation. 3D is default
+boundary p p p      # Rules or boundary
+newton on on        # Newton's 3rd law for pairwise and bonded interactions
+
+#-------------------- Read structure file ------------------------------------------------
+atom_style atomic   # Rules for atom styles. Atomic is default
+
+read_restart restartfile # from relaxation (step1)
+
+variable raid equal 1    # Specify the emitting atom (id1) by ID. (Here, as an example, the atom with ID number 1 is specified.)
+group id1 id ${raid}     # Assign the emitting atom (id1) to the group called id1 (because we will give the velocity as energy later)
+set atom ${raid} x $(lx/2) y $(ly/2) z $(lz/2) # Move the radiating atom (id1) to the center of the cell.
+
+#-------------------- Force field --------------------------------------------------------
+pair_style eam/fs
+pair_coeff * * Fe_2.eam.fs Fe
+
+#-------------------- Settings -----------------------------------------------------------
+timestep 0.0002 # 0.2 [fs]
+
+thermo 50
+
+dump atom all xyz 250 radiation.xyz 
+#----------------------------
+dump            d1 all cfg 50 cfg_step2/run.*.cfg mass type xs ys zs id type vx vy vz fx fy fz
+dump_modify     d1 element Fe
+#----------------------------
+
+velocity id1 set 1005.6 157.312 0 # gives the radiating atom (id1) a high kinetic energy in [K] unit.
+
+#-------------------- Run the simulation (NVE) -------------------------------------------
+fix 1 all nve 
+
+run 25000
+
+unfix 1
+
+#-----------------------output-----------------------
+write_restart restartfile # after radiation data
+
+#-------------------- End ----------------------------------------------------------------
