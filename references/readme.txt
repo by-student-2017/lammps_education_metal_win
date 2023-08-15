@@ -130,6 +130,15 @@ input file (metal unit, lammps)
     the bcc alpha-Fe is structurally relaxed to achieve energy minimization. Simulation is 
     performed with the cell temperature at 450K. 
   -----------------------------------------------------------------------------------------------
+  Build GB: https://aimsgb.org/
+  J. Cheng et al., Comput. Mater. Sci., 155, 92-103, (2018).
+  Find GB -> Build GB (e.g., using Fe.cif from Material project)
+  -----------------------------------------------------------------------------------------------
+  GB_code: https://github.com/oekosheri/GB_code
+  -----------------------------------------------------------------------------------------------
+  GBstudio: A Builder Software on Periodic Models of CSL Boundaries for Molecular Simulation
+  https://www.jstage.jst.go.jp/article/matertrans/47/11/47_11_2706/_pdf/-char/en
+  -----------------------------------------------------------------------------------------------
 
 - T. Metspalu, Master Thesis (2015)
   https://core.ac.uk/download/pdf/187147604.pdf
