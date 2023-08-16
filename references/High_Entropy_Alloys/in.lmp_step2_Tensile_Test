@@ -6,7 +6,6 @@
 
 #-------------------- Environment Settings -----------------------------------------------
 variable  Tdesird equal   77.0 # or 300 K or 600 k
-variable DumpFreq equal   3000 # For print out
 
 #-------------------- Initialization -----------------------------------------------------
 units metal    # units style is selected to be metal
@@ -49,7 +48,8 @@ thermo_style custom step temp ke etotal press lx ly lz
 velocity all create ${Tdesird} 5812775
 
 #-------------------- Equilibrating -------------------------------------------------------
-fix 1 all npt temp ${Tdesird} ${Tdesird} 1.0 iso 0.0 0.0 1.0 # isothermal-isobaric ensembles
+# isothermal-isobaric ensembles
+fix 1 all npt temp ${Tdesird} ${Tdesird} $(1000*dt) iso 0.0 0.0 $(1000*dt)
 
 run 40000 # 40 [ps]
 
@@ -71,9 +71,6 @@ variable        lbox equal ${topy}-${bottomy} # length of the box in y
 variable limitbottom equal ${bottomy}+25      # 25 A fixed
 variable    limittop equal ${topy}-25         # 25 A fixed
 
-# defining the top and bottom fixed regions
-region lower block INF INF INF ${limitbottom} INF INF units box 
-
 #---------------------------------------------------------------------
 # the geometry is defined in simulation box units
 # A box value selects standard distance units as defined by the units 
@@ -82,6 +79,8 @@ region lower block INF INF INF ${limitbottom} INF INF units box
 # must have been previously used to define the lattice spacings.
 #---------------------------------------------------------------------
 
+# defining the top and bottom fixed regions
+region lower block INF INF INF ${limitbottom} INF INF units box 
 region upper block INF INF ${limittop} INF INF INF units box 
 
 group lower region lower
@@ -93,21 +92,41 @@ group boundary union lower upper
 # defining the dynamic atoms
 group mobile subtract all boundary
 
+# 5e-4/dt=5e-4*1e15=5*10^11/s, why 5*(10^8)/s ?
 variable strrate equal 0.0005 # strain rate=0.0005/psec=5*(10^8)/s
-variable vyvalue equal ${strrate}*${lbox-50} # velocity A/psec
+variable vyvalue equal $( v_strrate*(v_lbox - 50) ) # velocity A/psec
 
 #---------------------------------------------------------------------
-# 240000 steps are sufficient to get to strain of 0.12
-# considering the experimental results strain 0.5
-# Nsteps (0.5/strain rate)/dt
+# 240000 steps are sufficient to get to strain of 0.12 considering 
+# the experimental results strain 0.5 Nsteps (0.5/strain rate)/dt
 #---------------------------------------------------------------------
 variable    Nsteps equal 1000000 
 variable ThermoOut equal 1000
 variable  DumpFreq equal 2000
 variable   NoutAvg equal ${ThermoOut}/100
 
+#thermo ${ThermoOut}
+#thermo_style custom step temp ke etotal press pxx pyy pzz lx ly lz
+
+#---------------------------------------------------------------------stress vs strain (Start line)
+compute 1 all stress/atom NULL  # computes the symmetric per-atom stress tensor for each atom in a group.
+compute 2 all temp              # computes the temp of a group of atoms
+compute 3 all reduce sum c_1[2] # reduces vector quantities of all stress tensors in y-direction and adds all the quantities to a single scalar value
+compute kea all ke/atom         # This is related to temperature
+
+variable stress     equal c_3/(3*vol)    # assigns a value to the variable name stress
+variable stress_GPa equal v_stress/10000 # converts the stress calculated to GPa
+
+variable    tmp equal ly
+variable     lo equal ${tmp}
+variable strain equal (ly-v_lo)/v_lo
+
 thermo ${ThermoOut}
-thermo_style custom step temp ke etotal press pxx pyy pzz lx ly lz
+thermo_style custom step temp ke etotal press pxx pyy pzz lx ly lz c_2 v_strain v_stress v_stress_GPa
+
+#---------- output file settings -------------------
+fix fo1 all ave/time 1 3 3 c_2 v_strain v_stress v_stress_GPa file stress_vs_strain.txt
+#----------------------------------------------------------------------stress vs strain (End line)
 
 # each component of the force on atoms of the group are set to 0
 fix 2 boundary setforce 0.0 0.0 0.0
@@ -129,13 +148,13 @@ velocity upper set 0 ${vyvalue} 0 units box
 # the mobile part velovity ramps up 
 velocity mobile ramp vy 0.0 ${vyvalue} y ${bottomy} ${topy} sum yes units box
 
-fix 10 all npt temp ${Tdesird} ${Tdesird} 1.0 x 0.0 0.0 1.0 z 0.0 0.0 1.0 couple xz
+fix 10 all npt temp ${Tdesird} ${Tdesird} $(1000*dt) x 0.0 0.0 $(1000*dt) z 0.0 0.0 $(1000*dt) couple xz
 
 #---------- output file settings -------------------
 #dump mydump all atom ${DumpFreq} LoadingFrame_*.dump
 #dump_modify mydump sort id
 #---------------------------------------------------
-dump            d1 all cfg ${DumpFreq} cfg/run.*.cfg mass type xs ys zs id type vx vy vz fx fy fz
+dump            d1 all cfg ${DumpFreq} cfg/run.*.cfg mass type xs ys zs id type vx vy vz fx fy fz c_kea
 dump_modify     d1 element Fe Ni Cr Co Mn
 #---------------------------------------------------
 
