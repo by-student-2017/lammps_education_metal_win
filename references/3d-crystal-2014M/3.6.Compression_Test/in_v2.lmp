@@ -7,8 +7,19 @@
 #3.6.1. Input file for compression testing of equilibrated crystal:
 # 3d compression simulation JP4review
 
-#-------------------- Initialization -----------------------------------------------------
 clear
+#-------------------- Environment Settings -----------------------------------------------
+variable  Tdesird equal  300.0 # Desired Temperature [K]
+
+variable   Nsteps equal  10000 # Number of simulation cycles
+variable DumpFreq equal    100 # For print out
+
+variable    dt_ps equal  0.001 # 0.001 [ps] = 1 [fs]
+
+variable  es_rate equal  -0.04 # engineering strain rate (1/time units) (Negative value for compression)
+# Note: es_rate/dt_ps = -0.04 / (1e-15) = -4.0e12 [1/s]
+
+#-------------------- Initialization -----------------------------------------------------
 echo both
 units metal
 boundary p p p
@@ -30,7 +41,7 @@ pair_coeff * * Cu_zhou04.eam.alloy Cu
 #-------------------- Settings -----------------------------------------------------------
 #reset_timestep 0
 
-timestep 0.001 # 1 [fs]
+timestep ${dt_ps}
 
 compute 1 all stress/atom NULL  # computes the symmetric per-atom stress tensor for each atom in a group.
 compute 2 all temp              # computes the temp of a group of atoms
@@ -46,7 +57,7 @@ variable stress     equal c_3/(3*vol)    # assigns a value to the variable name 
 variable stress_GPa equal v_stress/10000 # converts the stress calculated to GPa
 variable stress_MPa equal v_stress_GPa*1000 # Note: 1 GPa = 1000 MPa
 
-thermo 10
+thermo ${DumpFreq}
 thermo_style custom step temp press vol etotal c_2 v_stress v_stress_GPa v_stress_MPa v_strain
 
 #---------- output file settings -------------------
@@ -57,30 +68,30 @@ fix fo1 all ave/time 1 3 3 c_2 v_strain v_stress v_stress_GPa file stress_vs_str
 #dump 2 all custom 1000 dump.stress_atom_Test_40_strain type x y z c_1[1] c_1[2] c_1[3] c_1[4] c_1[5] c_1[6]
 ## dumps atom type; x,y,z coordinates; 6 stress tensors computed in 1 to an array of 6 elements
 #---------------------------------------------------
-dump            d1 all cfg 100 cfg/run.*.cfg mass type xs ys zs id type vx vy vz fx fy fz c_kea
+dump            d1 all cfg ${DumpFreq} cfg/run.*.cfg mass type xs ys zs id type vx vy vz fx fy fz c_kea
 dump_modify     d1 element Cu
 #---------------------------------------------------
 #log log5050_Test_40_strain.dat
 
 # calculates the radial distribution function (RDF) and output file
 compute 11 all rdf 100
-fix 4 all ave/time 100 1 100 c_11[*] file rdf_Test_40_compress.rdf mode vector
+fix 4 all ave/time 100 1 100 c_11[*] file rdf_Test_10_compress.rdf mode vector
 
 # initial velocities
-velocity all create 300 482748 rot yes mom yes dist gaussian
+velocity all create ${Tdesird} 482748 rot yes mom yes dist gaussian
 
 #-------------------- Run the simulation -------------------------------------------------
-# strain rate of -0.1 [1/dt] is applied in y direction
-fix 1 all deform 1 y erate -0.1
+# strain rate of -0.04 [1/dt] is applied in y direction
+fix 1 all deform 1 y erate ${es_rate}
 
 # all atoms rescaled to new positions while temp and pressure is conserved
-fix 2 all npt temp 100.0 100.0 10.0 x 0 0 10.0 z 0 0 10.0 dilate all
+fix 2 all npt temp ${Tdesird} ${Tdesird} $(1000*dt) x 0 0 $(1000*dt) z 0 0 $(1000*dt) dilate all
 
-# Resets the temp of atoms to 100K by rescaling velocities after every 10 steps
-fix 3 all temp/rescale 10 100 100 0.05 1.0
+# Resets the temp of atoms to 700 K by rescaling velocities after every 10 steps
+fix 3 all temp/rescale 10 ${Tdesird} ${Tdesird} 0.05 1.0
 
 # number of iterations is given so as to give 40% strain to the material
-run 4000
+run ${Nsteps}
 
 #-------------------- End ----------------------------------------------------------------
 
