@@ -7,6 +7,6 @@ for %%1 in (in_step2_tensil_v2.lmp) do (
   echo input file: %%1
 )
 
-plot_stress_vs_strain.gpl
+plot_stress_vs_strain_v2.gpl
 
 pause

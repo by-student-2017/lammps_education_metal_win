@@ -7,7 +7,7 @@ for %%1 in (in_v2.lmp) do (
   echo input file: %%1
 )
 
-plot_stress_vs_strain_compress.gpl
+plot_stress_vs_strain_compress_v2.gpl
 
 plot_rdf_all.gpl
 
