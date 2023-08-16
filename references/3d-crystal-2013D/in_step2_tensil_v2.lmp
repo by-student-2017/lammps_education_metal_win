@@ -1,7 +1,7 @@
 #3.5.2. Input file for tensile testing of a previously equilibrated crystal
 # 3d tensile simulation JP4review
 #   3d tensile simulation (at strain rate 10^13 s^-1)
-
+# LAMMPS 64-bit 22Dec2022-MSMPI
 clear
 #-------------------- Environment Settings -----------------------------------------------
 variable  Tdesird equal  700.0 # Desired Temperature [K]
@@ -37,7 +37,7 @@ compute 2 all temp              # computes the temp of a group of atoms
 compute 3 all reduce sum c_1[2] # reduces vector quantities of all stress tensors in y-direction and adds all the quantities to a single scalar value
 compute kea all ke/atom         # This is related to temperature
 
-variable stress     equal c_3/(3*vol)    # assigns a value to the variable name stress
+variable stress     equal c_3/vol # assigns a value to the variable name stress
 variable stress_GPa equal v_stress/10000 # converts the stress calculated to GPa
 
 #for units metal, pressure is in 1 [bars] = 100 [kPa] = 0.1 [MPa] = 1x10^-4/ [GPa] => p3 is in GPa
@@ -85,7 +85,7 @@ run ${Nsteps}
 # compute        peratom all stress/atom NULL
 # compute        p all reduce sum c_peratom[1] c_peratom[2] c_peratom[3]
 # variable       press equal -(c_p[1]+c_p[2]+c_p[3])/(3*vol)
-# # pxx = -c_p[1]/(3*vol), pyy = -c_p[2]/(3*vol), pzz = -c_p[3]/(3*vol)
+# # pxx = -c_p[1]/vol, pyy = -c_p[2]/vol, pzz = -c_p[3]/vol
 # thermo_style   custom step temp etotal press v_press
 # metal unit: press = bar = 0.1 MPa, length = Angstrom = 1e-10 m
 #-----------------------------------------------------------------------------------------
