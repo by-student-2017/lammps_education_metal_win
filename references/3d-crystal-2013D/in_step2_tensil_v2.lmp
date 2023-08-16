@@ -1,6 +1,8 @@
 #3.5.2. Input file for tensile testing of a previously equilibrated crystal
 # 3d tensile simulation JP4review
 #   3d tensile simulation (at strain rate 10^13 s^-1)
+
+clear
 #-------------------- Environment Settings -----------------------------------------------
 variable  Tdesird equal  700.0 # Desired Temperature [K]
 
@@ -13,7 +15,6 @@ variable  es_rate equal    0.1 # engineering strain rate (1/time units)
 # Note: es_rate/dt_ps = 0.1 / (1e-15) = 1.0e13 [1/s]
 
 #-------------------- Initialization -----------------------------------------------------
-clear
 echo both
 units metal
 boundary p p p
@@ -43,7 +44,7 @@ variable    tmp equal ly
 variable     lo equal ${tmp}
 variable strain equal (ly-v_lo)/v_lo
 
-thermo 10
+thermo ${DumpFreq}
 thermo_style custom step temp press vol etotal c_2 v_strain v_stress v_stress_GPa
 
 #---------- output file settings -------------------
@@ -59,10 +60,10 @@ dump_modify     d1 element Cu
 #---------------------------------------------------
 #log log5050_JP4_review_10_11s-1_70_strain_f1_allatoms.dat
 
-velocity all create 700 482748 rot yes mom yes dist gaussian
+velocity all create ${Tdesird} 482748 rot yes mom yes dist gaussian
 
 #-------------------- Run the simulation -------------------------------------------------
-# strain rate of X.X [1/time units] is applied in y direction
+# strain rate of 0.1 [1/time units] is applied in y direction
 fix 1 all deform 1 y erate ${es_rate}
 
 # all atoms rescaled to new positions while temp and pressure is conserved

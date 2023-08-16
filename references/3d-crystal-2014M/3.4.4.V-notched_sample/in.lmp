@@ -44,11 +44,14 @@ thermo 100 # computes and prints thermodynamic
 thermo_style custom step temp vol press etotal # specifies content of thermodynamic data to be printed in screen
 
 #---------- output file settings --------------------------------------
-dump 1 all atom 10 Cu_crystal_melt_3d_s_dump_new.lammpstrj # dumps a snapshot of atom quantities every 10 time steps to the specified file
-dump_modify 1 scale no # modifies parameters of previously defined dump command.
-# A value of scale ‘no’ means atom coordinates are written in absolute distance units. 
+#dump 1 all atom 10 Cu_crystal_melt_3d_s_dump_new.lammpstrj # dumps a snapshot of atom quantities every 10 time steps to the specified file
+#dump_modify 1 scale no # modifies parameters of previously defined dump command.
+## A value of scale ‘no’ means atom coordinates are written in absolute distance units. 
 #----------------------------------------------------------------------
-log logCu_crystal_melt_3d_s_new.data # closes the current log file, opens a new log file, and begins logging information to it
+dump            d1 all cfg 10 cfg/run.*.cfg mass type xs ys zs id type vx vy vz fx fy fz
+dump_modify     d1 element Cu
+#----------------------------------------------------------------------
+#log logCu_crystal_melt_3d_s_new.data # closes the current log file, opens a new log file, and begins logging information to it
 
 # calculates the radial distribution function (RDF)
 compute myRDF all rdf 1000
@@ -60,5 +63,8 @@ velocity all create 300 873847 rot yes mom yes dist gaussian # sets the velocity
 fix 1 all npt temp 100 100 0.1 iso 0 0 0.1 # temp and pressure conserved
 run 1000 # program is run for 1000 iterations
 unfix 1  # deletes the previously defined fix 1
+
+#-------------------- Output data file ---------------------------------------------------
+write_data Test.dat
 
 #-------------------- End ----------------------------------------------------------------
