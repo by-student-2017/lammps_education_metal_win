@@ -1,0 +1,87 @@
+#3.5.2. Input file for tensile testing of a previously equilibrated crystal
+# 3d tensile simulation JP4review
+#   3d tensile simulation (at strain rate 10^13 s^-1)
+#-------------------- Environment Settings -----------------------------------------------
+variable  Tdesird equal  700.0 # Desired Temperature [K]
+
+variable   Nsteps equal   7000 # Number of simulation cycles
+variable DumpFreq equal    100 # For print out
+
+variable    dt_ps equal  0.001 # 0.001 [ps] = 1 [fs]
+
+variable  es_rate equal    0.1 # engineering strain rate (1/time units)
+# Note: es_rate/dt_ps = 0.1 / (1e-15) = 1.0e13 [1/s]
+
+#-------------------- Initialization -----------------------------------------------------
+clear
+echo both
+units metal
+boundary p p p
+
+#-------------------- Read structure file ------------------------------------------------
+atom_style atomic
+
+# reads the data file containing the atom positions of the equilibrated crystal in the specified file
+read_data EQUILIBRATED_CRYSTAL_file.txt
+
+#-------------------- Force field --------------------------------------------------------
+pair_style eam/alloy
+pair_coeff * * Cu_zhou04.eam.alloy Cu
+
+#-------------------- Settings -----------------------------------------------------------
+timestep ${dt_ps}
+
+compute 1 all stress/atom NULL  # computes the symmetric per-atom stress tensor for each atom in a group.
+compute 2 all temp              # computes the temp of a group of atoms
+compute 3 all reduce sum c_1[2] # reduces vector quantities of all stress tensors in y-direction and adds all the quantities to a single scalar value
+compute kea all ke/atom         # This is related to temperature
+
+variable stress     equal c_3/(3*vol)    # assigns a value to the variable name stress
+variable stress_GPa equal v_stress/10000 # converts the stress calculated to GPa
+
+variable    tmp equal ly
+variable     lo equal ${tmp}
+variable strain equal (ly-v_lo)/v_lo
+
+thermo 10
+thermo_style custom step temp press vol etotal c_2 v_strain v_stress v_stress_GPa
+
+#---------- output file settings -------------------
+fix fo1 all ave/time 1 3 3 c_2 v_strain v_stress v_stress_GPa file stress_vs_strain.txt
+
+#---------- output file settings ------------------------
+#dump 1 all atom 100 dump.JP4_tensile_ 10_11s_1_70_strain_allatoms.lammpstrj
+#dump 2 all custom 1 dump.stress_atom_Jp4_review_10_11s-1_70strain_f1_allatoms type x y z c_1[1] c_1[2] c_1[3] c_1[4] c_1[5] c_1[6]
+##dumps atom type; x,y,z coordinates; 6 stress tensors computed in 1 to an array of 6 elements
+#---------------------------------------------------
+dump            d1 all cfg ${DumpFreq} cfg_step2_tensil/run.*.cfg mass type xs ys zs id type vx vy vz fx fy fz c_kea
+dump_modify     d1 element Cu
+#---------------------------------------------------
+#log log5050_JP4_review_10_11s-1_70_strain_f1_allatoms.dat
+
+velocity all create 700 482748 rot yes mom yes dist gaussian
+
+#-------------------- Run the simulation -------------------------------------------------
+# strain rate of X.X [1/time units] is applied in y direction
+fix 1 all deform 1 y erate ${es_rate}
+
+# all atoms rescaled to new positions while temp and pressure is conserved
+fix 2 all npt temp ${Tdesird} ${Tdesird} $(1000*dt) x 0 0 $(1000*dt) z 0 0 $(1000*dt) dilate all
+
+# Resets the temp of atoms to 700 K by rescaling velocities after every 10 steps
+fix 3 all temp/rescale 10 ${Tdesird} ${Tdesird} 0.05 1.0
+
+# number of iterations is given so as to give 70% strain to the material
+run ${Nsteps}
+
+#-------------------- End ----------------------------------------------------------------
+
+#-----------------------------------------------------------------------------------------
+# Note
+# compute        peratom all stress/atom NULL
+# compute        p all reduce sum c_peratom[1] c_peratom[2] c_peratom[3]
+# variable       press equal -(c_p[1]+c_p[2]+c_p[3])/(3*vol)
+# # pxx = -c_p[1]/(3*vol), pyy = -c_p[2]/(3*vol), pzz = -c_p[3]/(3*vol)
+# thermo_style   custom step temp etotal press v_press
+# metal unit: press = bar = 0.1 MPa, length = Angstrom = 1e-10 m
+#-----------------------------------------------------------------------------------------

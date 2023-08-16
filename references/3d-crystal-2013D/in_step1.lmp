@@ -1,5 +1,4 @@
-# 3.5.1. Input file for obtaining equilibrated 3D-crystal lattice using LAMMPS:
-
+# 3.5.1. Input file for obtaining equilibrated 3D-crystal lattice using LAMMPS
 #-------------------- Initialization -----------------------------------------------------
 echo both         # echoes each input script command to both log file and screen
 units metal       # determines units of all quantities used in the input file
@@ -34,11 +33,14 @@ thermo 10 # computes and prints thermodynamic data after every 10 timesteps
 thermo_style custom step temp vol press etotal pe ke # pecifies content of thermodynamic data to be printed in screen & log file
 
 #---------- output file settings -------------------
-dump 1 all atom 100 Cu_crystal_3d_s_dump_EQUILIBRATED.lammpstrj # dumps a snapshot of atom quantities every 100 timesteps to the specified file
-dump_modify 1 scale no # modifies parameters of previously defined dump command. 
-# A value of scale ‘no’ means atom coordinates are written in absolute distance units.
+#dump 1 all atom 100 Cu_crystal_3d_s_dump_EQUILIBRATED.lammpstrj # dumps a snapshot of atom quantities every 100 timesteps to the specified file
+#dump_modify 1 scale no # modifies parameters of previously defined dump command. 
+##A value of scale ‘no’ means atom coordinates are written in absolute distance units.
 #---------------------------------------------------
-log logCu_crystal_3d_s_EQUILIBRATED.data # closes the current log file, opens a new log file, and begins logging  information to it
+dump            d1 all cfg 100 cfg_step1/run.*.cfg mass type xs ys zs id type vx vy vz fx fy fz
+dump_modify     d1 element Cu
+#---------------------------------------------------
+#log logCu_crystal_3d_s_EQUILIBRATED.data # closes the current log file, opens a new log file, and begins logging  information to it
 
 velocity all create 300 873847 rot yes mom yes dist gaussian # sets the velocity of a group of atoms
 
@@ -46,5 +48,8 @@ velocity all create 300 873847 rot yes mom yes dist gaussian # sets the velocity
 fix 1 all npt temp 300 300 0.1 iso 0.0 0.0 0.1 # temp and pressure conserved
 run 1000 # program is run for 1000 iterations
 unfix 1  # deletes the previously defined fix 1
+
+#-------------------- Output data file ---------------------------------------------------
+write_data EQUILIBRATED_CRYSTAL_file.txt
 
 #-------------------- End ----------------------------------------------------------------
