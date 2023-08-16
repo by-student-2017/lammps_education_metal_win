@@ -237,7 +237,11 @@ pair_coeff      * * ../potentials/eam/Fe-Ni-Cr_fcc.eam.fs Fe Ni Cr
   https://www.osti.gov/servlets/purl/1241668
 
 
-[16] Buckingham database
+[16] QC Method
+  http://qcmethod.org/
+
+
+[17] Buckingham database
   https://www5.hp-ez.com/hp/calculations/page515
 ------------------------------------------------------------------------------
 # Input file
