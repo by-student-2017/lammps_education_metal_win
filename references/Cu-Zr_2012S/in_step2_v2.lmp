@@ -1,5 +1,5 @@
 # 4.4 Tensile Deformation of Quenched Specimens
-#   3d tensile simulation (at strain rate 10^11 [1/s])
+#   3d tensile simulation (at strain rate 10^14 [1/s])
 # LAMMPS 64-bit 22Dec2022-MSMPI
 clear
 #-------------------- Environment Settings -----------------------------------------------
@@ -11,9 +11,9 @@ variable DumpFreq equal    100 # For print out
 variable    dt_ps equal  0.001 # 0.001 [ps] = 1 [fs]
 
 variable  es_rate equal    0.1 # engineering strain rate (1/time units)
-# Note: (es_rate/100)/dt_ps = (0.1/100) / (1e-15) = 1.0e13 [1/s]
+# Note: (es_rate/1)/dt_ps = 0.1 / (1e-15) = 1.0e14 [1/s]
 # L(t) = L(0)*(1 + es_rate*dt*step)
-# strain [%] = es_rate*dt*Nstep*100 [%] = 0.1/100 * 0.001 * 4000 * 100 = 40 [%]
+# strain [%] = es_rate*dt*Nstep*100 [%] = 0.1 * 0.001 * 4000 * 100 = 40 [%]
 
 #-------------------- Initialization -----------------------------------------------------
 echo both
@@ -71,7 +71,7 @@ velocity all create  ${Tdesird} 482748 rot yes mom yes dist gaussian
 
 #-------------------- Run the simulation -------------------------------------------------
 # strain rate of 0.1 [1/time units] is applied in y direction
-fix 1 all deform 100 y erate ${es_rate}
+fix 1 all deform 1 y erate ${es_rate}
 
 # all atoms rescaled to new positions while temp and pressure is conserved
 fix 2 all npt temp ${Tdesird} ${Tdesird} $(100*dt) x 0 0 $(1000*dt) z 0 0 $(1000*dt) dilate all
@@ -83,3 +83,12 @@ fix 3 all temp/rescale 10 ${Tdesird} ${Tdesird} 0.05 1.0
 run ${Nsteps}
 
 #-------------------- End ----------------------------------------------------------------
+
+#-----------------------------------------------------------------------------------------
+# Note
+# compute        peratom all stress/atom NULL
+# compute        p all reduce sum c_peratom[1] c_peratom[2] c_peratom[3]
+# variable       press equal -(c_p[1]+c_p[2]+c_p[3])/(3*vol)
+# thermo_style   custom step temp etotal press v_press
+# metal unit: press = bar = 0.1 MPa, length = Angstrom = 1e-10 m
+#-----------------------------------------------------------------------------------------
