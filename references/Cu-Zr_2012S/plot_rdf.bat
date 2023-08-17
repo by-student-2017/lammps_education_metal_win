@@ -1,9 +1,9 @@
 @echo off
 
-set file_name=Cu_Zr_quench_large_restart.rdf
-set ndata=100
-
 echo "Set up new_rdf.dat for plot_rdf_all_v2.gpl"
+
+set file_name=Cu_zr_melt_3.rdf
+set ndata=100
 
 del new_rdf.dat
 
