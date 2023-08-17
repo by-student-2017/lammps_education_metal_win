@@ -28,6 +28,23 @@ boundary p p p
 #-------------------- Atom & Lattice description -----------------------------------------
 atom_style atomic
 
+# method 1 (easy method)
+#----------------------------------------------------------------------
+#lattice fcc 3.165
+#region box block 0 10 0 10 0 10 units box
+#create_box 3 box # define 3 types
+#
+#region cu block 0 10 0 10 0 10 units box
+#
+#create_atoms 1 region fe units box
+#
+## creating composition using set command for Fe0.70-Ni0.10-Cr0.20 alloy
+#set region fe type/fraction 2 0.10 12393 # set Ni 10%, randomly
+#set region fe type/fraction 3 0.20 12393 # set Cr 20%, randomly
+#----------------------------------------------------------------------
+
+# method 2 (layer type)
+#----------------------------------------------------------------------
 lattice fcc 3.165
 region new_region block 0 10 0 10 0 10
 create_box 3 new_region # define 3 types
@@ -42,6 +59,7 @@ region fecr_region block 0 10 0 10 5 10 # set Fe-Cr area
 # creating composition using set command for Fe0.70-Ni0.10-Cr0.20 alloy
 set region feni_region type/fraction 2 0.2 12393 # for Fe-Ni area
 set region fecr_region type/fraction 3 0.4 12393 # for Fe-Cr area
+#----------------------------------------------------------------------
 
 #-------------------- Force field --------------------------------------------------------
 pair_style eam/alloy
@@ -68,7 +86,6 @@ fix mc_fecr all atom/swap 1 1 12345 ${MC_temp} ke no types 1 3
 run ${MC_Nsteps}
 unfix mc_feni
 unfix mc_fecr
-
 
 replicate 1 1 1 # Extend to 1x1x1 cell
 
