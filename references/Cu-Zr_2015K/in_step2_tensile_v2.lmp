@@ -1,0 +1,130 @@
+#4.2 Tensile deformation of quenched specimen
+#  This program is for obtaining tensile behavior of Cu50-Zr50 for 3D system (5x10^11 [1/s] strain rate).
+# LAMMPS 64-bit 22Dec2022-MSMPI
+clear
+#-------------------- Environment Settings -----------------------------------------------
+variable  Tdesird equal   300.0 # Desired Temperature [K] (Test = Tensil or Compressive)
+
+variable   Nsteps equal  200000 # Number of simulation cycles
+variable DumpFreq equal   10000 # For print out
+
+variable     dt_ps equal  0.002 # 0.002 [ps] = 2 [fs]
+
+variable  es_rate equal   0.001 # engineering strain rate (1/time units)
+# Note: (es_rate/1)/dt_ps = 0.001 / (2e-15) = 5.0e11 [1/s]
+# L(t) = L(0)*(1 + es_rate*dt*step)
+# strain [%] = es_rate*dt*Nstep*100 [%] = 0.001 * 0.002 * 200000 * 100 = 40 [%]
+
+#-------------------- Initialization -----------------------------------------------------
+echo both
+units metal
+dimension 3
+boundary s p s
+
+#-------------------- Read structure file ------------------------------------------------
+atom_style atomic
+read_data CuZr_cooling_10_13.txt
+
+#-------------------- Force field --------------------------------------------------------
+pair_style eam/fs
+pair_coeff * * CuZr_mm.eam.fs Cu Zr
+
+#-------------------- Energy Minimization ------------------------------------------------
+# 0 K, structure optimization
+minimize 1.0e-9 1.0e-6 1000 1000
+
+#-------------------- Settings -----------------------------------------------------------
+reset_timestep 0
+
+timestep ${dt_ps}
+
+velocity all create 300 8173847 rot yes mom yes dist gaussian
+
+#-------------------- NVT simulation -----------------------------------------------------
+fix A all nvt temp 300 ${Tdesird} $(100*dt)
+run ${DumpFreq} # same number of thermo or dump output
+
+#-------------------- Settings -----------------------------------------------------------
+compute       1 all stress/atom NULL  # computes the symmetric per-atom stress tensor for each atom in a group.
+compute    csym all centro/atom fcc
+compute peratom all pe/atom 
+
+compute       2 all temp              # computes the temp of a group of atoms
+compute       3 all reduce sum c_1[2] # reduces vector quantities of all stress tensors in y-direction and adds all the quantities to a single scalar value
+compute     kea all ke/atom           # This is related to temperature
+
+variable stress     equal c_3/vol     # assigns a value to the variable name stress
+variable stress_GPa equal v_stress/10000 # converts the stress calculated to GPa
+
+variable    tmp equal ly
+variable     lo equal ${tmp}
+variable strain equal (ly-v_lo)/v_lo
+
+variable p1  equal "-pxx/10000"
+variable p2  equal "-pyy/10000"
+variable p3  equal "-pzz/10000"
+
+variable p12 equal "-pxy/10000"
+variable p23 equal "-pyz/10000"
+variable p13 equal "-pxz/10000"
+
+variable fm equal "(v_p2+v_p3+v_p1)/3" # Hydrostatic stress
+variable fv equal "sqrt(((v_p2-v_p3)^2+(v_p3-v_p1)^2+(v_p1-v_p2)^2+6*(v_p12^2+v_p23^2+v_p13^2))/2)" # Von Mises Stress
+variable  t equal "v_fm/v_fv"
+variable fd equal (((v_p2-v_fm)*(v_p3-v_fm)*(v_p1-v_fm))-(v_p12)^2*(v_p3-v_fm)-(v_p13)^2*(v_p2-v_fm)-(v_p23)^2*(v_p1-v_fm)+2*v_p12*v_p23*v_p13) # Deviatoric Von Mises stress
+
+# principal stresses
+variable I1 equal "(v_p1+v_p2+v_p3)"
+variable I2 equal "((v_p1)*(v_p2))+((v_p2)*(v_p3))+((v_p1)*(v_p3))-(v_p12)^2-(v_p23)^2-(v_p13)^2"
+variable I3 equal "((v_p1)*(v_p2)*(v_p3))-((v_p1)*((v_p23)^2))-((v_p2)*((v_p13)^2))-((v_p3)*((v_p12)^2))+2*(v_p12)*(v_p23)*(v_p13)"
+variable  A equal "(acos(((2*(v_I1)^3)-9*(v_I1)*(v_I2)+27*(v_I3))/(2*((v_I1)^2-(3*(v_I2)))^(3/2))))/3"
+variable s1 equal "((v_I1)/3)+(2/3)*(sqrt((v_I1)^2-(3*(v_I2))))*cos(v_A)" 
+variable s2 equal "((v_I1)/3)+(2/3)*(sqrt((v_I1)^2-(3*(v_I2))))*cos((v_A)+(2*PI)/3)" 
+variable s3 equal "((v_I1)/3)+(2/3)*(sqrt((v_I1)^2-(3*(v_I2))))*cos((v_A)+(4*PI)/3)" 
+
+thermo ${DumpFreq}
+thermo_style custom step temp press vol etotal c_2 v_strain v_stress v_stress_GPa v_p2
+
+#---------- output file settings --------------------------
+fix fo1 all ave/time 1 3 3 c_2 v_strain v_stress v_stress_GPa v_p2 file stress_vs_strain.txt
+
+#---------- output file settings -------------------------
+dump            d1 all cfg ${DumpFreq} cfg/run.*.cfg mass type xs ys zs c_csym c_peratom id type vx vy vz fx fy fz
+dump_modify     d1 element Cu Zr
+#---------------------------------------------------------
+log NVTlog5050_tensile_CuZr.dat
+
+#-------------------- Run the simulation -------------------------------------------------
+# Temperature controller
+fix 1 all nvt temp ${Tdesird} ${Tdesird} $(100*dt)
+
+# Tensile deformation
+# strain rate of 0.001 [1/time units] is applied in y direction
+fix 2 all deform 1 y erate ${es_rate} units box 
+#-----------------------------------------------------------------------
+fix 3 all print ${DumpFreq} "${strain} ${p2}" file stress_strain_data.txt
+#-----------------------------------------------------------------------
+fix def all print 1 "${strain} ${p2} ${s1} ${s2} ${s3} ${fm} ${fv} ${t} ${fd}" file CuZr_tension_von.txt
+
+# number of iterations is given so as to give 40% strain to the material
+run ${Nsteps}
+
+#-------------------- End ----------------------------------------------------------------
+
+#-----------------------------------------------------------------------------------------
+# Note: stress_strain_data.txt (output file)
+# Data: strain, p2 (stress of y direction)
+#-----------------------------------------------------------------------------------------
+# Note: CuZr_tension_von.txt (output file)
+# Data: strain, p2 (stress of y direction),  principal stresses (s1, s2 and s3),
+# fm (Hydrostatic stress), fv (Von Mises Stress), t (fm/fv), fd (Deviatoric Von Mises stress)
+#-----------------------------------------------------------------------------------------
+
+#-----------------------------------------------------------------------------------------
+# Note
+# compute        peratom all stress/atom NULL
+# compute        p all reduce sum c_peratom[1] c_peratom[2] c_peratom[3]
+# variable       press equal -(c_p[1]+c_p[2]+c_p[3])/(3*vol)
+# thermo_style   custom step temp etotal press v_press
+# metal unit: press = bar = 0.1 MPa, length = Angstrom = 1e-10 m
+#-----------------------------------------------------------------------------------------
