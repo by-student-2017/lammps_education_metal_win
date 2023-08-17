@@ -1,0 +1,127 @@
+#4.SIMULATION RESULTS
+#  4.1 Creation of amorphous alloy
+#    4.1.1 Creation of Cu50-Zr50 glassy alloy
+#This program is for obtaining quenched structure by melting Cu50-Zr50 alloy for 3d system.
+
+#-------------------- All Initialization -------------------------------------------------
+clear
+
+#-------------------- Environment Settings -----------------------------------------------
+variable anneaing_Temp equal  1150 # Annealing temperature [K]
+variable  cooling_Temp equal   270 #   Cooling temperature [K] (Final target value)
+variable  cooling_Time equal   100 #   Cooling time [ps]
+
+variable     Nsteps_h equal  10000 # Number of simulation cycles (heating process)
+variable     Nsteps_a equal  50000 # Number of simulation cycles (anneling process)
+
+variable     DumpFreq equal    100 # For print out
+
+variable         dt_ps equal 0.002 # 2 [fs]
+
+variable     Nsteps_c equal v_cooling_Time/v_dt_ps # Number of simulation cycles (cooling process)
+
+#-------------------- Initialization -----------------------------------------------------
+echo both
+units metal
+dimension 3
+boundary p p p
+
+#-------------------- Atom & Lattice description ----------------------------------------
+atom_style atomic
+
+region box block 0 50 0 100 0 50 units box
+create_box 2 box
+
+lattice fcc 3.61
+region cu block 0 50 0 100 0 50 units box
+create_atoms 1 region cu units box
+
+# creating composition using set command for Cu50-Zr50 alloy
+set region cu type/fraction 2 0.5 12393 # set Zr 50%, randomly.
+
+group cu type 1
+group zr type 2
+
+#-------------------- Force field --------------------------------------------------------
+pair_style eam/fs
+pair_coeff * * CuZr_mm.eam.fs Cu Zr
+
+#-------------------- Energy Minimization ------------------------------------------------
+# 0 [K], structure optimization
+minimize 1.0e-3 1.0e-6 1000 10000
+
+#-------------------- Settings -----------------------------------------------------------
+reset_timestep 0
+
+timestep ${dt_ps}
+
+thermo ${DumpFreq}
+thermo_style custom step temp vol press pe ke etotal
+
+#---------- output file settings -------------------
+dump            d1 all cfg ${DumpFreq} cfg/run.*.cfg mass type xs ys zs id type vx vy vz fx fy fz
+dump_modify     d1 element Cu Zr
+#---------------------------------------------------
+log log5050_q_bar_10e13ks-1.data
+
+# calculates the radial distribution function (RDF) and output file
+compute myRDF all rdf 100
+fix 1 all ave/time 1000 1 1000 c_myRDF[*] file Cu_Zr_quench_large_restart.rdf mode vector
+
+velocity all create 300.0 873847 rot yes mom yes dist gaussian
+
+#-------------------- Run the simulation -------------------------------------------------
+
+# heaging proces
+#--------------------------------
+dump            d2 all cfg ${DumpFreq} cfg/run.heating.*.cfg mass type xs ys zs id type vx vy vz fx fy fz
+dump_modify     d2 element Cu Zr
+#--------------------------------
+fix 2 all npt temp              300 ${anneaing_Temp} $(100*dt) iso 0.0 0.0 $(1000*dt)
+run ${Nsteps_h}
+unfix 2
+undump d2
+
+# anneling process
+#--------------------------------
+dump            d3 all cfg ${DumpFreq} cfg/run.anneling.*.cfg mass type xs ys zs id type vx vy vz fx fy fz
+dump_modify     d3 element Cu Zr
+#--------------------------------
+fix 3 all npt temp ${anneaing_Temp} ${anneaing_Temp} $(100*dt) iso 0.0 0.0 $(1000*dt)
+run ${Nsteps_a}
+unfix 3
+undump d3
+
+# cooling process
+#--------------------------------
+dump            d4 all cfg ${DumpFreq} cfg/run.cooling.*.cfg mass type xs ys zs id type vx vy vz fx fy fz
+dump_modify     d4 element Cu Zr
+#--------------------------------
+fix 4 all npt temp ${anneaing_Temp} ${cooling_Temp}  $(100*dt) iso 0.0 0.0 $(1000*dt)
+run ${Nsteps_c}
+unfix 4
+undump d4
+
+#--------------------------------------------------------------------------------
+# The calculation conditions for this time are as follows.
+#--------------------------------------------------------------------------------
+variable heating_rate equal "(v_anneaing_Temp - 300) / ( v_dt_ps * v_Nsteps_h ) * 1e-2"
+print "heating rate = ${heating_rate} x 10^14 [K/s]"
+#--------------------------------------------------------------------------------
+print "anneling time = $(v_dt_ps*v_Nsteps_a) [ps]"
+#--------------------------------------------------------------------------------
+variable cooling_rate equal "(v_anneaing_Temp - v_cooling_Temp) / ( v_dt_ps * v_Nsteps_c ) * 1e-2"
+print "cooling rate = ${cooling_rate} x 10^14 [K/s]"
+#--------------------------------------------------------------------------------
+
+#-------------------- Output data file ---------------------------------------------------
+write_data CuZr_cooling_10_13.txt
+
+#-------------------- End ----------------------------------------------------------------
+
+#-----------------------------------------------------------------------------------------
+# Memo
+# Temp difference = 1150 K - 270 K = 880 K
+# Total time taken for cooling = timestep x no of iterations in quenched step = (0.002 x 10000) ps
+# So cooling rate = 880 K / (0.002 x 10000) ps = 4.4x10^13 K/s for the above in.file
+#-----------------------------------------------------------------------------------------
