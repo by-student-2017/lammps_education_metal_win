@@ -141,6 +141,10 @@ input file (metal unit, lammps)
   Cu-Ag_2D (need Data-2DCu-20grs-noKk-TBS92A.in) (python and fortran code)
   (need Data-Cu-411-y123-17pct-1.in)
   
+- M. R. Pringle, Master Thesis (2021).
+  https://scholarworks.uvm.edu/graddis/1410/
+  Ag-Ni (need Data-ntAg-12nm-grs-NoTwin.in)
+  
 - T. Metspalu, Master Thesis (2015)
   https://core.ac.uk/download/pdf/187147604.pdf
   CLIC_electrical_breakdown (test version)
@@ -154,14 +158,6 @@ input file (metal unit, lammps)
   https://trace.tennessee.edu/utk_gradthes/3776/
   Radiation_defects
   
-- M. R. Pringle, Master Thesis (2021).
-  https://scholarworks.uvm.edu/graddis/1410/
-  Ag-Ni (need Data-ntAg-12nm-grs-NoTwin.in)
-
-- S. E. Ferry, thesis (2011).
-  https://dspace.mit.edu/handle/1721.1/119031
-  Ni-Al (need NiAl_50.data)
-
 - S. L. Ball, thesis (2014).
   https://dspace.mit.edu/handle/1721.1/104145
   Migration
@@ -389,6 +385,10 @@ input file (metal unit, lammps)
   
 - https://openscholarship.wustl.edu/art_sci_etds/1722/
   ZrNi
+  
+- S. E. Ferry, thesis (2011).
+  https://dspace.mit.edu/handle/1721.1/119031
+  Ni-Al (need NiAl_50.data)
   
 - S. Zhizhen, Doctor thesis (2022).
   https://repository.lboro.ac.uk/articles/thesis/Damage_of_nuclear_graphite_and_structural_response_of_carbon_fibre_to_tension/22345081/1/files/39760825.pdf
