@@ -1,5 +1,5 @@
-# 4.2 Creation of Cu-Zr-Al glassy alloys
-#  4.2.1 Creation of Cu49Zr49Al2 alloy
+# 4.2 Creation of Cu-Zr-Al-Ni glassy alloys
+#  4.2.1 Creation of Cu30Zr55Al10Ni5 alloy
 #(for size X=50 Angstrom, Y=100 Angstrom, Z=100 Angstrom & cooling rate 10^14 K/s)
 # LAMMPS 64-bit 22Dec2022-MSMPI
 clear
@@ -33,9 +33,9 @@ region cu block 0 50 0 100 0 50 units box
 create_atoms 1 region cu units box
 
 # creating composition by using set command for Cu30-Zr55-Al10-Ni5 alloy 
-set region cu type/fraction 2 0.49 12393 # set Zr 55%, randomly
-set region cu type/fraction 3 0.02 12393 # set Al 10%, randomly
-set region cu type/fraction 4 0.02 12393 # set Ni  5%, randomly
+set region cu type/fraction 2 0.55 12393 # set Zr 55%, randomly
+set region cu type/fraction 3 0.10 12393 # set Al 10%, randomly
+set region cu type/fraction 4 0.05 12393 # set Ni  5%, randomly
 
 #-------------------- Force field --------------------------------------------------------
 pair_style eam/alloy
@@ -104,8 +104,50 @@ variable cooling_rate equal "(v_Tdesird - 300) / ( v_dt_ps * v_Nsteps_c ) * 1e-2
 print "cooling rate = ${cooling_rate} x 10^14 [K/s]"
 #--------------------------------------------------------------------------------
 
+#--------------------------------------------------------------------------------
+# Since random numbers are used for arrangement, the composition ratio is #
+# slightly different from the specified ratio. Under the conditions calculated this time, 
+# the composition ratio is as follows. Also keep in mind that this value will change 
+# if you change the random number seed.
+#--------------------------------------------------------------------------------
+group cu type 1
+group zr type 2
+group al type 3
+group ni type 4
+#----------------------------
+variable  ncu equal count(cu)
+variable  nzr equal count(zr)
+variable  nal equal count(al)
+variable  nni equal count(ni)
+#----------------------------
+variable ntot equal ${ncu}+${nzr}+${nal}+${nni}
+#----------------------------
+variable nncu equal ${ncu}/${ntot}
+variable nnzr equal ${nzr}/${ntot}
+variable nnal equal ${nal}/${ntot}
+variable nnni equal ${nni}/${ntot}
+#-----------------------------
+variable snncu format nncu %05.3f
+variable snnzr format nnzr %05.3f
+variable snnal format nnal %05.3f
+variable snnni format nnni %05.3f
+#----------------------------
+variable pncu equal ${ncu}/${ntot}*100
+variable pnzr equal ${nzr}/${ntot}*100
+variable pnal equal ${nal}/${ntot}*100
+variable pnni equal ${nni}/${ntot}*100
+#-----------------------------
+variable spncu format pncu %04.1f
+variable spnzr format pnzr %04.1f
+variable spnal format pnal %04.1f
+variable spnni format pnni %04.1f
+#--------------------------------------------------------------------------------
+print "Cu: ${snncu}, Zr: ${snnzr}, Al: ${snnal}, Ni: ${snnni} [ratio]"
+print "Cu: ${spncu}, Zr: ${spnzr}, Al: ${spnal}, Ni: ${spnni} [%]"
+#--------------------------------------------------------------------------------
+
 #-------------------- Output data file ---------------------------------------------------
-write_data Cu30-Zr55-Al10-Ni5.data # output data for "4.2.1.4_Tensile_deformation"
+write_data dCu30-Zr55-Al10-Ni5.data # output data for "4.2.1.4_Tensile_deformation"
 
 #-------------------- End ----------------------------------------------------------------
 

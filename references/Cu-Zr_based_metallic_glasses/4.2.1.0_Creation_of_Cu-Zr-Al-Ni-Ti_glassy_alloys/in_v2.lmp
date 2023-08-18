@@ -1,5 +1,5 @@
-# 4.2 Creation of Cu-Zr-Al glassy alloys
-#  4.2.1 Creation of Cu49Zr49Al2 alloy
+# 4.2 Creation of Cu-Zr-Al-Ni-Ti glassy alloys
+#  4.2.1 Creation of Cu0.179-Zr0.525-Al0.10-Ni0.146-Ti0.05 alloy
 #(for size X=50 Angstrom, Y=100 Angstrom, Z=100 Angstrom & cooling rate 10^14 K/s)
 # LAMMPS 64-bit 22Dec2022-MSMPI
 clear
@@ -24,7 +24,7 @@ boundary p p p
 atom_style atomic
 
 region box block 0 50 0 100 0 50 units box
-create_box 3 box
+create_box 5 box # set 5 types (4 elements)
 
 lattice fcc 3.61
 
@@ -32,13 +32,15 @@ region cu block 0 50 0 100 0 50 units box
 
 create_atoms 1 region cu units box
 
-# creating composition by using set command for cuzral alloy 
-set region cu type/fraction 2 0.49 12393 # set Zr 49%, randomly
-set region cu type/fraction 3 0.02 12393 # set Al  2%, randomly
+# creating composition by using set command for Cu0.179-Zr0.525-Al0.10-Ni0.146-Ti0.05 alloy 
+set region cu type/fraction 2 0.525 12393 # set Zr 52.5%, randomly
+set region cu type/fraction 3 0.100 12393 # set Al 10.0%, randomly
+set region cu type/fraction 4 0.146 12393 # set Ni 14.6%, randomly
+set region cu type/fraction 5 0.050 12393 # set Ti  5.0%, randomly
 
 #-------------------- Force field --------------------------------------------------------
 pair_style eam/alloy
-pair_coeff * * CuZrAl_Zhou04.eam.alloy Cu Zr Al
+pair_coeff * * CuZrAlNiTi_Zhou04.eam.alloy Cu Zr Al Ni Ti
 
 #-------------------- Energy Minimization ------------------------------------------------
 # 0 [K], structure optimization
@@ -64,7 +66,7 @@ fix 11 all ave/time 1000 1 1000 c_myRDF[*] file cuzral2.rdf mode vector
 # heaging proces
 #---------------------------------------------------------
 dump            d2 all cfg ${DumpFreq} cfg/run.*.cfg mass type xs ys zs id type vx vy vz fx fy fz
-dump_modify     d2 element Cu Zr Al
+dump_modify     d2 element Cu Zr Al Ni Ti
 #---------------------------------------------------------
 fix 2 all npt temp        300 ${Tdesird} $(100*dt) iso 0.0 0.0 $(1000*dt)
 run ${Nsteps_h}
@@ -74,7 +76,7 @@ undump d2
 # anneling process
 #---------------------------------------------------------
 dump            d3 all cfg ${DumpFreq} cfg/run.*.cfg mass type xs ys zs id type vx vy vz fx fy fz
-dump_modify     d3 element Cu Zr Al
+dump_modify     d3 element Cu Zr Al Ni Ti
 #---------------------------------------------------------
 fix 3 all npt temp ${Tdesird} ${Tdesird} $(100*dt) iso 0.0 0.0 $(1000*dt)
 run ${Nsteps_a}
@@ -84,7 +86,7 @@ undump d3
 # cooling process
 #---------------------------------------------------------
 dump            d4 all cfg ${DumpFreq} cfg/run.*.cfg mass type xs ys zs id type vx vy vz fx fy fz
-dump_modify     d4 element Cu Zr Al
+dump_modify     d4 element Cu Zr Al Ni Ti
 #---------------------------------------------------------
 fix 4 all npt temp ${Tdesird}        300 $(100*dt) iso 0.0 0.0 $(1000*dt)
 run ${Nsteps_c}
@@ -103,44 +105,56 @@ variable cooling_rate equal "(v_Tdesird - 300) / ( v_dt_ps * v_Nsteps_c ) * 1e-2
 print "cooling rate = ${cooling_rate} x 10^14 [K/s]"
 #--------------------------------------------------------------------------------
 
-#----------------------------
+#--------------------------------------------------------------------------------
 # Since random numbers are used for arrangement, the composition ratio is #
 # slightly different from the specified ratio. Under the conditions calculated this time, 
 # the composition ratio is as follows. Also keep in mind that this value will change 
 # if you change the random number seed.
-#----------------------------
+#--------------------------------------------------------------------------------
 group cu type 1
 group zr type 2
 group al type 3
+group ni type 4
+group ni type 5
 #----------------------------
 variable  ncu equal count(cu)
 variable  nzr equal count(zr)
 variable  nal equal count(al)
+variable  nni equal count(ni)
+variable  nti equal count(ti)
 #----------------------------
-variable ntot equal ${ncu}+${nzr}+${nal}
+variable ntot equal ${ncu}+${nzr}+${nal}+${nni}+${nti}
 #----------------------------
 variable nncu equal ${ncu}/${ntot}
 variable nnzr equal ${nzr}/${ntot}
 variable nnal equal ${nal}/${ntot}
+variable nnni equal ${nni}/${ntot}
+variable nnti equal ${nti}/${ntot}
 #-----------------------------
 variable snncu format nncu %05.3f
 variable snnzr format nnzr %05.3f
 variable snnal format nnal %05.3f
+variable snnni format nnni %05.3f
+variable snnti format nnti %05.3f
 #----------------------------
 variable pncu equal ${ncu}/${ntot}*100
 variable pnzr equal ${nzr}/${ntot}*100
 variable pnal equal ${nal}/${ntot}*100
+variable pnni equal ${nni}/${ntot}*100
+variable pnti equal ${nti}/${ntot}*100
 #-----------------------------
 variable spncu format pncu %04.1f
 variable spnzr format pnzr %04.1f
 variable spnal format pnal %04.1f
-#----------------------------
-print "Cu: ${snncu}, Zr: ${snnzr}, Al: ${snnal} [ratio]"
-print "Cu: ${spncu}, Zr: ${spnzr}, Al: ${spnal} [%]"
-#----------------------------
+variable spnni format pnni %04.1f
+variable spnti format pnti %04.1f
+#--------------------------------------------------------------------------------
+print "Cu: ${snncu}, Zr: ${snnzr}, Al: ${snnal}, Ni: ${snnni}, Ti: ${snnti} [ratio]"
+print "Cu: ${spncu}, Zr: ${spnzr}, Al: ${spnal}, Ni: ${spnni}, Ti: ${spnti} [%]"
+#--------------------------------------------------------------------------------
 
 #-------------------- Output data file ---------------------------------------------------
-write_data cu49zr49al2.txt # output data for "4.2.1.4_Tensile_deformation"
+write_data Cu17-Zr52-Al10-Ni14-Ti5.data # output data for "4.2.1.4_Tensile_deformation"
 
 #-------------------- End ----------------------------------------------------------------
 
