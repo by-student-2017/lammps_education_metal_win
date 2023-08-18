@@ -26,7 +26,7 @@ create_atoms 1 region ag units box
 # creating composition using set command for Ag92-Cu8 alloy
 set region ag type/fraction 2 0.08 12393 # set Cu 8%, randomly.
 
-replicate 1 1 1 # (replicate 44 44 44 in paper)
+replicate 2 2 2 # (replicate 44 44 44 in paper)
 #--------------------------------------------------------------
 
 #--------------------------------------------------------------
@@ -60,20 +60,21 @@ compute potene all pe/atom
 velocity all create $t 4928459 rot yes dist gaussian
 
 #-------------------- Run the MC simulation (Temperature and pressure control) -----------
-fix  T_control all temp/rescale 10 $t $t 5. 1
+fix  T_control all temp/rescale 10 $t $t 0.05 1.0
 fix press_ctrl all press/berendsen aniso 0.0 0.0 1000.0
 
-fix mc all sgcmc 100000 1 $t -2.5 randseed 324234 variance 100 0.940 window_moves 8
+fix mc all atom/swap 1 1 29494 $t ke no types 1 2
+#fix mc all sgcmc 100000 1 $t -2.5 randseed 324234 variance 100 0.940 window_moves 8 # (N = 500*45*45*45) failed
 
-thermo_style custom step temp pe etotal press lx ly lx f_mc[1] f_mc[2] f_mc[3] f_mc[4]
+thermo_style custom step temp pe etotal press lx ly lx # f_mc[1] f_mc[2] f_mc[3] f_mc[4]
 
 #---------- output file settings ------------------------
-dump 2 all custom 500 frames_file/frames-3Cu.dat.* x y z type c_potene
+#dump 2 all custom 500 frames_file/frames-3Cu.dat.* x y z type c_potene
 #--------------------------------------------------------
 dump            d1 all cfg 500 cfg/run.*.cfg mass type xs ys zs id type vx vy vz fx fy fz
 dump_modify     d1 element Ag Cu
 #--------------------------------------------------------
-restart 500 restart_file/restart.dat # output data for in_step2_Tension.lmp
+#restart 500 restart_file/restart.dat # output data for in_step2_Tension.lmp
 
 run 1000000
 
