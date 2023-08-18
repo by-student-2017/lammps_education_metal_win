@@ -139,6 +139,7 @@ input file (metal unit, lammps)
 - Q. Fang, Doctor Thesis (2020).
   https://scholarworks.uvm.edu/graddis/1323/
   Cu-Ag_2D (need Data-2DCu-20grs-noKk-TBS92A.in) (python and fortran code)
+  (need Data-Cu-411-y123-17pct-1.in)
   
 - T. Metspalu, Master Thesis (2015)
   https://core.ac.uk/download/pdf/187147604.pdf
