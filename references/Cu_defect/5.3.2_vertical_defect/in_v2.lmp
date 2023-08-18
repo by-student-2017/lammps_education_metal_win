@@ -2,15 +2,23 @@
 # LAMMPS 64-bit 22Dec2022-MSMPI
 clear
 #-------------------- Environment Settings -----------------------------------------------
-# Note: es_rate/dt_ps = 0.0001 / (2e-15) = 5.0e10 [1/s]
+variable  Tdesird equal  700.0 # Desired Temperature [K]
+
+variable   Nsteps equal   7000 # Number of simulation cycles
+variable DumpFreq equal    100 # For print out
+
+variable    dt_ps equal  0.001 # 0.001 [ps] = 1 [fs]
+
+variable  es_rate equal    0.1 # engineering strain rate (1/time units)
+# Note: es_rate/dt_ps = 0.1 / (1e-15) = 1.0e13 [1/s]
 # L(t) = L(0)*(1 + es_rate*dt*step)
-# strain [%] = es_rate*dt*Nstep*100 [%] = 0.0001 * 0.002 * 6000000 * 100 = 120 [%]
+# strain [%] = es_rate*dt*Nstep*100 [%] = 0.1 * 0.001 * 7000 * 100 = 70 [%]
 
 #-------------------- Initialization -----------------------------------------------------
 units metal # determines units of all quantities used in the program
 echo both   # finds fault and displays error messages
 dimension 3
-boundary s p s
+boundary p p p
 
 #-------------------- Atom & Lattice description ----------------------------------------
 atom_style atomic
@@ -37,19 +45,22 @@ pair_coeff * * Cu_zhou04.eam.alloy Cu # energy between two atoms is taken from t
 
 #-------------------- Energy Minimization ------------------------------------------------
 # 0 [K], structure optimization
-minimize 1.0e-9 1.0e-6 1000 1000 # brings atoms to minimum energy state
+# brings atoms to minimum energy state
+minimize 1.0e-9 1.0e-6 1000 1000
 
 #-------------------- Settings -----------------------------------------------------------
 reset_timestep 0
 
-timestep 0.002 # 2 [fs], sets the timestep for subsequent simulations
+# 2 [fs], sets the timestep for subsequent simulations
+timestep ${dt_ps}
 
-#-------------------- Run the simulation (NVT) -------------------------------------------
-fix 23 all nvt temp 50 50 0.01 # fixes temperature for energy minimization of atoms
+#-------------------- Run the equilibrium simulation (NPT) at desired temperature [K] -----
+# fixes temperature for energy minimization of atoms
+fix fe1 all npt temp ${Tdesird} ${Tdesird} $(100*dt) iso 0.0 0.0 $(1000*dt)
 
 run 1000
 
-unfix 23
+unfix fe1
 
 #-------------------- Settings -----------------------------------------------------------
 reset_timestep 0
@@ -92,43 +103,45 @@ variable s1 equal "((v_I1)/3)+(2/3)*(sqrt((v_I1)^2-(3*(v_I2))))*cos(v_A)"
 variable s2 equal "((v_I1)/3)+(2/3)*(sqrt((v_I1)^2-(3*(v_I2))))*cos((v_A)+(2*PI)/3)" 
 variable s3 equal "((v_I1)/3)+(2/3)*(sqrt((v_I1)^2-(3*(v_I2))))*cos((v_A)+(4*PI)/3)"
 
-thermo 10 # computes and prints thermodynamic data after every 10 timesteps
+# computes and prints thermodynamic data after every 100 timesteps
+thermo ${DumpFreq}
 thermo_style custom step temp vol press pe ke etotal c_2 v_strain v_stress v_stress_GPa v_p2
 
 #---------- output file settings -------------------
 fix fo1 all ave/time 1 3 3 c_2 v_strain v_stress v_stress_GPa v_p2 file stress_vs_strain.txt
 
 #---------- output file settings -------------------
-#dump 1 all custom 10000 Cu_defect_vertical_tensile_50K.lammpstrj id type x y z 
-# dumps snapshot of atom quantities every 10000 timesteps to the specified file
-#---------------------------------------------------
-dump 2 all cfg 10000 cfg/Cu_defect_vertical_tensile.*.cfg mass type xs ys zs id type xs ys zs c_csym c_peratom c_kea
+dump 2 all cfg ${DumpFreq} cfg/Cu_defect_vertical_tensile.*.cfg mass type xs ys zs id type xs ys zs c_csym c_peratom c_kea
 dump_modify 2 element Cu
 #---------------------------------------------------
-#dump 3 all custom 50000 stress_peratom* id type x y z c_1[1] c_1[2] c_1[3] c_1[4] c_1[5] c_1[6]
+#dump 3 all custom ${DumpFreq} stress_peratom* id type x y z c_1[1] c_1[2] c_1[3] c_1[4] c_1[5] c_1[6]
+##dumps atom type; x,y,z coordinates; 6 stress tensors computed in 1 to an array of 6 elements
 #---------------------------------------------------
 #log NVTlog_compress_al.data
 
-
-velocity all create 10 873847 rot yes mom yes dist gaussian
+velocity all create ${Tdesird} 873847 rot yes mom yes dist gaussian
 
 #-------------------- Run the simulation -------------------------------------------------
+# strain rate of 0.01 [1/time units] is applied in y direction
+fix 1 all deform 1 y erate ${es_rate} units box # Uniaxial tensile deformation
 
-# temperature controller
-# fixes the temperature (50 K) and pressure of the given system
-fix 1 all nvt temp 50 50 0.01
+# all atoms rescaled to new positions while temp and pressure is conserved
+fix 2 all npt temp ${Tdesird} ${Tdesird} $(100*dt) x 0 0 $(1000*dt) z 0 0 $(1000*dt) dilate all
 
-# tensile deformation
-# application of tensile deformation force of 0.0001/dt [1/ps]
-fix 2 all deform 1 y erate 0.0001 units box
+# Resets the temp of atoms to 300 K by rescaling velocities after every 10 steps
+fix 3 all temp/rescale 10 ${Tdesird} ${Tdesird} 0.05 1.0
 
 # gives the stress-strain data
-fix 3 all print 10 "${strain} ${p2}" file stress_strain_data_Cu_defect_vertical_tensile_50K.txt
+fix 4 all print 10 "${strain} ${p2}" file stress_strain_data_Cu_defect_vertical_tensile_50K.txt
 
-fix def all print 1 "${strain} ${p2} ${s1} ${s2} ${s3} ${fm} ${fv} ${t} ${fd}" file Cu_defect_vertical_tensile_von.txt
+fix 5 all print 1 "${strain} ${p2} ${s1} ${s2} ${s3} ${fm} ${fv} ${t} ${fd}" file plot_stress_vs_strain_v3.txt
 
-# number of iterations
-run 6000000
+# calculates the radial distribution function (RDF) and output file
+compute 11 all rdf 100
+fix 6 all ave/time 100 1 100 c_11[*] file Cu_defect_vertical_Tensile.rdf mode vector
+
+# number of iterations is given so as to give 40% strain to the material
+run ${Nsteps}
 
 #-------------------- End ----------------------------------------------------------------
 
