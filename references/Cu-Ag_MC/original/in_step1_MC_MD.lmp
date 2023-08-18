@@ -1,0 +1,52 @@
+# LAMMPS version: 10Feb15
+
+units metal
+atom_style atomic
+boundary p p p
+
+newton on
+
+variable t equal 500.0
+
+read_data Data.in.gz
+
+set group all type/fraction 2 1.0 43534
+
+pair_style eam/alloy
+pair_coeff * * cu_ag_ymwu.eam.alloy Cu Ag
+
+fix integrate all nve
+
+thermo_modify flush yes
+thermo 100
+
+#min_style cg
+#minimize 1.0e-10 1.0e-12 1000 10000
+
+velocity all create $t 4928459 rot yes dist gaussian
+
+timestep 0.002
+
+compute potene all pe/atom
+
+fix T_control all temp/rescale 10 $t $t 5. 1
+fix press_ctrl all press/berendsen aniso 0.0 0.0 1000.0
+
+fix mc all sgcmc 100000 1 $t -2.5 randseed 324234 variance 100 0.940 window_moves 8
+
+thermo_style custom step temp pe etotal press lx ly lx f_mc[1] f_mc[2] f_mc[3] f_mc[4]
+
+run 1000
+
+dump 2 all custom 500 frames-3Cu.dat.* x y z type c_potene
+
+restart 500 restart.dat
+
+unfix mc
+
+#fix T_control all temp/rescale 10 500. 500. 5. 1
+fix mc all sgcmc 10 1 $t -2.5 randseed 324234 variance 100 0.940 window_moves 8
+
+thermo_style custom step temp pe etotal press lx ly lx f_mc[1] f_mc[2] f_mc[3] f_mc[4]
+
+run 1000000

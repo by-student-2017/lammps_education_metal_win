@@ -109,15 +109,6 @@ input file (metal unit, lammps)
   https://lup.lub.lu.se/luur/download?func=downloadFile&recordOId=8977878&fileOId=8977883
   Nanowire_SiC
   
-- K.-J. Carter, Bachelor Thesis (2017).
-  https://dspace.mit.edu/handle/1721.1/112482
-  https://dspace.mit.edu/bitstream/handle/1721.1/112482/1011413174-MIT.pdf
-  Irradiation
-  
-- Z. Huang, Master thesis (2016).
-  https://trace.tennessee.edu/utk_gradthes/3776/
-  Radiation_defects
-
 - D. Chen et al., Doctor Thesis (2014).
   https://oaktrust.library.tamu.edu/handle/1969.1/154160
   Radiation_grain_boundary (Structure of (013)[100]Σ = 5 symmetric-tilt grain boundary)
@@ -141,9 +132,30 @@ input file (metal unit, lammps)
   https://www.jstage.jst.go.jp/article/matertrans/47/11/47_11_2706/_pdf/-char/en
   -----------------------------------------------------------------------------------------------
 
+- X. Ke, Doctor Thesis (2019).
+  https://scholarworks.uvm.edu/graddis/995/
+  Cu-Ag_MC (need Data.in.gz and python code)
+
+- Q. Fang, Doctor Thesis (2020).
+  https://scholarworks.uvm.edu/graddis/1323/
+  Cu-Ag_2D (need Data-2DCu-20grs-noKk-TBS92A.in) (python and fortran code)
+  
 - T. Metspalu, Master Thesis (2015)
   https://core.ac.uk/download/pdf/187147604.pdf
   CLIC_electrical_breakdown (test version)
+  
+- K.-J. Carter, Bachelor Thesis (2017).
+  https://dspace.mit.edu/handle/1721.1/112482
+  https://dspace.mit.edu/bitstream/handle/1721.1/112482/1011413174-MIT.pdf
+  Irradiation
+  
+- Z. Huang, Master thesis (2016).
+  https://trace.tennessee.edu/utk_gradthes/3776/
+  Radiation_defects
+  
+- M. R. Pringle, Master Thesis (2021).
+  https://scholarworks.uvm.edu/graddis/1410/
+  Ag-Ni (need Data-ntAg-12nm-grs-NoTwin.in)
 
 - S. E. Ferry, thesis (2011).
   https://dspace.mit.edu/handle/1721.1/119031
@@ -233,18 +245,6 @@ input file (metal unit, lammps)
 - B. de Braaf, Master Thesis (2015).
   https://pure.tue.nl/ws/portalfiles/portal/46924674/841526-1.pdf
   Semi-Flexible Rod-Like Particles
-  
-- M. R. Pringle, Master Thesis (2021).
-  https://scholarworks.uvm.edu/graddis/1410/
-  Ag-Ni (need Data-ntAg-12nm-grs-NoTwin.in)
-  
-- X. Ke, Doctor Thesis (2019).
-  https://scholarworks.uvm.edu/graddis/995/
-  Cu-Ag_MC (need Data.in.gz and python code)
-
-- Q. Fang, Doctor Thesis (2020).
-  https://scholarworks.uvm.edu/graddis/1323/
-  Cu-Ag_2D (need Data-2DCu-20grs-noKk-TBS92A.in) (python and fortran code)
   
 - A. Saltos, Doctor Thesis (2020).
   https://mospace.umsystem.edu/xmlui/handle/10355/83797
