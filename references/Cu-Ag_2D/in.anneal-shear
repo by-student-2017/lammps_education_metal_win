@@ -1,0 +1,109 @@
+# A.4 LAMMPS script for MD simulations
+#  2. 2d models in shear deformation
+# LAMMPS 64-bit 22Dec2022-MSMPI
+
+#-------------------- Initialization -----------------------------------------------------
+units metal
+dimension 3
+boundary p p p
+
+#-------------------- Atom & Lattice description ----------------------------------------
+atom_style atomic
+
+read_data Data-Cu-411-y123-17pct-1
+
+change_box all triclinic
+
+mass * 63.55 # Cu
+
+#-------------------- Force field --------------------------------------------------------
+pair_style eam/alloy
+pair_coeff * * CuAg.eam.alloy Cu
+
+#-------------------- Settings -----------------------------------------------------------
+
+neighbor 1.5 bin
+neigh_modify delay 5
+
+#-------------------- Energy Minimization ------------------------------------------------
+# 0 [K], structure optimization
+min_style cg
+minimize 1.0e-5 1.0e-5 1000 1000
+
+#-------------------- Output restart file ------------------------------------------------
+write_restart restart_file/restart.minimize
+
+#-------------------- Settings -----------------------------------------------------------
+
+compute ctr all cna/atom 3.086   # calculates the CNA (Common Neighbor Analysis) pattern
+compute str all stress/atom NULL
+compute vor all voronoi/atom
+
+#-------------------- Run the simulation -------------------------------------------------
+dump 10 all custom 1 dump0.xyz x y z id c_ctr
+run 0
+undump 10
+
+#-------------------- Run the simulation -------------------------------------------------
+reset_timestep 0
+
+restart 10000 restart
+
+timestep 0.005 # 5 [fs]
+
+# set initial velocity at 450 K
+velocity all create 450 36000
+
+# annealing 450 K - 450 K (NPT simulation)
+dump 11 all custom 1000 frames_file/anneal1.xyz x y z id c_ctr c_str[1] c_str[2] c_str[3] c_str[4] c_str[5] c_str[6]
+fix  15 all npt temp 450 450 0.5 tri 0.0 0.0 5 drag 2
+run 10000
+unfix 15
+undump 11
+
+# annealing 450 K - 300 K (NPT simulation)
+dump 11 all custom 1000 frames_file/anneal2.xyz x y z id c_ctr c_str[1] c_str[2] c_str[3] c_str[4] c_str[5] c_str[6]
+fix  15 all npt temp 450 300 0.5 tri 0.0 0.0 5 drag 2
+run 10000
+unfix 15
+undump 11
+
+# annealing 300 K - 300 K (NPT simulation)
+dump 11 all custom 1000 frames_file/anneal3.xyz x y z id c_ctr c_str[1] c_str[2] c_str[3] c_str[4] c_str[5] c_str[6]
+fix  15 all npt temp 300 300 0.5 tri 0.0 0.0 5 drag 2
+run 10000
+unfix 15
+undump 11
+
+# deformation at 300 K, erate/dt = 0.0002/0.005 = 0.04 [1/ps] (for xz) => 10^14 [1/s]
+fix  5 all ave/time 100 5 500 c_thermo_press[1] c_thermo_press[2] c_thermo_press[3] file pressure.ave
+fix  3 all ave/atom 1 50 500 c_str[1] c_str[2] c_str[3] c_str[4] c_str[5] c_str[6]
+fix  1 all deform 1 xz erate 0.0002
+fix 35 all npt temp 300 300 0.5 aniso 0.0 0.0 5 drag 2
+
+thermo_style one
+thermo 100
+
+#-------------------- loop start (Note: It just splits the output.)
+variable a loop 1 10
+
+label repeat20
+
+dump 45 all custom 500 frames_file/ave$a.xyz x y z f_3[1] f_3[2] f_3[3] f_3[4] f_3[5] f_3[6]
+dump_modify 45 sort id
+
+dump 55 all custom 500 frames_file/coord$a.xyz x y z c_vor[1] c_str[1] c_str[2] c_str[3] c_str[4] c_str[5] c_str[6]
+dump_modify 55 sort id
+
+run 10000
+
+undump 45
+
+undump 55
+
+next a
+
+jump in.anneal-shear repeat20
+#-------------------- loop end
+
+#-------------------- End ----------------------------------------------------------------

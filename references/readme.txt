@@ -134,7 +134,7 @@ input file (metal unit, lammps)
 
 - X. Ke, Doctor Thesis (2019).
   https://scholarworks.uvm.edu/graddis/995/
-  Cu-Ag_MC (need Data.in.gz and python code)
+  Cu-Ag_MC (python code)
 
 - Q. Fang, Doctor Thesis (2020).
   https://scholarworks.uvm.edu/graddis/1323/
