@@ -11,69 +11,96 @@
 # in file for creation of Cu-Ni thin film with Ni layer of 6 Angstrom & indentation of the same 
 # with a strain rate of 0.05 Angstrom/ps and temperature of 300K
 
-units metal
+# LAMMPS 64-bit 22Dec2022-MSMPI
+#-------------------- Initialization -----------------------------------------------------
 echo both
+units metal
 
-# Creates a 3-Dimensional block with 2 boxes within it
-atom_style atomic
+#-------------------- Creates a 3-Dimensional block with 2 boxes within it ---------------
 dimension 3
 boundary p s p
-region box block 0 140 0 106 0 140 units box
-create_box 2 box
 
+atom_style atomic
+
+region box block 0 140 0 106 0 140 units box
+create_box 2 box # set 2 types (for 2 elements (Cu and Ni))
+
+#---------------------------------------------------
 # Creates Copper block and groups it as substrate
+#---------------------------------------------------
 lattice fcc 3.61
 region Cu block 0 140 0 100 0 140 units box
 create_atoms 1 region Cu units box
 group substrate region Cu
+#---------------------------------------------------
 
-# Creates Nickel block and groups it as deposit and further groups the substrate and deposit as entire
+#---------------------------------------------------
+# Creates Nickel block and groups it as deposit and 
+# further groups the substrate and deposit as entire
+#---------------------------------------------------
 lattice fcc 3.52
 region Ni block 0 140 100 106 0 140 units box
 create_atoms 2 region Ni units box
 group deposit region Ni
+#
 group entire union substrate deposit 
+#---------------------------------------------------
 
-timestep 0.002
+#-------------------- Force field --------------------------------------------------------
 pair_style eam/alloy
 pair_coeff * * Cu_Ni_Fischer_2018.eam.alloy Cu Ni 
 
-# Energy Minimization
+#-------------------- Energy Minimization ------------------------------------------------
+# 0 [K], structure optimization
 minimize 1.0e-3 1.0e-6 1000 1000
 
-# Defines the anvil regions and group them into single name 
-# as anvil and subtracts it from entire, naming the rest as mobile.
-# Rigid boundary
+#-------------------- Settings -----------------------------------------------------------
+reset_timestep 0
+
+timestep 0.002 # 2 [fs]
+
+# Defines the anvil regions and group them into single name as anvil and subtracts 
+# it from entire, naming the rest as mobile.
+
+#Rigid boundary
 region 1 block 0 140 0 25 0 140 units box
 group anvil1 region 1
+
 region 2 block 0 25 0 106 0 140 units box
 group anvil2 region 2
+
 region 3 block 115 140 0 106 0 140 units box
 group anvil3 region 3
+
 group anvil union anvil1 anvil2 anvil3
 group mobile subtract entire anvil
 
-dump 1 entire atom 1000 dump.CuNi_thin_film.lammpstrj 
+#---------- output file settings -------------------
+dump 1 entire atom 1000 dump.CuNi_thin_film.lammpstrj
 dump_modify 1 scale no
-log logCu_Ni_thinfilm.data
-
-# ----------------------------------
+# --------------------------------------------------
 dump            d1 all cfg 1000 cfg/run.*.cfg mass type xs ys zs id type vx vy vz fx fy fz
 dump_modify     d1 element Cu Ni 
-# ----------------------------------
+# --------------------------------------------------
+log logCu_Ni_thinfilm.data
 
 # Initializing Velocity
 compute new mobile temp
 velocity mobile create 300 8728007 temp new
-fix 1 mobile nvt temp 300.0 300.0 0.05
-fix 2 anvil setforce 0.0 0.0 0.0
 
 # assigning velocity to the indenter in y direction---loading
 variable y equal "141-step*dt*0.05" # 0.05 (Loading rate)
 print "y is $y"
 
+fix 1 mobile nvt temp 300.0 300.0 0.05
+fix 2 anvil setforce 0.0 0.0 0.0
+
 # Indenter position and radius at onset of loading
 fix 3 mobile indent 1000.0 sphere 70 v_y 70 30.0 units box
+
 thermo 100
 thermo_style custom step temp c_new v_y f_3[1] f_3[2] f_3[3] 
+
 run 80000
+
+#-------------------- End ----------------------------------------------------------------
