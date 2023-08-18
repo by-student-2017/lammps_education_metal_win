@@ -1,0 +1,87 @@
+# 5.2.3 Program for horizontal defect 
+
+units metal # determines units of all quantities used in the program
+echo both   # finds fault and displays error messages
+atom_style atomic
+dimension 3
+boundary s p s
+region box block 0 20 0 50 0 40 units box # creates a box of dimension 20x50x40
+create_box 1 box
+
+lattice fcc 3.61 # lattice parameter for Cu crystal
+region Cu block 0 20 0 50 0 40 units box # creates Cu atoms in the given box
+create_atoms 1 region Cu units box
+
+region dislocation block 18 20 23 25 10 30 units box
+group 5 region dislocation 
+delete_atoms group 5 # creates horizontal defect
+
+timestep 0.002 # sets the timestep for subsequent simulations
+pair_style eam/alloy # interaction between two atoms Embedded Atomic Method, calculates pair wise interaction
+pair_coeff * * Cu_zhou04.eam.alloy Cu # energy between two atoms is taken from the given potential file
+
+# Energy Minimization
+minimize 1.0e-9 1.0e-6 1000 1000 # brings atoms to minimum energy state
+
+fix 23 all nvt temp 10 10 0.01 # fixes temperature for energy minimization of atoms
+run 1000
+
+compute csym all centro/atom fcc
+compute peratom all pe/atom
+
+variable tmp equal ly
+variable lo equal ${tmp}
+variable strain equal (ly-v_lo)/v_lo
+
+variable p1 equal "-pxx/10000"
+variable p2 equal "-pyy/10000"
+variable p3 equal "-pzz/10000"
+
+variable p12 equal "-pxy/10000"
+variable p23 equal "-pyz/10000"
+variable p13 equal "-pxz/10000"
+variable fm equal "(v_p2+v_p3+v_p1)/3" # Hydrostatic stress
+variable fv equal "sqrt(((v_p2-v_p3)^2+(v_p3-v_p1)^2+(v_p1-v_p2)^2+6*(v_p12^2+v_p23^2+v_p13^2))/2)" # Von Mises Stress
+
+variable t equal "v_fm/v_fv"
+variable fd equal (((v_p2-v_fm)*(v_p3-v_fm)*(v_p1-v_fm))-(v_p12)^2*(v_p3-v_fm)-(v_p13)^2*(v_p2-v_fm)-(v_p23)^2*(v_p1-v_fm)+2*v_p12*v_p23*v_p13) # Deviatoric Von Mises stress
+
+# principal stresses
+
+variable I1 equal "(v_p1+v_p2+v_p3)"
+variable I2 equal "((v_p1)*(v_p2))+((v_p2)*(v_p3))+((v_p1)*(v_p3))-(v_p12)^2-(v_p23)^2-(v_p13)^2"
+variable I3 equal "((v_p1)*(v_p2)*(v_p3))-((v_p1)*((v_p23)^2))-((v_p2)*((v_p13)^2))-((v_p3)*((v_p12)^2))+2*(v_p12)*(v_p23)*(v_p13)"
+variable  A equal "(acos(((2*(v_I1)^3)-9*(v_I1)*(v_I2)+27*(v_I3))/(2*((v_I1)^2-(3*(v_I2)))^(3/2))))/3" 
+
+variable s1 equal "((v_I1)/3)+(2/3)*(sqrt((v_I1)^2-(3*(v_I2))))*cos(v_A)" 
+variable s2 equal "((v_I1)/3)+(2/3)*(sqrt((v_I1)^2-(3*(v_I2))))*cos((v_A)+(2*PI)/3)" 
+variable s3 equal "((v_I1)/3)+(2/3)*(sqrt((v_I1)^2-(3*(v_I2))))*cos((v_A)+(4*PI)/3)"
+
+thermos 10 # computes and prints thermodynamic data after every 10 timesteps
+thermo_style custom step temp vol press pe ke etotal
+
+dump 1 all custom 50 Cu_defect_horizontal_tensile_10K.lammpstrjid type x y z 
+# dumps a snapshot of atom quantities every 50 timesteps to the specified file
+
+dump 2 all cfg 10000 cfg/Cu_defect_horizontal_tensile*.cfg mass type xs ys zs id type xs ys zs c_csym c_peratom
+dump_modify 2 element Cu
+
+#dump 3 all custom 50000 stress_peratom* id type x y z c_1[1] c_1[2] c_1[3] c_1[4] c_1[5] c_1[6]
+
+log NVTlog_compress_al.data
+
+velocity all create 10 873847 rot yes mom yes dist gaussian
+
+# tensile deformation
+
+fix 2 all deform 1 y erate 0.0001 units box # application of tensile deformation force of 0.0001 [1/ps]
+
+fix 3 all print 10 "${strain} ${p2}" file stress_strain_data_Cu_defect_horizontal_tensile_10K # gives the stress-strain data
+
+# temperature controller
+
+fix 1 all nvt temp 10 10 0.01 # fixes the temperature (10 K)and pressure of the givensystem
+
+fix def all print 1 "${strain} ${p2} ${s1} ${s2} ${s3} ${fm} ${fv} ${t} ${fd}" file Cu_defect_horizontal_tensile_von.txt
+
+run 6000000 # number of iterations
