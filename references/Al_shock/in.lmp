@@ -1,54 +1,54 @@
 #Input file used for Al simulations
 # SCRIPT MADE BY: OSCAR GUERRERO
 # modified by GMc for fcc Aluminum in Oct 2015
-
-# ---------- Initialize Simulation ---------------------
+# LAMMPS 64-bit 22Dec2022-MSMPI
 clear
-
+#-------------------- Initialize Simulation ----------------------------------------------
 units metal
-
 dimension 3
 boundary p p p
 
 atom_style atomic
 atom_modify map array
 
-# ---------- define variables ---------------------
-variable stemperature equal 300 # temperature in kelvin
+#-------------------- define variables ---------------------------------------------------
+variable stemperature equal 300 # temperature in kelvin [K]
 
-variable alattice equal 4.05    # lattice constant (unit A)
+variable   alattice equal  4.05 # lattice constant (unit [Angstrom])
 
-variable myseed equal 12345     # the value seed for the velocity
+variable     myseed equal 12345 # the value seed for the velocity
 
-variable xmax equal 10          # size in the x-direction
-variable ymax equal 10          # size in the y-direction
+variable       xmax equal    10 # size in the x-direction
+variable       ymax equal    10 # size in the y-direction
 
 # zmax should be long enough that shock does not arrive at boundary by time_shock (140 eam, 420 lj)
-variable zmax equal 420         # size in the z-direction
+variable       zmax equal 420   # size in the z-direction
 
-variable time_step equal 0.001  # time step in pico seconds
-variable time_eq equal 100      # time steps for the equilibration part
-variable time_shock equal 5000  # time steps for the piston
+variable time_step  equal 0.001 # time step in pico seconds
+variable time_eq    equal   100 # time steps for the equilibration part
+variable time_shock equal  5000 # time steps for the piston
 
-variable vpiston equal 0.100    # piston speed in (km/s) multiply by ten to obtain (A/ps)
+variable    vpiston equal 0.100 # piston speed in (km/s) multiply by ten to obtain (A/ps)
 
-variable Nevery equal 10        # use input values every this many timesteps
-variable Nrepeat equal 5        # number of times to use input values for calculating
-variable Nfreq equal 1000       # calculate averages every this many timesteps
+variable     Nevery equal    10 # use input values every this many timesteps
+variable    Nrepeat equal     5 # number of times to use input values for calculating
+variable      Nfreq equal  1000 # calculate averages every this many timesteps
 
-variable deltaz equal 20        # thickness of spatial bins in dim (distance units)
-variable atomrate equal 100     # the rate in timestep that atoms are dump as CFG
+variable     deltaz equal    20 # thickness of spatial bins in dim (distance units)
+variable   atomrate equal   100 # the rate in timestep that atoms are dump as CFG
 
 variable tdamp equal "v_time_step*100"  # DO NOT CHANGE
 variable pdamp equal "v_time_step*1000" # DO NOT CHANGE
-
-# DO NOT CHANGE
-variable Up equal "10*v_vpiston"
+variable    Up equal "10*v_vpiston"    # DO NOT CHANGE
 
 timestep ${time_step}
 
-# ---------- Create Atoms ---------------------
-lattice fcc ${alattice} origin 0.0 0.0 0.0 orient x 1 0 0 orient y 0 1 0 orient z 0 0 1
+#-------------------- Create Atoms -------------------------------------------------------
+lattice fcc ${alattice} &
+  origin 0.0 0.0 0.0 &
+  orient x 1 0 0 &
+  orient y 0 1 0 &
+  orient z 0 0 1 
 
 #tmd 27g/NA 6e23 *4 atoms/cell/(4.05e-8cm)**3 = 2.7 g/cm**3
 # the create box commands create_box natoms idname, where natoms is the number of atoms type
@@ -56,8 +56,8 @@ lattice fcc ${alattice} origin 0.0 0.0 0.0 orient x 1 0 0 orient y 0 1 0 orient 
 # you can use the command "set" to set the different region of atoms to different Ntype
 # the command "set" is very useful examples: "set group piston type 1"
 
-# define size of the simulation box
-region sim_box block 0 ${xmax} 0 ${ymax} 0 ${zmax} # units for region are lattice (default)
+# define size of the simulation box (units for region are lattice (default))
+region sim_box block 0 ${xmax} 0 ${ymax} 0 ${zmax}
 create_box 2 sim_box
 
 # define atoms in sim_box
@@ -68,46 +68,50 @@ create_atoms 1 region atom_box
 group atom_box region atom_box
 
 region piston block INF INF INF INF INF 4
-region bulk block INF INF INF INF 4 INF 
+region   bulk block INF INF INF INF 4 INF 
 
 group piston region piston
-group bulk region bulk
+group   bulk region bulk
 
 set group piston type 1
-set group bulk type 2
+set group   bulk type 2
 
-# ---------- Define Interatomic Potential ---------------------
+#-------------------- Define Interatomic Potential ---------------------------------------
 # for lj, epsilon (eV) = heat of sublimation/atom
 # for lj, sigma (ang)= 2**(-1/6)*nearest neighbour distance
 # epsilon is 3.34 eV (cohesive energy per atom from Avinc)
 # sigma is 2**(-1/6) * (4.05**2+4.05**2)**.5 /2 angstrom == 2.55 Angstrom * 2.5 == 6.38
-
-pair_style lj/cut 6.38
-pair_coeff * * 3.34 2.55
-
-# al1.eam.fs is file available from http://www.ctcms.nist.gov/potentials 
-# pair_style eam/fs
-# pair_coeff * * al1.eam.fs Al Al
-# al99.eam.alloy is file available from http://www.ctcms.nist.gov/potentials
+#---------------------------------------------------------------------------
+##Lennard-Jones version
+# pair_style lj/cut 6.38
+# pair_coeff * * 3.34 2.55
+#---------------------------------------------------------------------------
+##al1.eam.fs is file available from http://www.ctcms.nist.gov/potentials 
+pair_style eam/fs
+pair_coeff * * al1.eam.fs Al Al
+#---------------------------------------------------------------------------
+##al99.eam.alloy is file available from http://www.ctcms.nist.gov/potentials
 # pair_style eam/alloy
 # pair_coeff * * Al99.eam.alloy Al Al
+#---------------------------------------------------------------------------
 
-mass 1 27.0
-mass 2 27.0
+mass 1 27.0 # Al
+mass 2 27.0 # Al
 
-compute myCN bulk cna/atom 3.45708
-compute myKE bulk ke/atom
-compute myPE bulk pe/atom
-compute myCOM bulk com
+compute    myCN bulk cna/atom 3.45708
+compute    myKE bulk ke/atom
+compute    myPE bulk pe/atom
+compute   myCOM bulk com
 compute peratom bulk stress/atom NULL
-compute vz bulk property/atom vz
-compute vorvol bulk voronoi/atom
+compute      vz bulk property/atom vz
+compute  vorvol bulk voronoi/atom
 
-# ------------ Equilibrate ---------------------------------------
+#-------------------- Equilibrate --------------------------------------------------------
 reset_timestep 0
 
 # Now, assign the initial velocities using Maxwell-Boltzmann distribution
 velocity atom_box create ${stemperature} ${myseed} rot yes dist gaussian
+
 fix equilibration bulk npt temp ${stemperature} ${stemperature} ${tdamp} iso 0 0 ${pdamp} drag 1
 
 variable eq1 equal "step"
@@ -119,6 +123,7 @@ variable eq6 equal "ly"
 variable eq7 equal "lz"
 variable eq8 equal "temp"
 variable eq9 equal "etotal"
+#for units metal, pressure is in 1 [bars] = 100 [kPa] = 0.1 [MPa] = 1x10^-4 [GPa] => p3 is in GPa
 
 fix output1 bulk print 10 "${eq1} ${eq2} ${eq3} ${eq4} ${eq5} ${eq6} ${eq7} ${eq8} ${eq9}" file run.out screen no
 
@@ -130,7 +135,7 @@ run ${time_eq}
 unfix equilibration
 unfix output1
 
-# -------------- Shock -------------------------------------------
+#-------------------- Shock --------------------------------------------------------------
 change_box all boundary p p s
 
 reset_timestep 0
@@ -138,9 +143,9 @@ reset_timestep 0
 # WE CREATE A PISTON USING A FEW LAYERS OF ATOMS AND THEN WE GIVE IT
 # A CONSTANT POSTIVE SPEED. YOU COULD ALSO USE LAMMPS' FIX WALL/PISTON COMMAND
 
-fix 1 all nve
-
 velocity piston set 0 0 v_Up sum no units box
+
+fix 1 all nve
 
 fix 2 piston setforce 0.0 0.0 0.0
 
@@ -175,6 +180,7 @@ variable eq7 equal "lz"
 variable eq8 equal "temp"
 variable eq9 equal "etotal"
 variable eq10 equal "c_myCOM[3]"
+#for units metal, pressure is in 1 [bars] = 100 [kPa] = 0.1 [MPa] = 1x10^-4 [GPa] => p3 is in GPa
 
 fix shock bulk print 10 "${eq1} ${eq2} ${eq3} ${eq4} ${eq5} ${eq6} ${eq7} ${eq8} ${eq9} ${eq10}" file run.${stemperature}K.out screen no
 
@@ -186,8 +192,10 @@ thermo_style custom step pxx pyy pzz lx ly lz temp etotal c_myCOM[3]
 # dump_modify 1 element Al
 # dump 2 all image 1000 image.*.jpg type type axes yes 0.8 0.02 view 120 -90
 #-------------------------------------------
-dump            d1 all cfg ${atomrate} cfg/run.*.cfg mass type xs ys zs id type vx vy vz fx fy fz
+dump            d1 all cfg ${atomrate} cfg/run.*.cfg mass type xs ys zs id type vx vy vz fx fy fz c_myPE c_myKE c_myCN
 dump_modify     d1 element Al Al
 #-------------------------------------------
 
 run ${time_shock}
+
+#-------------------- End ----------------------------------------------------------------
