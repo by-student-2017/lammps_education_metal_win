@@ -1,9 +1,9 @@
 @echo off
 
-echo "Set up new_rdf.dat for plot_rdf_all_v2.gpl"
-
-set file_name=CuZrAlNiTi.rdf
+set file_name=CuZrAlNiTi_300k_Tensile.rdf
 set ndata=100
+
+echo "Set up new_rdf.dat for plot_rdf_all_v2.gpl"
 
 del new_rdf.dat
 

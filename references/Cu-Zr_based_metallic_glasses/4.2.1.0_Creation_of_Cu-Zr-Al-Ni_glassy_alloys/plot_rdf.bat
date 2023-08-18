@@ -2,7 +2,7 @@
 
 echo "Set up new_rdf.dat for plot_rdf_all_v2.gpl"
 
-set file_name=cuzral2.rdf
+set file_name=CuZrAlNi.rdf
 set ndata=100
 
 del new_rdf.dat
