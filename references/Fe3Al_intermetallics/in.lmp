@@ -1,19 +1,21 @@
 # 4.2 Creation of Al matrix composite reinforced with Fe3Al intermetallics by MD
-#  An Al metal matrix composite is created by reinforcing Fe3Al particles in the form of 
-# clusters all over the volume. The mechanical properties of Al metal matrix composites reinforced 
-# with different volume fractions (5%, 10%, 15% and 20%) of Fe3Al intermetallics is investigated. 
-# The compressive studies are carried out at different strain rates (10^11 s^-1, 10^10 s^-1, 10^9 s^-1 and
-# 10^8 s^-1) and temperatures (10K, 50K, 100K, 200K and 300K). After the compressive test,
-# mechanical properties such as ultimate tensile strength, Young’s modulus and yield strength has been evaluated. 
+#  An Al metal matrix composite is created by reinforcing Fe3Al particles in the form of clusters all over the volume. 
+# The mechanical properties of Al metal matrix composites reinforced with 
+# different volume fractions (5%, 10%, 15% and 20%) of Fe3Al intermetallics is investigated. 
+# The compressive studies are carried out at different strain rates (10^11 s^-1, 10^10 s^-1, 10^9 s^-1 and 10^8 s^-1) and 
+# temperatures (10 K, 50 K, 100 K, 200 K and 300 K). After the compressive test,
+# mechanical properties such as ultimate tensile strength, Young modulus and yield strength has been evaluated. 
 
 # This program is for observing the compressive behavior of Al MMC reinforced with
 # 10 volume percentage of Fe3Al for 3D system (10^10 s^-1 strain rate).
 
-units metal
 echo both
-atom_style atomic
+units metal
 dimension 3
 boundary s p s
+
+atom_style atomic
+
 region box block 0 50 0 100 0 50 units box
 create_box 3 box
 
@@ -113,47 +115,40 @@ create_atoms 2 region fe10 units box
 group clu10 region fe10
 set region fe10 type/fraction 3 0.25 12358
 
-timestep 0.002
 pair_style eam/fs
 pair_coeff * * Al-Fe.eam.fs Al Fe Al
 
 # Energy Minimization
 minimize 1.0e-3 1.0e-6 10000 100000
 
-compute csym all centro/atom fcc
+timestep 0.002
+
+compute    csym all centro/atom fcc
 compute peratom all pe/atom 
 
-variable tmp equal ly
-variable lo equal ${tmp}
-variable strain equal (ly-v_lo)/v_lo 
-variable p1 equal "-pxx/10000"
-variable p2 equal "-pyy/10000"
-variable p3 equal "-pzz/10000"
+variable    tmp equal ly
+variable     lo equal ${tmp}
+variable strain equal (ly-v_lo)/v_lo
+
+variable  p1 equal "-pxx/10000"
+variable  p2 equal "-pyy/10000"
+variable  p3 equal "-pzz/10000"
 variable p12 equal "-pxy/10000"
 variable p23 equal "-pyz/10000"
 variable p13 equal "-pxz/10000"
 
 variable fm equal "(v_p2+v_p3+v_p1)/3" # Hydrostatic stress
-
 variable fv equal "sqrt(((v_p2-v_p3)^2+(v_p3-v_p1)^2+(v_p1-v_p2)^2+6*(v_p12^2+v_p23^2+v_p13^2))/2)" # Von Mises stress.
-
 variable t equal "v_fm/v_fv"
-
 variable fd equal (((v_p2-v_fm)*(v_p3-v_fm)*(v_p1-v_fm))-(v_p12)^2*(v_p3-v_fm)-(v_p13)^2*(v_p2-v_fm)-(v_p23)^2*(v_p1-v_fm)+2*v_p12*v_p23*v_p13) # Deviatoric Von Mises stress
 
 # principal stresses
 variable I1 equal "(v_p1+v_p2+v_p3)"
-
 variable I2 equal "((v_p1)*(v_p2))+((v_p2)*(v_p3))+((v_p1)*(v_p3))-(v_p12)^2-(v_p23)^2-(v_p13)^2"
-
 variable I3 equal "((v_p1)*(v_p2)*(v_p3))-((v_p1)*((v_p23)^2))-((v_p2)*((v_p13)^2))-((v_p3)*((v_p12)^2))+2*(v_p12)*(v_p23)*(v_p13)"
-
-variable A equal "(acos(((2*(v_I1)^3)-9*(v_I1)*(v_I2)+27*(v_I3))/(2*((v_I1)^2-(3*(v_I2)))^(3/2))))/3" 
-
+variable  A equal "(acos(((2*(v_I1)^3)-9*(v_I1)*(v_I2)+27*(v_I3))/(2*((v_I1)^2-(3*(v_I2)))^(3/2))))/3" 
 variable s1 equal "((v_I1)/3)+(2/3)*(sqrt((v_I1)^2-(3*(v_I2))))*cos(v_A)" 
-
 variable s2 equal "((v_I1)/3)+(2/3)*(sqrt((v_I1)^2-(3*(v_I2))))*cos((v_A)+(2*PI)/3)" 
-
 variable s3 equal "((v_I1)/3)+(2/3)*(sqrt((v_I1)^2-(3*(v_I2))))*cos((v_A)+(4*PI)/3)"
 
 thermo 100

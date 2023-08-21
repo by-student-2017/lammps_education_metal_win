@@ -206,10 +206,6 @@ input file (metal unit, lammps)
   http://ethesis.nitrkl.ac.in/6566/
   3d-crystal-2014M
   
-- Venumbaka , Sarat Chandra (2015) 
-  http://ethesis.nitrkl.ac.in/7043/
-  Fe3Al_intermetallics
-  
 - Sethy, Bipin Kumar and Mishra, Siddharth (2013) 
   http://ethesis.nitrkl.ac.in/5403/
   Cu-Ni_thin_film
@@ -222,13 +218,17 @@ input file (metal unit, lammps)
   http://ethesis.nitrkl.ac.in/6152/
   Cu-Al_defect
   
-- D. Chen et al., Master thesis (2011).
-  https://oaktrust.library.tamu.edu/bitstream/handle/1969.1/ETD-TAMU-2011-08-10112/CHEN-THESIS.pdf?sequence=2&isAllowed=y
-  Fe_poly (need polyfe.lammps)
-  
 - Kumar, Navratan (2014) 
   http://ethesis.nitrkl.ac.in/6144/
   Fe0.05Cr_MSD
+  
+- Venumbaka , Sarat Chandra (2015) 
+  http://ethesis.nitrkl.ac.in/7043/
+  Fe3Al_intermetallics
+  
+- D. Chen et al., Master thesis (2011).
+  https://oaktrust.library.tamu.edu/bitstream/handle/1969.1/ETD-TAMU-2011-08-10112/CHEN-THESIS.pdf?sequence=2&isAllowed=y
+  Fe_poly (need polyfe.lammps)
   
 - Gupta, Pradeep (2019) 
   http://ethesis.nitrkl.ac.in/10087/ (do not download)
