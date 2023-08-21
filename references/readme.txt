@@ -80,11 +80,11 @@ input file (metal unit, lammps)
   
 - R. G. Patel et al., J. Comput. Phys. 449 (2022) 110754.
   https://doi.org/10.1016/j.jcp.2021.110754
-  Cu_shock
+  shock_Cu
   
 - G. W. J. Mclntosh et al., (2016)
   https://cradpdf.drdc-rddc.gc.ca/PDFS/unc244/p804516_A1b.pdf
-  Al and Explosive
+  shock_Al and Explosive
   
 - J. M. O.-Roldan et al., Proc. Math. Phys. Eng. Sci. 478 (2022).
   https://doi.org/10.1098/rspa.2022.0201
