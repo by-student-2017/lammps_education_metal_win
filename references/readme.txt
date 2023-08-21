@@ -172,10 +172,6 @@ input file (metal unit, lammps)
   https://dspace.mit.edu/handle/1721.1/129108
   (VASP, Packmol, PANNA, Lammps) (failed)
   
-- D. Chen et al., Master thesis (2011).
-  https://oaktrust.library.tamu.edu/bitstream/handle/1969.1/ETD-TAMU-2011-08-10112/CHEN-THESIS.pdf?sequence=2&isAllowed=y
-  polyfe (need polyfe.lammps)
-  
 - J. Wang, Master thesis (2013).
   https://oaktrust.library.tamu.edu/handle/1969.1/151391
   SWNT (need structure file: SWNT1515_equ.lammps05, SWNT1010_250A_double_equ300.lammps05)
@@ -226,9 +222,13 @@ input file (metal unit, lammps)
   http://ethesis.nitrkl.ac.in/6152/
   Cu-Al_defect
   
+- D. Chen et al., Master thesis (2011).
+  https://oaktrust.library.tamu.edu/bitstream/handle/1969.1/ETD-TAMU-2011-08-10112/CHEN-THESIS.pdf?sequence=2&isAllowed=y
+  Fe_poly (need polyfe.lammps)
+  
 - Kumar, Navratan (2014) 
   http://ethesis.nitrkl.ac.in/6144/
-  Fe0.05Cr_alloy
+  Fe0.05Cr_MSD
   
 - Gupta, Pradeep (2019) 
   http://ethesis.nitrkl.ac.in/10087/ (do not download)
