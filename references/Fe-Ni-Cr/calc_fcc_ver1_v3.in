@@ -19,7 +19,7 @@ variable  es_rate equal   0.01 # engineering strain rate (1/time units)
 # strain [%] = es_rate*dt*Nstep*100 [%] = 0.01 * 0.002 * 10000 * 100 = 20 [%]
 
 variable Equil_Nsteps equal ${Nsteps}*2 # 40 [ps] on Equilibration (NPT)
-variable    MC_Nsteps equal ${Nsteps}/3 # Number of MC simulation cycles
+variable    MC_Nsteps equal ${Nsteps}/2 # Number of MC simulation cycles
 #-------------------- Initialization -----------------------------------------------------
 units metal
 dimension 3
@@ -46,31 +46,42 @@ atom_style atomic
 # method 2 (layer type)
 #----------------------------------------------------------------------
 lattice fcc 3.165
-region new_region block 0 10 0 10 0 10
+region new_region block -30 30 0 30 0 12
 create_box 3 new_region # define 3 types
 
-lattice fcc 3.165 orient x 1 0 0 orient y 0 1 0 orient z 0 0 1
-create_atoms 1 region new_region # making all Fe in cell
+region upper block   0 30 0 30 0 12 units box
+lattice fcc 3.510 orient x 2 1 0 orient y 1 -2 0 orient z 0 0 -1 
+create_atoms 1 region upper 
 
-region feni_region block 0 10 0 10 0  5 # set Fe-Ni area
-
-region fecr_region block 0 10 0 10 5 10 # set Fe-Cr area
+region lower block -30  0 0 30 0 12 units box 
+lattice fcc 3.165 orient x 1 2 0 orient y 2 -1 0 orient z 0 0 -1 
+create_atoms 2 region lower 
 
 # creating composition using set command for Fe0.70-Ni0.10-Cr0.20 alloy
-set region feni_region type/fraction 2 0.2 12393 # for Fe-Ni area
-set region fecr_region type/fraction 3 0.4 12393 # for Fe-Cr area
+set region upper type/fraction 2 0.2 12393 # Ni in Fe base
+set region lower type/fraction 3 0.4 12393 # Cr in Fe base
+
+group gupper region upper # Fe in upper
+group glower region lower # Fe in lower
 #----------------------------------------------------------------------
 
 #-------------------- Force field --------------------------------------------------------
 pair_style eam/alloy
 pair_coeff * * FeNiCr.eam.alloy Fe Ni Cr
 
+# ------------------- Displace atoms and delete overlapping atoms ------------------------
+displace_atoms gupper move 0 0 0 units lattice 
+displace_atoms glower move 0 0 0 units lattice 
+delete_atoms overlap 0.35 glower gupper # or delete_atoms overlap 0.35 all all
+
 #-------------------- Settings -----------------------------------------------------------
 neighbor 2.0 bin
 neigh_modify delay 0 every 10 check yes
 
-compute csym all centro/atom fcc
-compute  eng all pe/atom
+# ------------------- Define Settings ----------------------------------------------------
+compute   csym all centro/atom fcc 
+compute    eng all pe/atom 
+compute eatoms all reduce sum c_eng
 
 #--------- for gravity ----------
 # Note: You can add gravity. However, due to its very small value, it is ineffective at the nanoscale.
@@ -92,7 +103,29 @@ replicate 1 1 1 # Extend to 1x1x1 cell
 #-------------------- Energy Minimization ------------------------------------------------
 # 0 [K], structure optimization
 #neigh_modify every 1 delay 0 check yes
+
+thermo 10 
+thermo_style custom step pe lx press pxx c_eatoms 
+
+dump 1 all cfg 25 cfg/dump.sig5_minimization_*.cfg mass type xs ys zs c_csym c_eng fx fy fz 
+dump_modify 1 element Fe Fe 
+
+min_style cg 
 minimize 1e-6 1e-6 5000 10000
+
+undump 1 
+
+# ------------------- Calculate GB Energy ------------------------------------------------
+variable minimumenergy equal -3.360000 # <= Please, set this value.
+
+variable    esum equal "v_minimumenergy * count(all)" 
+variable   xseng equal "c_eatoms - (v_minimumenergy * count(all))" 
+variable  gbarea equal "lx * lz * 2" 
+variable     gbe equal "(c_eatoms - (v_minimumenergy * count(all)))/v_gbarea" 
+variable gbemJm2 equal ${gbe}*16021.7733 
+variable  gbernd equal round(${gbemJm2}) 
+
+print "GB energy is ${gbemJm2} mJ/m^2"
 
 # ------------------- Equilibration ------------------------------------------------------
 #reset timer
