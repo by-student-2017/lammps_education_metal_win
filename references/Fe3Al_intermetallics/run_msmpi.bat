@@ -8,7 +8,7 @@ for %%1 in (in.lmp) do (
   echo input file: %%1
 )
 
-plot_stress_vs_strain_v2.gpl
-plot_stress_vs_strain_v3.gpl
+plot_stress_vs_strain_compress_v2.gpl
+plot_stress_vs_strain_compress_v3.gpl
 
 pause
