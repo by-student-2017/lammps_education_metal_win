@@ -76,8 +76,10 @@ delete_atoms overlap 0.35 glower gupper # or delete_atoms overlap 0.35 all all
 neighbor 2.0 bin
 neigh_modify delay 0 every 10 check yes
 
-compute csym all centro/atom fcc
-compute  eng all pe/atom
+# ------------------- Define Settings ----------------------------------------------------
+compute   csym all centro/atom fcc 
+compute    eng all pe/atom 
+compute eatoms all reduce sum c_eng
 
 #--------- for gravity ----------
 # Note: You can add gravity. However, due to its very small value, it is ineffective at the nanoscale.
@@ -97,7 +99,29 @@ replicate 1 1 1 # Extend to 1x1x1 cell
 #-------------------- Energy Minimization ------------------------------------------------
 # 0 [K], structure optimization
 #neigh_modify every 1 delay 0 check yes
+
+thermo 10 
+thermo_style custom step pe lx press pxx c_eatoms 
+
+dump 1 all cfg 25 cfg/dump.sig5_minimization_*.cfg mass type xs ys zs c_csym c_eng fx fy fz 
+dump_modify 1 element Fe Fe 
+
+min_style cg 
 minimize 1e-6 1e-6 5000 10000
+
+undump 1 
+
+# ------------------- Calculate GB Energy ------------------------------------------------
+variable minimumenergy equal -3.360000 # <= Please, set this value.
+
+variable    esum equal "v_minimumenergy * count(all)" 
+variable   xseng equal "c_eatoms - (v_minimumenergy * count(all))" 
+variable  gbarea equal "lx * lz * 2" 
+variable     gbe equal "(c_eatoms - (v_minimumenergy * count(all)))/v_gbarea" 
+variable gbemJm2 equal ${gbe}*16021.7733 
+variable  gbernd equal round(${gbemJm2}) 
+
+print "GB energy is ${gbemJm2} mJ/m^2"
 
 # ------------------- Equilibration ------------------------------------------------------
 #reset timer
