@@ -8,17 +8,17 @@ clear
 variable  Tdesird equal  300.0 # Desired Temperature [K]
 variable  MC_temp equal 1300.0 # Temperature of MC [K]
 
-variable   Nsteps equal  20000 # Number of simulation cycles
+variable   Nsteps equal   2000 # Number of simulation cycles
 variable DumpFreq equal    100 # For print out
 
-variable    dt_ps equal  0.002 # 0.002 [ps] = 2 [fs]
+variable    dt_ps equal  0.001 # 0.001 [ps] = 1 [fs]
 
-variable  es_rate equal   0.01 # engineering strain rate (1/time units) (strain in x direction)
-# Note: es_rate/dt_ps = 0.01 / (2e-15) = 5.0e12 [1/s]
+variable  es_rate equal    0.2 # engineering strain rate (1/time units) (strain in x direction)
+# Note: (es_rate/1)/dt_ps = 0.2 / (1e-15) = 2.0e14 [1/s]
 # L(t) = L(0)*(1 + es_rate*dt*step)
-# strain [%] = es_rate*dt*Nstep*100 [%] = 0.01 * 0.002 * 20000 * 100 = 40 [%]
+# strain [%] = es_rate*dt*Nstep*100 [%] = 0.2 * 0.001 * 2000 * 100 = 40 [%]
 
-variable Equil_Nsteps equal ${Nsteps}*1 # 40 [ps] on Equilibration (NPT)
+variable Equil_Nsteps equal ${Nsteps}*2 # 8 [ps] on Equilibration (NPT)
 variable    MC_Nsteps equal ${Nsteps}/5 # Number of MC simulation cycles
 #-------------------- Initialization -----------------------------------------------------
 units metal
@@ -249,15 +249,15 @@ dump_modify     d1 element Fe Ni Cr Co Mn
 
 #-------------------- Run the simulation -------------------------------------------------
 
+# strain rate of 0.01 [1/time units] is applied in y direction
+fix 1 all deform 1 x erate ${es_rate} units box remap x
+
 # thermostat + barostat
 # all atoms rescaled to new positions while temp and pressure is conserved
-fix 1 all npt temp ${Tdesird} ${Tdesird} $(100*dt) y 0 0 $(1000*dt) z 0 0 $(1000*dt) drag 1.0
-
-# strain rate of 0.01 [1/time units] is applied in y direction
-fix 2 all deform 1 x erate ${es_rate} units box remap x
+fix 2 all npt temp ${Tdesird} ${Tdesird} $(100*dt) y 0 0 $(1000*dt) z 0 0 $(1000*dt) drag 1.0
 
 # Resets the temp of atoms to 300 K by rescaling velocities after every 10 steps
-#fix 3 all temp/rescale 10 ${Tdesird} ${Tdesird} 0.05 1.0
+fix 3 all temp/rescale 10 ${Tdesird} ${Tdesird} 0.05 1.0
 
 fix writer all print ${DumpFreq} "${p0} ${p1} ${p2} ${p3}" file HEA.deform.txt screen no
 
@@ -268,7 +268,7 @@ compute 11 all rdf 100
 fix 5 all ave/time 100 1 100 c_11[*] file data.rdf mode vector
 
 # number of iterations is given so as to give 40% strain to the material
-run ${Nsteps} # 40 [ps], MD Simulation (assuming 2 fs time step)
+run ${Nsteps} # 4 [ps], MD Simulation (assuming 1 fs time step)
 
 # clearing fixes and dumps
 unfix 1
