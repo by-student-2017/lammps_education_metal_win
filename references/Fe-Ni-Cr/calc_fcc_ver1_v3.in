@@ -8,7 +8,7 @@ clear
 variable  Tdesird equal  300.0 # Desired Temperature [K]
 variable  MC_temp equal 1300.0 # Temperature of MC [K]
 
-variable   Nsteps equal  10000 # Number of simulation cycles
+variable   Nsteps equal  20000 # Number of simulation cycles
 variable DumpFreq equal    100 # For print out
 
 variable    dt_ps equal  0.002 # 0.002 [ps] = 2 [fs]
@@ -16,7 +16,7 @@ variable    dt_ps equal  0.002 # 0.002 [ps] = 2 [fs]
 variable  es_rate equal   0.01 # engineering strain rate (1/time units)
 # Note: es_rate/dt_ps = 0.01 / (2e-15) = 5.0e12 [1/s]
 # L(t) = L(0)*(1 + es_rate*dt*step)
-# strain [%] = es_rate*dt*Nstep*100 [%] = 0.01 * 0.002 * 10000 * 100 = 20 [%]
+# strain [%] = es_rate*dt*Nstep*100 [%] = 0.01 * 0.002 * 20000 * 100 = 40 [%]
 
 variable Equil_Nsteps equal ${Nsteps}*2 # 40 [ps] on Equilibration (NPT)
 variable    MC_Nsteps equal ${Nsteps}/2 # Number of MC simulation cycles
@@ -46,7 +46,7 @@ atom_style atomic
 # method 2 (layer type)
 #----------------------------------------------------------------------
 lattice fcc 3.165
-region new_region block -30 30 0 30 0 12
+region new_region block -30 30 0 30 0 12 units box 
 create_box 3 new_region # define 3 types
 
 region upper block   0 30 0 30 0 12 units box
@@ -61,8 +61,8 @@ create_atoms 2 region lower
 set region upper type/fraction 2 0.2 12393 # Ni in Fe base
 set region lower type/fraction 3 0.4 12393 # Cr in Fe base
 
-group gupper region upper # Fe in upper
-group glower region lower # Fe in lower
+group gupper region upper # upper
+group glower region lower # lower
 #----------------------------------------------------------------------
 
 #-------------------- Force field --------------------------------------------------------
@@ -71,19 +71,19 @@ pair_coeff * * FeNiCr.eam.alloy Fe Ni Cr
 
 #-------------------- Settings 1 -----------------------------------------------------------
 
-#Creating regions to replace with Ni
+#Creating regions to replace with Cr
 #-------------------------------------
-region 1 block   0  1 INF INF INF INF units box # upper side
-region 2 block  -1  0 INF INF INF INF units box # lower side
+region g1 block   0  1 INF INF INF INF units box # upper side
+region g2 block  -1  0 INF INF INF INF units box # lower side
 #-------------------------------------
 
 #Removing atoms (region 1 and 2 block) and adding Cr atoms (type 3)
 #-------------------------------------
-delete_atoms region 1
-create_atoms 3 random 100 698317 1 # <= Please, e.g., set number of atoms of (liquid density * grain boundary(region 1 and 2 block))
+delete_atoms region g1
+create_atoms 3 random 100 698317 g1 # <= Please, e.g., set number of atoms of (liquid density * grain boundary(region 1 and 2 block))
 #-------------------------------------
-delete_atoms region 2
-create_atoms 3 random 100 612317 2 # <= Please, e.g., set number of atoms of (liquid density * grain boundary(region 1 and 2 block))
+delete_atoms region g2
+create_atoms 3 random 100 612317 g2 # <= Please, e.g., set number of atoms of (liquid density * grain boundary(region 1 and 2 block))
 #-------------------------------------
 # Note: create_atoms type random  N(atoms) sedd region-ID
 
