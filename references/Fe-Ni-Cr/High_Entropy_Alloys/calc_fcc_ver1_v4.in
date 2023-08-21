@@ -54,11 +54,25 @@ create_box 5 new_region # define 5 types
 lattice fcc 3.165 orient x 1 0 0 orient y 0 1 0 orient z 0 0 1
 create_atoms 1 region new_region # making all Fe in cell
 
-region fefe_region block 0 5 0 5 0 1 # set Fe-Fe area
-region feni_region block 0 5 0 5 1 2 # set Fe-Ni area
-region fecr_region block 0 5 0 5 2 3 # set Fe-Cr area
-region feco_region block 0 5 0 5 3 4 # set Fe-Co area
-region femn_region block 0 5 0 5 4 5 # set Fe-Mn area
+region fefe_region block   0 5 0 5 0 1 units box # set Fe-Fe area
+lattice fcc 3.165 orient x 2 1 0 orient y 1 -2 0 orient z 0 0 -1 
+create_atoms 1 region fefe_region
+
+region feni_region block   0 5 0 5 1 2 units box # set Fe-Ni area
+lattice fcc 3.165 orient x 2 1 0 orient y 1 -2 0 orient z 0 0 -1 
+create_atoms 1 region feni_region
+
+region fecr_region block   0 5 0 5 2 3 units box # set Fe-Cr area
+lattice fcc 3.165 orient x 1 0 0 orient y 0  1 0 orient z 0 0  1 
+create_atoms 1 region fecr_region
+
+region feco_region block   0 5 0 5 3 4 units box # set Fe-Co area
+lattice fcc 3.165 orient x 1 2 0 orient y 2 -1 0 orient z 0 0 -1 
+create_atoms 1 region feco_region
+
+region femn_region block   0 5 0 5 4 5 units box # set Fe-Mn area
+lattice fcc 3.165 orient x 1 2 0 orient y 2 -1 0 orient z 0 0 -1 
+create_atoms 1 region femn_region
 
 # creating composition using set command for HEA alloy
 set region fefe_region type/fraction 1 1.0 12393 # for Fe-Fe area
@@ -66,18 +80,34 @@ set region feni_region type/fraction 2 1.0 12393 # for Fe-Ni area
 set region fecr_region type/fraction 3 1.0 12393 # for Fe-Cr area
 set region feco_region type/fraction 4 1.0 12393 # for Fe-Co area
 set region femn_region type/fraction 5 1.0 12393 # for Fe-Mn area
+
+group gfefe_region region fefe_region # for Fe-Fe area
+group gfeni_region region feni_region # for Fe-Ni area
+group gfecr_region region fecr_region # for Fe-Cr area
+group gfeco_region region feco_region # for Fe-Co area
+group gfemn_region region femn_region # for Fe-Mn area
 #----------------------------------------------------------------------
 
 #-------------------- Force field --------------------------------------------------------
 pair_style meam/c
 pair_coeff * * library.meam Co Ni Cr Fe Mn hea.meam Fe Ni Cr Co Mn
 
+# ------------------- Displace atoms and delete overlapping atoms ------------------------
+displace_atoms gfefe_region move 0 0 0 units lattice 
+displace_atoms gfeni_region move 0 0 0 units lattice 
+displace_atoms gfecr_region move 0 0 0 units lattice 
+displace_atoms gfeco_region move 0 0 0 units lattice 
+displace_atoms gfemn_region move 0 0 0 units lattice 
+delete_atoms overlap 0.35 all all
+
 #-------------------- Settings -----------------------------------------------------------
 neighbor 2.0 bin
 neigh_modify delay 0 every 10 check yes
 
-compute csym all centro/atom fcc
-compute  eng all pe/atom
+# ------------------- Define Settings ----------------------------------------------------
+compute   csym all centro/atom fcc 
+compute    eng all pe/atom 
+compute eatoms all reduce sum c_eng
 
 #--------- for gravity ----------
 # Note: You can add gravity. However, due to its very small value, it is ineffective at the nanoscale.
@@ -102,7 +132,30 @@ replicate 2 2 2 # Extend to "2x2x2" cells
 
 #-------------------- Energy Minimization ------------------------------------------------
 # 0 [K], structure optimization
+#neigh_modify every 1 delay 0 check yes
+
+thermo 10 
+thermo_style custom step pe lx press pxx c_eatoms 
+
+dump 1 all cfg 25 cfg/dump.sig5_minimization_*.cfg mass type xs ys zs c_csym c_eng fx fy fz 
+dump_modify 1 element Fe Fe 
+
+min_style cg 
 minimize 1e-6 1e-6 5000 10000
+
+undump 1 
+
+# ------------------- Calculate GB Energy ------------------------------------------------
+variable minimumenergy equal -3.360000 # <= Please, set this value.
+
+variable    esum equal "v_minimumenergy * count(all)" 
+variable   xseng equal "c_eatoms - (v_minimumenergy * count(all))" 
+variable  gbarea equal "lx * lz * 2" 
+variable     gbe equal "(c_eatoms - (v_minimumenergy * count(all)))/v_gbarea" 
+variable gbemJm2 equal ${gbe}*16021.7733 
+variable  gbernd equal round(${gbemJm2}) 
+
+print "GB energy is ${gbemJm2} mJ/m^2"
 
 # ------------------- Equilibration ------------------------------------------------------
 #reset timer
