@@ -8,5 +8,8 @@ for %%1 in (calc_fcc_ver1_v4.in) do (
 )
 
 plot_stress_vs_strain_v2.gpl
+plot_stress_vs_strain_v3.gpl
+
+call plot_rdf.bat
 
 pause
