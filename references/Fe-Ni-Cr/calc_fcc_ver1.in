@@ -12,30 +12,85 @@ boundary p p p
 #-------------------- Atom & Lattice description -----------------------------------------
 atom_style atomic
 
-lattice fcc 3.165
-region new_region block 0 10 0 10 0 10 
-create_box 1 new_region
+# method 1 (easy method) 
+#----------------------------------------------------------------------
+#lattice fcc 3.165
+#region new_region block 0 10 0 10 0 10 
+#create_box 1 new_region
 
-lattice fcc 3.165 orient x 1 0 0 orient y 0 1 0 orient z 0 0 1
-create_atoms 1 region new_region
+#lattice fcc 3.165 orient x 1 0 0 orient y 0 1 0 orient z 0 0 1
+#create_atoms 1 region new_region
 
-replicate 1 1 1
+#replicate 1 1 1
+#----------------------------------------------------------------------
+
+# method 2 (layer type)
+#----------------------------------------------------------------------
+#lattice fcc 3.165
+region  new_region block -30 30 0 30 0 12 units box 
+create_box 2  new_region # set 2 elements (Fe and Ni)
+
+region upper block   0 30 0 30 0 12 units box 
+lattice fcc 3.165 orient x 2 1 0 orient y 1 -2 0 orient z 0 0 -1 
+create_atoms 1 region upper 
+
+region lower block -30  0 0 30 0 12 units box 
+lattice fcc 3.5101 orient x 1 2 0 orient y 2 -1 0 orient z 0 0 -1 
+create_atoms 2 region lower 
+
+# creating composition using set command for 56Fe0.917-54Fe0.058 alloy -simplify->56Fe0.93-54Fe0.07
+set region upper type/fraction 2 0.07 12393 # Fe upper area
+set region lower type/fraction 1 0.93 12393 # Fe lower area
+
+mass 1 56 # type1, 56Fe
+mass 2 54 # type2, 54Fe
+
+group gupper region upper # Fe in upper
+group glower region lower # Fe in lower
+#----------------------------------------------------------------------
 
 #-------------------- Force field --------------------------------------------------------
 pair_style eam/alloy
-pair_coeff * * FeNiCr.eam.alloy Fe
+#pair_coeff * * FeNiCr.eam.alloy Fe # method 1
+pair_coeff * * FeNiCr.eam.alloy Fe Fe
+
+# ------------------- Displace atoms and delete overlapping atoms ------------------------
+displace_atoms gupper move 0 0 0 units lattice 
+displace_atoms glower move 0 0 0 units lattice 
+delete_atoms overlap 0.35 glower gupper # or delete_atoms overlap 0.35 all all
 
 #-------------------- Settings -----------------------------------------------------------
 neighbor 2.0 bin
 neigh_modify delay 0 every 10 check yes
 
-compute csym all centro/atom fcc
-compute  eng all pe/atom
+# ------------------- Define Settings ----------------------------------------------------
+compute   csym all centro/atom fcc 
+compute    eng all pe/atom 
+compute eatoms all reduce sum c_eng
+
+replicate 1 1 1 # Extend to 1x1x1 cell
 
 #-------------------- Energy Minimization ------------------------------------------------
 # 0 [K], structure optimization
 #neigh_modify every 1 delay 0 check yes
-#minimize 1e-25 1e-25 5000 10000
+
+thermo 10 
+thermo_style custom step pe lx press pxx c_eatoms 
+
+min_style cg 
+minimize 1e-6 1e-6 5000 10000
+
+# ------------------- Calculate GB Energy ------------------------------------------------
+variable minimumenergy equal -3.360000 # <= Please, set this value.
+
+variable    esum equal "v_minimumenergy * count(all)" 
+variable   xseng equal "c_eatoms - (v_minimumenergy * count(all))" 
+variable  gbarea equal "lx * lz * 2" 
+variable     gbe equal "(c_eatoms - (v_minimumenergy * count(all)))/v_gbarea" 
+variable gbemJm2 equal ${gbe}*16021.7733 
+variable  gbernd equal round(${gbemJm2}) 
+
+print "GB energy is ${gbemJm2} mJ/m^2"
 
 # ------------------- Equilibration ------------------------------------------------------
 #reset timer
@@ -119,7 +174,7 @@ fix fo1 all ave/time 1 3 3 c_2 v_strain v_stress v_stress_GPa v_p2 file stress_v
 #dump_modify 2 element Fe
 #---------------------------------------------------
 dump            d1 all cfg 100 cfg/run.*.cfg mass type xs ys zs id type vx vy vz fx fy fz c_kea
-dump_modify     d1 element Fe
+dump_modify     d1 element Fe Fe
 #---------------------------------------------------
 
 # thermostat + barostat
