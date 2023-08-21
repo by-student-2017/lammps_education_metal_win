@@ -5,7 +5,7 @@ clear
 #-------------------- Environment Settings -----------------------------------------------
 variable  Tdesird equal  100.0 # Desired Temperature [K]
 
-variable   Nsteps equal  75000 # Number of simulation cycles
+variable   Nsteps equal   7000 # Number of simulation cycles
 variable DumpFreq equal    100 # For print out
 
 variable    dt_ps equal  0.002 # 0.002 [ps] = 2 [fs]
@@ -30,10 +30,6 @@ pair_coeff * * PdPt_Zhou04.eam.alloy Pd Pt
 
 timestep ${dt_ps} # 2 [fs]
 
-variable    tmp equal ly
-variable     lo equal ${tmp}
-variable strain equal (ly-v_lo)/v_lo
-
 compute 1 all stress/atom NULL  # computes the symmetric per-atom stress tensor for each atom in a group.
 compute 2 all temp              # computes the temp of a group of atoms
 compute 3 all reduce sum c_1[2] # reduces vector quantities of all stress tensors in z-direction and adds all the quantities to a single scalar value
@@ -50,6 +46,10 @@ variable     stress equal c_3/v_t3 # assigns a value to the variable name stress
 #variable stress     equal c_3/vol      # old version
 #--------------------------------------
 variable stress_GPa equal v_stress/1e4 # converts the stress calculated to GPa
+
+variable    tmp equal ly
+variable     lo equal ${tmp}
+variable strain equal (ly-v_lo)/v_lo
 
 variable     p2 equal -pyy/10000 # [GPa]
 # for units metal, pressure is in 1 [bars] = 100 [kPa] = 0.1 [MPa] = 1x10^-4 [GPa] => p1, p2, p3, are in GPa
