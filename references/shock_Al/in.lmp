@@ -151,24 +151,50 @@ fix 2 piston setforce 0.0 0.0 0.0
 
 # WE CREATE BINS IN ORDER TO TRACK THE PASSING OF THE SHOCKWAVE
 
+#--------------------------------------------------------------------------
+# After 31May2016
+compute cc1 bulk chunk/atom bin/1d z lower ${deltaz}
+#--------------------------------------------------------------------------
+
+#--------------------------------------------------------------------------
 #fix density_profile bulk ave/spatial ${Nevery} ${Nrepeat} ${Nfreq} z lower ${deltaz} density/mass file denz.profile units box
 # ERROR: This fix style is no longer available (src/fix_deprecated.cpp:55)
+#--------------------------------------------------------------------------
+# After 31May2016
+fix density_profile bulk ave/chunk ${Nevery} ${Nrepeat} ${Nfreq} cc1 density/mass file denz.profile
+#--------------------------------------------------------------------------
 
 variable temp atom c_myKE/(1.5*8.61e-5)
 
+#--------------------------------------------------------------------------
 #fix temp_profile bulk ave/spatial ${Nevery} ${Nrepeat} ${Nfreq} z lower ${deltaz} v_temp file temp.profile units box
 # ERROR: This fix style is no longer available (src/fix_deprecated.cpp:55)
+#--------------------------------------------------------------------------
+# After 31May2016
+fix temp_profile bulk ave/chunk ${Nevery} ${Nrepeat} ${Nfreq} cc1 v_temp file temp.profile units box
+#--------------------------------------------------------------------------
 
 # meanpress was originally pressure *volume per atom (cubic distance units)
 # manual suggests use compute voronoi/atom to estimate atomic volume
 
 variable meanpress atom -(c_peratom[1]+c_peratom[2]+c_peratom[3])/3/c_vorvol[1]
 
+#--------------------------------------------------------------------------
 #fix pressure_profile bulk ave/spatial ${Nevery} ${Nrepeat} ${Nfreq} z lower ${deltaz} v_meanpress units box file pressure.profile
 # ERROR: This fix style is no longer available (src/fix_deprecated.cpp:55)
+#--------------------------------------------------------------------------
+# After 31May2016
+#compute cc3 bulk chunk/atom bin/1d z lower ${deltaz}
+fix pressure_profile bulk ave/chunk ${Nevery} ${Nrepeat} ${Nfreq} cc1 v_meanpress units box file pressure.profile
+#--------------------------------------------------------------------------
 
+#--------------------------------------------------------------------------
 #fix velZ_profile bulk ave/spatial ${Nevery} ${Nrepeat} ${Nfreq} z lower ${deltaz} c_vz units box file velocityZcomp.profile
 # ERROR: This fix style is no longer available (src/fix_deprecated.cpp:55)
+#--------------------------------------------------------------------------
+# After 31May2016
+fix velZ_profile bulk ave/chunk ${Nevery} ${Nrepeat} ${Nfreq} cc1 c_vz units box file velocityZcomp.profile
+#--------------------------------------------------------------------------
 
 variable eq1 equal "step"
 variable eq2 equal "pxx/10000"
