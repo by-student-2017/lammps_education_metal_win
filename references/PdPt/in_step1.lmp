@@ -1,0 +1,86 @@
+### The following commands describe the input script for creating a Pd50-Pt50 alloy nanowire.
+## Initialization
+# Definitions of the units that are going to be used during the simulation i.e. metal units are: 
+# distance = Angstrom, time = picoseconds, energy = eV, velocity = Angstrom/ps, temperature = K, pressure = bar.
+#-----------------------------------------------------------------------------------------
+
+#-------------------- Initialization -----------------------------------------------------
+echo both
+units metal
+
+# The boundary conditions that are employed in LAMMPS are:
+# ppp; p p s; p f p
+# Where p stands for periodic along the three directions, f and s stand for fixed and
+# shrink wrapped, which are non-periodic.
+boundary p p p
+
+#Definition of the simulation dimensions, in this case 3D.
+dimension 3
+
+#-------------------- Atom & Lattice description -----------------------------------------
+# Atom and Lattice definition
+# The atomic type is the one that matches better with metals simulation.
+atom_style atomic
+
+region my cylinder y 0 0 10 0 100 units box # r=10 x l=100 Angstrom
+create_box 2 my # set 2 elements (Pd and Pt)
+
+# Definition of the type of lattice
+lattice fcc 3.89
+
+# Definition the region that is going to be studied
+region mine cylinder y 0 0 10 0 100 units box
+lattice fcc 3.89 orient x 1 0 0 orient y 0 1 0 orient z 0 0 1
+create_atoms 1 region mine units box
+
+# creating composition using set command for Pd0.5-Pt0.5 alloy
+set region my type/fraction 2 0.5 12393 # Pt 50% in FCC Pd
+
+#-------------------- Force field --------------------------------------------------------
+# Choice of the interatomical potential that is going to be used and the directory to find the parameters.
+# The Åg*Åh indicates that the potential is going to be applied between all the types of atoms defined.
+pair_style eam/alloy
+pair_coeff * * PdPt_Zhou04.eam.alloy Pd Pt # (force field parameter)
+
+#-------------------- Energy Minimization ------------------------------------------------
+# LAMMPS performs an energy minimization of the system, by iteratively regulating atom coordinates.
+# The minimizers hurdle the far away atoms movement in single iteration, 
+# so that it is possible to slow down systems with exceedingly overlie atoms (huge energies and forces) by
+# approaching the atoms off each other.
+# 0 [K], structure optimization
+minimize 1.0e-6 1.0e-5 100 100 # (energy minimization)
+
+#-------------------- Settings -------------------------------------------------------------
+reset_timestep 0
+
+timestep 0.002 # 2 [fs]
+
+# Definition of the frequency with which the output information is going to be registered and 
+# which variables are going to be recorded.
+thermo 10 # (output)
+thermo_style custom step temp etotal pyy
+
+# The output of the LAMMPS simulation is written onto text files called dump file containing 
+# the information of the atom coordinates along with the velocities dumped at the required 
+# timestep. While the thermodynamic information of the simulation is stored in as log file.
+#dump 1 all custom 10 pd-pt_wire_dump.lammpstrj id type x y z # (output)
+#---------------------------------------------------
+dump            d1 all cfg 10 cfg/run.*.cfg mass type xs ys zs id type vx vy vz fx fy fz
+dump_modify     d1 element Pd Pt
+#---------------------------------------------------
+#log log pd-pt wire.data
+
+# Give some initial velocity to all the atoms randomly
+velocity all create 100 45875 rot yes mom yes dist gaussian
+
+#-------------------- Run the simulation -------------------------------------------------
+fix 1 all npt temp 100 100 0.1 iso 0 0 0.1 
+
+run 100
+
+unfix 1
+
+#-------------------- Output data file ---------------------------------------------------
+write_data sample_data_tensile.txt # for step2_tensile
+
+#-------------------- End ----------------------------------------------------------------

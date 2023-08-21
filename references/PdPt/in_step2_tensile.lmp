@@ -1,0 +1,61 @@
+### The following input file depicts the tensile sample for Pd50-Pt50 alloy nanowire
+
+#-------------------- Initialization -----------------------------------------------------
+echo both
+units metal
+dimension 3
+boundary p p p
+
+#-------------------- Atom and Lattice definition (read structure file) ------------------
+atom_style atomic
+
+read_data sample_data_tensile.txt
+
+#-------------------- Force field --------------------------------------------------------
+pair_style eam/alloy
+pair_coeff * * PdPt_Zhou04.eam.alloy Pd Pt
+
+#-------------------- Settings -------------------------------------------------------------
+
+timestep 0.002 # 2 [fs]
+
+compute 1 all stress/atom NULL
+compute 2 all reduce sum c_1[1] c_1[2] c_1[3]
+
+variable stress equal ((c_2[2])/(3*vol*10000))
+variable    tmp equal ly
+variable     lo equal ${tmp}
+variable strain equal (ly-v_lo)/v_lo
+variable      p equal -pyy/10000
+
+thermo 100
+thermo_style custom step temp vol etotal pyy lx ly lz v_stress v_strain
+
+#---------- output file settings -------------------
+#dump 1 all custom 100 NVT_defo_dump_100K.lammpstrj id type x y z 
+#---------------------------------------------------
+dump            d1 all cfg 10 cfg/run.*.cfg mass type xs ys zs id type vx vy vz fx fy fz
+dump_modify     d1 element Pd Pt
+#---------------------------------------------------
+#log NVTlogdefpdpt_100K.data
+
+velocity all create 100 873847 rot yes mom yes dist gaussian
+
+#-------------------- Run the simulation -------------------------------------------------
+
+fix 1 all deform 1 x volume y trate 0.01 z volume units box 
+
+fix 2 all nvt temp 100 100 0.1 
+
+run 75000
+
+#-------------------- End ----------------------------------------------------------------
+
+#-----------------------------------------------------------------------------------------
+# Note
+# compute        peratom all stress/atom NULL
+# compute        p all reduce sum c_peratom[1] c_peratom[2] c_peratom[3]
+# variable       press equal -(c_p[1]+c_p[2]+c_p[3])/(3*vol)
+# thermo_style   custom step temp etotal press v_press
+# metal unit: press = bar = 0.1 MPa, length = Angstrom = 1e-10 m
+#-----------------------------------------------------------------------------------------
