@@ -91,12 +91,6 @@ input file (metal unit, lammps)
   Ordered_Nanoporous_Metals
   (ERROR: Molecule auto special bond generation overflow)
   
-- A. Fredriksson, Master Thesis (2022).
-  https://lup.lub.lu.se/luur/download?func=downloadFile&recordOId=9079628&fileOId=9079859
-  tungsten
-  -------------------------------------
-  https://lup.lub.lu.se/student-papers/search/
-  
 - G. Damien, Master Thesis (2022)
   https://lup.lub.lu.se/student-papers/search/publication/9102580
   Nanocutting
@@ -108,6 +102,10 @@ input file (metal unit, lammps)
 - A. Vesti, Master Thesis (2019).
   https://lup.lub.lu.se/luur/download?func=downloadFile&recordOId=8977878&fileOId=8977883
   Nanowire_SiC
+  
+- A. Fredriksson, Master Thesis (2022).
+  https://lup.lub.lu.se/luur/download?func=downloadFile&recordOId=9079628&fileOId=9079859
+  Nanowire_W
   
 - D. Chen et al., Doctor Thesis (2014).
   https://oaktrust.library.tamu.edu/handle/1969.1/154160
