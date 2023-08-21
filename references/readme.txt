@@ -107,6 +107,10 @@ input file (metal unit, lammps)
   https://lup.lub.lu.se/luur/download?func=downloadFile&recordOId=9079628&fileOId=9079859
   Nanowire_W
   
+- Dora, Jay Krishan (2014)
+  http://ethesis.nitrkl.ac.in/6375/
+  Nanowire_PdPt
+  
 - D. Chen et al., Doctor Thesis (2014).
   https://oaktrust.library.tamu.edu/handle/1969.1/154160
   Radiation_grain_boundary (Structure of (013)[100]Σ = 5 symmetric-tilt grain boundary)
@@ -225,10 +229,6 @@ input file (metal unit, lammps)
 - Kumar, Navratan (2014) 
   http://ethesis.nitrkl.ac.in/6144/
   Fe0.05Cr_alloy
-  
-- Dora, Jay Krishan (2014)
-  http://ethesis.nitrkl.ac.in/6375/
-  PdPt
   
 - Gupta, Pradeep (2019) 
   http://ethesis.nitrkl.ac.in/10087/ (do not download)
