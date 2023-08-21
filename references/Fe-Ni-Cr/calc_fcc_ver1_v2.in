@@ -67,27 +67,31 @@ group glower region lower # Fe in lower
 pair_style eam/alloy
 pair_coeff * * FeNiCr.eam.alloy Fe Ni
 
+#-------------------- Settings 1 -----------------------------------------------------------
+
 #Creating regions to replace with Ni
 #-------------------------------------
 region 1 block   0  1 INF INF INF INF units box # upper side
 region 2 block  -1  0 INF INF INF INF units box # lower side
 #-------------------------------------
 
-#Removing Ag atoms and adding Ni atoms
+#Removing atoms (region 1 and 2 block) and adding Ni atoms (type 2)
 #-------------------------------------
 delete_atoms region 1
-create_atoms 2 random 100 698317 1 # <= Please, e.g., set number of atoms of (liquid density * grain boundary)
+create_atoms 2 random 100 698317 1 # <= Please, e.g., set number of atoms of (liquid density * grain boundary(region 1 and 2 block))
 #-------------------------------------
 delete_atoms region 2
-create_atoms 2 random 100 612317 2 # <= Please, e.g., set number of atoms of (liquid density * grain boundary)
+create_atoms 2 random 100 612317 2 # <= Please, e.g., set number of atoms of (liquid density * grain boundary(region 1 and 2 block))
 #-------------------------------------
+# Note: create_atoms type random  N(atoms) sedd region-ID
 
-# ------------------- Displace atoms and delete overlapping atoms ------------------------
+# Displace atoms and delete overlapping atoms
 displace_atoms gupper move 0 0 0 units lattice 
 displace_atoms glower move 0 0 0 units lattice 
 delete_atoms overlap 0.35 glower gupper # or delete_atoms overlap 0.35 all all
+#-------------------------------------
 
-#-------------------- Settings -----------------------------------------------------------
+#-------------------- Settings 2 -----------------------------------------------------------
 neighbor 2.0 bin
 neigh_modify delay 0 every 10 check yes
 
