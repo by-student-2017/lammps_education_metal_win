@@ -31,8 +31,8 @@ variable latconst equal 3.14339 # lattice constants of BCC [Angstrom]
 #-------------------- Defining type of atoms, dimensions and boundary conditions ---------
 units metal
 dimension 3
-#boundary p s s # method 1 case
-boundary p p p # method 2 case
+boundary p s s # method 1 case
+#boundary p p p # method 2 case
 
 #-------------------- Atom & Lattice description -----------------------------------------
 atom_style atomic
@@ -131,29 +131,29 @@ dump_modify     d1 element W
 
 #-------------------- Run the simulation (deformation process) ---------------------------
 
-# method 1 (original paper) (This method is difficult. Not recommended.)
+# method 1 (original paper)
 #---------------------------------------------------
 # strain rate of 0.01 [1/time units] is applied in x direction
-#fix 1 all deform 1 x erate ${es_rate} units box remap x
+fix 1 all deform 1 x erate ${es_rate} units box remap x
 
 # Defining timeintegration, ensemble and temperature.
-#fix 2 all nvt temp ${Tdesird} ${Tdesird} $(100*dt) # "nvt" and "bouncary p s s" for nano-wire
-
-# Resets the temp of atoms to 700 K by rescaling velocities after every 10 steps
-#fix 3 all temp/rescale 10 ${Tdesird} ${Tdesird} 0.05 1.0
-#---------------------------------------------------
-
-# method 2 (other paper) (Still a good way in these.)
-#---------------------------------------------------
-# strain rate of 0.01 [1/time units] is applied in y direction
-fix 1 all deform 1 x erate ${es_rate}
-
-# Defining timeintegration, ensemble and temperature.
-fix 2 all npt temp ${Tdesird} ${Tdesird} $(v_Nsteps*dt) y 0 0 $(v_Nsteps*dt) z 0 0 $(v_Nsteps*dt) dilate all # Adiabatic conditions
-#fix 2 all npt temp ${Tdesird} ${Tdesird} $(100*dt) y 0 0 $(1000*dt) z 0 0 $(1000*dt) dilate all # Non-adiabatic conditions
+fix 2 all nvt temp ${Tdesird} ${Tdesird} $(100*dt) # "nvt" and "bouncary p s s" for nano-wire
 
 # Resets the temp of atoms to 700 K by rescaling velocities after every 10 steps
 fix 3 all temp/rescale 10 ${Tdesird} ${Tdesird} 0.05 1.0
+#---------------------------------------------------
+
+# method 2 (other paper)
+#---------------------------------------------------
+# strain rate of 0.01 [1/time units] is applied in y direction
+#fix 1 all deform 1 x erate ${es_rate}
+
+# Defining timeintegration, ensemble and temperature.
+#fix 2 all npt temp ${Tdesird} ${Tdesird} $(v_Nsteps*dt) y 0 0 $(v_Nsteps*dt) z 0 0 $(v_Nsteps*dt) dilate all # Adiabatic conditions
+#fix 2 all npt temp ${Tdesird} ${Tdesird} $(100*dt) y 0 0 $(1000*dt) z 0 0 $(1000*dt) dilate all # Non-adiabatic conditions
+
+# Resets the temp of atoms to 700 K by rescaling velocities after every 10 steps
+#fix 3 all temp/rescale 10 ${Tdesird} ${Tdesird} 0.05 1.0
 #---------------------------------------------------
 
 fix writer all print ${DumpFreq} "${p0} ${p1} ${p2} ${p3}" file W.deform.txt screen no
