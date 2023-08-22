@@ -40,16 +40,15 @@ compute 1 all stress/atom NULL  # computes the symmetric per-atom stress tensor 
 compute 2 all temp              # computes the temp of a group of atoms
 compute 3 all reduce sum c_1[2] # reduces vector quantities of all stress tensors in z-direction and adds all the quantities to a single scalar value
 
-# atom radii per type (Pd: atomic radius 1.37 Angstrom, Pt: atomic radius 1.39 Angstrom)
+# assigns a value to the variable name stress
+#--------------------------------------
+# It takes time to calculate the volume by the Voronoi method every time.
+# Atom radii per type (Pd: atomic radius 1.37 Angstrom, Pt: atomic radius 1.39 Angstrom)
 variable r atom "(1.37+1.39)/2"
 compute v1 all voronoi/atom radius v_r
 compute r0 all reduce sum c_v1[1] # Pd
 compute r1 all reduce sum c_v1[2] # Pt
 variable         t3 equal (c_r0+c_r1)/2
-
-# assigns a value to the variable name stress
-#--------------------------------------
-# It takes time to calculate the volume by the Voronoi method every time.
 #variable     stress equal c_3/v_t3
 #--------------------------------------
 # If the volume change error is within the expected range, this method is faster to calculate.
