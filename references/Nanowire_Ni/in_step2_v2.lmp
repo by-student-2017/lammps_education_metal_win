@@ -1,24 +1,27 @@
 # 4.2 Tensile Deformation of Nickel nanowire
-#   3d tensile simulation (at strain rate 10^11 s^-1)
+#   3d tensile simulation (at strain rate 5x10^12 s^-1)
 
 # LAMMPS 64-bit 22Dec2022-MSMPI
 #-------------------- Environment Settings -----------------------------------------------
 variable  Tdesird equal   50.0 # Desired Temperature [K]
 
-variable   Nsteps equal   2000 # Number of simulation cycles
+variable   Nsteps equal  20000 # Number of simulation cycles
 variable DumpFreq equal    100 # For print out
 
 variable    dt_ps equal  0.002 # 0.002 [ps] = 2 [fs]
 
-variable  es_rate equal    0.1 # engineering strain rate (1/time units)
-# Note: 0.1 / (2e-15) = 5.0e13 [1/s], why 10^11 [1/s] ?
+variable  es_rate equal   0.01 # engineering strain rate (1/time units)
+# Note: 0.01 / (2e-15) = 5.0e12 [1/s]
 # check: strain rate 0.1/2[fs] = 0.05/1[fs] = 0.05/1e-15[s] = 0.05e15/1[s]
 # L(t) = L(0)*(1 + es_rate*dt*step)
-# strain [%] = es_rate*dt*Nstep*100 [%] = 0.1 * 0.002 * 2000 * 100 = 40 [%]
+# strain [%] = es_rate*dt*Nstep*100 [%] = 0.01 * 0.002 * 20000 * 100 = 40 [%]
 
 #-------------------- Initialization -----------------------------------------------------
 echo both
 units metal
+#boundary p p p # method 1 case
+boundary s p s # method 2 case
+
 
 #-------------------- Read structure file ------------------------------------------------
 atom_style atomic
@@ -32,9 +35,10 @@ pair_coeff * * Ni_u3.eam
 #-------------------- Settings -----------------------------------------------------------
 timestep ${dt_ps}
 
-compute 1 all stress/atom NULL
-compute 2 all temp
-compute 3 all reduce sum c_1[2]
+compute 1 all stress/atom NULL  # computes the symmetric per-atom stress tensor for each atom in a group.
+compute 2 all temp              # computes the temp of a group of atoms
+compute 3 all reduce sum c_1[2] # reduces vector quantities of all stress tensors in y-direction and adds all the quantities to a single scalar value
+compute kea all ke/atom         # This is related to temperature
 
 # volume of nanowire (not box !) = 3.14*(25/2)^2*100 (D = 25 Anggstrom, L = 100 Angstrom)
 #variable     stress equal c_3/(3.14*(25/2)^2*100)
@@ -44,7 +48,12 @@ variable r atom 1.35
 compute v1 all voronoi/atom radius v_r
 compute r0 all reduce sum c_v1[1]
 variable         t3 equal c_r0
-variable     stress equal c_3/v_t3
+#-----------------------------------------------------
+# It takes time to calculate the volume by the Voronoi method every time.
+#variable     stress equal c_3/v_t3
+#-----------------------------------------------------
+# If the volume change error is within the expected range, this method is faster to calculate.
+variable     stress equal c_3/vol
 #-----------------------------------------------------
 variable stress_GPa equal v_stress/1e4
 
@@ -52,17 +61,45 @@ variable    tmp equal ly
 variable     lo equal ${tmp}
 variable strain equal (ly-v_lo)/v_lo
 
+# instrumentation and output
+# for units metal, pressure is in 1 [bars] = 100 [kPa] = 0.1 [MPa] = 1x10^-4 [GPa] => p1, p2, p3, are in GPa
+# Create a variable called strain, which calculates the strain.
+#-------------------------------
+variable  p0 equal "v_strain"
+#-------------------------------
+variable  p1 equal "-pxx/10000"
+variable  p2 equal "-pyy/10000"
+variable  p3 equal "-pzz/10000"
+#-------------------------------
+variable p12 equal "-pxy/10000"
+variable p23 equal "-pyz/10000"
+variable p13 equal "-pxz/10000"
+#-------------------------------
+variable  fm equal "(v_p1+v_p2+v_p3)/3" # Hydrostatic stress
+variable  fv equal "sqrt( (1/2)*( (v_p1-v_p2)^2 + (v_p2-v_p3)^2 + (v_p3-v_p1)^2 + 6*(v_p12^2+v_p23^2+v_p13^2) ) )" # Von Mises Stress
+variable   t equal "v_fm/v_fv"
+variable  fd equal "( (v_p1-v_fm)*(v_p2-v_fm)*(v_p3-v_fm) - ((v_p12)^2)*(v_p3-v_fm) - ((v_p23)^2)*(v_p1-v_fm) - ((v_p13)^2)*(v_p2-v_fm) + 2*(v_p12*v_p23*v_p13) )" # Deviatoric Von Mises stress
+#-------------------------------
+# principal stresses
+variable  I1 equal "(v_p1+v_p2+v_p3)"
+variable  I2 equal "(v_p1)*(v_p2) + (v_p2)*(v_p3) + (v_p1)*(v_p3) - (v_p12)^2 - (v_p23)^2 - (v_p13)^2"
+variable  I3 equal "(v_p1)*(v_p2)*(v_p3) - (v_p1)*((v_p23)^2) - (v_p2)*((v_p13)^2) - (v_p3)*((v_p12)^2) + 2*(v_p12)*(v_p23)*(v_p13)"
+variable   A equal "( acos(((2*(v_I1)^3)-9*(v_I1)*(v_I2)+27*(v_I3))/(2*((v_I1)^2-(3*(v_I2)))^(3/2))) )/3" 
+variable  s1 equal "( (v_I1)/3)+(2/3)*( sqrt((v_I1)^2-(3*(v_I2)) ) )*cos(v_A)" 
+variable  s2 equal "( (v_I1)/3)+(2/3)*( sqrt((v_I1)^2-(3*(v_I2)) ) )*cos((v_A)+(2*PI)/3)"
+variable  s3 equal "( (v_I1)/3)+(2/3)*( sqrt((v_I1)^2-(3*(v_I2)) ) )*cos((v_A)+(4*PI)/3)"
+#-------------------------------
+
 thermo ${DumpFreq}
-thermo_style custom step temp press vol etotal c_2 v_strain v_stress v_stress_GPa
+thermo_style custom step temp press vol etotal c_2 v_strain v_stress v_stress_GPa vol v_t3
 
 #---------- output file settings -------------------
-fix fo1 all ave/time 1 3 3 c_2 v_strain v_stress v_stress_GPa file stress_vs_strain.txt
-
+fix fo1 all ave/time 1 3 3 c_2 v_strain v_stress v_stress_GPa v_p2 file stress_vs_strain.txt
 #---------- output file settings -------------------
 #dump 1 all atom 100 dump.JP4_tensile_review_10_11s-1_40_strain_f1_allatoms.lammpstrj
 #dump 2 all custom ${DumpFreq} dump.stress_atom_Jp4_review_10_11s1_40_strain_f1_allatoms type x y z c_1[1] c_1[2] c_1[3] c_1[4] c_1[5] c_1[6]
 #---------------------------------------------------
-dump            d1 all cfg ${DumpFreq} cfg/run.*.cfg mass type xs ys zs id type vx vy vz fx fy fz
+dump            d1 all cfg ${DumpFreq} cfg/run.*.cfg mass type xs ys zs id type vx vy vz fx fy fz c_kea
 dump_modify     d1 element Ni
 #---------------------------------------------------
 #log log5050_JP4_review_10_11s-1_40_strain_f1_allatoms.dat
@@ -72,24 +109,55 @@ velocity all create ${Tdesird} 482748 rot yes mom yes dist gaussian
 
 #-------------------- Run the simulation -------------------------------------------------
 
+# method 1 (original paper)
+#---------------------------------------------------
 # strain rate of 0.01 [1/time units] is applied in y direction
-fix 1 all deform 1 y erate ${es_rate}
+#fix 1 all deform 1 y erate ${es_rate}
 
 # Defining timeintegration, ensemble and temperature. (other case: "nvt" and "bouncary p s s" for nano-wire)
-fix 2 all npt temp ${Tdesird} ${Tdesird} $(5000*dt) x 0 0 $(5000*dt) z 0 0 $(5000*dt) dilate all
+#fix 2 all npt temp ${Tdesird} ${Tdesird} $(v_Nsteps*dt) x 0 0 $(v_Nsteps*dt) z 0 0 $(v_Nsteps*dt) dilate all # Adiabatic conditions
+#fix 2 all npt temp ${Tdesird} ${Tdesird} $(100*dt) x 0 0 $(1000*dt) z 0 0 $(1000*dt) dilate all # Non-adiabatic conditions
+
+# Resets the temp of atoms to 700 K by rescaling velocities after every 10 steps
+#fix 3 all temp/rescale 10 ${Tdesird} ${Tdesird} 0.05 1.0
+#---------------------------------------------------
+
+# method 2 (other paper)
+#---------------------------------------------------
+# strain rate of 0.01 [1/time units] is applied in y direction
+fix 1 all deform 1 y erate ${es_rate} units box # remap y
+
+# Defining timeintegration, ensemble and temperature.
+fix 2 all nvt temp ${Tdesird} ${Tdesird} $(100*dt) # "nvt" and "bouncary s p s" for nano-wire
 
 # Resets the temp of atoms to 700 K by rescaling velocities after every 10 steps
 fix 3 all temp/rescale 10 ${Tdesird} ${Tdesird} 0.05 1.0
+#---------------------------------------------------
 
+fix writer all print ${DumpFreq} "${p0} ${p1} ${p2} ${p3}" file Ni.deform.txt screen no
+
+fix def all print 1 "${strain} ${p2} ${s1} ${s2} ${s3} ${fm} ${fv} ${t} ${fd}" file plot_stress_vs_strain_v3.txt screen no
+
+# calculates the radial distribution function (RDF) and output file
+compute 11 all rdf 100
+fix 5 all ave/time 100 1 100 c_11[*] file data.rdf mode vector
+
+# number of iterations is given so as to give 40% strain to the material
 run ${Nsteps}
 
 #--------------------------------------------------------------------------------
 # The calculation conditions for this time are as follows.
 #--------------------------------------------------------------------------------
-variable strain_rate_percent equal "(v_strain)/(v_dt_ps * Nsteps)*100" # [%/ps]
-variable strain_rate equal "(v_strain)/(v_dt_ps * Nsteps)" # [1/ps]
-print "strain_rate: ${strain_rate_percent} [%/ps]"
-print "strain rate: ${strain_rate} x 10^12 [1/s]"
+variable strain_rate_percent equal "(v_strain)/(v_dt_ps * v_Nsteps)*100" # [1/ps]
+variable strain_rate equal "(v_strain)/(v_dt_ps * v_Nsteps)" # [%/ps]
+print "strain_rate: ${strain_rate_percent} [%/ps] at setting temperature ${Tdesird} [K]"
+print "strain rate: ${strain_rate} x 10^12 [1/s] at setting temperature ${Tdesird} [K]"
+#--------------------------------------------------------------------------------
+#
+# "vol" is used here because the volume is only about 0.016% different from the Voronoi method.
+#--------------------------------------------------------------------------------
+variable vol_error equal "(v_t3 - vol)/vol*100"
+print "volume error: (V(voronoi) - vol)/vol)*100 = ${vol_error} [%]"
 #--------------------------------------------------------------------------------
 
 #-------------------- End ----------------------------------------------------------------
