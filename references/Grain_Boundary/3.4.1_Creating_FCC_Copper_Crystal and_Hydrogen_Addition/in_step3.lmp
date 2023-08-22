@@ -1,40 +1,48 @@
 # 3.4.1 Creating FCC Copper Crystal and Hydrogen Addition
-
+#-----------------------------------------------------------------------------------------
+# LAMMPS 64-bit 22Dec2022-MSMPI
+clear
+#-------------------- Read structure file ------------------------------------------------
 read_data Data25.R1
 
+#-------------------- Force field --------------------------------------------------------
 pair_style bop
 pair_coeff * * CuH.bop.table Cu H
 
 comm_modify cutoff 11.4
 
-mass 1 63.546
-mass 2 1.00794
-
-timestep 0.001
-
-thermo 200000
-
-fix 1 all nvt temp 700.0 700.0 0.1
-fix 3 all momentum 1 linear 1 1 1
-
-thermo_style custom step temp press vol enthalpy ke pe etotal lx ly lz density atoms
+mass 1 63.546   # Cu
+mass 2  1.00794 # H
 
 group Cu type 1
-group H type 2
+group  H type 2
+
+#-------------------- Settings -----------------------------------------------------------
+timestep 0.001
 
 compute 2 H msd
 
-fix 4 H ave/time 10000 5 1000000 c_2 file H.txt mode vector
-
+thermo 200000
 thermo_style custom step temp press vol enthalpy ke pe etotal lx ly lz density atoms
 thermo_modify lost warn
 
+#---------- output file settings -------------------
 dump 2 all atom 200000 copper_box_300K.lammpstrj
 dump 3 all custom 200000 copper_box_300k_final.dump id type x y z vx vy vz
+#---------------------------------------------------
+#restart 10000000 poly.restart
 
-restart 10000000 poly.restart
+#-------------------- Run the simulation -------------------------------------------------
 
+fix 1 all nvt temp 700.0 700.0 $(100*dt)
+fix 3 all momentum 1 linear 1 1 1
+fix 4   H ave/time 1000 5 10000 c_2 file H.txt mode vector
+
+run 20000 upto
+
+#---------- output file settings -------------------
 write_data Data.R2
-write_restart diamond_box_300k.restart
 
-run 100000000 upto
+print “Done”
+
+#-------------------- End ----------------------------------------------------------------

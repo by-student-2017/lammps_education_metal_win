@@ -1,43 +1,62 @@
 # 3.4.2 Calculations with the Grain Boundary
+#-----------------------------------------------------------------------------------------
+# LAMMPS 64-bit 22Dec2022-MSMPI
+clear
+#-------------------- Initialization -----------------------------------------------------
+units metal
+dimension 3
+boundary p p p
 
-read_data Data.R1
+#-------------------- Read structure file ------------------------------------------------
+atom_style atomic
 
-group upper type 1 
-group lower type 2
+read_data Data.R1 # data from step1
 
+group upper type 1 # Cu
+group lower type 2 # Cu
+
+#-------------------- Force field --------------------------------------------------------
 pair_style bop
 pair_coeff * * CuH.bop.table Cu Cu H
 
 comm_modify cutoff 11.4
 
+#-------------------- Settings -----------------------------------------------------------
+
 displace_atoms upper move 0 0 0 units lattice 
 
 delete_atoms overlap 2.5 lower upper
 
-velocity all create 700 25674 dist gaussian
-
+#-------------------- Energy Minimization ------------------------------------------------
+# 0 [K], structure optimization
 minimize 1.0e-8 1.0e-8 1000000 1000000
+
+#-------------------- Settings -----------------------------------------------------------
+reset_timestep 0
 
 timestep 0.001
 
-reset_timestep 0
-
-fix 1 all npt temp 700 700 0.1 iso 0.0 0.0 10 
-fix 3 all momentum 1 linear 1 1 1
-
-thermo 20000
-
-dump 2 all atom 20000 copper_box_300K2.lammpstrj
-
+thermo 100
 thermo_modify lost ignore
 
-restart 1000000 poly.restart
+#---------- output file settings -------------------
+dump 2 all cfg 100 cfg/run.*.cfg mass type xs ys zs id type xs ys zs vx vy vz fx fy fz
+dump_modify 2 element Cu Cu H
+#---------------------------------------------------
 
-run 10000000
+velocity all create 700 25674 dist gaussian
+
+#-------------------- Run the simulation -------------------------------------------------
+
+fix 1 all npt temp 700 700 $(100*dt) iso 0.0 0.0 $(1000*dt)
+fix 3 all momentum 1 linear 1 1 1
+
+run 20000
 
 unfix 1
 
+#---------- output file settings -------------------
 write_data Data25.R1
-write_restart Copper2_box_300k.restart
 
 print “Done”
+#-------------------- End ----------------------------------------------------------------

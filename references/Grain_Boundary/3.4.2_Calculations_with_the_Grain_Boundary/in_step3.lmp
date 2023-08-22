@@ -1,13 +1,13 @@
 # 3.4.2 Calculations with the Grain Boundary
-
+#-----------------------------------------------------------------------------------------
+# LAMMPS 64-bit 22Dec2022-MSMPI
 clear
-
-log copper_box_300k.log
-
+#-------------------- Initialization -----------------------------------------------------
 units metal
 dimension 3
 boundary p p f
 
+#-------------------- Read structure file ------------------------------------------------
 atom_style atomic
 atom_modify map array sort 0 0
 
@@ -15,8 +15,11 @@ read_data Data.R1
 
 group water type 3
 
+#-------------------- Force field --------------------------------------------------------
 pair_style bop
 pair_coeff * * CuH.bop.table Cu Cu H
+
+#-------------------- Settings -----------------------------------------------------------
 
 comm_modify cutoff 11.4
 
@@ -24,25 +27,26 @@ reset_timestep 0
 
 timestep 0.001
 
-fix 1 all nvt temp 700.0 700.0 0.1
-fix 2 all momentum 1 linear 1 1 1
-fix walls all wall/reflect zlo -3.0
-
+thermo 100
 thermo_style custom step temp press vol enthalpy ke pe etotal lx ly lz density atoms
 thermo_modify lost ignore
 
-dump 2 all atom 20000 copper_box_300K55.lammpstrj
+#---------- output file settings -------------------
+dump 2 all cfg 100 cfg/run.*.cfg mass type xs ys zs id type xs ys zs vx vy vz fx fy fz
+dump_modify 2 element Cu Cu H
+#---------------------------------------------------
 
-thermo 20000
+#-------------------- Run the simulation -------------------------------------------------
 
-dump 3 all custom 20000 copper_box_300k_dfdffinal.dump id type x y z vx vy vz
-dump 4 water atom 20000 dump.atom
+fix 1 all nvt temp 700.0 700.0 $(100*dt)
+fix 2 all momentum 1 linear 1 1 1
+fix walls all wall/reflect zlo -3.0
 
-restart 1000000 poly.restart
+run 20000 upto
 
-run 20000000 upto
-
-write_restart Copper3_box_300k.restart
+#---------- output file settings -------------------
 write_data Data33.R1
 
 print “Done”
+
+#-------------------- End ----------------------------------------------------------------

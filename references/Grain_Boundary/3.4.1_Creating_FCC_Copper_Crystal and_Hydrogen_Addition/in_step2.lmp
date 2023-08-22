@@ -1,7 +1,16 @@
 # 3.4.1 Creating FCC Copper Crystal and Hydrogen Addition
+#-----------------------------------------------------------------------------------------
+# LAMMPS 64-bit 22Dec2022-MSMPI
+clear
+#-------------------- Initialization -----------------------------------------------------
+units metal
+dimension 3
+boundary p p p
 
 #-------------------- Read structure file ------------------------------------------------
-read_data Data.R1
+atom_style atomic
+
+read_data Data.R1 # data from step1
 
 #-------------------- Force field --------------------------------------------------------
 pair_style bop
@@ -16,30 +25,29 @@ minimize 1.0e-8 1.0e-8 1000000 1000000
 #-------------------- Settings -----------------------------------------------------------
 reset_timestep 0
 
-timestep 0.001
+timestep 0.001 # 1 [fs]
 
-thermo 20000
+thermo 100
 thermo_modify lost ignore
 
-dump 2 all atom 20000 copper_box_300K2.lammpstrj
-dump 3 all custom 100000 Copper2_box_300k_final.dump id type x y z vx vy vz
+#---------- output file settings -------------------
+dump 2 all cfg 100 cfg/run.*.cfg mass type xs ys zs id type xs ys zs vx vy vz fx fy fz
+dump_modify 2 element Cu H
+#---------------------------------------------------
 
 velocity all create 1000 25674 dist gaussian
 
 #-------------------- Run the simulation -------------------------------------------------
 
-fix 1 all npt temp 1000 1000 0.1 iso 0.0 0.0 10 
+fix 1 all npt temp 300 300 $(100*dt) iso 0.0 0.0 $(1000*dt)
 fix 3 all momentum 1 linear 1 1 1
 
-restart 1000000 poly.restart
-
-run 10000000
+run 20000
 
 unfix 1
 
 #---------- output file settings -------------------
 write_data Data25.R1
-write_restart Copper2_box_300k.restart
 
 print “Done”
 

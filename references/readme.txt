@@ -284,10 +284,6 @@ input file (metal unit, lammps)
   https://ttu-ir.tdl.org/handle/2346/85090
   Grain_Boundary (CuH)
   
-- K. C. Alexander, thesis (2011).
-  https://dspace.mit.edu/handle/1721.1/108218
-  Grain_Boundary_generation (failed)
-  
 - Z. Zhang, Master thesis (2017).
   https://ttu-ir.tdl.org/handle/2346/73470
   Nanoprotrusion
@@ -446,6 +442,10 @@ input file (metal unit, lammps)
 - A. Saltos, Doctor Thesis (2020).
   https://mospace.umsystem.edu/xmlui/handle/10355/83797
   Greens_Function_Method (need Ugamma101010.pos) (MCNP and OpenMC code)
+  
+- K. C. Alexander, thesis (2011).
+  https://dspace.mit.edu/handle/1721.1/108218
+  Grain_Boundary_generation (failed)
 -------------------------------------------------------------------
 plot the temperature of each atom
 
