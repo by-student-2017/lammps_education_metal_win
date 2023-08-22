@@ -3,29 +3,32 @@
 # the velocity autocorrelation function method is given below. Similar files were used for
 # U-7Mo. The atomic positions files (i.e., U10Mo.pos) were generated using the Latgen
 # software developed by Kong [130].
-
+#
 # U10Mo enrichment 20% Input
 # phonon calculation #Eam U-Mo -Xe potential
-#LAMMPS (11 Aug 2017)
+# LAMMPS (11 Aug 2017)
 # Andrea Saltos
 
-# Initialization
+#-------------------- Initialization -----------------------------------------------------
 units metal
 dimension 3
 boundary p p p
 
-# Definitions
+#-------------------- Definitions --------------------------------------------------------
 box tilt large
+
 read_data U10Mo.pos
+
 group uranium type 1
 group moly type 2
 group u235 type 3
 
-# Interatomic Potential
+#-------------------- Force field --------------------------------------------------------
 pair_style eam/alloy
 pair_coeff * * U_Mo_Xe.2013.eam.alloy U Mo U
 
-#Settings
+#-------------------- Settings -----------------------------------------------------------
+
 mass 1 238.02891
 mass 2 95.94
 mass 3 235.04393
@@ -43,32 +46,57 @@ variable totalE equal etotal
 variable Time equal time
 
 #Output1
-thermo_style custom step time ke pe etotal press temp v_a_x &
-  v_a_y v_a_z v_x_y v_x_z v_y_z
 thermo 100
+thermo_style custom step time ke pe etotal press temp &
+  v_a_x v_a_y v_a_z v_x_y v_x_z v_y_z
+
 dump mydump all atom 10000 dump.UMo
-fix thermodata all print 100 "${Time} ${totalE }" file thermo.out &
-  title "# Time Etotal" screen no
+
+fix thermodata all print 100 "${Time} ${totalE }" file thermo.out title "# Time Etotal" screen no
+
+#-------------------- Energy Minimization ------------------------------------------------
+# 0 [K], structure optimization
 
 #Actions
 minimize 0 0 1000 100000
-unfix myfix
-minimize 0 0 1000 100000
-velocity all create 600 4928549 dist gaussian mom yes rot yes
-fix myfix2 all npt temp 300 300 0.01 iso 0 0 0.1 pchain 8 drag 1 flip no
-timestep 0.0001
-run 5000000
 
+unfix myfix
+
+#-------------------- 
+
+minimize 0 0 1000 100000
+
+#-------------------- Run the simulation (NPT) -------------------------------------------
+
+timestep 0.0001
+
+velocity all create 600 4928549 dist gaussian mom yes rot yes
+
+fix myfix2 all npt temp 300 300 0.01 iso 0 0 0.1 pchain 8 drag 1 flip no
+
+run 5000000
 
 # To get velocties of atoms
 unfix myfix2
+
+#-------------------- Run the simulation -------------------------------------------------
+
 fix myfix4 all nve
+
+#-------------------- 
 dump 2 all custom 100 dump -vel -tot vx vy vz
 dump_modify 2 sort id
+#-------------------- 
 dump 3 moly custom 100 dump -vel -Mo type vx vy vz
 dump_modify 3 sort id
+#-------------------- 
 dump 4 uranium custom 100 dump -vel -U type vx vy vz
 dump_modify 4 sort id
+#-------------------- 
 dump 5 u235 custom 100 dump -vel -U235 type vx vy vz
 dump_modify 5 sort id
+#-------------------- 
+
 run 4000000
+
+#-------------------- End ----------------------------------------------------------------

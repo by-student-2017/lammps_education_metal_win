@@ -241,10 +241,6 @@ input file (metal unit, lammps)
   https://pure.tue.nl/ws/portalfiles/portal/46924674/841526-1.pdf
   Semi-Flexible Rod-Like Particles
   
-- A. Saltos, Doctor Thesis (2020).
-  https://mospace.umsystem.edu/xmlui/handle/10355/83797
-  Greens_Function_Method (need Ugamma101010.pos) (MCNP and OpenMC code)
-  
 - M. Jorum, Master thesis (2015).
   https://ntnuopen.ntnu.no/ntnu-xmlui/handle/11250/2350291
   cantilever
@@ -446,6 +442,10 @@ input file (metal unit, lammps)
 - S. Townsend, thesis (2018).
   https://dspace.mit.edu/handle/1721.1/119936
   Biggest_Trudging (failed)
+  
+- A. Saltos, Doctor Thesis (2020).
+  https://mospace.umsystem.edu/xmlui/handle/10355/83797
+  Greens_Function_Method (need Ugamma101010.pos) (MCNP and OpenMC code)
 -------------------------------------------------------------------
 plot the temperature of each atom
 
