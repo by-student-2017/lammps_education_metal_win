@@ -1,0 +1,86 @@
+# MD code written for Pure Fe-lattice & its MSD calculation
+# this MD code is for obtaining 3d-crystal lattice of Fe at temperature 50k
+#-----------------------------------------------------------------------------------------
+# LAMMPS 64-bit 22Dec2022-MSMPI
+clear
+#-------------------- Initialization -----------------------------------------------------
+echo both
+units metal
+dimension 3
+boundary p p p
+
+#-------------------- Atom & Lattice description ----------------------------------------
+atom_style atomic
+
+region box block 0 50 0 50 0 50 units box
+create_box 1 box
+
+lattice bcc 2.851
+region Fe block 0 50 0 50 0 50 units box
+create_atoms 1 region Fe units box
+
+region Fe1 sphere 25.0 25.0 48.44 2 units box
+group void1 region Fe1
+delete_atoms group void1
+
+region Fe2 sphere 10.0 10.0 48.44 2 units box
+group void2 region Fe2
+delete_atoms group void2
+
+region Fe3 sphere 20.0 30.0 48.44 2 units box
+group void3 region Fe3
+delete_atoms group void3
+
+region Fe4 sphere 30.0 10.0 48.44 2 units box
+group void4 region Fe4
+delete_atoms group void4
+
+region Fe5 sphere 30.0 40.0 48.44 2 units box
+group void5 region Fe5
+delete_atoms group void5
+
+region Fe6 sphere 5.0 10.0 48.44 2 units box
+group void6 region Fe6
+delete_atoms group void6
+
+#-------------------- Force field --------------------------------------------------------
+pair_style eam/fs
+pair_coeff * * Fe_2.eam.fs Fe 
+
+#-------------------- Energy Minimization ------------------------------------------------
+# 0 [K], structure optimization
+minimize 1.0e-7 1.0e-8 1000 10000
+
+#-------------------- Settings -----------------------------------------------------------
+reset_timestep 0
+
+timestep 0.002
+
+thermo 100
+thermo_style custom step temp vol press pe ke etotal 
+
+
+dump 1 all custom 20 Fe_50k_crystal_void_dump.lammpstrj id type x y z vx vy vz
+#------------------------------------------------------------
+dump 2 all cfg 100 cfg/run.*.cfg mass type xs ys zs id type xs ys zs vx vy vz fx fy fz
+dump_modify 2 element Fe
+#------------------------------------------------------------
+log log2Fe_50k_crystal_void_s.data
+
+velocity all create 50 873847 rot yes mom yes dist gaussian
+
+#-------------------- Run the simulation -------------------------------------------------
+
+fix 1 all nvt temp 50 50 0.01 
+
+run 10000
+
+unfix 1
+
+#-------------------- Output data file ---------------------------------------------------
+write_data Fe50k_void_data.txt # output data for step2
+
+print "Simulation is about to finish"
+print "All done"
+
+#-------------------- End ----------------------------------------------------------------

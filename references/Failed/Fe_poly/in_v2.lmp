@@ -1,0 +1,103 @@
+# Standard input file for LAMMPS
+
+# LAMMPS 64-bit 22Dec2022-MSMPI
+clear
+#-------------------- Environment Settings -----------------------------------------------
+variable  Tdesird equal  300.0 # Desired Temperature [K]
+
+variable   Nsteps equal   1000 # Number of simulation cycles
+variable DumpFreq equal    100 # For print out
+
+variable    dt_ps equal 0.0005 # 0.0005 [ps] = 0.5 [fs]
+
+#-------------------- Initialization -----------------------------------------------------
+units metal
+dimension 3        # Dimensions of space for simulation. 3D is default 
+boundary p p p     # Rules or boundary 
+newton on on       # Newton's 3rd law for pairwise and bonded interactions 
+# Processors n m o # define the proc. grid 
+
+#-------------------- Atom & Lattice description -----------------------------------------
+atom_style atomic  # Rules for atom styles. Atomic is default 
+# atom_modify
+
+read_data polyfe.lammps 
+
+replicate 50 50 50    # about 14 nm x 14 nm x 14 nm
+
+#read_restart restartGBfe27w 
+
+lattice bcc 1 
+region 1 block  20 INF INF INF INF INF
+region 2 block INF 20  INF INF INF INF
+group group1 region 1
+group group2 region 2
+
+group id id 83740 
+#group id2 id 432002
+
+mass 1 55.845 # Fe
+
+#-------------------- Force field --------------------------------------------------------
+pair_style eam/fs 
+pair_coeff * * Fe_2.eam.fs Fe
+
+#-------------------- Energy Minimization ------------------------------------------------
+# 0 [K], structure optimization
+#min_style cg 
+min_style sd 
+minimize 1.0e-12 1.0e-12 1000 1000
+
+#-------------------- Settings -----------------------------------------------------------
+reset_timestep 0
+
+timestep ${dt_ps} # 0.5 [fs]
+
+compute 1 all ke/atom
+
+thermo ${DumpFreq}
+#thermo_style custom step temp vol press etotal
+
+#---------- output file settings ----------------------------
+#dump atom all xyz ${DumpFreq} grainfe.xyz 
+#dump atoms all custom ${DumpFreq} feGB1ps-15 id x y z c_1 
+#------------------------------------------------------------
+dump            d1 all cfg ${DumpFreq} cfg/run.*.cfg mass type xs ys zs id type vx vy vz fx fy fz
+dump_modify     d1 element Fe
+#------------------------------------------------------------
+
+#velocity all create 100 56565 
+#velocity group1 create ${Tdesird} 54545 rot yes dist gaussian 
+velocity group2 create ${Tdesird} 54545 rot yes dist gaussian 
+velocity all zero linear 
+velocity all zero angular
+
+#velocity id set 820.205 130.085 42.985 
+#velocity id set 0 0 0 
+
+#set atom 216001 x -5 y 57.75 z 58
+
+#-------------------- Run the simulation -------------------------------------------------
+
+#fix 1 all nve 
+#fix 1 group2 nvt temp 100 100 1.0 drag 0.2 
+fix 1 group2 npt temp ${Tdesird} ${Tdesird} $(100*dt) aniso 0.0 0.0 10.0 drag 1.0 
+
+fix 2 group1 setforce 0 0 0 
+
+fix 3 id setforce 0 0 0 
+
+#fix 4 id2 setforce 0 0 0 
+
+#run_style verlet 
+run ${Nsteps}
+
+unfix 1 
+
+#-------------------- Output data file ---------------------------------------------------
+#write_restart restartGBfe-151ps
+
+print "Simulation is about to finish"
+print "All done"
+
+#-------------------- End ----------------------------------------------------------------

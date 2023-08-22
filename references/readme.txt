@@ -220,7 +220,7 @@ input file (metal unit, lammps)
   
 - Kumar, Navratan (2014) 
   http://ethesis.nitrkl.ac.in/6144/
-  Fe0.05Cr_MSD
+  Fe-Cr_MSD
   
 - Venumbaka , Sarat Chandra (2015) 
   http://ethesis.nitrkl.ac.in/7043/
