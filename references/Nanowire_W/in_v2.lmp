@@ -131,7 +131,7 @@ dump_modify     d1 element W
 
 #-------------------- Run the simulation (deformation process) ---------------------------
 
-# strain rate of 0.01 [1/time units] is applied in y direction
+# strain rate of 0.01 [1/time units] is applied in x direction
 fix 1 all deform 1 x erate ${es_rate} units box remap x
 
 # Defining timeintegration, ensemble and temperature.
@@ -150,6 +150,15 @@ fix 5 all ave/time 100 1 100 c_11[*] file data.rdf mode vector
 
 # number of iterations is given so as to give 40% strain to the material
 run ${Nsteps} # 40 [ps], MD Simulation (assuming 2 fs time step)
+
+#--------------------------------------------------------------------------------
+# The calculation conditions for this time are as follows.
+#--------------------------------------------------------------------------------
+variable strain_rate_percent equal "(v_strain)/(v_dt_ps * Nsteps)*100" # [%/ps]
+variable strain_rate equal "(v_strain)/(v_dt_ps * Nsteps)" # [1/ps]
+print "strain_rate: ${strain_rate_percent} [%/ps]"
+print "strain rate: ${strain_rate} x 10^12 [1/s]"
+#--------------------------------------------------------------------------------
 
 print "Simulation is about to finish"
 print "All done"

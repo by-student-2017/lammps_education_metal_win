@@ -146,13 +146,22 @@ velocity all create ${Tdesird} 511124 rot yes mom yes
 
 #-------------------- MD run (Loading) ---------------------------------------------------
 
-# Timeintegration
-fix NVT all nvt temp ${Tdesird} ${Tdesird} $(100*dt)
-
 # Start loading, strain rate of epsilon = 1e14 s^-1
 fix LOAD nanowire deform 1 z erate 0.1 units box
 
+# Timeintegration
+fix NVT all nvt temp ${Tdesird} ${Tdesird} $(100*dt)
+
 run ${Nsteps}
+
+#--------------------------------------------------------------------------------
+# The calculation conditions for this time are as follows.
+#--------------------------------------------------------------------------------
+variable strain_rate_percent equal "(v_strain)/(v_dt_ps * Nsteps)*100" # [%/ps]
+variable strain_rate equal "(v_strain)/(v_dt_ps * Nsteps)" # [1/ps]
+print "strain_rate: ${strain_rate_percent} [%/ps]"
+print "strain rate: ${strain_rate} x 10^12 [1/s]"
+#--------------------------------------------------------------------------------
 
 #-------------------- SIMULATION DONE ----------------------------------------------------
 print "All done"
