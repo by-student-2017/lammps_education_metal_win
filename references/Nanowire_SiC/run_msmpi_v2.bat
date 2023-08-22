@@ -7,6 +7,9 @@ for %%1 in (in_v2.lmp) do (
   echo input file: %%1
 )
 
-plot_stress_vs_strai_v2n.gpl
+plot_stress_vs_strain_v2.gpl
+plot_stress_vs_strain_v3.gpl
+
+call plot_rdf.bat
 
 pause
