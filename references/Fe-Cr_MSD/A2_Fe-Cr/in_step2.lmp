@@ -1,6 +1,6 @@
-# After creating simulation box with Fe atoms filled inside it we go for 
+# After creating simulation box with Fe-Cr alloy atoms filled inside it we go for 
 # calculating MSD value running the code given below:
-# msd calculation in Fe crystal at 50 K file
+# msd calculation of Fe-Cr crystal at temperature 50 K in file
 #-----------------------------------------------------------------------------------------
 # LAMMPS 64-bit 22Dec2022-MSMPI
 clear
@@ -11,13 +11,14 @@ boundary p p p
 #-------------------- Read structure file ------------------------------------------------
 atom_style atomic
 
-read_data Fe50k_void_data.txt
+read_data Fe-Cr_crystal_50K_data.txt
 
 group Fe type 1
+group Cr type 2
 
 #-------------------- Force field --------------------------------------------------------
-pair_style eam/fs
-pair_coeff * * Fe_2.eam.fs Fe 
+pair_style eam/cd
+pair_coeff * * FeCr.cdeam Fe Cr
 
 #-------------------- Energy Minimization ------------------------------------------------
 # 0 [K], structure optimization
@@ -31,31 +32,38 @@ timestep 0.002 # 2 [fs]
 # MSD Calculation
 #--------------------------------------
 compute mymsdFe Fe msd com yes
+compute mymsdCr Cr msd com yes
 #--------------------------------------
 variable msdxFe   equal "c_mymsdFe[1]"
 variable msdyFe   equal "c_mymsdFe[2]"
 variable msdzFe   equal "c_mymsdFe[3]"
 variable msdtotFe equal "c_mymsdFe[4]"
 #--------------------------------------
+variable msdxCr   equal "c_mymsdCr[1]"
+variable msdyCr   equal "c_mymsdCr[2]"
+variable msdzCr   equal "c_mymsdCr[3]"
+variable msdtotCr equal "c_mymsdCr[4]"
+#--------------------------------------
 fix msdT1 Fe ave/time 1 1 2500 v_msdxFe v_msdyFe v_msdzFe v_msdtotFe file msdFe50K
+fix msdT2 Cr ave/time 1 1 2500 v_msdxCr v_msdyCr v_msdzCr v_msdtotFe file msdCr50K
 #--------------------------------------
 
 thermo 300
-thermo_style custom step temp press vol pe ke etotal c_mymsdFe[4]
+thermo_style custom step temp press vol pe ke etotal c_mymsdFe[4] c_mymsdCr[4]
 
 #---------- output file settings -------------------
-#dump 1 all atom 1000 dump.Fe_msd_50K_11643_3d.dump.lammpstrj
+#dump 1 all atom 1000 dump.Fe5Cr_50k_3d_11643_msd.dump.lammpstrj
 #------------------------------------------------------------
 dump 2 all cfg 1000 cfg/run.*.cfg mass type xs ys zs id type xs ys zs vx vy vz fx fy fz
-dump_modify 2 element Fe
+dump_modify 2 element Fe Cr
 #------------------------------------------------------------
-#log logFe_msd_50k_11643.data
+#log logFe5Cr_50k_crystal_msd_11643.data
 
-velocity all create 50 5812775 rot yes mom yes dist gaussian
+velocity all create 50.0 5812775 rot yes mom yes dist gaussian
 
 #-------------------- Run the simulation -------------------------------------------------
 
-fix 1 all npt temp 50.0 50.0 0.2 iso -1000.0 -1000.0 0.2 
+fix 1 all npt temp 50.0 50.0 0.2 iso -1000.0 -1000.0 0.2
 
 run 50000
 

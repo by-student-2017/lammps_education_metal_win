@@ -1,9 +1,19 @@
 # After creating simulation box with Fe-Cr alloy atoms filled inside it we go for 
 # calculating MSD value running the code given below:
-# msd calculation of Fe0.05Cr crystal at temperature 50k in file
+# msd calculation of Fe-Cr crystal at temperature 50 K in file
 #-----------------------------------------------------------------------------------------
 # LAMMPS 64-bit 22Dec2022-MSMPI
 clear
+#-------------------- Environment Settings -----------------------------------------------
+variable  Tdesird equal    50.0 # Desired Temperature [K]
+
+variable   Nsteps equal   50000 # Number of simulation cycles
+variable DumpFreq equal    2500 # For print out
+
+variable    dt_ps equal   0.002 # 0.002 [ps] = 2 [fs]
+
+variable comp_bar equal -1000.0 # [bar] = * 0.1 [MPa]
+
 #-------------------- Initialization -----------------------------------------------------
 units metal
 boundary p p p
@@ -11,7 +21,7 @@ boundary p p p
 #-------------------- Read structure file ------------------------------------------------
 atom_style atomic
 
-read_data Fe5Cr_crystal_50k_data.txt
+read_data Fe-Cr_crystal_data.txt # data from step1
 
 group Fe type 1
 group Cr type 2
@@ -27,7 +37,7 @@ minimize 1.0e-4 1.0e-6 10000 1000000
 #-------------------- Settings -----------------------------------------------------------
 reset_timestep 0
 
-timestep 0.002 # 2 [fs]
+timestep ${dt_ps}
 
 # MSD Calculation
 #--------------------------------------
@@ -44,28 +54,25 @@ variable msdyCr   equal "c_mymsdCr[2]"
 variable msdzCr   equal "c_mymsdCr[3]"
 variable msdtotCr equal "c_mymsdCr[4]"
 #--------------------------------------
-fix msdT1 Fe ave/time 1 1 2500 v_msdxFe v_msdyFe v_msdzFe v_msdtotFe file msdFe50K
-fix msdT2 Cr ave/time 1 1 2500 v_msdxCr v_msdyCr v_msdzCr v_msdtotFe file msdCr50K
+fix msdT1 Fe ave/time 1 1 ${DumpFreq} v_msdxFe v_msdyFe v_msdzFe v_msdtotFe file msdFe
+fix msdT2 Cr ave/time 1 1 ${DumpFreq} v_msdxCr v_msdyCr v_msdzCr v_msdtotFe file msdCr
 #--------------------------------------
 
-thermo 300
+thermo ${DumpFreq}
 thermo_style custom step temp press vol pe ke etotal c_mymsdFe[4] c_mymsdCr[4]
 
-#---------- output file settings -------------------
-#dump 1 all atom 1000 dump.Fe5Cr_50k_3d_11643_msd.dump.lammpstrj
-#------------------------------------------------------------
-dump 2 all cfg 1000 cfg/run.*.cfg mass type xs ys zs id type xs ys zs vx vy vz fx fy fz
+#---------- output file settings ----------------------------
+dump 2 all cfg ${DumpFreq} cfg/run.*.cfg mass type xs ys zs id type xs ys zs vx vy vz fx fy fz
 dump_modify 2 element Fe Cr
 #------------------------------------------------------------
-#log logFe5Cr_50k_crystal_msd_11643.data
 
-velocity all create 50.0 5812775 rot yes mom yes dist gaussian
+velocity all create ${Tdesird} 5812775 rot yes mom yes dist gaussian
 
 #-------------------- Run the simulation -------------------------------------------------
 
-fix 1 all npt temp 50.0 50.0 0.2 iso -1000.0 -1000.0 0.2
+fix 1 all npt temp ${Tdesird} ${Tdesird} $(100*dt) iso ${comp_bar} ${comp_bar} $(1000*dt)
 
-run 50000
+run ${Nsteps}
 
 print "Simulation is about to finish"
 print "All done"

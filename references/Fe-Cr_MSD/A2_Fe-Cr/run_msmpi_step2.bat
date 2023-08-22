@@ -8,4 +8,6 @@ for %%1 in (in_step2.lmp) do (
   echo input file: %%1
 )
 
+call plot_rdf.bat
+
 pause
