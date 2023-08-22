@@ -73,6 +73,11 @@ pair_coeff      * * ../potentials/eam/Fe-Ni-Cr_fcc.eam.fs Fe Ni Cr
 * official version: Cu, Ag, Au, Ni, Pd, Pt, Al, Pb, Fe, Mo, Ta, W, Mg, Co, Ti, Zr
 * test version: V, Ca, Na, Cr, Mn, Nb, Ir, Sr, Rh, Ru, Os, Hf, Re, Zn
 * Any combination of these is possible. Don't expect too much about the "test version".
+1. (open) Reference_eam_database
+2. (open) EAM.input (on notepad, etc)
+3. (Rewrite the elements, or reduce or increase the set of "&funccard" to "&end".)
+4. (click) run.bat
+5. (You can get EAM potential: XX_Zhou04.eam.alloy)
 
 ## tutorial_8_elastic
 1. notepad potential.mod
