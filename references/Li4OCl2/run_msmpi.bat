@@ -7,4 +7,6 @@ for %%1 in (in.lmp) do (
   echo input file: %%1
 )
 
+plot_msd_Li.gpl
+
 pause
