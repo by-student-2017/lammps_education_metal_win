@@ -18,25 +18,26 @@ atom_style atomic
 # defining the structure, lattice parameter and orientation of x, y and z directions
 lattice fcc 3.52 orient x 1 0 0 orient y 0 1 0 orient z 0 0 1
 
-# (radius, r = 35 Angstrom, D = 2*r = 70 Angstrom) (ylinder dim c1 c2 radius lo hi)
-region mycylinder cylinder z 0 0 35 -25 24.8 units box 
+# (radius, r = 25 A, D = 2*r = 50 Angstrom) (ylinder dim c1 c2 radius lo hi)
+region mycylinder cylinder z 0 0 25 -25 24.8 units box 
 create_box 1 mycylinder 
 
 create_atoms 1 region mycylinder units box 
 #------------------------------------
 
 #------------------------------------
-region vo cylinder z 0 0 20 -25 24.8 units box
+region vo cylinder z 0 0 $(9/2) -25 24.8 units box
 group void region vo
 delete_atoms group void
 #------------------------------------
 
 #------------------------------------
 # defining the structure, lattice parameter and orientation of x, y and z directions
-lattice fcc 3.52 orient x -1 1 -2 orient y -1 1 1 orient z 1 1 0 
+#lattice fcc 3.52 orient x -1 1 -2 orient y -1 1 1 orient z 1 1 0 
+lattice hcp 3.52 orient x 1 0 0 orient y 0 1 0 orient z 0 0 1 
 
-# (radius, r = 35 Angstrom, D = 2*r = 70 Angstrom) (ylinder dim c1 c2 radius lo hi)
-region Ni cylinder z 0 0 20 -25 24.8 units box 
+# The dislocation widths: Al (7 A), Ni (9 A), Cu (13 A), Ag (25 A)
+region Ni cylinder z 0 0 $(9/2) -25 24.8 units box 
 create_atoms 1 region Ni units box 
 #------------------------------------
 
@@ -117,6 +118,7 @@ velocity inside create 1550 102486 mom yes rot no
 
 #-------------------- Run the simulation (NVT) ---------------------------------------------
 
+# Al: 800-1000 K, Ni: 1500-1600 K, Cu: 1250-1325 K
 # running dynamics with NVT ensemble to reach the desired temperature 
 fix 15 inside nvt temp 1550 1550 100
 
@@ -125,6 +127,7 @@ run 500000
 undump d1
 
 #-------------------- Run the simulation -------------------------------------------------
+# The total energy (𝐸 = potential energy + kinetic energy) 
 
 # starting to dump output files of cylinders with different radii and run dynamics for 30 #nanoseconds
 dump 10 all custom 50000 DUMP_All_Ni_1550K.lammpstrj id type x y z
@@ -146,3 +149,19 @@ dump_modify     d2 element Ni
 run 15000000
 
 #-------------------- End ----------------------------------------------------------------
+
+#-----------------------------------------------------------------------------------------
+# Note
+# The diffusion coefficient in each of the cylinders can be found using 
+# the Einstein formula for diffusivity:
+# MSD  <[z(t0) - z(t0 + t)]^2> = 2*D*t
+# where 𝐷 is the diffusion coefficient, t0 is time origin, 𝑡 is time and < > averages over 
+# all atoms in the chosen cylinder and all time origins 
+# (any time step can be considered time zero, t0, in Equation 4.1). 
+# MSD is the Mean Squared Displacements of atoms along the dislocation line for atoms located in 
+# each cylinder. Therefore, D in each of the cylinders, can be found using the slope of MSD vs. time. 
+# Next, by plotting D vs. the radius, R, at different temperatues, 
+# it is possible to find the activation energy of self-diffusion along 
+# the dislocation core in each of the elements, as proposed in [9]
+# [9] G.P. Purja Pun, Y. Mishin, Acta Mater. 57 (2009) 5531-5542.
+#-----------------------------------------------------------------------------------------
