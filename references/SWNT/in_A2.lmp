@@ -1,37 +1,40 @@
 # For thermal conductivity calculation, a typical input file is written as below
-
+#-----------------------------------------------------------------------------------------
 # MD simulation of carbon nanotube thermal conductivity via NEMD method 
 # Initialization 
-
+#-----------------------------------------------------------------------------------------
+# LAMMPS 64-bit 22Dec2022-MSMPI
+clear
 log SWNT1010_250A_double_equ300_thermal.log 
 
-clear 
-
+#-------------------- Initialization -----------------------------------------------------
 units metal 
-
-newton on 
-
 boundary p p f 
+newton on
 
+#-------------------- Read structure file ------------------------------------------------
 atom_style atomic 
 
 read_data SWNT1010_250A_double_equ300.lammps05 
 
+#-------------------- Force field --------------------------------------------------------
 pair_style hybrid/overlay tersoff lj/cut 10.2 
 pair_coeff * * tersoff BNC.tersoff C C 
 pair_coeff 1 2 lj/cut 2.968e-3 3.407 10.2 
 
-#define variables used in simulation**************************************** 
-variable T0 equal 300 
-variable THot equal 330 
+#-------------------- Settings -----------------------------------------------------------
+
+#-------------------- define variables used in simulation ------------
+variable    T0 equal 300 
+variable  THot equal 330 
 variable TCold equal 270 
-variable tau equal 1.0 
-variable dt equal 0.0002 
-variable N equal atoms 
-variable kB equal 8.6173324e-5 # in [ev/K] units
+variable   tau equal 1.0 
+variable    dt equal 0.0002 
+variable     N equal atoms 
+variable    kB equal 8.6173324e-5 # in [ev/K] units
 
 # define fixed ends 
-region fixEnd1 block INF INF INF INF INF 0 units box 
+region fixEnd1 block INF INF INF INF INF   0 units box 
 region fixEnd2 block INF INF INF INF 400 INF units box 
 
 group fixEnd1 region fixEnd1 
@@ -40,21 +43,21 @@ group fixEnd2 region fixEnd2
 velocity fixEnd1 set 0 0 0 units box 
 velocity fixEnd2 set 0 0 0 units box 
 
-# define hot cold sink****************************************************** 
+#-------------------- define hot cold sink ---------------------------
 
-region hot block INF INF INF INF 0.0001 50 units box 
+region  hot block INF INF INF INF 0.0001 50 units box 
 group hot region hot 
 
 region cold block INF INF INF INF 350.0001 400 units box 
 group cold region cold 
 
-# define central and mobile atoms******************************************** 
+#-------------------- define central and mobile atoms ----------------
 
 region central block INF INF INF INF 50.0001 350 units box 
 group central region central 
 group mobile subtract all fixEnd1 fixEnd2 
 
-#define spatially temp gradient group**************************************** 
+#-------------------- define spatially temp gradient group -----------
 region temp_spat_2 block INF INF INF INF 50.0001 100 units box 
 region temp_spat_3 block INF INF INF INF 100.0001 150 units box
 region temp_spat_4 block INF INF INF INF 150.0001 200 units box 
@@ -77,50 +80,52 @@ group temp_spat_4_type2 intersect temp_spat_4 type2
 group temp_spat_5_type1 intersect temp_spat_5 type1 
 group temp_spat_5_type2 intersect temp_spat_5 type2 
 
-# thermal cond calc **************************************************** 
+#-------------------- thermal cond calc ------------------------------
 
 timestep ${dt} 
 
-fix hotzone hot nvt temp ${THot} ${THot} ${tau} 
+fix   hotzone hot nvt temp ${THot}  ${THot}  ${tau} 
 fix coldzone cold nvt temp ${TCold} ${TCold} ${tau} 
 fix central central nve 
-fix end1 fixEnd1 setforce 0 0 0 
 
+fix end1 fixEnd1 setforce 0 0 0 
 fix end2 fixEnd2 setforce 0 0 0 
-fix_modify hotzone energy yes 
+
+fix_modify  hotzone energy yes 
 fix_modify coldzone energy yes 
 
 compute 1 mobile temp 
-compute temp1 hot temp 
-compute temp2 temp_spat_2 temp 
-compute temp3 temp_spat_3 temp 
-compute temp4 temp_spat_4 temp 
-compute temp5 temp_spat_5 temp 
-compute temp6 temp_spat_6 temp 
-compute temp7 temp_spat_7 temp 
-compute temp8 cold temp 
-compute temp9 temp_spat_4_type1 temp 
+
+compute  temp1 hot temp 
+compute  temp2 temp_spat_2 temp 
+compute  temp3 temp_spat_3 temp 
+compute  temp4 temp_spat_4 temp 
+compute  temp5 temp_spat_5 temp 
+compute  temp6 temp_spat_6 temp 
+compute  temp7 temp_spat_7 temp 
+compute  temp8 cold temp 
+compute  temp9 temp_spat_4_type1 temp 
 compute temp10 temp_spat_4_type2 temp 
 compute temp11 temp_spat_5_type1 temp 
 compute temp12 temp_spat_5_type2 temp 
 
-# obtain average value***************************************************** 
+#-------------------- obtain average value ---------------------------
 
-fix temp_profile mobile ave/time 1 100000 100000 c_temp1 c_temp2 c_temp3 c_temp4 c_temp5 c_temp6 c_temp7 c_temp8 c_temp9 c_temp10 c_temp11 c_temp12 file temp.profile 
-
-# thermal output****************************************************** 
-thermo_style custom step c_1 c_temp1 f_hotzone c_temp8 f_coldzone etotal vol
-
-thermo_modify lost warn 
+# thermal output
 thermo 100 
+thermo_style custom step c_1 c_temp1 f_hotzone c_temp8 f_coldzone etotal vol
+thermo_modify lost warn 
 
-#dumpfile************************************************************ 
+# dumpfile
+dump 1 all custom 10000 results/SWNT1010_250A_double_equ300_thermal.lammpstrj id type x y z vx vy vz 
 
-dump 1 all custom 10000 SWNT1010_250A_double_equ300_thermal.lammpstrj id type 
+fix temp_profile mobile ave/time 1 100000 100000 &
+  c_temp1 c_temp2 c_temp3 c_temp4 c_temp5 c_temp6 &
+  c_temp7 c_temp8 c_temp9 c_temp10 c_temp11 c_temp12 file temp.profile 
 
-x y z vx vy vz 
-
-# Run 
 run 10000000 
 
+#---------- output file settings -------------------
 write_restart SWNT1010_250A_double_equ300_thermal.restart
+
+#-------------------- End ----------------------------------------------------------------
