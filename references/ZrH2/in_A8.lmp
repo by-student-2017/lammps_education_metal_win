@@ -1,9 +1,9 @@
 # Crack Simulations folder contains calculations for MEAM
-
-#-------------------- Initialization -----------------------------------------------------
+#-----------------------------------------------------------------------------------------
+# LAMMPS 64-bit 22Dec2022-MSMPI
 clear
-log 300.out
-
+#log 300.out
+#-------------------- Initialization -----------------------------------------------------
 units metal
 boundary s s p
 
@@ -22,6 +22,7 @@ neigh_modify delay 10 check yes
 # define groups
 region 1 block INF INF INF 1.25 INF INF
 group lower region 1
+
 region 2 block INF INF 38.75 INF INF INF
 group upper region 2
 
@@ -39,10 +40,11 @@ mass 3 91.224 # Zr
 pair_style meam
 pair_coeff * * meam Zr H ZrH.meam Zr Zr Zr
 
-#-------------------- minimization parameters --------------------------------------------
+#-------------------- Settings -----------------------------------------------------------
 dump 2 all custom 1000 zr.dump id type x y z
 dump_modify 2 every 1000
 
+#-------------------- minimization parameters --------------------------------------------
 fix 1 all nve/limit 0.1
 minimize 1.0e-30 1.0e-30 100000 1000000
 unfix 1
@@ -50,6 +52,10 @@ unfix 1
 undump 2
 
 #-------------------- calculates the mean-squared displacement (MSD) ---------------------
+reset_timestep 0
+
+timestep 0.001 # 1 [fs]
+
 compute 1 hydrogen msd
 compute 2 zr msd
 
@@ -62,13 +68,15 @@ dump_modify 2 every 1000
 velocity all create 600.0 4928459 rot yes dist gaussian
 
 fix 1 all nvt temp 600.0 600.0 100.0
+
 run 700000
+
 unfix 1
 
 undump 2
 
 #-------------------- initial velocities and equilibration -------------------------------
-timestep 0.0001
+timestep 0.0001 # 0.1 [fs]
 
 compute new3d mobile temp
 compute new2d mobile temp/partial 1 0 1
@@ -108,5 +116,7 @@ velocity mobile ramp vy 0.0 0.8 y 1.25 38.75 sum yes
 
 fix 3 mobile temp/rescale 10 0.01 0.01 10.0 1.0
 fix_modify 3 temp new2d
+
 run 500000
+
 #-------------------- End ----------------------------------------------------------------

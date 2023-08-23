@@ -22,7 +22,7 @@ mass 1 91.224  # Zr
 #-------------------- Force field --------------------------------------------------------
 pair_style meam # For MEAM potential 
 pair_coeff * * meam Zr H ZrH.meam Zr
-pair_coeff * * meam Zr H ZrH.meam Zr H # (For MEAM with hydrogen)
+#pair_coeff * * meam Zr H ZrH.meam Zr H # (For MEAM with hydrogen)
 
 #-------------------- Settings -----------------------------------------------------------
 neighbor 2.0 bin
@@ -31,44 +31,41 @@ neigh_modify delay 0 every 1
 compute eng all pe/atom
 compute eatoms all reduce sum c_eng
 
+thermo 1
 thermo_style custom step pe lx ly lz press pxx pyy pzz c_eatoms vol etotal
 
 #---------- output file settings -------------------------
-#dump 1 all custom 100 atom.dump id type x y z
-#dump_modify 1 every 100
-#---------------------------------------------------------
 dump            d1 all cfg 1 cfg/run.*.cfg mass type xs ys zs id type vx vy vz fx fy fz
 dump_modify     d1 element Zr
 #---------------------------------------------------------
-log lattice.out
-
 #-------------------- Energy Minimization ------------------------------------------------
-fix 1 all nve/limit 0.1
+#fix 1 all nve/limit 0.1
 
 minimize 1.00e-30 1.00e-30 100000 1000000 # 0 [K], structure optimization
 
-unfix 1
+#unfix 1
 
 #-------------------- Calculate energy ----------------------------------------------------
 reset_timestep 0
 
-fix 1 all box/relax aniso 0.0 vmax 0.1
+#fix 1 all box/relax aniso 0.0 vmax 0.1
 
-thermo 1
-thermo_style custom step pe lx ly lz press pxx pyy pzz c_eatoms vol etotal
+#thermo 1
+#thermo_style custom step pe lx ly lz press pxx pyy pzz c_eatoms vol etotal
 
 # 0 [K], structure optimization
-min_style cg
-minimize 1e-25 1e-25 5000 10000
+#min_style cg
+#minimize 1e-25 1e-25 5000 10000
 
-variable   teng equal "c_eatoms"
-variable length equal "lx"
-variable length equal "lz"
-variable   ecoh equal "v_teng/v_natoms"
+variable     teng equal "c_eatoms"
+variable length_x equal "lx"
+variable length_z equal "lz"
+variable     ecoh equal "v_teng/v_natoms"
 
 print "Total energy (eV) = ${teng};"
 print "Number of atoms = ${natoms};"
-print "Lattice constant (Angstoms) = ${length};"
+print "Lattice constant, x (Angstoms) = ${length_x};"
+print "Lattice constant, z (Angstoms) = ${length_z};"
 print "Cohesive energy (eV) = ${ecoh};"
 
 print "All done!"
