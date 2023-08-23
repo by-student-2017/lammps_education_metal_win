@@ -175,6 +175,7 @@ input file (metal unit, lammps)
 - J. Wang, Master thesis (2013).
   https://oaktrust.library.tamu.edu/handle/1969.1/151391
   SWNT (need structure file: SWNT1515_equ.lammps05, SWNT1010_250A_double_equ300.lammps05)
+  see "TubeGen Online": http://turin.nss.udel.edu/research/tubegenonline.html
 
 - M. Dong, Master thesis (2020).
   https://oaktrust.library.tamu.edu/handle/1969.1/191617
@@ -290,7 +291,7 @@ input file (metal unit, lammps)
   
 - S. Soltanibajestani, Master thesis (2017).
   https://scholarcommons.scu.edu/mech_mstr/9/
-  screw_dislocation (need Ni_Data.txt)
+  screw_dislocation
   
 - R. K. Siripurapu, Master thesis (2013).
   https://harvest.usask.ca/handle/10388/ETD-2013-10-1264
