@@ -1,5 +1,19 @@
 # 4.2.2Uniaxial Testing of the specimen
+#-----------------------------------------------------------------------------------------
+# LAMMPS 64-bit 22Dec2022-MSMPI
+clear
+#-------------------- Environment Settings -----------------------------------------------
+variable  Tdesird equal  400.0 # Desired Temperature [K]
 
+variable   Nsteps equal   3500 # Number of simulation cycles
+variable DumpFreq equal    100 # For print out
+
+variable    dt_ps equal  0.002 # 0.002 [ps] = 2 [fs]
+
+variable  es_rate equal    0.1 # engineering strain rate (1/time units)
+# Note: es_rate/dt_ps = 0.1 / (1e-15) = 1.0e13 [1/s]
+# L(t) = L(0)*(1 + es_rate*dt*step)
+# strain [%] = es_rate*dt*Nstep*100 [%] = 0.1 * 0.002 * 3500 * 100 = 70 [%]
 #-------------------- Initialization -----------------------------------------------------
 echo both
 units metal
@@ -17,46 +31,58 @@ pair_style eam/alloy
 pair_coeff * * al-cu-set.eam.alloy Al Cu
 
 #-------------------- Settings -----------------------------------------------------------
-timestep 0.002 # 2 [fs]
+timestep ${dt_ps}
 
-compute 1 all stress/atom NULL
-compute 2 all reduce sum c_1[2]
+compute 1 all stress/atom NULL  # computes the symmetric per-atom stress tensor for each atom in a group.
+compute 2 all temp              # computes the temp of a group of atoms
+compute 3 all reduce sum c_1[2] # reduces vector quantities of all stress tensors in y-direction and adds all the quantities to a single scalar value
+compute kea all ke/atom         # This is related to temperature
 
-variable stress equal c_2/vol
+variable stress     equal c_3/vol # assigns a value to the variable name stress
+variable stress_GPa equal v_stress/10000 # converts the stress calculated to GPa
 
 variable    tmp equal ly
 variable     lo equal ${tmp}
 variable strain equal (ly-v_lo)/v_lo
 
-variable      p equal -pyy/10000
+#for units metal, pressure is in 1 [bars] = 100 [kPa] = 0.1 [MPa] = 1x10^-4 [GPa] => p2 is in GPa
+variable p2 equal "-pyy/10000" # [GPa]
 
-thermo 100
-thermo_style custom step temp vol etotal pyy lx ly lz v_stress v_strain
+thermo ${DumpFreq}
+thermo_style custom step temp press vol etotal c_2 v_strain v_stress v_stress_GPa v_p2
 
-#---------- output file settings -------------------
-#dump 1 all custom 100 NVT_defo_nnndump_Cu-void.lammpstrj id type x y z
-#---------------------------------------------------
-dump            d1 all cfg 100 cfg/run.*.cfg mass type xs ys zs id type vx vy vz fx fy fz
+#---------- output file settings ------------------------
+fix fo1 all ave/time 1 3 3 c_2 v_strain v_stress v_stress_GPa v_p2 file stress_vs_strain.txt
+
+#---------- output file settings ------------------------
+dump            d1 all cfg 100 cfg/run.*.cfg mass type xs ys zs id type vx vy vz fx fy fz c_kea
 dump_modify     d1 element Al Cu
-#---------------------------------------------------
-log NVTlogdef_nnn_cu_void.data
+#--------------------------------------------------------
 
 # calculates the radial distribution function (RDF) and output file
 compute myrdf all rdf 100
-fix a all ave/time 10 2 100 c_myrdf[*] file W_rdf_nnnd mode vector
+fix a all ave/time 10 2 100 c_myrdf[*] file data.rdf mode vector
 
-velocity all create 400 873847 rot yes mom yes dist gaussian 
+velocity all create ${Tdesird} 873847 rot yes mom yes dist gaussian 
 
 #-------------------- Run the simulation -------------------------------------------------
-# temperature controller
-fix 1 all nvt temp 400 400 0.1 # fixing the temp of system
-
 # tensile deformation
-fix 2 all deform 1 x volume y erate 0.1 z volume units box # strain rate of 0.1 sec-1 is applied in y direction
+fix 1 all deform 1 x volume y erate ${es_rate} z volume units box
 
-fix def all print 1 "${strain} ${p}" file Cu_nnn_100.def1NVT.txt
+# temperature controller (fixing the temp of system)
+fix 2 all nvt temp ${Tdesird} ${Tdesird} $(100*dt) 
 
-run 1000 # Number of iterations of the simulation
+# Number of iterations of the simulation
+run ${Nsteps}
+
+#--------------------------------------------------------------------------------
+# The calculation conditions for this time are as follows.
+#--------------------------------------------------------------------------------
+variable strain_rate_percent equal "(v_strain)/(v_dt_ps * v_Nsteps)*100" # [%/ps]
+variable strain_rate equal "(v_strain)/(v_dt_ps * v_Nsteps)" # [1/ps]
+print "strain_rate: ${strain_rate_percent} [%/ps] at setting temperature ${Tdesird} [K]"
+print "strain rate: ${strain_rate} x 10^12 [1/s] at setting temperature ${Tdesird} [K]"
+#--------------------------------------------------------------------------------
 
 #-------------------- End ----------------------------------------------------------------
 

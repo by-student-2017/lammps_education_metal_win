@@ -4,17 +4,12 @@
 # LAMMPS 64-bit 22Dec2022-MSMPI
 clear
 #-------------------- Environment Settings -----------------------------------------------
-variable  Tdesird equal  700.0 # Desired Temperature [K]
+variable  Tdesird equal   50.0 # Desired Temperature [K]
 
-variable   Nsteps equal   7000 # Number of simulation cycles
+variable   Nsteps equal   1000 # Number of simulation cycles
 variable DumpFreq equal    100 # For print out
 
-variable    dt_ps equal  0.001 # 0.001 [ps] = 1 [fs]
-
-variable  es_rate equal    0.1 # engineering strain rate (1/time units)
-# Note: es_rate/dt_ps = 0.1 / (1e-15) = 1.0e13 [1/s]
-# L(t) = L(0)*(1 + es_rate*dt*step)
-# strain [%] = es_rate*dt*Nstep*100 [%] = 0.1 * 0.001 * 7000 * 100 = 70 [%]
+variable    dt_ps equal  0.002 # 0.002 [ps] = 2 [fs]
 
 #-------------------- Initialization -----------------------------------------------------
 echo both      # echoes each input script command to both log file and screen
@@ -51,30 +46,30 @@ pair_coeff * * al-cu-set.eam.alloy Al Cu # specifies the potential file used
 #-------------------- Settings -----------------------------------------------------------
 reset_timestep 0
 
-timestep 0.002 # 2 [fs], sets the timestep for subsequent simulations
+# sets the timestep for subsequent simulations
+timestep ${dt_ps}
 
-thermo 10 # computes and prints thermodynamic data after every 10 timesteps
+thermo ${DumpFreq} # computes and prints thermodynamic data after every 100 timesteps
 thermo_style custom step temp vol press etotal
 
 #---------- output file settings -------------------
-#dump 1 all atom 1AlCu_crystal_melt_3d_s_dump_new.lammpstrj # dumps a snapshot of atom quantities every 100 timesteps to the specified file
-#dump_modify 1 scale no # modifies parameters of previously defined dump command.
-# A value of scale ‘no’ means atom coordinates are written in absolute distance units
-#---------------------------------------------------
-dump            d1 all cfg 100 cfg/run.*.cfg mass type xs ys zs id type vx vy vz fx fy fz
+dump            d1 all cfg ${DumpFreq} cfg/run.*.cfg mass type xs ys zs id type vx vy vz fx fy fz
 dump_modify     d1 element Al Cu
 #---------------------------------------------------
 
 # calculates the radial distribution function (RDF) and output file
-compute myRDF all rdf 10
-fix 11 all ave/time 10 1 10 c_myRDF[*] file cu_melt_new.rdf mode vector
+compute myRDF all rdf 100
+fix 11 all ave/time 100 1 100 c_myRDF[*] file cu_melt_new.rdf mode vector
 
-velocity all create 50 873847 rot yes mom yes dist gaussian
+velocity all create ${Tdesird} 873847 rot yes mom yes dist gaussian
 
 #-------------------- Run the simulation -------------------------------------------------
-fix 1 all npt temp 50 50 0.01 iso 0.0 0.0 0.2 # fixing the temperature and pressure of the system
 
-run 1000 # number of iterations of the simulation
+# fixing the temperature and pressure of the system
+fix 1 all npt temp ${Tdesird} ${Tdesird} $(100*dt) iso 0.0 0.0 $(1000*dt)
+
+# number of iterations of the simulation
+run ${Nsteps}
 
 unfix 1 
 
@@ -82,13 +77,3 @@ unfix 1
 write_data AlCu_void.txt
 
 #-------------------- End ----------------------------------------------------------------
-
-#-----------------------------------------------------------------------------------------
-# Note
-# compute        peratom all stress/atom NULL
-# compute        p all reduce sum c_peratom[1] c_peratom[2] c_peratom[3]
-# variable       press equal -(c_p[1]+c_p[2]+c_p[3])/(3*vol)
-# # pxx = -c_p[1]/vol, pyy = -c_p[2]/vol, pzz = -c_p[3]/vol
-# thermo_style   custom step temp etotal press v_press
-# metal unit: press = bar = 0.1 MPa, length = Angstrom = 1e-10 m
-#-----------------------------------------------------------------------------------------
