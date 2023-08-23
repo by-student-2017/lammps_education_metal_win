@@ -26,8 +26,8 @@ pair_coeff 1 2 lj/cut 2.968e-3 3.407 10.2
 
 #-------------------- define variables used in simulation ------------
 variable    T0 equal 300 
-variable  THot equal 330 
-variable TCold equal 270 
+variable  THot equal 330 # [K]
+variable TCold equal 270 # [K]
 variable   tau equal 1.0 
 variable    dt equal 0.0002 
 variable     N equal atoms 
@@ -58,7 +58,7 @@ group central region central
 group mobile subtract all fixEnd1 fixEnd2 
 
 #-------------------- define spatially temp gradient group -----------
-region temp_spat_2 block INF INF INF INF 50.0001 100 units box 
+region temp_spat_2 block INF INF INF INF  50.0001 100 units box 
 region temp_spat_3 block INF INF INF INF 100.0001 150 units box
 region temp_spat_4 block INF INF INF INF 150.0001 200 units box 
 region temp_spat_5 block INF INF INF INF 200.0001 250 units box 
@@ -84,15 +84,15 @@ group temp_spat_5_type2 intersect temp_spat_5 type2
 
 timestep ${dt} 
 
+fix end1 fixEnd1 setforce 0 0 0 
+fix end2 fixEnd2 setforce 0 0 0 
+
 fix   hotzone hot nvt temp ${THot}  ${THot}  ${tau} 
 fix coldzone cold nvt temp ${TCold} ${TCold} ${tau} 
 fix central central nve 
 
-fix end1 fixEnd1 setforce 0 0 0 
-fix end2 fixEnd2 setforce 0 0 0 
-
-fix_modify  hotzone energy yes 
-fix_modify coldzone energy yes 
+#fix_modify  hotzone energy yes
+#fix_modify coldzone energy yes
 
 compute 1 mobile temp 
 
