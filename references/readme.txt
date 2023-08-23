@@ -212,11 +212,11 @@ input file (metal unit, lammps)
   
 - Rath, Sibasish and Toppo, Joy Kiran (2015) 
   http://ethesis.nitrkl.ac.in/7560/
-  Cu_defect
+  defect_Cu
   
 - Das , A and Singh, G (2014)
   http://ethesis.nitrkl.ac.in/6152/
-  Cu-Al_defect
+  defect_Cu-Al
   
 - Kumar, Navratan (2014) 
   http://ethesis.nitrkl.ac.in/6144/
