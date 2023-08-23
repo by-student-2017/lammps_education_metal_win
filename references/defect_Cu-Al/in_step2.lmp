@@ -3,11 +3,12 @@
 #-------------------- Initialization -----------------------------------------------------
 echo both
 units metal
-atom_style atomic
 #dimension 2
-Boundary p p p
+boundary p p p
 
 #-------------------- Read structure file ------------------------------------------------
+atom_style atomic
+
 # reads the data file containing the atom positions of the equilibrated crystal in the specified file
 read_data AlCu_void.txt
 
@@ -18,17 +19,15 @@ pair_coeff * * al-cu-set.eam.alloy Al Cu
 #-------------------- Settings -----------------------------------------------------------
 timestep 0.002 # 2 [fs]
 
-# calculates the radial distribution function (RDF) and output file
-compute myrdf all rdf 100
-fix a all ave/time 10 2 100 c_myrdf[*] file W_rdf_nnnd mode vector
+compute 1 all stress/atom NULL
+compute 2 all reduce sum c_1[2]
 
-compute 1 all stress/atom
-compute 2 all reduce sum c_1[1] c_1[2] c_1[3]
+variable stress equal c_2/vol
 
-variable stress equal ((c_2[2])/(3*vol))
 variable    tmp equal ly
 variable     lo equal ${tmp}
 variable strain equal (ly-v_lo)/v_lo
+
 variable      p equal -pyy/10000
 
 thermo 100
@@ -41,6 +40,10 @@ dump            d1 all cfg 100 cfg/run.*.cfg mass type xs ys zs id type vx vy vz
 dump_modify     d1 element Al Cu
 #---------------------------------------------------
 log NVTlogdef_nnn_cu_void.data
+
+# calculates the radial distribution function (RDF) and output file
+compute myrdf all rdf 100
+fix a all ave/time 10 2 100 c_myrdf[*] file W_rdf_nnnd mode vector
 
 velocity all create 400 873847 rot yes mom yes dist gaussian 
 

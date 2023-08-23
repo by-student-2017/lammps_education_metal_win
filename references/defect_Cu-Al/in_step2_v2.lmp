@@ -1,0 +1,61 @@
+# 4.2.2Uniaxial Testing of the specimen
+
+#-------------------- Initialization -----------------------------------------------------
+echo both
+units metal
+#dimension 2
+boundary p p p
+
+#-------------------- Read structure file ------------------------------------------------
+atom_style atomic
+
+# reads the data file containing the atom positions of the equilibrated crystal in the specified file
+read_data AlCu_void.txt
+
+#-------------------- Force field --------------------------------------------------------
+pair_style eam/alloy
+pair_coeff * * al-cu-set.eam.alloy Al Cu
+
+#-------------------- Settings -----------------------------------------------------------
+timestep 0.002 # 2 [fs]
+
+compute 1 all stress/atom NULL
+compute 2 all reduce sum c_1[2]
+
+variable stress equal c_2/vol
+
+variable    tmp equal ly
+variable     lo equal ${tmp}
+variable strain equal (ly-v_lo)/v_lo
+
+variable      p equal -pyy/10000
+
+thermo 100
+thermo_style custom step temp vol etotal pyy lx ly lz v_stress v_strain
+
+#---------- output file settings -------------------
+#dump 1 all custom 100 NVT_defo_nnndump_Cu-void.lammpstrj id type x y z
+#---------------------------------------------------
+dump            d1 all cfg 100 cfg/run.*.cfg mass type xs ys zs id type vx vy vz fx fy fz
+dump_modify     d1 element Al Cu
+#---------------------------------------------------
+log NVTlogdef_nnn_cu_void.data
+
+# calculates the radial distribution function (RDF) and output file
+compute myrdf all rdf 100
+fix a all ave/time 10 2 100 c_myrdf[*] file W_rdf_nnnd mode vector
+
+velocity all create 400 873847 rot yes mom yes dist gaussian 
+
+#-------------------- Run the simulation -------------------------------------------------
+# temperature controller
+fix 1 all nvt temp 400 400 0.1 # fixing the temp of system
+
+# tensile deformation
+fix 2 all deform 1 x volume y erate 0.1 z volume units box # strain rate of 0.1 sec-1 is applied in y direction
+
+fix def all print 1 "${strain} ${p}" file Cu_nnn_100.def1NVT.txt
+
+run 1000 # Number of iterations of the simulation
+
+#-------------------- End ----------------------------------------------------------------
