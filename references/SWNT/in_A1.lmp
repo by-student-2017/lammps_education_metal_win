@@ -1,21 +1,24 @@
 # For displacement energy calculation, an input file of following format was used
 #-----------------------------------------------------------------------------------------
-
+#-----------------------------------------------------------------------------------------
+# LAMMPS 64-bit 22Dec2022-MSMPI
+clear
 log SWNT1515_long_disp.log 
 
-clear 
-
+#-------------------- Initialization -----------------------------------------------------
 units metal
-
 boundary f f f 
 
+#-------------------- Read structure file ------------------------------------------------
 atom_style atomic 
 
 read_data SWNT1515_equ.lammps05 
 
+#-------------------- Force field --------------------------------------------------------
 pair_style airebo 2.0 1 1 
 pair_coeff * * CH.airebo C 
 
+#-------------------- Settings -----------------------------------------------------------
 thermo 100 
 thermo_style custom step pe ke etotal enthalpy vol press temp 
 thermo_modify lost warn 
@@ -32,13 +35,16 @@ group fix2 region fix2
 velocity fix1 set 0 0 0 units box 
 velocity fix2 set 0 0 0 units box 
 
-timestep 0.0002 
+#-------------------- Run the simulation -------------------------------------------------
+reset_timestep 0
+
+timestep 0.0002 # 0.2 [fs]
+
+dump 1 all custom 50 results/SWNT1515_long_disp_collison.lammpstrj id x y z vx vy vz 
 
 fix 1 all nve 
 fix 2 fix1 setforce 0 0 0 
 fix 3 fix2 setforce 0 0 0 
-
-dump 1 all custom 50 SWNT1515_long_disp_collison.lammpstrj id x y z vx vy vz 
 
 run 1000
 
@@ -47,13 +53,16 @@ unfix 2
 unfix 3 
 undump 1 
 
-timestep 0.001 
+#-------------------- Run the simulation -------------------------------------------------
+reset_timestep 0
+
+timestep 0.001 # 1 [fs]
+
+dump 2 all custom 100 results/SWNT1515_long_disp.lammpstrj id x y z vx vy vz 
 
 fix 1 all nve 
 fix 2 fix1 setforce 0 0 0 
 fix 3 fix2 setforce 0 0 0 
-
-dump 2 all custom 100 SWNT1515_long_disp.lammpstrj id x y z vx vy vz 
 
 run 1000
 
@@ -62,4 +71,8 @@ unfix 2
 unfix 3
 
 undump 2 
+
+#---------- output file settings -------------------
 write_restart SWNT1515_long_disp.restart
+
+#-------------------- End ----------------------------------------------------------------
