@@ -4,7 +4,7 @@
 # LAMMPS 64-bit 22Dec2022-MSMPI
 clear
 #-------------------- Environment Settings -----------------------------------------------
-variable  Tdesird equal   50.0 # Desired Temperature [K]
+variable  Tdesird equal  300.0 # Desired Temperature [K]
 
 variable   Nsteps equal   1000 # Number of simulation cycles
 variable DumpFreq equal    100 # For print out
@@ -20,18 +20,25 @@ boundary p p p # periodic boundary condition
 #-------------------- Atom & Lattice description ----------------------------------------
 atom_style atomic
 
-region box block 0 50 0 100 0 5 units box # defines a geometric region of space
-create_box 2 box # creates a simulation box in the specified region
+# defines a geometric region of space
+region box block 0 50 0 100 0 5 units box
 
-lattice fcc 3.61 # lattice type and lattice parameter 
+# creates a simulation box in the specified region
+create_box 2 box # set 2 types (Al and Cu)
 
-region cu block 0 50 0 100 0 5 units box # creates copper atoms in the simulation box
+# lattice type and lattice parameter 
+lattice fcc 3.61
+
+# creates copper atoms in the simulation box
+region cu block 0 50 0 100 0 5 units box
 
 create_atoms 1 region cu units box
 
-set region cu type/fraction 2 0.5 123456 # set Cu 50%, randomly.
+# set Cu 50%, randomly.
+set region cu type/fraction 2 0.5 123456
 
-region vo cylinder z 25 50 5 0 5 units box # void formation
+# void formation (r = 15 Angstrom) (cylinder dim c1 c2 radius lo hi)
+region vo cylinder z 25 50 10 INF INF units box
 group void region vo
 delete_atoms group void
 
@@ -41,7 +48,7 @@ pair_coeff * * al-cu-set.eam.alloy Al Cu # specifies the potential file used
 
 #-------------------- Energy Minimization ------------------------------------------------
 # 0 [K], structure optimization
-#minimize 3e-7 3e-8 10000 10000
+#minimize 1e-6 1e-6 10000 10000
 
 #-------------------- Settings -----------------------------------------------------------
 reset_timestep 0
@@ -59,7 +66,7 @@ dump_modify     d1 element Al Cu
 
 # calculates the radial distribution function (RDF) and output file
 compute myRDF all rdf 100
-fix 11 all ave/time 100 1 100 c_myRDF[*] file cu_melt_new.rdf mode vector
+fix 11 all ave/time 100 1 100 c_myRDF[*] file data.rdf mode vector
 
 velocity all create ${Tdesird} 873847 rot yes mom yes dist gaussian
 
