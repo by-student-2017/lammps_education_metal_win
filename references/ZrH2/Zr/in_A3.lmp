@@ -10,29 +10,30 @@ boundary p p p
 atom_style atomic
 
 lattice hcp 3.232
-region box block 0 5 0 3 0 3
 
+region box block 0 5 0 3 0 3
 create_box 1 box
+
 create_atoms 1 box
 
 mass * 91.225 # Zr
 
 #-------------------- Force field --------------------------------------------------------
 pair_style meam
-pair_coeff * * meam Zr H ZrH.meam Zr
+pair_coeff * * library.meam Zr H ZrH.meam Zr
 
 #-------------------- Settings -----------------------------------------------------------
 neighbor 2.0 bin
 neigh_modify delay 10 check yes
 
-thermo 10 
+thermo 100
 thermo_style custom step pe lx ly lz press pxx pyy pzz
 
 #-------------------- Energy minimization and pressure minimization ----------------------
 fix 1 all box/relax aniso 0.0 vmax 0.001
 
 min_style cg 
-minimize 1e-25 1e-25 5000 10000 
+minimize 1.0e-6 1.0e-6 10000 10000
 
 unfix 1
 
@@ -41,8 +42,7 @@ reset_timestep 0
 
 timestep 0.001 # 1 [fs]
 
-# Set thermo output
-thermo 1000
+thermo 100
 thermo_style custom step lx ly lz press pxx pyy pzz pe temp
 
 #---------------------------------------------------------
@@ -57,7 +57,7 @@ velocity all create 500 12345 mom yes rot no
 
 fix 1 all npt temp 500 500 1 iso 0 0 1 drag 1 
 
-run 100000 # Run for at least 10 picosecond (assuming 1 fs timestep)
+run 10000 # Run for at least 10 picosecond (assuming 1 fs timestep)
 
 unfix 1
 
@@ -68,7 +68,7 @@ variable tmp equal "lz"
 variable  L0 equal ${tmp}
 print "Initial Length, L0: ${L0}"
 
-#-------------------- DEFORMATION --------------------
+#-------------------- DEFORMATION settings -----------------------------------------------
 reset_timestep 0
 
 # Output strain and stress info to file
@@ -80,14 +80,14 @@ variable p1 equal "-pxx/10000"
 variable p2 equal "-pyy/10000"
 variable p3 equal "-pzz/10000"
 
-thermo 1000
+thermo 100
 thermo_style custom step v_strain temp v_p1 v_p2 v_p3 ke pe press
 
 #---------------------------------------------------------
 #dump 1 all custom 100 300.dump id type x y z
 #dump_modify 1 every 1000
 #---------------------------------------------------------
-dump            d2 all cfg 1000 cfg/run.defrom.*.cfg mass type xs ys zs id type vx vy vz fx fy fz
+dump            d2 all cfg 100 cfg/run.defrom.*.cfg mass type xs ys zs id type vx vy vz fx fy fz
 dump_modify     d2 element Zr
 #---------------------------------------------------------
 
@@ -95,8 +95,8 @@ variable  srate equal 1.0e10
 variable srate1 equal "v_srate / 1.0e12"
 
 #-------------------- Run the simulation -------------------------------------------------
-fix 1 all npt temp 500 500 1 x 0 0 1 y 0 0 1 drag 1
-fix 2 all deform 1 z erate ${srate1} units box remap x
+fix 1 all deform 1 z erate ${srate1} units box remap x
+fix 2 all npt temp 500 500 1 x 0 0 1 y 0 0 1 drag 1
 
 run 30000
 
