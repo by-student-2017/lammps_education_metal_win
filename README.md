@@ -71,7 +71,7 @@ pair_coeff      * * ../potentials/eam/Fe-Ni-Cr_fcc.eam.fs Fe Ni Cr
 
 ## Reference_eam_database (Generalized EAM = GEAM)
 * official version: Mg, Ti, Zr, Ta, Mo, W, Fe, Co, Ni, Pd, Pt, Cu, Ag, Au, Al, Pb
-* test version: (good <=) V, Ca, Na, Cr, Mn, Nb, Ir, Sr, Rh, Ru, Os, Hf, Re, Zn (=> bad) (compared to QE (DFT))
+* test version: (good <=) V, Ca, Na, Cr, Mn, Nb, Ir, Sr, Rh, Ru, Os, Hf, Re, Zn (=> bad) (compared to QE (DFT+PAW))
 * Other elements have parameters, but don't expect accuracy. (e.g., Be, Y, Sn, B, etc)
 * EAM does not consider angular dependence. Keep in mind that a system with strong angular dependence will have poor prediction accuracy. 
 * Any combination of these is possible. Don't expect too much about the "test version".
