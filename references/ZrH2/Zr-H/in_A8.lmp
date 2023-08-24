@@ -45,6 +45,11 @@ mass 4  1.0079 # H
 group       zr type 1 # Zr
 group hydrogen type 4 # H
 
+# void formation 
+region vo ellipsoid 50 20 2 12 3 3
+group void region vo
+delete_atoms group void
+
 #-------------------- Force field --------------------------------------------------------
 pair_style meam
 pair_coeff * * library.meam Zr H ZrH.meam Zr Zr Zr H
@@ -53,18 +58,22 @@ pair_coeff * * library.meam Zr H ZrH.meam Zr Zr Zr H
 neighbor 2.0 bin
 neigh_modify delay 10 check yes
 
-dump            d1 all cfg 1000 cfg/run.*.cfg mass type xs ys zs id type vx vy vz fx fy fz
-dump_modify     d1 element Zr Zr Zr H
-
 #-------------------- minimization parameters --------------------------------------------
+
+#---------- output file settings -------------------------
 #dump 2 all custom 1000 zr.dump id type x y z
 #dump_modify 2 every 1000
+#---------------------------------------------------------
+dump            d1 all cfg 1000 cfg/run.*.cfg mass type xs ys zs id type vx vy vz fx fy fz
+dump_modify     d1 element Zr Zr Zr H
+#---------------------------------------------------------
 
 fix 1 all nve/limit 0.1
 minimize 1.0e-6 1.0e-6 10000 10000
 unfix 1
 
 #undump 2
+undump d1
 
 #-------------------- calculates the mean-squared displacement (MSD) ---------------------
 reset_timestep 0
