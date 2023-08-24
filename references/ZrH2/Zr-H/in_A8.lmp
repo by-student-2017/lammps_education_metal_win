@@ -1,4 +1,11 @@
-# Crack Simulations folder contains calculations for MEAM
+#9. Crack Simulations folder contains calculations for MEAM as discussed in Chapter 9
+#Methodology
+# Effect of hydrogen on crack propagation is studied in zirconium at various temperatures. 
+# A stable crack is created in zirconium. Energy of the entire system is minimized. 
+# Temperature equilibration is done on structure. The script here computes stresses around 
+# the atoms upon stain. With each step of strain corresponding stresses surrounding 
+# each atom is calculated and the configurations are dumped at each change in timestep. 
+# The script below is modified from LAMMPS software to provide us the required output.
 #-----------------------------------------------------------------------------------------
 # LAMMPS 64-bit 22Dec2022-MSMPI
 clear
@@ -12,49 +19,49 @@ atom_style atomic
 
 lattice hcp 3.23
 region box block 0 100 0 40 0 3
+create_box 3 box # set 3 types (H, Zr and Zr)
 
-create_box 3 box
-create_atoms 1 box
-
-neighbor 2.0 bin
-neigh_modify delay 10 check yes
+#create_atoms 1 box
 
 # define groups
-region 1 block INF INF INF 1.25 INF INF
+region 1 block INF INF INF   1.25 INF INF
 group lower region 1
 
-region 2 block INF INF 38.75 INF INF INF
+region 2 block INF INF 38.75 INF  INF INF
 group upper region 2
 
 group boundary union lower upper
 group mobile subtract all boundary
 
-set group upper type 2
-set group lower type 3
+set group upper type 2 # Zr
+set group lower type 3 # Zr
 
-mass 1 91.224 # Zr
-mass 2 91.224 # Zr
-mass 3 91.224 # Zr
+mass 1  1.0079 # H
+mass 2 91.224  # Zr, upper area
+mass 3 91.224  # Zr, lower area
 
 #-------------------- Force field --------------------------------------------------------
 pair_style meam
-pair_coeff * * meam Zr H ZrH.meam Zr Zr Zr
+pair_coeff * * library.meam Zr H ZrH.meam H Zr Zr
 
 #-------------------- Settings -----------------------------------------------------------
-dump 2 all custom 1000 zr.dump id type x y z
-dump_modify 2 every 1000
+neighbor 2.0 bin
+neigh_modify delay 10 check yes
 
 #-------------------- minimization parameters --------------------------------------------
+#dump 2 all custom 1000 zr.dump id type x y z
+#dump_modify 2 every 1000
+
 fix 1 all nve/limit 0.1
-minimize 1.0e-30 1.0e-30 100000 1000000
+minimize 1.0e-6 1.0e-6 10000 10000
 unfix 1
 
-undump 2
+#undump 2
 
 #-------------------- calculates the mean-squared displacement (MSD) ---------------------
 reset_timestep 0
 
-timestep 0.001 # 1 [fs]
+timestep 0.0001 # 0.11 [fs]
 
 compute 1 hydrogen msd
 compute 2 zr msd
@@ -62,8 +69,13 @@ compute 2 zr msd
 thermo 1000
 thermo_style custom step etotal ke temp pe press vol c_1[1] c_1[2] c_1[3] c_1[4] c_2[1] c_2[2] c_2[3] c_2[4]
 
-dump 2 all custom 10000 msd.dump id type xu yu zu ix iy iz
-dump_modify 2 every 1000
+#---------- output file settings -------------------------
+#dump 2 all custom 10000 msd.dump id type xu yu zu ix iy iz
+#dump_modify 2 every 1000
+#---------------------------------------------------------
+dump            d2 all cfg 1000 cfg/run.*.cfg mass type xs ys zs id type vx vy vz fx fy fz
+dump_modify     d2 element H Zr Zr
+#---------------------------------------------------------
 
 velocity all create 600.0 4928459 rot yes dist gaussian
 
@@ -73,13 +85,13 @@ run 700000
 
 unfix 1
 
-undump 2
+#undump 2
+undump d2
 
 #-------------------- initial velocities and equilibration -------------------------------
 timestep 0.0001 # 0.1 [fs]
 
 compute new3d mobile temp
-compute new2d mobile temp/partial 1 0 1
 
 thermo 50
 thermo_modify temp new3d
@@ -91,25 +103,29 @@ fix 2 boundary setforce NULL 0.0 NULL
 fix 3 mobile temp/rescale 10 0.01 0.01 10.0 1.0
 fix_modify 3 temp new3d
 
-run 1000
-
-#-------------------- Deformation --------------------------------------------------------
-neigh_modify delay 5
-
-compute p all stress/atom
-
-minimize 1.0e-6 1.0e-6 10000 100000
+run 10000
 
 unfix 3
 
 #-------------------- Deformation --------------------------------------------------------
 reset_timestep 0
 
+neigh_modify delay 5
+
+compute new2d mobile temp/partial 1 0 1
+
 thermo 1000
 thermo_modify temp new2d
 
-dump 3 all custom 1000 crack.dump id type x y z c_p[1] c_p[2] c_p[3]
-dump_modify 3 every 10000
+compute p all stress/atom
+
+#---------- output file settings -------------------------
+#dump 3 all custom 1000 crack.dump id type x y z c_p[1] c_p[2] c_p[3]
+#dump_modify 3 every 10000
+#---------------------------------------------------------
+dump            d3 all cfg 1000 cfg/run.*.cfg mass type xs ys zs id type vx vy vz fx fy fz
+dump_modify     d2 element H Zr Zr
+#---------------------------------------------------------
 
 velocity upper set 0.0 0.8 0.0
 velocity mobile ramp vy 0.0 0.8 y 1.25 38.75 sum yes
@@ -119,4 +135,5 @@ fix_modify 3 temp new2d
 
 run 500000
 
+print "All done !"
 #-------------------- End ----------------------------------------------------------------

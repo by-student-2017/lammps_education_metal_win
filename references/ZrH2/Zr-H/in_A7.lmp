@@ -12,35 +12,35 @@ atom_style atomic
 
 read_data ihcpl.in
 
-#-------------------- Force field --------------------------------------------------------
-pair_style meam
-pair_coeff * * meam Zr H ZrH.meam Zr H
-
-neighbor 2 bin
-neigh_modify delay 10 check yes
-
 group       zr type 1 # Zr
 group hydrogen type 2 # H
 
 mass 1 91.224 # Zr
 mass 2 1.0079 # H
 
+#-------------------- Force field --------------------------------------------------------
+pair_style meam
+pair_coeff * * library.meam Zr H ZrH.meam Zr H
+
 #-------------------- Settings -----------------------------------------------------------
+neighbor 2 bin
+neigh_modify delay 10 check yes
+
 compute    eng all pe/atom
 compute eatoms all reduce sum c_eng
 
-thermo 1000
+thermo 100
 thermo_style custom step pe lx ly lz press pxx pyy pzz c_eatoms 
 
 #-------------------- Energy Minimization ------------------------------------------------
 fix 1 all nve/limit 0.1
-minimize 1.00e-30 1.00e-30 100000 1000000
+minimize 1.0e-6 1.0e-6 10000 10000
 unfix 1
 
 #-------------------- 
 fix 1 all box/relax aniso 0.0 vmax 0.1
 min_style cg
-minimize 1e-30 1e-30 1000000 10000000
+minimize 1.0e-6 1.0e-6 10000 10000
 unfix 1
 
 variable natoms equal "count(all)"
@@ -50,14 +50,14 @@ variable   ecoh equal "v_teng/v_natoms"
 
 print "Total energy (eV) = ${teng};"
 print "Number of atoms = ${natoms};"
-print "Lattice constant (Angstoms) = ${length};"
+print "Lattice constant, x (Angstoms) = ${length};"
 print "Cohesive energy (eV) = ${ecoh};"
 
 #-------------------- Run the simulation (NPT) -------------------------------------------
 #-------------------- EQUILIBRATION ------------------------------------------------------
 reset_timestep 0
 
-timestep 0.001 # 1 [fs]
+timestep 0.0001 # 0.1 [fs]
 
 thermo 1000
 thermo_style custom step lx ly lz press pxx pyy pzz pe temp vol ke etotal 
@@ -66,7 +66,7 @@ velocity all create 800 12345 mom yes rot no
 
 fix 1 all npt temp 800 800 1 aniso 0 0 1 drag 0.5 
 
-run 12000
+run 60000
 
 unfix 1
 
@@ -88,19 +88,23 @@ variable p1 equal "-pxx/10000"
 variable p2 equal "-pyy/10000"
 variable p3 equal "-pzz/10000"
 
-thermo 10000
+thermo 1000
 thermo_style custom step v_strain temp v_p1 v_p2 v_p3 ke pe press vol
 
-dump 4 all custom 1000 Interface.dump id type xu yu zu ix iy iz
-dump_modify 4 every 10000
+#---------- output file settings -------------------
+#dump 4 all custom 1000 Interface.dump id type xu yu zu ix iy iz
+#dump_modify 4 every 10000
+#---------------------------------------------------
+dump            d1 all cfg 1000 cfg/run.*.cfg mass type xs ys zs id type vx vy vz fx fy fz
+dump_modify     d1 element Zr H
+#---------------------------------------------------
 
-variable  srate equal 1.0e10
+variable  srate equal 5.0e10
 variable srate1 equal "v_srate / 1.0e12"
 
 #-------------------- Run the simulation -------------------------------------------------
-
-fix 1 all npt temp 800 800 1 y 0 0 1 z 0 0 1 drag 1
-fix 2 all deform 1 x erate 0.05 units box remap x
+fix 1 all deform 1 x erate ${srate1} units box remap x
+fix 2 all npt temp 800 800 1 y 0 0 1 z 0 0 1 drag 1
 
 run 300000 
 

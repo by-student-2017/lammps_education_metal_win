@@ -11,11 +11,12 @@ boundary p p p
 atom_style atomic
 
 lattice hcp 3.232
-region box block 0 16 0 10 0 10
 
-create_box 2 box
+region box block 0 16 0 10 0 10
+create_box 2 box # set 2 types (Zr and H)
+
 create_atoms 1 box
-create_atoms 2 random 100 878567 box
+create_atoms 2 random 100 878567 box # set H 100 atoms, randomly.
 
 group       zr type 1 # Zr
 group hydrogen type 2 # H
@@ -25,13 +26,13 @@ mass 2 1.0079 # H
 
 #-------------------- Force field --------------------------------------------------------
 pair_style meam
-pair_coeff * * meam Zr H ZrH.meam Zr H
+pair_coeff * * library.meam Zr H ZrH.meam Zr H
 
 #-------------------- Settings -----------------------------------------------------------
 neighbor 2 bin
 neigh_modify delay 10 check yes
 
-thermo 1000
+thermo 100
 thermo_style custom step pe lx ly lz press pxx pyy pzz vol etotal
 
 #-------------------- Energy minimization and pressure minimization ----------------------
@@ -72,7 +73,7 @@ reset_timestep 0
 
 timestep 0.0001 # 0.1 [fs]
 
-thermo 10000
+thermo 1000
 thermo_style custom step temp pe press vol etotal
 
 compute 5 hydrogen msd com yes
@@ -81,7 +82,7 @@ compute 6 zr msd
 fix 1 all nvt temp 500 500 100.0
 fix 3 hydrogen ave/time 10 5 1000 c_5[1] c_5[2] c_5[3] c_5[4] c_6[4] file 500.txt
 
-run 10000000
+run 100000
 
 unfix 1
 unfix 3
@@ -91,7 +92,9 @@ unfix 3
 compute 5k zr rdf 50 1 1
 fix 1 all ave/time 100 1 100 c_5k file tmp5.rdf mode vector
 
-run 10000
+run 1000
 
 unfix 1
+
+print "All done !"
 #-------------------- End ----------------------------------------------------------------

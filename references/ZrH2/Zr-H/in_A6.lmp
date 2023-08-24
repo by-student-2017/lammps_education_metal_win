@@ -27,7 +27,7 @@ mass 2 1.0079 # H
 
 #-------------------- Force field --------------------------------------------------------
 pair_style meam
-pair_coeff * * meam Zr H ZrH.meam Zr H
+pair_coeff * * library.meam Zr H ZrH.meam Zr H
 
 #-------------------- Settings -----------------------------------------------------------
 neighbor 2.0 bin
@@ -51,7 +51,7 @@ unfix 1
 #-------------------- Settings -----------------------------------------------------------
 reset_timestep 0
 
-timestep 0.001 # 1.0 [fs]
+timestep 0.0001 # 0.1 [fs]
 
 compute 1 hydrogen msd com yes
 compute 2 zr msd
@@ -66,7 +66,7 @@ velocity all create 623.0 12345 mom yes rot no
 
 fix 1 all npt temp 623.0 623.0 1 iso 0 0 1 drag 0.5
 
-run 10000
+run 40000
 
 unfix 1
 
@@ -92,15 +92,20 @@ variable p3 equal "-pzz/10000"
 thermo 10000
 thermo_style custom step etotal ke temp pe press vol v_strain v_p1 v_p2 v_p3
 
-dump 3 all custom 10000 xenergy.dump id type xu yu zu ix iy iz
-dump_modify 3 every 10000
+#---------- output file settings -------------------
+#dump 3 all custom 10000 xenergy.dump id type xu yu zu ix iy iz
+#dump_modify 3 every 10000
+#---------------------------------------------------
+dump            d1 all cfg 1000 cfg/run.*.cfg mass type xs ys zs id type vx vy vz fx fy fz
+dump_modify     d1 element Zr H
+#---------------------------------------------------
 
 variable  srate equal 1.0e10
 variable srate1 equal "v_srate / 1.0e12"
 
 #-------------------- Run the simulation -------------------------------------------------
 
-fix 1 all deform 1 z erate 0.01 units box remap x
+fix 1 all deform 1 z erate ${srate1} units box remap x
 fix 2 all npt temp 623.0 623. 1 x 0 0 1 y 0 0 1 drag 0.5
 
 run 300000
