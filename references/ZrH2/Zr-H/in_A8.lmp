@@ -19,9 +19,10 @@ atom_style atomic
 
 lattice hcp 3.23
 region box block 0 100 0 40 0 3
-create_box 3 box # set 3 types (H, Zr and Zr)
+create_box 4 box # set 4 types (Zr, Zr, Zr and H)
 
-#create_atoms 1 box
+create_atoms 1 box
+create_atoms 4 random 100 878567 box # set H 100 atoms, randomly.
 
 # define groups
 region 1 block INF INF INF   1.25 INF INF
@@ -36,17 +37,24 @@ group mobile subtract all boundary
 set group upper type 2 # Zr
 set group lower type 3 # Zr
 
-mass 1  1.0079 # H
+mass 1 91.224  # Zr, center area
 mass 2 91.224  # Zr, upper area
 mass 3 91.224  # Zr, lower area
+mass 4  1.0079 # H
+
+group       zr type 1 # Zr
+group hydrogen type 4 # H
 
 #-------------------- Force field --------------------------------------------------------
 pair_style meam
-pair_coeff * * library.meam Zr H ZrH.meam H Zr Zr
+pair_coeff * * library.meam Zr H ZrH.meam Zr Zr Zr H
 
 #-------------------- Settings -----------------------------------------------------------
 neighbor 2.0 bin
 neigh_modify delay 10 check yes
+
+dump            d1 all cfg 1000 cfg/run.*.cfg mass type xs ys zs id type vx vy vz fx fy fz
+dump_modify     d1 element Zr Zr Zr H
 
 #-------------------- minimization parameters --------------------------------------------
 #dump 2 all custom 1000 zr.dump id type x y z
@@ -74,7 +82,7 @@ thermo_style custom step etotal ke temp pe press vol c_1[1] c_1[2] c_1[3] c_1[4]
 #dump_modify 2 every 1000
 #---------------------------------------------------------
 dump            d2 all cfg 1000 cfg/run.*.cfg mass type xs ys zs id type vx vy vz fx fy fz
-dump_modify     d2 element H Zr Zr
+dump_modify     d2 element Zr Zr Zr H
 #---------------------------------------------------------
 
 velocity all create 600.0 4928459 rot yes dist gaussian
@@ -124,7 +132,7 @@ compute p all stress/atom
 #dump_modify 3 every 10000
 #---------------------------------------------------------
 dump            d3 all cfg 1000 cfg/run.*.cfg mass type xs ys zs id type vx vy vz fx fy fz
-dump_modify     d2 element H Zr Zr
+dump_modify     d2 element Zr Zr Zr H
 #---------------------------------------------------------
 
 velocity upper set 0.0 0.8 0.0
