@@ -16,20 +16,53 @@ boundary p p p
 #-------------------- Atom & Lattice description ----------------------------------------
 atom_style atomic
 
-# nterface (0001) alpha-Zr // {111} delta-ZrH1.5
-read_data ihcpl.in
+# Interface (0001) alpha-Zr // {111} delta-ZrH2
+#-----------------------------------------------------------------------
+# (0001) alpha-Zr
+#-----------------------------------------------
+region new_region block 0 40 0 30 -20 20 units box 
+create_box 2 new_region # define 2 types (Zr and H)
+
+region upper block 0 40 0 30 0 20 units box
+lattice hcp 3.232 orient x 1 0 0 orient y 0 1 0 orient z 0 0 1
+create_atoms 1 region upper 
+#-----------------------------------------------
+
+# {111} delta-ZrHx
+#-----------------------------------------------
+region lower block 0 40 0 30 -20 0 units box 
+lattice fcc 4.83 orient x 1 -1 0 orient y 1 1 -2 orient z 1 1 1
+create_atoms 1 region lower 
+
+lattice sc 2.415 origin 0.5 0.5 0.5 orient x 1 -1 0 orient y 1 1 -2 orient z 1 1 1
+create_atoms 2 region lower # ZrH2 case
+#create_atoms 2 random 1137 878567 lower # set H 1137 atoms, randomly. ZrHx case
+
+# creating composition
+#set region upper type/fraction 2 0.1 12393 #  H (= type 2) in upper
+#set region lower type/fraction 1 0.1 12393 # Zr (= type 1) in lower
+#-----------------------------------------------
+#-----------------------------------------------------------------------
+
+# Interface (0001) alpha-Zr // {111} delta-ZrH1.5
+#read_data ihcpl.in
 
 group       zr type 1 # Zr
 group hydrogen type 2 # H
 
-mass 1 91.224 # Zr
-mass 2 1.0079 # H
+mass 1 91.224  # Zr
+mass 2  1.0079 # H
+
+print "H: $(count(hydrogen)) [atoms]"
 
 #-------------------- Force field --------------------------------------------------------
 pair_style meam
 pair_coeff * * library.meam Zr H ZrH.meam Zr H
 
 #-------------------- Settings -----------------------------------------------------------
+
+delete_atoms overlap 0.35 all all
+
 neighbor 2 bin
 neigh_modify delay 10 check yes
 
@@ -69,6 +102,11 @@ timestep 0.0001 # 0.1 [fs]
 thermo 1000
 thermo_style custom step lx ly lz press pxx pyy pzz pe temp vol ke etotal 
 
+#---------------------------------------------------
+dump            d1 all cfg 1000 cfg/run.relax.*.cfg mass type xs ys zs id type vx vy vz fx fy fz
+dump_modify     d1 element Zr H
+#---------------------------------------------------
+
 velocity all create 800 12345 mom yes rot no
 
 fix 1 all npt temp 800 800 1 aniso 0 0 1 drag 0.5 
@@ -76,6 +114,8 @@ fix 1 all npt temp 800 800 1 aniso 0 0 1 drag 0.5
 run 60000
 
 unfix 1
+
+undump d1
 
 #-------------------- Store final cell length for strain calculations ---------------------
 reset_timestep 0
@@ -102,8 +142,8 @@ thermo_style custom step v_strain temp v_p1 v_p2 v_p3 ke pe press vol
 #dump 4 all custom 1000 Interface.dump id type xu yu zu ix iy iz
 #dump_modify 4 every 10000
 #---------------------------------------------------
-dump            d1 all cfg 1000 cfg/run.*.cfg mass type xs ys zs id type vx vy vz fx fy fz
-dump_modify     d1 element Zr H
+dump            d2 all cfg 1000 cfg/run.strain.*.cfg mass type xs ys zs id type vx vy vz fx fy fz
+dump_modify     d2 element Zr H
 #---------------------------------------------------
 
 variable  srate equal 5.0e10
@@ -115,6 +155,5 @@ fix 2 all npt temp 800 800 1 y 0 0 1 z 0 0 1 drag 1
 
 run 300000 
 
-unfix 1
-unfix 2
+print "All done !"
 #-------------------- End ----------------------------------------------------------------
