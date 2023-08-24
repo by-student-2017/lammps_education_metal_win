@@ -166,7 +166,7 @@ input file (metal unit, lammps)
   
 - B. N. Sorbom, thesis (2010).
   https://dspace.mit.edu/handle/1721.1/120392
-  YBCO (Y1Ba2Cu3O7) (need *.dat and table) (failed)
+  YBCO (Y1Ba2Cu3O7) (need *.dat and table)
   
 - S. T. T. Lam, thesis (2013).
   https://dspace.mit.edu/handle/1721.1/129108
