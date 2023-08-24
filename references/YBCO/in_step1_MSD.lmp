@@ -116,13 +116,27 @@ reset_timestep 0
 
 timestep 0.001 # 1 [fs]
 
+#---------------------------------------------------
+dump            d1 all cfg 100 cfg/run.equil.*.cfg mass type xs ys zs id type vx vy vz fx fy fz
+dump_modify     d1 element Y Ba Cu Cu O
+#---------------------------------------------------
+
 velocity all create ${myT} 8200 mom yes
 
 fix 1 all nvt temp ${myT} ${myT} 0.1
 
 run 100000
 
+undump d1
+
 #-------------------- MSD ----------------------------------------------------------------
+reset_timestep 0
+
+#---------------------------------------------------
+dump            d2 all cfg 100 cfg/run.msd.*.cfg mass type xs ys zs id type vx vy vz fx fy fz c_KineticAll
+dump_modify     d2 element Y Ba Cu Cu O
+#---------------------------------------------------
+
 compute Omsd oxygen msd com yes
 
 variable   OMSDX equal "c_Omsd[1]"
