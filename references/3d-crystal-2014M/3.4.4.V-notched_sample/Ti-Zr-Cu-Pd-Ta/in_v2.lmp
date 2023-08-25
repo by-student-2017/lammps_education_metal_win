@@ -23,7 +23,7 @@ create_atoms 3 region cu units box # creates copper atoms in the simulation box
 #--------------------------------------------------------------------------------
 # creating composition by using set command for Ti0.396-Zr0.099-Cu0.3564-Pd0.1386-Ta0.01 alloy 
 set region cu type/fraction 1 0.396  12393 # set Ti 40*(100-x)%, randomly
-set region cu type/fraction 2 0.099  12393 # set Zr 10*(100-x)%, randomly
+set region cu type/fraction 2 0.99   12393 # set Zr 10*(100-x)%, randomly
 set region cu type/fraction 4 0.1386 12393 # set Cu 14*(100-x)%, randomly
 set region cu type/fraction 5 0.01   12393 # set Ta x=1%, randomly
 #--------------------------------------------------------------------------------
@@ -72,6 +72,54 @@ velocity all create 300 873847 rot yes mom yes dist gaussian # sets the velocity
 fix 1 all npt temp 100 100 0.1 iso 0 0 0.1 # temp and pressure conserved
 run 1000 # program is run for 1000 iterations
 unfix 1  # deletes the previously defined fix 1
+
+#--------------------------------------------------------------------------------
+# Since random numbers are used for arrangement, the composition ratio is #
+# slightly different from the specified ratio. Under the conditions calculated this time, 
+# the composition ratio is as follows. Also keep in mind that this value will change 
+# if you change the random number seed.
+#--------------------------------------------------------------------------------
+group ti type 1
+group zr type 2
+group cu type 3
+group pd type 4
+group ta type 5
+#----------------------------
+variable  nti equal count(ti)
+variable  nzr equal count(zr)
+variable  ncu equal count(cu)
+variable  npd equal count(pd)
+variable  nta equal count(ta)
+#----------------------------
+variable ntot equal ${nti}+${nzr}+${ncu}+${npd}+${nta}
+#----------------------------
+variable nnti equal ${nti}/${ntot}
+variable nnzr equal ${nzr}/${ntot}
+variable nncu equal ${ncu}/${ntot}
+variable nnpd equal ${npd}/${ntot}
+variable nnta equal ${nta}/${ntot}
+#-----------------------------
+variable snnti format nnti %05.3f
+variable snnzr format nnzr %05.3f
+variable snncu format nncu %05.3f
+variable snnpd format nnpd %05.3f
+variable snnta format nnta %05.3f
+#----------------------------
+variable pnti equal ${nti}/${ntot}*100
+variable pnzr equal ${nzr}/${ntot}*100
+variable pncu equal ${ncu}/${ntot}*100
+variable pnpd equal ${npd}/${ntot}*100
+variable pnta equal ${nta}/${ntot}*100
+#-----------------------------
+variable spnti format pnti %04.1f
+variable spnzr format pnzr %04.1f
+variable spncu format pncu %04.1f
+variable spnpd format pnpd %04.1f
+variable spnta format pnta %04.1f
+#--------------------------------------------------------------------------------
+print "Ti: ${snnti}, Zr: ${snnzr}, Cu: ${snncu}, Pd: ${snnpd}, Ta: ${snnta} [ratio]"
+print "Ti: ${spnti}, Zr: ${spnzr}, Cu: ${spncu}, Pd: ${spnpd}, Ta: ${spnta} [%]"
+#--------------------------------------------------------------------------------
 
 #-------------------- Output data file ---------------------------------------------------
 write_data Test.dat
