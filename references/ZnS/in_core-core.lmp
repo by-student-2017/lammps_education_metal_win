@@ -1,115 +1,123 @@
 # APPENDIX C: 
 # CODE USED TO SIMULATE PIEZOELECTIC CONSTANTS IN THIS THESIS
 # LAMMPS CODE FOR CORE-CORE SIMULATION
-
+#-----------------------------------------------------------------------------------------
 # Units metal = Energy in eV, time in picoseconds, distance in Angstroms, 
 # and charge in multiple of electron charge
-
-units metal
-
-#Bounday condition
-boundary p p p
-
-# Molecular + Charge
-atom_style full
-
+#-----------------------------------------------------------------------------------------
+# LAMMPS 64-bit 22Dec2022-MSMPI
+clear
+#-------------------- Environment Settings -----------------------------------------------
 # T = Temperature in K
-variable T1 equal 500
-variable T2 equal 0.1
+variable T1 equal 500 # Start T [K]
+variable T2 equal 0.1 # End   T [K]
 
-variable N equal 3
-variable N2 equal 10000
+variable N  equal 3
+variable N2 equal 10000 # number of thermo (output)
+
+#-------------------- Initialization -----------------------------------------------------
+units metal
+dimension 3
+boundary p p p # Bounday condition
+
+#-------------------- Read structure file ------------------------------------------------
+atom_style full # Molecular + Charge
 
 # Generate a Wurtzite crystal with data file
 read_data ZnS_3x3x3x2_dihedral_CoreCore.data
 
-pair_style buck/coul/long/cs 12
+mass 1 65.38  # Atomic mass of Zn
+mass 2 32.059 # Atomic mass of S
 
-# Atomic mass of Zn
-mass 1 65.38
-
-# Atomic mass of S
-mass 2 32.059
-
-set type 1 charge 2.0
+set type 1 charge  2.0
 set type 2 charge -2.0
 
 dielectric 1.0
 
-# Zn_core – Zn_core
-pair_coeff * * 0.0 1.0 0.0 0.0
+neighbor 3.0 bin
+neigh_modify every 1 delay 0 check yes
 
-# Zn_core - S_core 
-pair_coeff 1 2 672.288 0.39089 0.0
+#-------------------- Force field --------------------------------------------------------
+pair_style buck/coul/long/cs 12
+pair_coeff * *    0.0   1.0     0.0 # Zn_core - Zn_core
+pair_coeff 1 2  672.288 0.39089 0.0 # Zn_core -  S_core 
+pair_coeff 2 2 1200.0   0.149   0.0 #  S_core -  S_core 
 
-# S_core - S_core 
-pair_coeff 2 2 1200.0 0.149 0.0
-
+# Angle style S_core - Zn_Core - S_core 
 angle_style harmonic_decay
-
 angle_coeff 1 4714170 109.47 0.3 0.3
 
+# Four-body term 
 dihedral_style charmm
-
 dihedral_coeff 1 0.005 3 0 0.0
 
 special_bonds coul 0.0 0.0 1.0 angle yes dihedral yes
 
 pair_modify shift yes
-kspace_style ewald/disp 1.0E-06
-neighbor 3.0 bin
+
+kspace_style ewald/disp 1.0e-06
+
+#-------------------- Settings -----------------------------------------------------------
+
+# Time step in ps
+timestep 0.001 # 1 [fs]
+
+compute peratom all pe/atom
 
 variable xl equal (lx/(2*$N))
 variable yl equal (ly/(2*$N))
 variable zl equal (lz/(2*$N))
 
-neigh_modify every 1 delay 0 check yes
-
-dump 1 all xyz ${N2} 
-ZnS_Binks_$Nx$Nx$N_${T2}K_Relaxed.xyz 
-#dump_modify 1 element Zn O
-
-dump 12 all custom ${N2} ZnS_$Nx$Nx$N_${T2}K_Z_U.atom id type xu yu zu 
-dump_modify 12 sort id
-
-compute peratom all pe/atom
-
-## MD EQUILIBRATION
-reset_timestep 0
-
-# Time step in ps
-timestep 0.001
-
-velocity all create ${T1} 12345 mom yes rot no
-fix 1 all npt temp ${T1} ${T1} 1 iso 0 0 1 drag 1 
-fix 2 all temp/rescale 1 ${T1} ${T1} 0.05 1.0
-
-variable al equal v_xl 
-variable bl equal v_yl
-variable cl equal v_zl
-variable s equal step
-variable Vol equal vol
+variable    al equal v_xl 
+variable    bl equal v_yl
+variable    cl equal v_zl
+variable     s equal step
+variable   Vol equal vol
 variable srate equal -1.0e08
 
-# Set thermo output
 thermo 1000
 thermo_style custom step lx ly lz press pxx pyy pzz pe temp v_al v_bl v_cl vol v_xl v_yl v_zl 
 
+#---------------------------------------------------
+dump 1 all xyz ${N2} ZnS_Binks_$Nx$Nx$N_${T2}K_Relaxed.xyz 
+#dump_modify 1 element Zn O
+#---------------------------------------------------
+dump 12 all custom ${N2} ZnS_$Nx$Nx$N_${T2}K_Z_U.atom id type xu yu zu 
+dump_modify 12 sort id
+#---------------------------------------------------
+
+# Velocity bias option
+velocity all create ${T1} 12345 mom yes rot no
+
+#-------------------- Equilibration Run --------------------------------------------------
 # Run for at least 10 picosecond (assuming 1 fs timestep)
 # Number of steps (Time = timestep * number of steps)
+
+#-------------------- NPT (T1 [K] - T1 [K])
+
+fix 1 all npt temp ${T1} ${T1} 1 iso 0 0 1 drag 1 
+fix 2 all temp/rescale 1 ${T1} ${T1} 0.05 1.0
 
 run 10000
 
 unfix 1
 unfix 2
 
+#-------------------- NPT (T1 [K] - T2 [K])
+
 fix 1 all npt temp ${T1} ${T2} 1 iso 0 0 1 drag 1 
 fix 2 all temp/rescale 1 ${T1} ${T2} 0.05 1.0
+
+fix def2 all print 100000 "0 0 ${al} ${bl} ${cl} ${Vol}" &
+  file ZnS_$Nx$Nx$N_${T2}K_Z_${srate}_lattice.txt screen no title ""
 
 run 100000
 
 unfix 1
 unfix 2
+unfix def2
+
+#-------------------- NPT (T2 [K] - T2 [K])
 
 fix 1 all npt temp ${T2} ${T2} 1 iso 0 0 1 drag 1 
 fix 2 all temp/rescale 1 ${T2} ${T2} 0.05 1.0
@@ -121,63 +129,69 @@ run 200000
 
 unfix 1
 unfix 2
+unfix def2
 
-# MS
+#-------------------- 
 
 #min_style cg
 #min_modify line quadratic dmax 0.001
 #fix 1 all box/relax iso 0.0 vmax 0.001
 #minimize 1.0E-09 1.0E-09 100000 1000000
-
 #unfix 1
 undump 1
+
+thermo 10
+thermo_style custom step etotal evdwl ecoul v_xl v_yl v_zl
+
+write_restart optimized.data
 
 # Store final cell length for strain calculations
 variable tmp equal "lz"
 variable L0 equal ${tmp}
 print "Initial Length, L0: ${L0}"
 
-## DEFORMATION
+# ------------------------ DEFORMATION ---------------------------------------------------
 reset_timestep 0
+
 fix 1 all nvt/sllod temp ${T2} ${T2} 1 
 
 # Strain rate in 1/ps
-
 variable srate1 equal "v_srate/1.0e12"
 
 fix 2 all deform 1 z erate ${srate1} units box remap v
-
-# Output strain and stress info to file
-# For units metal, pressure is in [bars] = 100 [kPa] = 1/10000 [GPa]
 
 compute iyad all stress/atom NULL
 compute p all reduce sum c_iyad[1] c_iyad[2] c_iyad[3]
 variable press equal -(c_p[1]+c_p[2]+c_p[3])/(3*vol)
 
+# Output strain and stress info to file
+# For units metal, pressure is in [bars] = 100 [kPa] = 1/10000 [GPa]
 # p2, p3, p4 are in GPa
+
 # strain = dl/lo
-
 variable strain equal "(lz - v_L0)/v_L0"
-variable p1 equal "v_strain"
-variable p2 equal "-pxx/10000"
-variable p3 equal "-pyy/10000"
-variable p4 equal "-pzz/10000"
+variable     p1 equal "v_strain"
+variable     p2 equal "-pxx/10000"
+variable     p3 equal "-pyy/10000"
+variable     p4 equal "-pzz/10000"
 
+#---------- output file settings -------------------
 fix def1 all print ${N2} "${p1} ${p2} ${p3} ${p4}" &
   file ZnS_$Nx$Nx$N_${T2}K_Z_${srate}_defl.txt screen no
 
 fix def2 all print ${N2} "${s} ${p1} ${al} ${bl} ${cl} ${Vol}" &
   append ZnS_$Nx$Nx$N_${T2}K_Z_${srate}_lattice.txt screen no title ""
 
-# Display thermo
 thermo ${N2}
 thermo_style custom step v_strain temp v_p2 v_p3 v_p4 ke pe press v_al v_bl v_cl vol v_s v_press
 
 dump 1 all xyz ${N2} ZnS_${T2}K_Z_SS_${srate}.*.xyz 
 dump 2 all custom ${N2} ZnS_${T2}K_Z_SS_U_${srate}.*.atom id type xu yu zu 
 dump_modify 2 sort id
+#---------------------------------------------------
 
 run 100000
-######################################
-# SIMULATION DONE
+
 print "All done"
+
+#-------------------- End ----------------------------------------------------------------

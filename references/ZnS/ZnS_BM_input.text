@@ -1,52 +1,59 @@
 # CODE USED TO CALCULATE BULK MODULUS IN THIS THESIS
 # BULK MODULUS LAMMPS CODE
-
+#-----------------------------------------------------------------------------------------
+# LAMMPS 64-bit 22Dec2022-MSMPI
+clear
+#-------------------- Initialization -----------------------------------------------------
 units metal
+dimension 3
 boundary p p p
-atom_style full
+
+#-------------------- Read structure file ------------------------------------------------
+atom_style full # Molecular + Charge
 
 fix csinfo all property/atom i_CSID
 
 read_data ZnS_3x3x3x2_dihedral_Coreshell.data fix csinfo NULL CS-Info
 
-group cores type 1 2
-group shells type 3 4
+group  cores type 1 2 # Zn S
+group shells type 3 4 # Zn S
 
 neighbor 2.0 bin
+neigh_modify every 1 delay 0 check yes
+
 comm_modify vel yes
 
-kspace_style ewald 1.0e-6
-
+#-------------------- Force field --------------------------------------------------------
 pair_style buck/coul/long/cs 12
+pair_coeff * *    0.0   1.0     0.0 # Zn_core - Zn_core
+pair_coeff 1 4  672.288 0.39089 0.0 # Zn_core - S_shell
+pair_coeff 4 4 1200.0   0.149   0.0 # S_shell - S_shell
 
-# *-* 
-pair_coeff * * 0.0 1.0 0.0 0.0
+# core - shell
+bond_style harmonic
+bond_coeff 1 0 0
+bond_coeff 2 6.6513715 0
 
-# Zn_core - S_shell 
-pair_coeff 1 4 672.288 0.39089 0.0
-
-# S_shell - S_shell 
-pair_coeff 4 4 1200.0 0.149 0.0
-
-pair_modify shift yes
-
+# Angle style: S_Shell - Zn_Core - S_Shell
 angle_style harmonic_decay
-
-#S_Shell - Zn_Core - S_Shell 
 angle_coeff 1 4714170 109.47 0.3 0.3
 
+# Four-body term 
 dihedral_style charmm
 dihedral_coeff 1 0.005 3 0 0.0
 
 special_bonds coul 0.0 0.0 1.0 angle yes dihedral yes
 
-bond_style harmonic
-bond_coeff 1 0 0
-bond_coeff 2 6.6513715 0
+pair_modify shift yes
 
+kspace_style ewald 1.0e-6
+
+#-------------------- loop l and p: start
 variable l loop 21
 variable p index -10000 -9000 -8000 -7000 -6000 -5000 -4000 -3000 -2000 -1000 &
   0 1000 2000 3000 4000 5000 6000 7000 8000 9000 10000
+#-------
+
 variable t index 1 
 #velocity all create $t 4928459
 
@@ -58,28 +65,33 @@ thermo_modify temp CStemp press thermo_press_lmp
 velocity all create $t 4928459 dist gaussian mom yes rot no bias yes temp CStemp
 velocity all scale $t temp CStemp
 
-fix 5 all temp/berendsen $t $t 0.4
 fix 1 all nve 
 fix 2 all temp/rescale 1 $t $t 0.01 1.0 
 fix 3 all nph iso $p $p 1 drag 100
-fix_modify 5 temp CStemp
+fix 5 all temp/berendsen $t $t 0.4
 
+fix_modify 5 temp CStemp
 fix_modify 3 press thermo_press_lmp # pressure for correct kinetic scalar
 
 variable Vol equal vol
-variable xl equal lx/6
-variable yl equal ly/6
-variable zl equal lz/6
-variable Ec equal pe/atoms
+variable  xl equal lx/6
+variable  yl equal ly/6
+variable  zl equal lz/6
+variable  Ec equal pe/atoms
 
-thermo_style custom step press etotal lx ly lz vol 
 thermo 100
+thermo_style custom step press etotal lx ly lz vol 
 
 run 10000
 
 print "$p ${Vol}" append ZnS_BM.dat screen yes
 
-next p
 clear
-next l 
+
+#-------
+next p
+next l
+#-------------------- loop l and p: end
+
 jump ZnS_BM_input.text
+#-------------------- End ----------------------------------------------------------------
