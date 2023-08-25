@@ -1,0 +1,161 @@
+#9. Crack Simulations folder contains calculations for MEAM as discussed in Chapter 9
+#Methodology
+# Effect of hydrogen on crack propagation is studied in zirconium at various temperatures. 
+# A stable crack is created in zirconium. Energy of the entire system is minimized. 
+# Temperature equilibration is done on structure. The script here computes stresses around 
+# the atoms upon stain. With each step of strain corresponding stresses surrounding 
+# each atom is calculated and the configurations are dumped at each change in timestep. 
+# The script below is modified from LAMMPS software to provide us the required output.
+#-----------------------------------------------------------------------------------------
+# LAMMPS 64-bit 22Dec2022-MSMPI
+clear
+#log 300.out
+#-------------------- Environment Settings -----------------------------------------------
+variable       Tdesird equal  600.0 # Desired Temperature [K]
+
+variable    MSD_Nsteps equal 140000 # Number of simulation cycles (MSD)
+
+variable  Equil_Nsteps equal  10000 # Number of simulation cycles (NPT)
+
+variable        Nsteps equal 500000 # Number of simulation cycles (strain)
+
+variable      DumpFreq equal   1000 # For print out
+
+variable         dt_ps equal 0.0005 # (Note: Atoms are lost at 0.001 [ps].)
+
+#-------------------- Initialization -----------------------------------------------------
+units metal
+boundary s s p
+
+#-------------------- Atom & Lattice description ----------------------------------------
+atom_style atomic
+
+lattice hcp 3.23
+region box block 0 100 0 40 0 3
+create_box 4 box # set 4 types (Zr, Zr, Zr and H)
+
+create_atoms 1 box
+create_atoms 4 random 100 878567 box # set H 100 atoms, randomly.
+
+# define groups
+region 1 block INF INF INF   1.25 INF INF
+group lower region 1
+
+region 2 block INF INF 38.75 INF  INF INF
+group upper region 2
+
+group boundary union lower upper
+group mobile subtract all boundary
+
+set group upper type 2 # Zr
+set group lower type 3 # Zr
+
+mass 1 91.224  # Zr, center area
+mass 2 91.224  # Zr, upper area
+mass 3 91.224  # Zr, lower area
+mass 4  1.0079 # H
+
+group       zr type 1 # Zr
+group hydrogen type 4 # H
+
+# void formation 
+region vo ellipsoid 50 20 2 12 3 3
+group void region vo
+delete_atoms group void
+
+#-------------------- Force field --------------------------------------------------------
+pair_style meam
+pair_coeff * * library.meam Zr H ZrH.meam Zr Zr Zr H
+
+#-------------------- Settings -----------------------------------------------------------
+neighbor 2.0 bin
+neigh_modify delay 10 check yes
+
+#-------------------- minimization parameters --------------------------------------------
+
+#---------- output file settings -------------------------
+dump            d1 all cfg ${DumpFreq} cfg/run.*.cfg mass type xs ys zs id type vx vy vz fx fy fz
+dump_modify     d1 element Zr Zr Zr H
+#---------------------------------------------------------
+
+fix 1 all nve/limit 0.1
+minimize 1.0e-6 1.0e-6 10000 10000
+unfix 1
+
+#undump 2
+undump d1
+
+#-------------------- calculates the mean-squared displacement (MSD) ---------------------
+reset_timestep 0
+
+timestep ${dt_ps}
+
+compute 1 hydrogen msd
+compute 2 zr msd
+
+thermo ${DumpFreq}
+thermo_style custom step etotal ke temp pe press vol &
+  c_1[1] c_1[2] c_1[3] c_1[4] c_2[1] c_2[2] c_2[3] c_2[4]
+# MSD: H(x), H(y), H(z), H(total), Zr(x), Zr(y), Zr(z) and Zr(total)
+
+#---------- output file settings -------------------------
+dump            d2 all cfg ${DumpFreq} cfg/run.*.cfg mass type xs ys zs id type vx vy vz fx fy fz
+dump_modify     d2 element Zr Zr Zr H
+#---------------------------------------------------------
+
+velocity all create ${Tdesird} 4928459 rot yes dist gaussian
+
+fix 1 all nvt temp ${Tdesird} ${Tdesird} $(100*dt)
+
+run ${MSD_Nsteps}
+
+unfix 1
+
+#undump 2
+undump d2
+
+#-------------------- initial velocities and equilibration -------------------------------
+
+compute new3d mobile temp
+
+thermo 50
+thermo_modify temp new3d
+
+velocity mobile create 0.01 887723 temp new3d
+
+fix 1 all nve
+fix 2 boundary setforce NULL 0.0 NULL
+fix 3 mobile temp/rescale 10 0.01 0.01 10.0 1.0
+fix_modify 3 temp new3d
+
+run ${Equil_Nsteps}
+
+unfix 3
+
+#-------------------- Deformation --------------------------------------------------------
+reset_timestep 0
+
+neigh_modify delay 5
+
+compute new2d mobile temp/partial 1 0 1
+
+thermo ${DumpFreq}
+thermo_modify temp new2d
+
+compute p all stress/atom
+
+#---------- output file settings -------------------------
+dump            d3 all cfg ${DumpFreq} cfg/run.crack.*.cfg mass type xs ys zs id type vx vy vz fx fy fz c_p[1] c_p[2] c_p[3]
+dump_modify     d2 element Zr Zr Zr H
+#---------------------------------------------------------
+
+velocity upper set 0.0 0.8 0.0
+velocity mobile ramp vy 0.0 0.8 y 1.25 38.75 sum yes
+
+fix 3 mobile temp/rescale 10 0.01 0.01 10.0 1.0
+fix_modify 3 temp new2d
+
+run ${Nsteps}
+
+print "All done !"
+#-------------------- End ----------------------------------------------------------------

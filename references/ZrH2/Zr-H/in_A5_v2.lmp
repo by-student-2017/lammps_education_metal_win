@@ -94,7 +94,7 @@ variable  L0 equal ${tmp}
 print "Initial Length, L0: ${L0}"
 
 #-------------------- Diffuision calculation on strain -----------------------------------
-reset_timestep 0
+#reset_timestep 0
 
 # Output strain and stress info to file
 # for units metal, pressure is in [bars] = 100 [kPa] = 1/10000 [GPa]
@@ -140,24 +140,17 @@ unfix 3
 undump d1
 
 #-------------------- Diffuision calculation after strain -----------------------------------
-reset_timestep 0
+#reset_timestep 0 # Why ? (ERROR: Cannot reset timestep with time-dependent fix ave/time defined (src/update.cpp:511))
 
-#thermo 1000
-#thermo_style custom step temp pe press vol
-
-compute 10 zr msd
-compute 11 hydrogen msd com yes
-
-#velocity all create ${Tdesird} 12345 mom yes rot no
+#compute 5 zr msd
+#compute 6 hydrogen msd
 
 fix 1 all nvt temp ${Tdesird} ${Tdesird} $(100*dt)
-fix 2 hydrogen ave/time 2 1 200 c_11[1] c_11[2] c_11[3] c_11[4] file msd${Tdesird}K-3.txt
-# c_11[1], c_11[2], c_11[3], c_11[4] => MSD_H(x), MSD_H(y), MSD_H(z), MSD_H(total)
+fix 2 hydrogen ave/time 2 1 200 c_6[1] c_6[2] c_6[3] c_6[4] file msd${Tdesird}K-3.txt
+# c_6[1], c_6[2], c_6[3], c_6[4] => MSD_H(x), MSD_H(y), MSD_H(z), MSD_H(total)
+
 
 run ${Nsteps}
-
-unfix 1
-unfix 2
 
 print "All done !"
 #-------------------- End ----------------------------------------------------------------

@@ -1,7 +1,7 @@
 #8. Crack Interface folder contains calculations for MEAM as discussed in Chapter 8
 #Methodology
 # Interface (0001) alpha-Zr // {111} delta-ZrH1.5 is created using FORTRAN programming language. 
-# The distance at the interface is similar to the distance of zirconium along ‘c’ directions. 
+# The distance at the interface is similar to the distance of zirconium along c directions. 
 # Interface is tested for stability and minimized energy. The following script calculates lattice 
 # parameters and cohesive energies. The structure is then equilibrated at various temperatures 
 # and a constant strain rate is applied on Interface to study crack initiation.
@@ -9,8 +9,24 @@
 # LAMMPS 64-bit 22Dec2022-MSMPI
 clear
 #log l.out
+#-------------------- Environment Settings -----------------------------------------------
+variable       Tdesird equal  800.0 # Desired Temperature [K]
+
+variable  Equil_Nsteps equal  40000 # Number of simulation cycles (NPT)
+
+variable        Nsteps equal  10000 # Number of simulation cycles (strain)
+
+variable      DumpFreq equal   1000 # For print out
+
+variable         dt_ps equal 0.0005 # (Note: Atoms are lost at 0.001 [ps].)
+
+variable  es_rate equal   0.05 # engineering strain rate (1/time units)
+# Note: es_rate/dt_ps = 0.05 / (1e-15) = 5.0e13 [1/s]
+# L(t) = L(0)*(1 + es_rate*dt*step)
+# strain [%] = es_rate*dt*Nstep*100 [%] = 0.05 * 0.0005 * 10000 * 100 = 25 [%]
 #-------------------- Initialization -----------------------------------------------------
 units metal
+dimension 3
 boundary p p p
 
 #-------------------- Atom & Lattice description ----------------------------------------
@@ -68,7 +84,7 @@ neigh_modify delay 10 check yes
 compute    eng all pe/atom
 compute eatoms all reduce sum c_eng
 
-thermo 100
+thermo ${DumpFreq}
 thermo_style custom step pe lx ly lz press pxx pyy pzz c_eatoms 
 
 #-------------------- Energy Minimization ------------------------------------------------
@@ -85,9 +101,10 @@ minimize 1.0e-6 1.0e-6 10000 10000
 unfix 1
 
 variable natoms equal "count(all)"
-variable   teng equal "c_eatoms"
-variable length equal "lx"
-variable   ecoh equal "v_teng/v_natoms"
+variable   teng equal c_eatoms
+variable length equal lx
+variable natoms equal atoms
+variable   ecoh equal v_teng/v_natoms
 
 print "Total energy (eV) = ${teng};"
 print "Number of atoms = ${natoms};"
@@ -98,21 +115,21 @@ print "Cohesive energy (eV) = ${ecoh};"
 #-------------------- EQUILIBRATION ------------------------------------------------------
 reset_timestep 0
 
-timestep 0.0001 # 0.1 [fs]
+timestep ${dt_ps}
 
-thermo 1000
+thermo ${DumpFreq}
 thermo_style custom step lx ly lz press pxx pyy pzz pe temp vol ke etotal 
 
 #---------------------------------------------------
-dump            d1 all cfg 1000 cfg/run.relax.*.cfg mass type xs ys zs id type vx vy vz fx fy fz
+dump            d1 all cfg ${DumpFreq} cfg/run.relax.*.cfg mass type xs ys zs id type vx vy vz fx fy fz
 dump_modify     d1 element Zr H
 #---------------------------------------------------
 
-velocity all create 800 12345 mom yes rot no
+velocity all create ${Tdesird} 12345 mom yes rot no
 
-fix 1 all npt temp 800 800 1 aniso 0 0 1 drag 0.5 
+fix 1 all npt temp ${Tdesird} ${Tdesird} $(100*dt) aniso 0 0 $(1000*dt) drag 0.5 
 
-run 60000
+run ${Equil_Nsteps}
 
 unfix 1
 
@@ -120,8 +137,6 @@ undump d1
 
 #-------------------- Store final cell length for strain calculations ---------------------
 reset_timestep 0
-
-timestep 0.0001 # 0.1 [fs]
 
 variable tmp equal "lx"
 variable  L0 equal ${tmp}
@@ -136,25 +151,29 @@ variable p1 equal "-pxx/10000"
 variable p2 equal "-pyy/10000"
 variable p3 equal "-pzz/10000"
 
-thermo 1000
+thermo ${DumpFreq}
 thermo_style custom step v_strain temp v_p1 v_p2 v_p3 ke pe press vol
 
+compute 1 all stress/atom NULL  # computes the symmetric per-atom stress tensor for each atom in a group.
+compute 2 all temp              # computes the temp of a group of atoms
+compute 3 all reduce sum c_1[1] # reduces vector quantities of all stress tensors in z-direction and adds all the quantities to a single scalar value
+compute kea all ke/atom         # This is related to temperature
+
+variable stress     equal c_3/vol        # assigns a value to the variable name stress
+variable stress_GPa equal v_stress/10000 # converts the stress calculated to GPa
+
 #---------- output file settings -------------------
-#dump 4 all custom 1000 Interface.dump id type xu yu zu ix iy iz
-#dump_modify 4 every 10000
+fix fo1 all ave/time 1 3 3 c_2 v_strain v_stress v_stress_GPa v_p1 file stress_vs_strain.txt
 #---------------------------------------------------
-dump            d2 all cfg 1000 cfg/run.strain.*.cfg mass type xs ys zs id type vx vy vz fx fy fz
+dump            d2 all cfg ${DumpFreq} cfg/run.strain.*.cfg mass type xs ys zs id type vx vy vz fx fy fz c_kea
 dump_modify     d2 element Zr H
 #---------------------------------------------------
 
-variable  srate equal 5.0e10
-variable srate1 equal "v_srate / 1.0e12"
-
 #-------------------- Run the simulation -------------------------------------------------
-fix 1 all deform 1 x erate ${srate1} units box remap x
-fix 2 all npt temp 800 800 1 y 0 0 1 z 0 0 1 drag 1
+fix 1 all deform 1 x erate ${es_rate} units box remap x
+fix 2 all npt temp ${Tdesird} ${Tdesird} $(100*dt) y 0 0 $(1000*dt) z 0 0 $(1000*dt) drag 1
 
-run 300000 
+run ${Nsteps}
 
 print "All done !"
 #-------------------- End ----------------------------------------------------------------
