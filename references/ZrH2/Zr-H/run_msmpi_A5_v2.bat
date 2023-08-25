@@ -7,6 +7,8 @@ for %%1 in (in_A5_v2.lmp) do (
   echo input file: %%1
 )
 
+plot_stress_vs_strain_v2.gpl
+
 plot_msd_step5_total.gpl
 
 pause

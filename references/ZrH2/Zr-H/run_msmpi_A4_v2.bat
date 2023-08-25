@@ -9,4 +9,6 @@ for %%1 in (in_A4_v2.lmp) do (
 
 plot_msd_step4_total.gpl
 
+call plot_rdf.bat
+
 pause
