@@ -2,8 +2,8 @@ set ncore=4
 
 rem mkdir cfg
 
-for %%1 in (emin-ntf2_viscosity.in) do (
-  "C:\Program Files\Microsoft MPI\Bin\mpiexec.exe" -np %ncore% "C:\Program Files\LAMMPS 64-bit 22Dec2022-MSMPI\bin\lmp.exe" -in %%1 -log emim-ntf2-1.log
+for %%1 in (emim-ntf2_viscosity.in) do (
+  "C:\Program Files\Microsoft MPI\Bin\mpiexec.exe" -np %ncore% "C:\Program Files\LAMMPS 64-bit 22Dec2022-MSMPI\bin\lmp.exe" -in %%1 -log emim-ntf2_viscosity.log
   echo input file: %%1
 )
 
