@@ -6,7 +6,7 @@
 # The script equilibrates and calculates the mean square displacement at desired temperatures. 
 # Timestep of 0.0005 psec is used. MSD without drifts (drifts in center of mass) are 
 # removed and displacement along 3 directions are dumped in file 500.txt.Maximum runs are done for 
-# 40000 psec to test the variation in slopes. Average RDF calculations are done on 
+# 80000 psec to test the variation in slopes. Average RDF calculations are done on 
 # zirconium to test the structure.
 #-----------------------------------------------------------------------------------------
 # LAMMPS 64-bit 22Dec2022-MSMPI
@@ -15,9 +15,9 @@ clear
 #-------------------- Environment Settings -----------------------------------------------
 variable      Tdesird equal  500.0 # Desired Temperature [K]
 
-variable Equil_Nsteps equal  20000 # Number of simulation cycles (NPT)
+variable Equil_Nsteps equal  40000 # Number of simulation cycles (NPT)
 
-variable       Nsteps equal  40000 # Number of simulation cycles (MSD)
+variable       Nsteps equal  80000 # Number of simulation cycles (MSD)
 
 variable     DumpFreq equal   1000 # For print out
 
@@ -98,7 +98,7 @@ compute 5 zr msd
 compute 6 hydrogen msd com yes
 
 fix 1 all nvt temp ${Tdesird} ${Tdesird} $(100*dt)
-fix 3 hydrogen ave/time 1 1 100 c_6[1] c_6[2] c_6[3] c_6[4] c_5[4] file msd${Tdesird}K.txt
+fix 3 hydrogen ave/time 2 1 200 c_6[1] c_6[2] c_6[3] c_6[4] c_5[4] file msd${Tdesird}K.txt
 # c_6[1], c_6[2], c_6[3], c_6[4], c_5[4] => MSD_H(x), MSD_H(y), MSD_H(z), MSD_H(total), MSD_Zr(total)
 
 run ${Nsteps}
