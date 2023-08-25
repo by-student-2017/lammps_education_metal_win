@@ -97,7 +97,57 @@ displace_atoms gfeco_region move 0 0 0 units lattice
 displace_atoms gfemn_region move 0 0 0 units lattice 
 delete_atoms overlap 0.35 all all
 
-#-------------------- Settings -----------------------------------------------------------
+#-------------------- Settings 1 -----------------------------------------------------------
+
+#Creating regions to replace with Ni, etc
+#-------------------------------------
+region g1 block   0  1 INF INF INF INF units box # upper side
+region g2 block  -1  0 INF INF INF INF units box # lower side
+#-------------------------------------
+
+#Removing atoms (region 1 and 2 block) and adding Ni atoms (type 2)
+#-------------------------------------
+delete_atoms region g1
+create_atoms 2 random 100 698317 g1 # <= Please, e.g., set number of atoms of (liquid density * grain boundary(region 1 and 2 block))
+#-------------------------------------
+delete_atoms region g2
+create_atoms 2 random 100 612317 g2 # <= Please, e.g., set number of atoms of (liquid density * grain boundary(region 1 and 2 block))
+#-------------------------------------
+# Note: create_atoms type random  N(atoms) sedd region-ID
+
+# Displace atoms
+#-------------------------------------
+displace_atoms gupper move 0 0 0 units lattice 
+displace_atoms glower move 0 0 0 units lattice 
+#-------------------------------------
+
+# Delete overlapping atoms
+#-------------------------------------
+delete_atoms overlap 0.35 glower gupper # or delete_atoms overlap 0.35 all all
+#-------------------------------------
+
+# creates vertical defect
+#-------------------------------------
+#region dislocation block 19 20 15 35 24.4 25.4 units box
+#group 5 region dislocation # creates a vertical defect
+#delete_atoms group 5 
+#-------------------------------------
+
+# creates horizontal defect
+#-------------------------------------
+#region dislocation block 18 20 23 25 10 30 units box
+#group 5 region dislocation 
+#delete_atoms group 5
+#-------------------------------------
+
+# void formation (r = 10 Angstrom) (cylinder dim c1 c2 radius lo hi)
+#-------------------------------------
+#region vo cylinder z 0 15 10 INF INF units box
+#group void region vo
+#delete_atoms group void
+#-------------------------------------
+
+#-------------------- Settings 2 -----------------------------------------------------------
 neighbor 2.0 bin
 neigh_modify delay 0 every 10 check yes
 
