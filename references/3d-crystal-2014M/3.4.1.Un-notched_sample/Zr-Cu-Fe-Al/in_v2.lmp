@@ -1,0 +1,68 @@
+# Input file for obtaining equilibrated 3D-crystal lattice of Un-notched sample using LAMMPS:
+# This program is for obtaining 3d-crystal lattice
+# Un-Notched: 50 x 100 x 50, 21952 atoms
+
+#-------------------- Initialization -----------------------------------------------------
+clear 
+echo both        # echoes each input script command to both log file and screen
+units metal      # determines units of all quantities used in the input file 
+dimension 3
+boundary p p p   # periodic boundary condition
+
+#-------------------- Atom & Lattice description ----------------------------------------
+atom_style atomic 
+
+region box block 0 50 0 100 0 50 units box # defines a geometric region of space
+create_box 4 box # creates a simulation box in the specified region
+
+lattice fcc 3.61 # lattice type and lattice parameter
+
+region cu block 0 50 0 100 0 50 units box
+create_atoms 2 region cu units box # creates copper atoms in the simulation box
+
+# creating composition by using set command for Zr0.58-Cu0.22-Fe0.08-Al0.12 alloy 
+set region cu type/fraction 1 0.58 12393 # set Zr 58.0%, randomly
+set region cu type/fraction 3 0.08 12393 # set Fe  8.0%, randomly
+set region cu type/fraction 4 0.12 12393 # set Al 12.0%, randomly
+
+#-------------------- Force field --------------------------------------------------------
+pair_style eam/alloy
+pair_coeff * * ZrAlCuFeCoTi_Zhou04.eam.alloy Zr Cu Fe Al
+
+#-------------------- Energy Minimization ------------------------------------------------
+# 0 [K], structure optimization
+#minimize 1.0e-7 1.0e-8 1000 1000
+
+#-------------------- Settings -----------------------------------------------------------
+reset_timestep 0
+
+timestep 0.002 # 2 [fs], sets the timestep for subsequent simulations
+
+thermo 100 # computes and prints thermodynamic 
+thermo_style custom step temp vol press etotal # specifies content of thermodynamic data to be printed in screen
+
+#---------- output file settings ---------- 
+#dump 1 all atom 10 Cu_crystal_melt_3d_s_dump_new.lammpstrj # dumps a snapshot of atom quantities every 10 time steps to the specified file
+#dump_modify 1 scale no # modifies parameters of previously defined dump command.
+## A value of scale no means atom coordinates are written in absolute distance units. 
+#---------------------------------------------------
+dump            d1 all cfg 10 cfg/run.*.cfg mass type xs ys zs id type vx vy vz fx fy fz
+dump_modify     d1 element Zr Cu Fe Al
+#---------------------------------------------------
+#log logCu_crystal_melt_3d_s_new.data # closes the current log file, opens a new log file, and begins logging information to it 
+
+# calculates the radial distribution function (RDF) and output file
+compute myRDF all rdf 100
+fix 11 all ave/time 1 1 100 c_myRDF[*] file data.rdf mode vector
+
+velocity all create 300 873847 rot yes mom yes dist gaussian # sets the velocity of a group of atoms
+
+#-------------------- Run the simulation -------------------------------------------------
+fix 1 all npt temp 100 100 0.1 iso 0 0 0.1 # temp and pressure conserved
+run 1000 # program is run for 1000 iterations
+unfix 1  # deletes the previously defined fix 1
+
+#-------------------- Output data file ---------------------------------------------------
+write_data Test.dat
+
+#-------------------- End ----------------------------------------------------------------
