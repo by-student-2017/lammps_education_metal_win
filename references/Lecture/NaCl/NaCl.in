@@ -1,0 +1,62 @@
+units             real
+pair_style        born/coul/long 10
+kspace_style      ewald 1.0e-5
+atom_style        charge
+read_data         NaCl.data 
+replicate         4 4 4
+group             Na type 1
+group             Cl type 2
+thermo	          100
+thermo_style      custom step temp etotal press vol density
+variable          dt equal 2.0
+variable          title format dt "#dt=%.8gfs;"
+timestep          ${dt}
+
+# 300 K equilibrium
+variable          T equal 300
+velocity          all create ${T} 777
+fix	          1 all npt temp ${T} ${T} 100 iso 1 1 1000
+dump              1 all custom 10 NaCl.lammpstrj id type element x y z
+dump_modify       1 element Na Cl sort id
+run               1000
+
+# 300 K sampling
+compute           1 Na msd 
+compute           2 Cl msd 
+compute           3 all rdf 200 1 2
+fix               2 all ave/time 1 1 5 c_1[*] &
+                    file Na_${T}K.msd title1 ${title}
+fix               3 all ave/time 1 1 5 c_2[*] &
+                    file Cl_${T}K.msd title1 ${title}
+fix               4 all ave/time 1 100 100 c_3[*] &
+                    file NaCl_${T}K.gr mode vector title1 "#PAIRS=Na-Cl"
+run               10000
+
+uncompute         1
+uncompute         2
+uncompute         3
+unfix             2
+unfix             3
+unfix             4
+
+# build melt structure
+# 2000K->1200K	  
+variable          T equal 1200
+fix	          1 all npt temp 2000 2000 100 iso 1 1 1000
+run               1000
+fix	          1 all npt temp 2000 ${T} 100 iso 1 1 1000
+run               1000
+# 1200K		  
+fix	          1 all npt temp ${T} ${T} 100 iso 1 1 1000
+run               1000
+compute           1 Na msd 
+compute           2 Cl msd 
+compute           3 all rdf 200 1 2
+fix               2 all ave/time 1 1 5 c_1[*] &
+                    file Na_${T}K.msd title1 ${title}
+fix               3 all ave/time 1 1 5 c_2[*] &
+                    file Cl_${T}K.msd title1 ${title}
+fix               4 all ave/time 1 100 100 c_3[*] &
+                    file NaCl_${T}K.gr mode vector title1 "#PAIRS=Na-Cl"
+run               10000
+write_data        NaCl_1200K.data pair ij

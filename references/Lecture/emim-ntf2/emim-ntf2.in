@@ -1,0 +1,40 @@
+# 27c2c1im-27ntf2
+units             real
+atom_style        full
+pair_style        lj/cut/coul/long 12.0 12.0
+pair_modify       mix geometric tail yes
+kspace_style      ewald 1.0e-5
+variable          T equal 300
+
+special_bonds     lj/coul 0.0 0.0 0.5
+bond_style        harmonic
+angle_style       harmonic
+dihedral_style    opls
+improper_style    cvff
+read_data         emim-ntf2.data
+
+thermo            100
+thermo_style      custom step temp etotal press vol density
+
+timestep          1.0
+velocity          all create 2000 777
+
+dump              1 all custom 100 emim-ntf2.lammpstrj &
+                  id mol type element x y z
+dump_modify       1 element C C C C H H H H N C F N O S sort id
+
+fix               SHAKE all shake 0.0001 20 0 b 1 5 7
+fix               DEFORM all deform 1 &
+                  x scale 0.5000 y scale 0.5000 z scale 0.5000
+fix               1 all nvt temp 2000 2000 100
+run               3000
+unfix             DEFORM
+
+kspace_style      pppm 1.0e-5
+run               3000
+fix               1 all nvt temp 2000 ${T} 10
+run               3000
+unfix             1
+fix               1 all npt temp ${T} ${T} 100 iso 1 1 1000
+run               10000
+write_data        emim-ntf2_eq.data

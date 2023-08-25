@@ -1,0 +1,76 @@
+# Ionic liquid system: [imidazorium][tf2N-], viscosity calculation
+units             real
+atom_style        full
+pair_style        lj/cut/coul/long 12.0 12.0
+pair_modify       mix geometric tail yes
+kspace_style      pppm 1.0e-5
+special_bonds     lj/coul 0.0 0.0 0.5
+bond_style        harmonic
+angle_style       harmonic
+dihedral_style    opls
+improper_style    cvff
+read_data         emim-ntf2_eq.data
+
+variable          T equal 300
+variable          V equal vol
+variable          dt equal 2
+variable          DT_ format dt "dt=%.8gfs"
+variable          T_ format T   "T=%.8gK"
+variable          V_ format V   "V=%.8gAng3"
+variable          title string  "#${DT_};${T_};${V_};[Eta_calc.]"
+
+thermo            100
+thermo_style      custom step temp etotal press vol density
+timestep          ${dt}
+
+fix               SHAKE all shake 0.0001 20 0 b 1 5 7
+#  to calculate cell size, 300 K NPT run
+variable          T equal 300
+variable          xlo_ equal xlo
+variable          xhi_ equal xhi
+variable          ylo_ equal ylo
+variable          yhi_ equal yhi
+variable          zlo_ equal zlo
+variable          zhi_ equal zhi
+fix	          1 all npt temp ${T} ${T} 100 iso 1 1 1000
+fix               xlo all ave/time 1 50000 50000 v_xlo_
+fix               xhi all ave/time 1 50000 50000 v_xhi_
+fix               ylo all ave/time 1 50000 50000 v_ylo_
+fix               yhi all ave/time 1 50000 50000 v_yhi_
+fix               zlo all ave/time 1 50000 50000 v_zlo_
+fix               zhi all ave/time 1 50000 50000 v_zhi_
+run               50000
+# set equilibrium cell size
+unfix             1
+variable          xlo_ equal f_xlo
+variable          xhi_ equal f_xhi
+variable          ylo_ equal f_ylo
+variable          yhi_ equal f_yhi
+variable          zlo_ equal f_zlo
+variable          zhi_ equal f_zhi
+
+fix               1 all deform 1 &
+                    x final ${xlo_} ${xhi_} &
+                    y final ${ylo_} ${yhi_} &
+                    z final ${zlo_} ${zhi_}
+
+unfix             xlo
+unfix             xhi
+unfix             ylo
+unfix             yhi
+unfix             zlo
+unfix             zhi
+fix               2 all nvt temp ${T} ${T} 100
+run 	          50000
+
+# equilibrium under NVT
+unfix             1
+run               50000
+
+# viscosity calculation for 10 ns
+variable          pxy equal pxy
+variable          pxz equal pxz
+variable          pyz equal pyz
+fix               3 all print 1000 "$(step) ${pxy} ${pxz} ${pyz}" &
+                  title ${title} screen no file emim-ntf2.flux
+run               50000000

@@ -1,0 +1,37 @@
+variable        T equal 1200       # temperature
+variable        dt equal 2         # timestep
+variable        V  equal vol       # volume
+
+units           real
+pair_style      born/coul/long 10
+kspace_style    ewald 1.0e-5
+
+atom_style      charge
+read_data       NaCl_${T}K.data
+
+thermo	        100
+thermo_style    custom step temp etotal press vol density
+
+# make title header in flux output file
+variable        dt_ format dt "dt=%.8gfs"
+variable        T_ format T   "T=%.8gK"
+variable        V_ format V   "V=%.8gAng3"
+variable        title string  "#${dt_};${T_};${V_};[Kappa_calc.]"
+
+timestep        ${dt}
+velocity        all scale ${T}
+fix             1 all nve
+
+# compute energy flux
+compute         myKE all ke/atom
+compute         myPE all pe/atom
+compute         myStress all stress/atom NULL virial
+compute         flux all heat/flux myKE myPE myStress
+variable        Jx equal c_flux[1]/$V
+variable        Jy equal c_flux[2]/$V
+variable        Jz equal c_flux[3]/$V
+
+# save flux data every step
+fix             2 all print 1 "$(step) ${Jx} ${Jy} ${Jz}" &
+                title ${title} screen no file NaCl_${T}K.flux
+run             10000

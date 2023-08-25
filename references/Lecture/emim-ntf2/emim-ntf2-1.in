@@ -1,0 +1,37 @@
+# Ionic liquid system: [imidazorium][tf2N-], msd and G(r) calculation
+units             real
+atom_style        full
+pair_style        lj/cut/coul/long 12.0 12.0
+pair_modify       mix geometric tail yes
+kspace_style      pppm 1.0e-5
+special_bonds     lj/coul 0.0 0.0 0.5
+bond_style        harmonic
+angle_style       harmonic
+dihedral_style    opls
+improper_style    cvff
+read_data         emim-ntf2_eq.data
+
+variable          T equal 300
+
+thermo            100
+thermo_style      custom step temp etotal press vol density
+timestep          2.0
+
+group             CR type 3  # CR in emim
+group             CT type 1  # CT in emim
+group             F type 11  # F  in tf2N
+
+# 300 K
+compute           1 CR msd 
+compute           2 F msd
+compute           3 all rdf 600 3 11 1 11
+fix               SHAKE all shake 0.0001 20 0 b 1 5 7
+fix               1 all npt temp ${T} ${T} 100 iso 1 1 100
+
+fix               2 all ave/time 1 1 50 c_1[*] &
+                    file CR_${T}K.msd title1 "#dt=2.0fs"
+fix               3 all ave/time 1 1 50 c_2[*] &
+		    file F_${T}K.msd title1 "#dt=2.0fs"
+fix               4 all ave/time 1 1000 1000 c_3[*] &
+                    file CR-F,CT-F.gr mode vector title1 "#PAIRS=CR-F,CT-F"
+run               50000
