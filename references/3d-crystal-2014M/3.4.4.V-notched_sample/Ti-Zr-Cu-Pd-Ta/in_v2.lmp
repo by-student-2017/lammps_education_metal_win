@@ -12,22 +12,67 @@ boundary p p p   # periodic boundary condition
 #-------------------- Atom & Lattice description ----------------------------------------
 atom_style atomic 
 
-region box block 0 50 0 100 0 50 units box # defines a geometric region of space
-create_box 5 box # creates a simulation box in the specified region (set 5 elements (Ti, Zr, Cu, Pd and Ta))
-
-lattice fcc 3.61 # lattice type and lattice parameter
-region cu block 0 50 0 100 0 50 units box
-create_atoms 3 region cu units box # creates copper atoms in the simulation box
-
-# Composition settings (easy method)
-#--------------------------------------------------------------------------------
+# method 1 (easy method) (Deprecated: This method does not work properly for ternary systems or higher.)
+#----------------------------------------------------------------------
+#region box block 0 50 0 100 0 50 units box # defines a geometric region of space
+#create_box 5 box # creates a simulation box in the specified region (set 5 elements (Ti, Zr, Cu, Pd and Ta))
+#
+#lattice fcc 3.61 # lattice type and lattice parameter
+#region cu block 0 50 0 100 0 50 units box
+#create_atoms 1 region cu units box # creates (copper => Ti) atoms in the simulation box
+#
 # creating composition by using set command for Ti0.396-Zr0.099-Cu0.3564-Pd0.1386-Ta0.01 alloy 
-set region cu type/fraction 1 0.396  12393 # set Ti 40*(100-x)%, randomly
-set region cu type/fraction 2 0.99   12393 # set Zr 10*(100-x)%, randomly
-set region cu type/fraction 4 0.1386 12393 # set Cu 14*(100-x)%, randomly
-set region cu type/fraction 5 0.01   12393 # set Ta x=1%, randomly
+#set region cu type/fraction 2 0.099  12393 # set Zr 10*(100-x)%, randomly
+#set region cu type/fraction 3 0.3564 12393 # set Cu 36*(100-x)%, randomly
+#set region cu type/fraction 4 0.1386 12393 # set Pd 14*(100-x)%, randomly
+#set region cu type/fraction 5 0.01   12393 # set Ta x=1%, randomly
 #--------------------------------------------------------------------------------
 
+# method 2 (layer type)
+#----------------------------------------------------------------------
+lattice fcc 3.61
+region new_region block 0 50 0 100 0 50 units box 
+create_box 5 new_region # set 5 types (5 elements)
+
+# Ti (type 1) only, 20%
+region titi block 0 50  0 20  0 50 units box
+lattice fcc 3.61 orient x 1 0 0 orient y 0 1 0 orient z 0 0 1 
+create_atoms 1 region titi
+
+# Ti (type 1) main
+region tizr block 0 50 20 40  0 50 units box 
+lattice fcc 3.61 orient x 1 0 0 orient y 0 1 0 orient z 0 0 1 
+create_atoms 1 region tizr
+
+# Cu (type 2) only, 20%
+region cucu block 0 50 40 60  0 50 units box 
+lattice fcc 3.61 orient x 1 0 0 orient y 0 1 0 orient z 0 0 1 
+create_atoms 2 region cucu
+
+# Cu (type 2) main
+region cupd block 0 60 80 100 0 50 units box 
+lattice fcc 3.61 orient x 1 0 0 orient y 0 1 0 orient z 0 0 1 
+create_atoms 2 region cupd
+
+# Cu (type 2) main
+region cuta block 0 80 100 100 0 50 units box 
+lattice fcc 3.61 orient x 1 0 0 orient y 0 1 0 orient z 0 0 1 
+create_atoms 2 region cuta
+
+# creating composition by using set command for Ti0.396-Zr0.099-Cu0.3564-Pd0.1386-Ta0.01 alloy 
+set region tizr type/fraction 2 $(0.0990*5) 12393 # set Zr 10*(100-x)%, randomly
+set region cupd type/fraction 4 $(0.1386*5) 12393 # set Pd 14*(100-x)%, randomly
+set region cuta type/fraction 5 $(0.0100*5) 12393 # set Ta x=1%, randomly
+
+#group gtiti region titi
+#group gtizr region tizr
+#group gcucu region cucu
+#group gcupd region cupd
+#group gcuta region cuta
+#----------------------------------------------------------------------
+
+# delete area
+#----------------------------------------------------------------------
 region cu1 prism 30 50 40 60 0 50 20 0 0 units box # defines a geometric region of V-notch
 group crystal1 region cu1
 delete_atoms group crystal1 # creates square-notch in the simulation box
@@ -35,10 +80,22 @@ delete_atoms group crystal1 # creates square-notch in the simulation box
 region cu2 prism  0 20 40 60 0 50 -20 0 0 units box # defines a geometric region of V-notch
 group crystal2 region cu2
 delete_atoms group crystal2 # creates square-notch in the simulation box
+#----------------------------------------------------------------------
 
 #-------------------- Force field --------------------------------------------------------
 pair_style eam/alloy
 pair_coeff * * TiZrCuNiPdTaCo_Zhou04.eam.alloy Ti Zr Cu Pd Ta
+
+#-------------------- Monte Carlo swaps (method 2 case at 2300 K) ------------------------
+fix mc_ticu all atom/swap 1 1 12345 2300 ke no types 1 2
+fix mc_tizr all atom/swap 1 1 12345 2300 ke no types 1 3
+fix mc_cupd all atom/swap 1 1 12345 2300 ke no types 2 4
+fix mc_cuta all atom/swap 1 1 12345 2300 ke no types 2 5
+run 10000
+unfix mc_ticu
+unfix mc_tizr
+unfix mc_cupd
+unfix mc_cuta
 
 #-------------------- Energy Minimization ------------------------------------------------
 # 0 [K], structure optimization
