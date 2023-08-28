@@ -12,22 +12,73 @@ boundary p p p   # periodic boundary condition
 #-------------------- Atom & Lattice description ----------------------------------------
 atom_style atomic 
 
-region box block 0 50 0 100 0 50 units box # defines a geometric region of space
-create_box 4 box # creates a simulation box in the specified region
+# method 1 (easy method) (Deprecated: This method does not work properly for ternary systems or higher.)
+#----------------------------------------------------------------------
+#region box block 0 50 0 100 0 50 units box # defines a geometric region of space
+#create_box 4 box # creates a simulation box in the specified region
+#
+#lattice fcc 3.61 # lattice type and lattice parameter
+#
+#region cu block 0 50 0 100 0 50 units box
+#create_atoms 2 region cu units box # creates copper atoms in the simulation box
+#
+# creating composition by using set command for Zr0.58-Cu0.22-Fe0.08-Al0.12 alloy 
+#set region cu type/fraction 1 0.58 12393 # set Zr 58.0%, randomly
+#set region cu type/fraction 3 0.08 12393 # set Fe  8.0%, randomly
+#set region cu type/fraction 4 0.12 12393 # set Al 12.0%, randomly
+#----------------------------------------------------------------------
 
-lattice fcc 3.61 # lattice type and lattice parameter
+# method 2 (layer type)
+#----------------------------------------------------------------------
+lattice fcc 3.61
+region new_region block 0 50 0 100 0 50 units box 
+create_box 4 new_region # set 4 types (4 elements)
 
-region cu block 0 50 0 100 0 50 units box
-create_atoms 2 region cu units box # creates copper atoms in the simulation box
+# Zr (type 1) only, 25%
+region zrzr block 0 50  0 25  0 50 units box
+lattice fcc 3.61 orient x 1 0 0 orient y 0 1 0 orient z 0 0 1 
+create_atoms 1 region zrzr
+
+# Zr (type 1) main
+region zrcu block 0 50 25 50  0 50 units box 
+lattice fcc 3.61 orient x 1 0 0 orient y 0 1 0 orient z 0 0 1 
+create_atoms 1 region zrcu
+
+# Zr (type 1) main
+region zrfe block 0 50 50 75  0 50 units box 
+lattice fcc 3.61 orient x 1 0 0 orient y 0 1 0 orient z 0 0 1 
+create_atoms 1 region zrfe
+
+# Zr (type 1) main
+region zral block 0 50 75 100 0 50 units box 
+lattice fcc 3.61 orient x 1 0 0 orient y 0 1 0 orient z 0 0 1 
+create_atoms 1 region zral
 
 # creating composition by using set command for Zr0.58-Cu0.22-Fe0.08-Al0.12 alloy 
-set region cu type/fraction 1 0.58 12393 # set Zr 58.0%, randomly
-set region cu type/fraction 3 0.08 12393 # set Fe  8.0%, randomly
-set region cu type/fraction 4 0.12 12393 # set Al 12.0%, randomly
+set region zrcu type/fraction 2 $(0.22*4) 12393 # set Cu 22.0%, randomly
+set region zrfe type/fraction 3 $(0.08*4) 12393 # set Fe  8.0%, randomly
+set region zral type/fraction 4 $(0.12*4) 12393 # set Al 12.0%, randomly
+
+#group gzrzr region zrzr
+#group gzrcu region zrcu
+#group gzrfe region zrfe
+#group gzral region zral
+#----------------------------------------------------------------------
 
 #-------------------- Force field --------------------------------------------------------
 pair_style eam/alloy
 pair_coeff * * ZrAlCuFeCoTi_Zhou04.eam.alloy Zr Cu Fe Al
+
+#-------------------- Monte Carlo swaps (method 2 case at 1300 K) ------------------------
+fix mc_zrcu all atom/swap 1 1 12345 1300 ke no types 1 2
+fix mc_zrfe all atom/swap 1 1 12345 1300 ke no types 1 3
+fix mc_zral all atom/swap 1 1 12345 1300 ke no types 1 4
+run 5000
+unfix mc_zrcu
+unfix mc_zrfe
+unfix mc_zral
+
+replicate 1 1 1 # Extend to 1x1x1 cell
 
 #-------------------- Energy Minimization ------------------------------------------------
 # 0 [K], structure optimization
