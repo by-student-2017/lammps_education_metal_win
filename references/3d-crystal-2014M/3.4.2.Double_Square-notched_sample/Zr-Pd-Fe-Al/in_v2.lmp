@@ -14,18 +14,18 @@ atom_style atomic
 
 # method 1 (easy method) (Deprecated: This method does not work properly for ternary systems or higher.)
 #----------------------------------------------------------------------
-#region box block 0 50 0 100 0 50 units box # defines a geometric region of space
-#create_box 4 box # creates a simulation box in the specified region
-#
-#lattice fcc 3.61 # lattice type and lattice parameter
-#
-#region cu block 0 50 0 100 0 50 units box
-#create_atoms 1 region cu units box # creates (copper -> Zr) atoms in the simulation box
-#
+region box block 0 50 0 100 0 50 units box # defines a geometric region of space
+create_box 4 box # creates a simulation box in the specified region
+
+lattice fcc 3.61 # lattice type and lattice parameter
+
+region cu block 0 50 0 100 0 50 units box
+create_atoms 1 region cu units box # creates (copper -> Zr) atoms in the simulation box
+
 # creating composition by using set command for Zr0.65-Pd0.175-Fe0.10-Al0.075 alloy 
-#set region cu type/fraction 2 0.175 12393 # set Pd 17.5%, randomly
-#set region cu type/fraction 3 0.100 12393 # set Fe 10.0%, randomly
-#set region cu type/fraction 4 0.075 12393 # set Al  7.5%, randomly
+set region cu type/fraction 2 0.175 12393 # set Pd 17.5%, randomly
+set region cu type/fraction 3 0.100 12393 # set Fe 10.0%, randomly
+set region cu type/fraction 4 0.075 12393 # set Al  7.5%, randomly
 #----------------------------------------------------------------------
 
 # method 2 (layer type)
@@ -122,6 +122,48 @@ velocity all create 300 873847 rot yes mom yes dist gaussian # sets the velocity
 fix 1 all npt temp 100 100 0.1 iso 0 0 0.1 # temp and pressure conserved
 run 1000 # program is run for 1000 iterations
 unfix 1  # the previously defined fix 1
+
+#--------------------------------------------------------------------------------
+# Since random numbers are used for arrangement, the composition ratio is #
+# slightly different from the specified ratio. Under the conditions calculated this time, 
+# the composition ratio is as follows. Also keep in mind that this value will change 
+# if you change the random number seed.
+#--------------------------------------------------------------------------------
+group zr type 1
+group pd type 2
+group fe type 3
+group al type 4
+#----------------------------
+variable  nzr equal count(zr)
+variable  npd equal count(pd)
+variable  nfe equal count(fe)
+variable  nal equal count(al)
+#----------------------------
+variable ntot equal ${nzr}+${npd}+${nfe}+${nal}
+#----------------------------
+variable nnzr equal ${nzr}/${ntot}
+variable nnpd equal ${npd}/${ntot}
+variable nnfe equal ${nfe}/${ntot}
+variable nnal equal ${nal}/${ntot}
+#-----------------------------
+variable snnzr format nnzr %05.3f
+variable snnpd format nnpd %05.3f
+variable snnfe format nnfe %05.3f
+variable snnal format nnal %05.3f
+#----------------------------
+variable pnzr equal ${nzr}/${ntot}*100
+variable pnpd equal ${npd}/${ntot}*100
+variable pnfe equal ${nfe}/${ntot}*100
+variable pnal equal ${nal}/${ntot}*100
+#-----------------------------
+variable spnzr format pnzr %4.1f
+variable spnpd format pnpd %4.1f
+variable spnfe format pnfe %4.1f
+variable spnal format pnal %4.1f
+#--------------------------------------------------------------------------------
+print "Zr: ${snnzr}, Pd: ${snnpd}, Fe: ${snnfe}, Al: ${snnal} [ratio]"
+print "Zr: ${spnzr}, Pd: ${spnpd}, Fe: ${spnfe}, Al: ${spnal} [%]"
+#--------------------------------------------------------------------------------
 
 #-------------------- Output data file ---------------------------------------------------
 write_data Test.dat

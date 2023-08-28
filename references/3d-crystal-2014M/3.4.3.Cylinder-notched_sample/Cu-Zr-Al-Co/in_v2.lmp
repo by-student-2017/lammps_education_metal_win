@@ -12,22 +12,60 @@ boundary p p p   # periodic boundary condition
 #-------------------- Atom & Lattice description ----------------------------------------
 atom_style atomic 
 
+# method 1 (easy method) (Deprecated: This method does not work properly for ternary systems or higher.)
+#----------------------------------------------------------------------
 region box block 0 50 0 100 0 50 units box # defines a geometric region of space
-create_box 4 box # creates a simulation box in the specified region (set 4 elements (Cu, Zr, Al and Co))
+create_box 4 box # creates a simulation box in the specified region
 
 lattice fcc 3.61 # lattice type and lattice parameter
 region cu block 0 50 0 100 0 50 units box
 create_atoms 1 region cu units box # creates copper atoms in the simulation box
 
-# Composition settings (easy method)
-#--------------------------------------------------------------------------------
 # creating composition by using set command for Cu0.0625-Zr0.5625-Al0.1875-Co0.1875 alloy 
 set region cu type/fraction 2 0.5625 12393 # set Zr 56.25%, randomly
 set region cu type/fraction 3 0.1875 12393 # set Al 18.75%, randomly
 set region cu type/fraction 4 0.1875 12393 # set Co 18.75%, randomly
-#--------------------------------------------------------------------------------
+#----------------------------------------------------------------------
 
-#region cu1 cylinder x 50 40 10 0 50 units box # defines a geometric region of Cylinder-notch
+# method 2 (layer type)
+#----------------------------------------------------------------------
+lattice fcc 3.61
+region new_region block 0 50 0 100 0 50 units box 
+create_box 4 new_region # set 4 types (4 elements)
+
+# Zr (type 1) only, 25%
+region zrzr block 0 50  0 25  0 50 units box
+lattice fcc 3.61 orient x 1 0 0 orient y 0 1 0 orient z 0 0 1 
+create_atoms 1 region zrzr
+
+# Zr (type 1) main
+region zrcu block 0 50 25 50  0 50 units box 
+lattice fcc 3.61 orient x 1 0 0 orient y 0 1 0 orient z 0 0 1 
+create_atoms 1 region zrcu
+
+# Zr (type 1) main
+region zral block 0 50 50 75  0 50 units box 
+lattice fcc 3.61 orient x 1 0 0 orient y 0 1 0 orient z 0 0 1 
+create_atoms 1 region zral
+
+# Zr (type 1) main
+region zrco block 0 50 75 100 0 50 units box 
+lattice fcc 3.61 orient x 1 0 0 orient y 0 1 0 orient z 0 0 1 
+create_atoms 1 region zrco
+
+# creating composition by using set command for Cu0.0625-Zr0.5625-Al0.1875-Co0.1875 alloy 
+set region zrcu type/fraction 2 $(0.0625*4) 12393 # set Cu  6.25%, randomly
+set region zral type/fraction 3 $(0.1875*4) 12393 # set Al 18.75%, randomly
+set region zrco type/fraction 4 $(0.1875*4) 12393 # set Co 18.75%, randomly
+
+#group gzrzr region zrzr
+#group gzrcu region zrcu
+#group gzral region zral
+#group gzrco region zrco
+#----------------------------------------------------------------------
+
+# delete area
+#----------------------------------------------------------------------
 region cu1 cylinder z 50 50 10 0 50 units box # defines a geometric region of Cylinder-notch
 group crystal1 region cu1
 delete_atoms group crystal1 # creates square-notch in the simulation box
@@ -35,10 +73,11 @@ delete_atoms group crystal1 # creates square-notch in the simulation box
 region cu2 cylinder z  0 50 10 0 50 units box # defines a geometric region of Cylinder-notch
 group crystal2 region cu2
 delete_atoms group crystal2 # creates square-notch in the simulation box
+#----------------------------------------------------------------------
 
 #-------------------- Force field --------------------------------------------------------
 pair_style eam/alloy
-pair_coeff * * CuZrAlNiCoPdAg_Zhou04.eam.alloy Cu Zr Al Co
+pair_coeff * * CuZrAlNiCoPdAg_Zhou04.eam.alloy Zr Cu Al Co
 
 #-------------------- Energy Minimization ------------------------------------------------
 # 0 [K], structure optimization
@@ -58,12 +97,12 @@ thermo_style custom step temp vol press etotal # specifies content of thermodyna
 ## A value of scale no means atom coordinates are written in absolute distance units. 
 #---------------------------------------------------
 dump            d1 all cfg 10 cfg/run.*.cfg mass type xs ys zs id type vx vy vz fx fy fz
-dump_modify     d1 element Cu Zr Al Co
+dump_modify     d1 element Zr Cu Al Co
 #---------------------------------------------------
 #log logCu_crystal_melt_3d_s_new.data # closes the current log file, opens a new log file, and begins logging information to it
 
 # calculates the radial distribution function (RDF) and output file
-compute myRDF all rdf 100
+compute myRDF all rdf 1000
 fix 11 all ave/time 1 1 100 c_myRDF[*] file data.rdf mode vector
 
 velocity all create 300 873847 rot yes mom yes dist gaussian # sets the velocity of a group of atoms
@@ -72,6 +111,48 @@ velocity all create 300 873847 rot yes mom yes dist gaussian # sets the velocity
 fix 1 all npt temp 100 100 0.1 iso 0 0 0.1 # temp and pressure conserve
 run 1000 # program is run for 1000 iterations
 unfix 1  # deletes the previously defined fix 1
+
+#--------------------------------------------------------------------------------
+# Since random numbers are used for arrangement, the composition ratio is #
+# slightly different from the specified ratio. Under the conditions calculated this time, 
+# the composition ratio is as follows. Also keep in mind that this value will change 
+# if you change the random number seed.
+#--------------------------------------------------------------------------------
+group zr type 1
+group cu type 2
+group al type 3
+group co type 4
+#----------------------------
+variable  nzr equal count(zr)
+variable  ncu equal count(cu)
+variable  nal equal count(al)
+variable  nco equal count(co)
+#----------------------------
+variable ntot equal ${nzr}+${ncu}+${nal}+${nco}
+#----------------------------
+variable nnzr equal ${nzr}/${ntot}
+variable nncu equal ${ncu}/${ntot}
+variable nnal equal ${nal}/${ntot}
+variable nnco equal ${nco}/${ntot}
+#-----------------------------
+variable snnzr format nnzr %05.3f
+variable snncu format nncu %05.3f
+variable snnal format nnal %05.3f
+variable snnco format nnco %05.3f
+#----------------------------
+variable pnzr equal ${nzr}/${ntot}*100
+variable pncu equal ${ncu}/${ntot}*100
+variable pnal equal ${nal}/${ntot}*100
+variable pnco equal ${nco}/${ntot}*100
+#-----------------------------
+variable spnzr format pnzr %4.1f
+variable spncu format pnpd %4.1f
+variable spnal format pnfe %4.1f
+variable spnco format pnal %4.1f
+#--------------------------------------------------------------------------------
+print "Zr: ${snnzr}, Cu: ${snncu}, Al: ${snnal}, Co: ${snnco} [ratio]"
+print "Zr: ${spnzr}, Cu: ${spncu}, Al: ${spnal}, Co: ${spnco} [%]"
+#--------------------------------------------------------------------------------
 
 #-------------------- Output data file ---------------------------------------------------
 write_data Test.dat
