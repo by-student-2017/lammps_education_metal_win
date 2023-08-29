@@ -1,0 +1,220 @@
+# 4.2 Creation of Cu-Zr-Al-Ni glassy alloys
+#  4.2.1 Creation of Cu30Zr55Al10Ni5 alloy
+#(for size X=50 Angstrom, Y=100 Angstrom, Z=100 Angstrom & cooling rate 10^14 K/s)
+# LAMMPS 64-bit 22Dec2022-MSMPI
+clear
+#-------------------- Environment Settings -----------------------------------------------
+variable  Tdesird equal 2300.0 # Desired Temperature [K]
+
+variable Nsteps_h equal  10000 # Number of simulation cycles (heating process)
+variable Nsteps_a equal  20000 # Number of simulation cycles (anneling process)
+variable Nsteps_c equal  10000 # Number of simulation cycles (cooling process)
+
+variable DumpFreq equal    100 # For print out
+
+variable    dt_ps equal  0.002 # 0.002 [ps] = 2 [fs]
+
+#-------------------- Initialization -----------------------------------------------------
+echo both
+units metal
+dimension 3
+boundary p p p
+
+#-------------------- Atom & Lattice description ----------------------------------------
+atom_style atomic
+
+# method 1 (easy method) (Deprecated: This method does not work properly for ternary systems or higher.)
+#----------------------------------------------------------------------
+#region box block 0 50 0 100 0 50 units box
+#create_box 4 box # set 4 types (4 elements)
+#
+#lattice fcc 3.61
+#
+#region cu block 0 50 0 100 0 50 units box
+#
+#create_atoms 1 region cu units box
+#
+# creating composition by using set command for Ni60-Zr25-Nb10-Al5 alloy 
+#set region cu type/fraction 2 0.25 12393 # set Zr 25%, randomly
+#set region cu type/fraction 3 0.10 12393 # set Nb 10%, randomly
+#set region cu type/fraction 4 0.05 12393 # set Al  5%, randomly
+#----------------------------------------------------------------------
+
+# method 2 (layer type)
+#----------------------------------------------------------------------
+lattice fcc 3.61
+region new_region block 0 50 0 100 0 50 units box 
+create_box 4 new_region # set 4 types (4 elements)
+
+# Ni (type 1)
+region nizr1 block 0 50  0 20  0 50 units box
+lattice fcc 3.61 orient x 1 0 0 orient y 0 1 0 orient z 0 0 1 
+create_atoms 1 region nizr1
+
+# Ni (type 1)
+region nizr2 block 0 50 20 40  0 50 units box
+lattice fcc 3.61 orient x 1 0 0 orient y 0 1 0 orient z 0 0 1 
+create_atoms 1 region nizr2
+
+# Ni (type 1) main
+region nizr3 block 0 50 40 60  0 50 units box 
+lattice fcc 3.61 orient x 1 0 0 orient y 0 1 0 orient z 0 0 1 
+create_atoms 1 region nizr3
+
+# Ni (type 1) main
+region ninb block  0 50 60 80  0 50 units box 
+lattice fcc 3.61 orient x 1 0 0 orient y 0 1 0 orient z 0 0 1 
+create_atoms 1 region ninb
+
+# Ni (type 1) main
+region nial block  0 50 80 100 0 50 units box 
+lattice fcc 3.61 orient x 1 0 0 orient y 0 1 0 orient z 0 0 1 
+create_atoms 1 region nial
+
+# creating composition by using set command for Ni60-Zr25-Nb10-Al5 alloy 
+set region nizr1 type/fraction 2 $(0.10*5) 12393 # set Zr 10%, randomly
+set region nizr2 type/fraction 2 $(0.10*5) 12393 # set Zr 10%, randomly
+set region nizr3 type/fraction 2 $(0.05*5) 12393 # set Zr  5%, randomly
+set region ninb  type/fraction 3 $(0.10*5) 12393 # set Nb 10%, randomly
+set region nial  type/fraction 4 $(0.05*5) 12393 # set Al  5%, randomly
+
+#group gnizr1 region nizr1
+#group gnizr2 region nizr2
+#group gnizr3 region nizr3
+#group gninb  region ninb
+#group gnial  region nial
+#----------------------------------------------------------------------
+
+#-------------------- Force field --------------------------------------------------------
+pair_style hybrid eam/alloy eam/alloy eam/fs meam
+pair_coeff * * eam/alloy 1 ZrAlNiTiTa_Zhou04.eam.alloy          Ni   Zr   NULL Al # Ni-Zr-Al
+pair_coeff * * eam/alloy 2 Farkas_Nb-Ti-Al_1996.eam.alloy       NULL NULL Nb   Al # Al-Nb
+pair_coeff * * eam/fs      v1_18_NiNb_B2.eam.fs                 Ni   NULL Nb NULL # Ni-Nb
+pair_coeff * * meam library.meam Hf Nb Ta Ti Zr HfNbTaTiZr.meam NULL Zr   Nb NULL # Zr-Nb
+
+#-------------------- Monte Carlo swaps (method 2 case at 2300 K) ------------------------
+fix mc_nizr all atom/swap 1 1 12345 2300 ke no types 1 2
+fix mc_ninb all atom/swap 1 1 12345 2300 ke no types 1 3
+fix mc_nial all atom/swap 1 1 12345 2300 ke no types 1 4
+run 10000
+unfix mc_nizr
+unfix mc_ninb
+unfix mc_nial
+
+replicate 1 1 1 # Extend to 1x1x1 cell
+
+#-------------------- Energy Minimization ------------------------------------------------
+# 0 [K], structure optimization
+minimize 1.0e-4 1.0e-6 10000 100000
+
+#-------------------- Settings -----------------------------------------------------------
+reset_timestep 0
+
+timestep ${dt_ps}
+
+thermo ${DumpFreq}
+thermo_style custom step temp vol press etotal
+
+velocity all create 300.0 873847 rot yes mom yes dist gaussian
+
+# calculates the radial distribution function (RDF) and output file
+compute myRDF all rdf 1000
+fix 11 all ave/time 1000 1 1000 c_myRDF[*] file CuZrAlNi.rdf mode vector
+
+#-------------------- Run the simulation -------------------------------------------------
+# Heat treatment
+
+# heating proces
+#---------------------------------------------------------
+dump            d2 all cfg ${DumpFreq} cfg/run.*.cfg mass type xs ys zs id type vx vy vz fx fy fz
+dump_modify     d2 element Ni Zr Nb Al
+#---------------------------------------------------------
+fix 2 all npt temp        300 ${Tdesird} $(100*dt) iso 0.0 0.0 $(1000*dt)
+run ${Nsteps_h}
+unfix 2
+undump d2
+
+# anneling process
+#---------------------------------------------------------
+dump            d3 all cfg ${DumpFreq} cfg/run.*.cfg mass type xs ys zs id type vx vy vz fx fy fz
+dump_modify     d3 element Ni Zr Nb Al
+#---------------------------------------------------------
+fix 3 all npt temp ${Tdesird} ${Tdesird} $(100*dt) iso 0.0 0.0 $(1000*dt)
+run ${Nsteps_a}
+unfix 3
+undump d3
+
+# cooling process
+#---------------------------------------------------------
+dump            d4 all cfg ${DumpFreq} cfg/run.*.cfg mass type xs ys zs id type vx vy vz fx fy fz
+dump_modify     d4 element Ni Zr Nb Al
+#---------------------------------------------------------
+fix 4 all npt temp ${Tdesird}        300 $(100*dt) iso 0.0 0.0 $(1000*dt)
+run ${Nsteps_c}
+unfix 4
+undump d4
+
+#--------------------------------------------------------------------------------
+# The calculation conditions for this time are as follows.
+#--------------------------------------------------------------------------------
+variable heating_rate equal "(v_Tdesird - 300) / ( v_dt_ps * v_Nsteps_h ) * 1e-2"
+print "heating rate = ${heating_rate} x 10^14 [K/s]"
+#--------------------------------------------------------------------------------
+print "anneling time = $(v_dt_ps*v_Nsteps_a) [ps]"
+#--------------------------------------------------------------------------------
+variable cooling_rate equal "(v_Tdesird - 300) / ( v_dt_ps * v_Nsteps_c ) * 1e-2"
+print "cooling rate = ${cooling_rate} x 10^14 [K/s]"
+#--------------------------------------------------------------------------------
+
+#--------------------------------------------------------------------------------
+# Since random numbers are used for arrangement, the composition ratio is #
+# slightly different from the specified ratio. Under the conditions calculated this time, 
+# the composition ratio is as follows. Also keep in mind that this value will change 
+# if you change the random number seed.
+#--------------------------------------------------------------------------------
+group ni type 1
+group zr type 2
+group nb type 3
+group al type 4
+#----------------------------
+variable  nni equal count(ni)
+variable  nzr equal count(zr)
+variable  nnb equal count(nb)
+variable  nal equal count(al)
+#----------------------------
+variable ntot equal ${nni}+${nzr}+${nnb}+${nal}
+#----------------------------
+variable nncu equal ${nni}/${ntot}
+variable nnzr equal ${nzr}/${ntot}
+variable nnal equal ${nnb}/${ntot}
+variable nnni equal ${nal}/${ntot}
+#-----------------------------
+variable snncu format nnni %05.3f
+variable snnzr format nnzr %05.3f
+variable snnal format nnnb %05.3f
+variable snnni format nnal %05.3f
+#----------------------------
+variable pncu equal ${nni}/${ntot}*100
+variable pnzr equal ${nzr}/${ntot}*100
+variable pnal equal ${nnb}/${ntot}*100
+variable pnni equal ${nal}/${ntot}*100
+#-----------------------------
+variable spncu format pnni %4.1f
+variable spnzr format pnzr %4.1f
+variable spnal format pnnb %4.1f
+variable spnni format pnal %4.1f
+#--------------------------------------------------------------------------------
+print "Ni: ${snnni}, Zr: ${snnzr}, Nb: ${snnnb}, Al: ${snnal} [ratio]"
+print "Ni: ${spnni}, Zr: ${spnzr}, Nb: ${spnnb}, Al: ${spnal} [%]"
+#--------------------------------------------------------------------------------
+
+#-------------------- Output data file ---------------------------------------------------
+write_data Ni60-Zr25-Nb10-Al5.data # output data for "4.2.1.4_Tensile_deformation"
+
+#-------------------- End ----------------------------------------------------------------
+
+#-----------------------------------------------------------------------------------------
+# Temp difference = 2300 K - 300 K = 2000 K
+# Total time taken for cooling = timestep x no of iterations in quenched step = (0.002 x 10000) ps
+# So cooling rate = 2000 K / (0.002 x 10000) ps = 10^14 K/s for the above in.file
+#-----------------------------------------------------------------------------------------
