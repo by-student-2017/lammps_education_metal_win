@@ -1,0 +1,85 @@
+#!/bin/bash
+
+echo "-----------------------------------------------------------------"
+echo "Usage: core-shell.sh X"
+echo "where X is the [atom type] you want to add shell."
+echo "-----------------------------------------------------------------"
+
+if [ -f core-shell.data ]; then
+  rm -f core-shell.data
+fi
+
+# win -> linux
+sed "s/\r//g" *.data > tmp1.data
+
+nat=`awk '{if($2=="atom" && $3=="types"){printf "%d",$1}}' tmp1.data`
+Ls=`awk '{if($1=="Atoms"){printf "%d",(NR+1)}}' tmp1.data`
+
+echo "-----------------------------------------------------------------"
+echo "number of atom types: "${nat}
+echo "Line of Atoms + 1: "${Ls}
+echo "-----------------------------------------------------------------"
+
+if ["$1" == ""]; then
+  set $1 ${nat}
+  echo "Auto set atom type making shell: "$1
+fi
+
+awk '{if($2=="atom" && $3=="types"){printf "%d atom types \n",($1+1)}else{print $0}}' tmp1.data > tmp2.data
+
+awk -v Ls=${Ls} -v cn=$1 '
+  BEGIN{ls=0}
+  {
+    if(NR>Ls){ls+=1}
+    if(NR>Ls && $2==cn){
+      printf "%d %d %4.1f %f %f %f # core  of type %d \n", ls,$2,$3,$4,$5,$6,cn
+      ls+=1
+      printf "%d %d %4.1f %f %f %f # shell of type %d \n", ls,(cn+1),$3,$4,$5,$6,cn
+    }else if(NR<=Ls){
+      print $0
+    }else{
+      printf "%d %d %4.1f %f %f %f # \n", ls,$2,$3,$4,$5,$6
+    }
+  }
+  END{printf "END_Atoms %d",ls}
+  ' tmp2.data > tmp3.data
+
+natoms=`awk '{if($1=="END_Atoms"){printf "%d",$2}}' tmp3.data`
+
+echo "-----------------------------------------------------------------"
+echo "Number of atoms: "${natoms}
+echo "-----------------------------------------------------------------"
+
+awk -v natoms=${natoms} '{
+    if($2=="atoms"){
+      printf "%d atoms \n",natoms
+    }else{
+      print $0
+    }
+  }' tmp3.data > core-shell.data
+sed -i -e "/END_Atoms/d" core-shell.data
+
+awk '
+  BEGIN{
+    ls=0
+    print "\nBonds\n"
+  }
+  {
+    if($8=="shell"){
+      ls+=1
+      printf "%d 1 %d %d # core-shell (types:%d-%d) \n",ls,($1-1),$1,$11,$2
+    }
+  }' core-shell.data > Bonds.data
+
+cat Bonds.data >> core-shell.data
+
+rm -f tmp1.data tmp2.data tmp3.data Bonds.data
+
+# linux -> win
+sed -i "s/$/\r/g" core-shell.data
+
+echo "-----------------------------------------------------------------"
+echo "show new input file"
+echo "-----------------------------------------------------------------"
+cat core-shell.data
+echo "-----------------------------------------------------------------"
