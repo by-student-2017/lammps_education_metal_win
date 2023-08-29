@@ -69,7 +69,19 @@ awk '
       ls+=1
       printf "%d 1 %d %d # core-shell (types:%d-%d) \n",ls,($1-1),$1,$11,$2
     }
-  }' core-shell.data > Bonds.data
+  }
+  END{printf "END_Bonds %d",ls}
+  ' core-shell.data > Bonds.data
+
+nbonds=`awk '{if($1=="END_Bonds"){printf "%d",$2}}' Bonds.data`
+
+echo "-----------------------------------------------------------------"
+echo "Number of core-shell bonds: "${nbonds}
+echo "-----------------------------------------------------------------"
+
+sed -i "/atoms/a ${nbonds} bonds \n" core-shell.data
+sed -i "/atom types/a 1 bond types" core-shell.data
+sed -i -e "/END_Bonds/d" core-shell.data
 
 cat Bonds.data >> core-shell.data
 
