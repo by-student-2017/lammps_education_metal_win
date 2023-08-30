@@ -3,6 +3,7 @@
 echo "-----------------------------------------------------------------"
 echo "Usage: core-shell_v1.sh X"
 echo "where X is the [atom type] you want to add shell."
+echo "VESTA(cif) -> Ovito(*.data) -> core-shell_v1.sh X"
 echo "-----------------------------------------------------------------"
 
 #-----------------------------------------------------------------
