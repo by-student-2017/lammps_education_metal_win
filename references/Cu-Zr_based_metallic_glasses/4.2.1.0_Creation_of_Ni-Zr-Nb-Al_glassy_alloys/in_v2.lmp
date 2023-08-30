@@ -103,11 +103,11 @@ pair_coeff * * adp         ./POT/Zr_Nb.2021.adp.txt                   NULL Zr   
 #pair_coeff * * meam ./POT/library.meam Hf Nb Ta Ti Zr ./POT/HfNbTaTiZr.meam NULL Zr   Nb NULL # Zr-Nb
 #----------------------------------------------
 
-#-------------------- Monte Carlo swaps (method 2 case at 2300 K) ------------------------
-fix mc_nizr all atom/swap 1 1 12345 2300 ke no types 1 2
-fix mc_ninb all atom/swap 1 1 12345 2300 ke no types 1 3
-fix mc_nial all atom/swap 1 1 12345 2300 ke no types 1 4
-run 20000
+#-------------------- Monte Carlo swaps (method 2 case at 4300 K) ------------------------
+fix mc_nizr all atom/swap 1 1 12345 4300 ke no types 1 2
+fix mc_ninb all atom/swap 1 1 12345 4300 ke no types 1 3
+fix mc_nial all atom/swap 1 1 12345 4300 ke no types 1 4
+run 4000
 unfix mc_nizr
 unfix mc_ninb
 unfix mc_nial
@@ -116,7 +116,15 @@ replicate 1 1 1 # Extend to 1x1x1 cell
 
 #-------------------- Energy Minimization ------------------------------------------------
 # 0 [K], structure optimization
-minimize 1.0e-4 1.0e-6 10000 100000
+
+fix 1 all nve/limit 0.1
+minimize 1.0e-4 1.0e-6 10000 10000
+unfix 1
+
+#-------------------- (cells are also relaxed)
+fix 1 all box/relax aniso 0.0 vmax 0.1
+minimize 1.0e-4 1.0e-6 10000 10000
+unfix 1
 
 #-------------------- Settings -----------------------------------------------------------
 reset_timestep 0
