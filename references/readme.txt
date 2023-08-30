@@ -265,10 +265,6 @@ input file (metal unit, lammps)
 - R. Fuller, Master thesis (2018).
   https://mds.marshall.edu/etd/1124/
   PdAgH (elastic)
-
-- R. Xie, Master thesis (2021).
-  https://mds.marshall.edu/etd/1411/
-  ZnS (need structure files) (core-shell model) (elastic) (MATLAB)
   
 - https://doi.org/10.26190/5d1d47a9eb76f
   UZrO
@@ -451,6 +447,10 @@ input file (metal unit, lammps)
 - K. C. Alexander, thesis (2011).
   https://dspace.mit.edu/handle/1721.1/108218
   Grain_Boundary_generation (failed)
+  
+- R. Xie, Master thesis (2021).
+  https://mds.marshall.edu/etd/1411/
+  ZnS (need structure files) (core-shell model) (elastic) (MATLAB)
 -------------------------------------------------------------------
 plot the temperature of each atom
 

@@ -3,17 +3,17 @@
 # LAMMPS 64-bit 22Dec2022-MSMPI
 clear
 #-------------------- Environment Settings -----------------------------------------------
-variable  Tdesird equal  300.0 # Desired Temperature [K]
+variable  Tdesird equal   300.0 # Desired Temperature [K]
 
-variable   Nsteps equal  40000 # Number of simulation cycles
-variable DumpFreq equal   1000 # For print out
+variable   Nsteps equal   40000 # Number of simulation cycles
+variable DumpFreq equal    1000 # For print out
 
-variable    dt_ps equal  0.001 # 0.001 [ps] = 1 [fs]
+variable    dt_ps equal 0.00025 # 0.00025 [ps] = 0.25 [fs] (Note: 0.1 [fs] may be better under severe calculation conditions.)
 
-variable  es_rate equal   0.01 # engineering strain rate (1/time units)
+variable  es_rate equal    0.01 # engineering strain rate (1/time units)
 # Note: es_rate/dt_ps = 0.01 / (1e-15) = 1.0e13 [1/s]
 # L(t) = L(0)*(1 + es_rate*dt*step)
-# strain [%] = es_rate*dt*Nstep*100 [%] = 0.01 * 0.001 * 40000 * 100 = 40 [%]
+# strain [%] = es_rate*dt*Nstep*100 [%] = 0.01 * 0.00025 * 40000 * 100 = 10 [%]
 
 #-------------------- Initialization -----------------------------------------------------
 echo both
@@ -26,22 +26,11 @@ atom_style atomic
 read_data Ni60-Zr25-Nb10-Al5.data
 
 #-------------------- Force field --------------------------------------------------------
-#---------- timestep 0.0001 # 0.1 [fs] (on previous (4.2.1.0_Creation) step) ---
-pair_style hybrid eam/alloy eam/alloy eam/fs adp
-pair_coeff * * eam/alloy 1 ./POT/ZrAlNiTiTa_Zhou04.eam.alloy          Ni   Zr   NULL Al # Ni-Zr-Al
-pair_coeff * * eam/alloy 2 ./POT/Farkas_Nb-Ti-Al_1996.eam.alloy       NULL NULL Nb   Al # Al-Nb
-pair_coeff * * eam/fs      ./POT/Ni-Nb_1.eam.fs                       Ni   NULL Nb NULL # Ni-Nb
-pair_coeff * * adp         ./POT/Zr_Nb.2021.adp.txt                   NULL Zr   Nb NULL # Zr-Nb
-#-------------------------------------------------------------------------------
-
-# other settings
-#---------- timestep 0.0001 # 0.1 [fs] (on previous (4.2.1.0_Creation) step) ---
-#pair_style hybrid eam/alloy eam/alloy eam/fs meam
-#pair_coeff * * eam/alloy 1 ./POT/ZrAlNiTiTa_Zhou04.eam.alloy                Ni   Zr   NULL Al # Ni-Zr-Al
-#pair_coeff * * eam/alloy 2 ./POT/Farkas_Nb-Ti-Al_1996.eam.alloy             NULL NULL Nb   Al # Al-Nb
-#pair_coeff * * eam/fs      ./POT/v1_18_NiNb_B2.eam.fs                       Ni   NULL Nb NULL # Ni-Nb
-#pair_coeff * * meam ./POT/library.meam Hf Nb Ta Ti Zr ./POT/HfNbTaTiZr.meam NULL Zr   Nb NULL # Zr-Nb
-#-------------------------------------------------------------------------------
+pair_style hybrid eam/alloy eam/alloy eam/fs meam
+pair_coeff * * eam/alloy 1 ZrAlNiTiTa_Zhou04.eam.alloy          Ni   Zr   NULL Al # Ni-Zr-Al
+pair_coeff * * eam/alloy 2 Farkas_Nb-Ti-Al_1996.eam.alloy       NULL NULL Nb   Al # Al-Nb
+pair_coeff * * eam/fs      v1_18_NiNb_B2.eam.fs                 Ni   NULL Nb NULL # Ni-Nb
+pair_coeff * * meam library.meam Hf Nb Ta Ti Zr HfNbTaTiZr.meam NULL Zr   Nb NULL # Zr-Nb
 
 #-------------------- Energy Minimization ------------------------------------------------
 # 0 [K], structure optimization
