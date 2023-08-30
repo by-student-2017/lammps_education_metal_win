@@ -1,7 +1,7 @@
 #!/bin/bash
 
 echo "-----------------------------------------------------------------"
-echo "Usage: core-shell.sh X"
+echo "Usage: core-shell_v1.sh X"
 echo "where X is the [atom type] you want to add shell."
 echo "-----------------------------------------------------------------"
 
@@ -19,11 +19,13 @@ echo "-----------------------------------------------------------------"
 #-----------------------------------------------------------------
 nat=`awk '{if($2=="atom" && $3=="types"){printf "%d",$1}}' tmp1.data`
 Ls=`awk '{if($1=="Atoms"){printf "%d",(NR+1)}}' tmp1.data`
+Lm=`awk '{if($1=="Masses"){printf "%d",NR}}' tmp1.data`
 #-----------------------------------------------------------------
 
 echo "-----------------------------------------------------------------"
 echo "number of atom types: "${nat}
 echo "Line of Atoms + 1: "${Ls}
+echo "Line of Masses: "${Lm}
 echo "-----------------------------------------------------------------"
 
 #-----------------------------------------------------------------
@@ -34,20 +36,26 @@ fi
 #-----------------------------------------------------------------
 
 #-----------------------------------------------------------------
-awk '{if($2=="atom" && $3=="types"){
-  printf "%d atom types \n",($1+1)}else{print $0}
+awk -v nat=${nat} '{if($2=="atom" && $3=="types"){
+  printf "%d atom types \n",(nat+1)}else{print $0}
   }' tmp1.data > tmp2.data
 #-----------------------------------------------------------------
-awk -v Ls=${Ls} -v cn=$1 '
+awk -v Ls=${Ls} -v Lm=${Lm} -v nat=${nat} -v cn=$1 '
   BEGIN{ls=0}
   {
     if(NR>Ls){ls+=1}
     if(NR>Ls && $2==cn){
       printf "%d %d %4.1f %f %f %f # core  of type %d \n", ls,$2,$3,$4,$5,$6,cn
       ls+=1
-      printf "%d %d %4.1f %f %f %f # shell of type %d \n", ls,(cn+1),$3,$4,$5,$6,cn
+      printf "%d %d %4.1f %f %f %f # shell of type %d \n", ls,(nat+1),$3,$4,$5,$6,cn
     }else if(NR<=Ls){
-      print $0
+      if(NR==(Lm+1+cn)){
+	printf "%d %7.4f # core  of type %d \n",$1,($2-0.2),cn
+      }else if(NR==(Lm+1+nat+1)){
+        printf "%d %7.4f # shell of type %d \n \n",(nat+1),0.2,cn
+      }else{
+        print $0
+      }
     }else{
       printf "%d %d %4.1f %f %f %f # \n", ls,$2,$3,$4,$5,$6
     }
@@ -94,7 +102,8 @@ echo "-----------------------------------------------------------------"
 #-----------------------------------------------------------------
 sed -i "/atoms/a ${nbonds} bonds \n" core-shell.data
 sed -i "/atom types/a 1 bond types" core-shell.data
-sed -i -e "/END_Bonds/d" core-shell.data
+sed -i "s/charge/full/" core-shell.data
+sed -i "/END_Bonds/d" core-shell.data
 #-----------------------------------------------------------------
 
 #-----------------------------------------------------------------
