@@ -77,7 +77,7 @@ awk -v natoms=${natoms} '{
       print $0
     }
   }' tmp3.data > core-shell.data
-sed -i -e "/END_Atoms/d" core-shell.data
+sed -i "/END_Atoms/d" core-shell.data
 #-----------------------------------------------------------------
 awk '
   BEGIN{
@@ -100,14 +100,12 @@ echo "Number of core-shell bonds: "${nbonds}
 echo "-----------------------------------------------------------------"
 
 #-----------------------------------------------------------------
+cat Bonds.data >> core-shell.data
+#-----------------------------------------------------------------
 sed -i "/atoms/a ${nbonds} bonds \n" core-shell.data
 sed -i "/atom types/a 1 bond types" core-shell.data
 sed -i "s/charge/full/" core-shell.data
 sed -i "/END_Bonds/d" core-shell.data
-#-----------------------------------------------------------------
-
-#-----------------------------------------------------------------
-cat Bonds.data >> core-shell.data
 #-----------------------------------------------------------------
 
 #-----------------------------------------------------------------
