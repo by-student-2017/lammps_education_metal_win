@@ -71,12 +71,12 @@ awk -v La1=${La1} -v Lm=${Lm} -v cn=$1 -v nas=${nas} -v nat=${nat} -v nbt1=${nbt
     # modified Atoms
     if(NR>La1 && NR<=La1+nas){
       ls+=1
-      if(NR>La1 && $2==cn){
-        printf "%d %d %4.1f %f %f %f # core  atype %d btype %d \n", ls,$2,$3,$4,$5,$6,cn,nbt1
+      if(NR>La1 && $3==cn){
+        printf "%d %d %d %4.1f %f %f %f # core  atype %d btype %d \n", ls,$2,$3,$4,$5,$6,$7,cn,nbt1
         ls+=1
-        printf "%d %d %4.1f %f %f %f # shell atype %d btype %d \n", ls,(nat+1),$3,$4,$5,$6,cn,nbt1
+        printf "%d %d %d %4.1f %f %f %f # shell atype %d btype %d \n", ls,(nat+1),$3,$4,$5,$6,$7,cn,nbt1
       }else{
-        printf "%d %d %4.1f %f %f %f %s %s %s %s %s %s \n", ls,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12
+        printf "%d %d %d %4.1f %f %f %f %s %s %s %s %s %s \n", ls,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13
       }
       if(NR==La1+nas){
 	printf "END_Atoms %d \n",ls
@@ -118,14 +118,14 @@ awk -v new_Lb=${new_Lb} -v cn=$1 -v nbt1=${nbt1} '
   BEGIN{ls=0}
   {
     # old bonds
-    if($8=="shell" && $10!=cn && NR<(new_Lb-1)){
+    if($9=="shell" && $10!=cn && NR<(new_Lb-1)){
       ls+=1
-      printf "%d %d %d %d # core-shell (types:%d-%d) \n",ls,$12,($1-1),$1,$10,$2
+      printf "%d %d %d %d # core-shell (types:%d-%d) \n",ls,$13,($1-1),$1,$11,$3
     }
     # new bonds
-    if($8=="shell" && $10==cn && NR<(new_Lb-1)){
+    if($9=="shell" && $10==cn && NR<(new_Lb-1)){
       ls+=1
-      printf "%d %d %d %d # core-shell (types:%d-%d) \n",ls,nbt1,($1-1),$1,$10,$2
+      printf "%d %d %d %d # core-shell (types:%d-%d) \n",ls,nbt1,($1-1),$1,$11,$3
     }
   }
   END{printf "END_Bonds %d",ls}
