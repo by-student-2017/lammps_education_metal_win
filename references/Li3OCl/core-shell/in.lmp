@@ -10,7 +10,7 @@ units metal
 
 dimension 3
 boundary p p p
-atom_style charge
+atom_style full
 
 # Memo
 # Li3OCl (unit cell): Li:3, O:1, Cl:1
@@ -19,21 +19,23 @@ atom_style charge
 #  (An alkali-halide partial Schottky defect concentration of delta = 0.038.) (LiCl Schottky defect)
 #  (5x5x5 -4LiCl -> 10x10x5 -3LiCl -> 10x10x10 (delta = 0.038))
 #
-read_data Li3OCl_10x10x10_38LiCl_defect.data
+read_data Li3OCl_10x10x10_38LiCl_defect_core-shell.data
 #
 #replicate 2 2 2 # 10x10x10 supercell of Li3OX (X=Cl or Br) from unit cell
 
 group lithium type 1 
-group O  type 2
-group Cl type 3
+group O   type 2
+group Cl  type 3
+group Os  type 4
+group Cls type 5
 
-mass 1  6.941  # Li 1+
-mass 2 15.9994 # O  2-
-mass 3 35.453  # Cl 1-
-
-set type 1 charge  1.0 # Li 1+
-set type 2 charge -2.0 # O  2-
-set type 3 charge -1.0 # Cl 1-
+set type 1 charge  1.0   # Li 1+
+set type 2 charge  0.183 # O  core
+set type 3 charge  1.485 # Cl core
+set type 4 charge -2.183 # Os shell
+set type 5 charge -2.485 # Cls shell
+# The total charge: O + Os = -2.0 [e]
+# The total charge: Cl + Cls = -1.0 [e]
 
 variable T1 equal 700  # Temperature [K]
 variable Timer equal step*dt
@@ -47,7 +49,7 @@ log ${T1}.lammps
 # https://pubs.acs.org/doi/suppl/10.1021/acsaem.1c00656/suppl_file/ae1c00656_si_001.pdf
 #Ref2 (other references): https://www.ucl.ac.uk/klmc/Potentials/O/index.html
 
-pair_style buck/coul/long 12.0 
+pair_style buck/coul/long/cs 12.0 
 pair_coeff * *     0.0    1.0      0.0   # all-all
 pair_coeff 1 1   360.5269 0.1609   0.0   #  Li-Li
 pair_coeff 1 2   292.3    0.3472   0.0   #  Li-O
@@ -55,6 +57,10 @@ pair_coeff 1 3   421.0366 0.33364  0.0   #  Li-Cl
 pair_coeff 2 2 22764.3    0.149   13.185 #   O-O
 pair_coeff 2 3  8287      0.259   62.2   #   O-Cl
 pair_coeff 3 3  1227.2    0.3214  14.53  #  Cl-Cl
+
+bond_style harmonic
+bond_coeff 1 593.716 0.0 # O-Os,   k = 593.716 [eV/A^2]
+bond_coeff 2  29.38  0.0 # Cl-Cls, k =  29.38  [eV/A^2]
 
 # 1:Li+, 2:O2-, 3:Cl-, 4:Na+, 5:Br-
 # For Li3-xNaxOCl1-yBry, see Supporting Info (https://doi.org/10.1021/acs.jpcc.8b08208)
@@ -77,16 +83,6 @@ pair_coeff 3 3  1227.2    0.3214  14.53  #  Cl-Cl
 # O2-, Y = -2.183 [e], k = 593.72 [eV/A^2]
 # Cl-, Y = -2.485 [e], k =  29.38 [eV/A^2]
 # Br-, Y = -2.094 [e], k =  18.30 [eV/A^2]
-# e.g., 
-#  group  cores type 1 # O  ,      0.183000 [e] in data.init
-#  group shells type 4 # Os1, Y = -2.183000 [e] in data.init
-#  # The total charge: O + Os1 = -2.0 [e]
-#  #
-#  bond_style harmonic
-#  bond_coeff 1 593.72 0.0 # O-Os1, k = 593.72 [eV/A^2]
-#  #
-#  Note that "Bonds" is set to "O-Os" only in "Li3OCl_10x10x10_38LiCl_defect.data".
-#  (And, the atomic coordinates (x,y,z) of "O" and "Os" paired in "Bonds" are the same.)
 
 # 0.27% Li vacancies (Undoped (LiCl Schottky).)
 # Dopant parameters (Li3OCl) (Mg2+, Ca2+, Sr2+ or Ba2+ at Li+ site)
@@ -162,17 +158,28 @@ reset_timestep 0
 
 timestep 0.002 # 2 [fs]
 
+compute           CStemp all temp/cs cores shells
+compute thermo_press_lmp all pressure thermo_temp # pressure for individual particles
+
+#thermo 1000 
+#thermo_style custom step v_Timer cpu temp etotal fmax lx ly lz vol press 
+
 thermo 1000 
-thermo_style custom step v_Timer cpu temp etotal fmax lx ly lz vol press 
+thermo_style custom step etotal pe ke temp press &
+ epair evdwl ecoul elong ebond eangle cella cellb cellc
+thermo_modify temp CStemp press thermo_press_lmp  # modify thermo to regular pressure
 
 #---------------------------------------------------------
 dump            d1 all cfg 1000 cfg/run.npt_${T1}K.no.*.cfg mass type xs ys zs id type q vx vy vz fx fy fz
-dump_modify     d1 element Li O Cl
+dump_modify     d1 element Li O Cl Os Cls
 #---------------------------------------------------------
 
 velocity all create ${T1} 4928459 rot yes dist gaussian 
 
-fix 2 all npt temp ${T1} ${T1} 0.01 aniso 1.0 1.0 0.1 
+#fix 2 all npt temp ${T1} ${T1} 0.01 aniso 1.0 1.0 0.1 
+
+fix npt_equ all npt temp ${T1} ${T1} $(100*dt) iso 0 0 $(1000*dt)
+fix_modify  npt_equ temp CStemp press thermo_press_lmp # pressure for correct kinetic scalar
 
 run 2000 # 4 [ps]
 
@@ -196,7 +203,9 @@ variable msdtot equal "c_mymsd[4]"
 
 fix msdT1 lithium ave/time 1 1 10000 v_msdx v_msdy v_msdz v_msdtot file msdLi${T1}K
 
-fix 3 all nvt temp ${T1} ${T1} 0.01 
+#fix 3 all nvt temp ${T1} ${T1} 0.01 
+fix 3 all nvt temp ${T1} ${T1} $(100*dt)
+fix_modify 3 temp CStemp press thermo_press_lmp # pressure for correct kinetic scalar
 
 thermo 5000 
 thermo_style custom step v_Timer cpu temp etotal fmax lx ly lz vol press 
@@ -205,7 +214,7 @@ thermo_style custom step v_Timer cpu temp etotal fmax lx ly lz vol press
 #dump 4 all atom 100 traj.dat 
 #---------------------------------------------------------
 dump            d2 all cfg 2500 cfg/run.nvt_${T1}K.no.*.cfg mass type xs ys zs id type q vx vy vz fx fy fz
-dump_modify     d2 element Li O Cl
+dump_modify     d2 element Li O Cl Os Cls
 #---------------------------------------------------------
 
 run 5000000 # 10 [ns]
@@ -223,14 +232,4 @@ unfix msdT1
 # the Nernst-Einstein equation.
 # MSD = 6*D*t
 # where t is the simulation time, D is diffusion coeffcients.
-# ---------- ---------- ---------- ---------- ----------
-# This is related to the inclination when 
-# the vertical axis (Y-axis) is MSD (total^2 = dx^2 + dy^2 + dz^2)
-# and the horizontal axis (x-axis) is step*dt.
-# ---------- ---------- ---------- ---------- ----------
-# If you want near-steady-state results, you need to run 
-# the simulation for a long time until it is sufficiently stable.
-# ---------- ---------- ---------- ---------- ----------
-# D = MSD/(6*t) = MSD (total)/(6*step*dt)
-# D = [Angstrom^2/ps] => (10^-10)^2/10^-12 = 10^-8 [m^2/s]
 #------------------------------------------------------#
