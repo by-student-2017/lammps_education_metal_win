@@ -8,7 +8,7 @@ variable  Tdesird equal   300.0 # Desired Temperature [K]
 variable   Nsteps equal   40000 # Number of simulation cycles
 variable DumpFreq equal    1000 # For print out
 
-variable    dt_ps equal  0.0001 # 0.0001 [ps] = 0.1 [fs] (Note: 0.1 [fs] may be better under severe calculation conditions.)
+variable    dt_ps equal  0.0001 # 0.0001 [ps] = 0.1 [fs] (At "0.25 [fs]", atoms may be lost.)
 
 variable  es_rate equal     0.1 # engineering strain rate (1/time units)
 # Note: es_rate/dt_ps = 0.1 / (0.1e-15) = 1.0e15 [1/s]
@@ -26,11 +26,22 @@ atom_style atomic
 read_data Ni60-Zr25-Nb10-Al5.data
 
 #-------------------- Force field --------------------------------------------------------
-pair_style hybrid eam/alloy eam/alloy eam/fs meam
-pair_coeff * * eam/alloy 1 ZrAlNiTiTa_Zhou04.eam.alloy          Ni   Zr   NULL Al # Ni-Zr-Al
-pair_coeff * * eam/alloy 2 Farkas_Nb-Ti-Al_1996.eam.alloy       NULL NULL Nb   Al # Al-Nb
-pair_coeff * * eam/fs      v1_18_NiNb_B2.eam.fs                 Ni   NULL Nb NULL # Ni-Nb
-pair_coeff * * meam library.meam Hf Nb Ta Ti Zr HfNbTaTiZr.meam NULL Zr   Nb NULL # Zr-Nb
+#---------- timestep 0.0001 # 0.1 [fs] ---------
+pair_style hybrid eam/alloy eam/alloy eam/fs adp
+pair_coeff * * eam/alloy 1 ./POT/ZrAlNiTiTa_Zhou04.eam.alloy          Ni   Zr   NULL Al # Ni-Zr-Al
+pair_coeff * * eam/alloy 2 ./POT/Farkas_Nb-Ti-Al_1996.eam.alloy       NULL NULL Nb   Al # Al-Nb
+pair_coeff * * eam/fs      ./POT/Ni-Nb_1.eam.fs                       Ni   NULL Nb NULL # Ni-Nb
+pair_coeff * * adp         ./POT/Zr_Nb.2021.adp.txt                   NULL Zr   Nb NULL # Zr-Nb
+#----------------------------------------------
+
+# other settings
+#---------- timestep 0.0001 # 0.1 [fs] --------
+#pair_style hybrid eam/alloy eam/alloy eam/fs meam
+#pair_coeff * * eam/alloy 1 ./POT/ZrAlNiTiTa_Zhou04.eam.alloy                Ni   Zr   NULL Al # Ni-Zr-Al
+#pair_coeff * * eam/alloy 2 ./POT/Farkas_Nb-Ti-Al_1996.eam.alloy             NULL NULL Nb   Al # Al-Nb
+#pair_coeff * * eam/fs      ./POT/v1_18_NiNb_B2.eam.fs                       Ni   NULL Nb NULL # Ni-Nb
+#pair_coeff * * meam ./POT/library.meam Hf Nb Ta Ti Zr ./POT/HfNbTaTiZr.meam NULL Zr   Nb NULL # Zr-Nb
+#----------------------------------------------
 
 #-------------------- Energy Minimization ------------------------------------------------
 # 0 [K], structure optimization
