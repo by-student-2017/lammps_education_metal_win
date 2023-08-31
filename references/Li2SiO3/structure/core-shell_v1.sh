@@ -74,7 +74,7 @@ awk -v La1=${La1} -v Lm=${Lm} -v cn=$1 -v nas=${nas} -v nat=${nat} -v nbt1=${nbt
       if(NR>La1 && $3==cn){
         printf "%d %d %d %4.1f %f %f %f # core  atype %d btype %d \n", ls,$2,$3,$4,$5,$6,$7,cn,nbt1
         ls+=1
-        printf "%d %d %d %4.1f %f %f %f # shell atype %d btype %d \n", ls,(nat+1),$3,$4,$5,$6,$7,cn,nbt1
+        printf "%d %d %d %4.1f %f %f %f # shell atype %d btype %d \n", ls,$2,(nat+1),$4,$5,$6,$7,cn,nbt1
       }else{
         printf "%d %d %d %4.1f %f %f %f %s %s %s %s %s %s \n", ls,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13
       }
