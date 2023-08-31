@@ -1,0 +1,126 @@
+# 4.2.1.4 Tensile deformation of quenched specimen
+# In order to perform a tensile test MD code is written and executed in LAMMPS. The 
+# LAMMPS 64-bit 22Dec2022-MSMPI
+clear
+#-------------------- Environment Settings -----------------------------------------------
+variable  Tdesird equal   300.0 # Desired Temperature [K]
+
+variable   Nsteps equal     4e6 # Number of simulation cycles
+variable DumpFreq equal     1e5 # For print out
+
+variable    dt_ps equal  0.0001 # 0.0001 [ps] = 0.1 [fs] (Note: 0.1 [fs] may be better under severe calculation conditions.)
+
+variable  es_rate equal    1e-3 # engineering strain rate (1/time units)
+# Note: es_rate/dt_ps = 0.001 / (0.1e-15) = 1.0e13 [1/s]
+# L(t) = L(0)*(1 + es_rate*dt*step)
+# strain [%] = es_rate*dt*Nstep*100 [%] = 0.001 * 0.0001 * 4000000 * 100 = 40 [%]
+
+#-------------------- Initialization -----------------------------------------------------
+echo both
+units metal
+boundary p p p
+
+#-------------------- Read structure file ------------------------------------------------
+atom_style atomic
+
+read_data ../Ni60-Zr25-Nb10-Al5.data
+
+#-------------------- Force field --------------------------------------------------------
+#---------- timestep 0.0001 # 0.1 [fs] ---------
+pair_style hybrid eam/alloy eam/alloy eam/fs adp
+pair_coeff * * eam/alloy 1 ../POT/ZrAlNiTiTa_Zhou04.eam.alloy          Ni   Zr   NULL Al # Ni-Zr-Al
+pair_coeff * * eam/alloy 2 ../POT/Farkas_Nb-Ti-Al_1996.eam.alloy       NULL NULL Nb   Al # Al-Nb
+pair_coeff * * eam/fs      ../POT/Ni-Nb_1.eam.fs                       Ni   NULL Nb NULL # Ni-Nb
+pair_coeff * * adp         ../POT/Zr_Nb.2021.adp.txt                   NULL Zr   Nb NULL # Zr-Nb
+#----------------------------------------------
+
+# other settings
+#---------- timestep 0.0001 # 0.1 [fs] --------
+#pair_style hybrid eam/alloy eam/alloy eam/fs meam
+#pair_coeff * * eam/alloy 1 ../POT/ZrAlNiTiTa_Zhou04.eam.alloy                Ni   Zr   NULL Al # Ni-Zr-Al
+#pair_coeff * * eam/alloy 2 ../POT/Farkas_Nb-Ti-Al_1996.eam.alloy             NULL NULL Nb   Al # Al-Nb
+#pair_coeff * * eam/fs      ../POT/v1_18_NiNb_B2.eam.fs                       Ni   NULL Nb NULL # Ni-Nb
+#pair_coeff * * meam ../POT/library.meam Hf Nb Ta Ti Zr ../POT/HfNbTaTiZr.meam NULL Zr   Nb NULL # Zr-Nb
+#----------------------------------------------
+
+#-------------------- Energy Minimization ------------------------------------------------
+# 0 [K], structure optimization
+# minimize 1.0e-5 1.0e-10 10000 100000
+
+#-------------------- Settings -----------------------------------------------------------
+reset_timestep 0
+
+timestep ${dt_ps}
+
+compute 1 all stress/atom NULL  # computes the symmetric per-atom stress tensor for each atom in a group.
+compute 2 all temp              # computes the temp of a group of atoms
+compute 3 all reduce sum c_1[2] # reduces vector quantities of all stress tensors in y-direction and adds all the quantities to a single scalar value
+compute kea all ke/atom         # This is related to temperature
+
+variable stress     equal c_3/vol        # assigns a value to the variable name stress
+variable stress_GPa equal v_stress/10000 # converts the stress calculated to GPa
+
+#for units metal, pressure is in 1 [bars] = 100 [kPa] = 0.1 [MPa] = 1x10^-4 [GPa] => p3 is in GPa
+variable p3 equal "-pyy/10000"  # [GPa]
+
+variable    tmp equal ly
+variable     lo equal ${tmp}
+variable strain equal (ly-v_lo)/v_lo
+
+thermo ${DumpFreq}
+thermo_style custom step temp press vol etotal c_2 v_strain v_stress v_stress_GPa v_p3
+
+#---------- output file settings -------------------
+fix fo1 all ave/time 1 100 100 c_2 v_strain v_stress v_stress_GPa v_p3 file stress_vs_strain.txt
+
+#---------- output file settings -------------------------
+#dump 2 all custom ${DumpFreq} dump.stress_atom_2al-300k_test type x y z c_1[1] c_1[2] c_1[3] c_1[4] c_1[5] c_1[6]
+##dumps atom type; x,y,z coordinates; 6 stress tensors computed in 1 to an array of 6 elements
+#---------------------------------------------------------
+dump            d1 all cfg ${DumpFreq} cfg/run.*.cfg mass type xs ys zs id type vx vy vz fx fy fz
+dump_modify     d1 element Ni Zr Nb Al
+#---------------------------------------------------------
+log log2al_300k_test.dat
+
+# initial velocities
+velocity all create ${Tdesird} 482748 rot yes mom yes dist gaussian
+
+#-------------------- Run the simulation -------------------------------------------------
+# strain rate of 0.01 [1/time units] is applied in y direction
+fix 1 all deform 1 y erate ${es_rate} # Uniaxial tensile deformation
+
+# all atoms rescaled to new positions while temp and pressure is conserved
+fix 2 all npt temp ${Tdesird} ${Tdesird} $(v_Nsteps*dt) x 0 0 $(v_Nsteps*dt) z 0 0 $(v_Nsteps*dt) dilate all # Adiabatic conditions
+#fix 2 all npt temp ${Tdesird} ${Tdesird} $(100*dt) x 0 0 $(1000*dt) z 0 0 $(1000*dt) dilate all # Non-adiabatic conditions
+# Under non-adiabatic conditions, considering external influences, many parameters must be adjusted to explain the experimental results.
+
+# Resets the temp of atoms to 300 K by rescaling velocities after every 10 steps
+fix 3 all temp/rescale 10 ${Tdesird} ${Tdesird} 0.05 1.0
+
+# calculates the radial distribution function (RDF) and output file
+compute 11 all rdf 100
+fix 4 all ave/time 100 1 100 c_11[*] file CuZrAlNi_300k_Tensile.rdf mode vector
+
+# number of iterations is given so as to give 40% strain to the material
+run ${Nsteps}
+
+#--------------------------------------------------------------------------------
+# The calculation conditions for this time are as follows.
+#--------------------------------------------------------------------------------
+variable strain_rate_percent equal "(v_strain)/(v_dt_ps * v_Nsteps)*100" # [%/ps]
+variable strain_rate equal "(v_strain)/(v_dt_ps * v_Nsteps)" # [1/ps]
+print "strain_rate: ${strain_rate_percent} [%/ps] at setting temperature ${Tdesird} [K]"
+print "strain rate: ${strain_rate} x 10^12 [1/s] at setting temperature ${Tdesird} [K]"
+#--------------------------------------------------------------------------------
+
+#-------------------- End ----------------------------------------------------------------
+
+#-----------------------------------------------------------------------------------------
+# Note
+# compute        peratom all stress/atom NULL
+# compute        p all reduce sum c_peratom[1] c_peratom[2] c_peratom[3]
+# variable       press equal -(c_p[1]+c_p[2]+c_p[3])/(3*vol)
+# # pxx = -c_p[1]/vol, pyy = -c_p[2]/vol, pzz = -c_p[3]/vol
+# thermo_style   custom step temp etotal press v_press
+# metal unit: press = bar = 0.1 MPa, length = Angstrom = 1e-10 m
+#-----------------------------------------------------------------------------------------
