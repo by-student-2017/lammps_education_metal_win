@@ -166,29 +166,26 @@ timestep 0.0001 # 0.1 [fs], (failed: 0.5 [fs])
 compute           CStemp all temp/cs cores shells
 compute thermo_press_lmp all pressure thermo_temp # pressure for individual particles
 
-#thermo 1000 
-#thermo_style custom step v_Timer cpu temp etotal fmax lx ly lz vol press 
-
-thermo 100
-thermo_style custom step etotal pe ke temp press &
- epair evdwl ecoul elong ebond eangle cella cellb cellc
+thermo 1000
+thermo_style custom step v_Timer cpu temp etotal fmax lx ly lz vol press &
+  pe ke epair evdwl ecoul elong ebond eangle cella cellb cellc
 thermo_modify temp CStemp press thermo_press_lmp  # modify thermo to regular pressure
 
 #---------------------------------------------------------
-dump            d1 all cfg 100 cfg/run.npt_${T1}K.no.*.cfg mass type xs ys zs id type q vx vy vz fx fy fz
+dump            d1 all cfg 1000 cfg/run.npt_${T1}K.no.*.cfg mass type xs ys zs id type q vx vy vz fx fy fz
 dump_modify     d1 element Li O Cl Os Cls
 #---------------------------------------------------------
 
 velocity all create ${T1} 4928459 rot yes dist gaussian 
 
-fix mom all momentum 100 linear 1 1 1 rescale
+#fix mom all momentum 100 linear 1 1 1 rescale
 
 #fix 2 all npt temp ${T1} ${T1} 0.01 aniso 1.0 1.0 0.1 
-
+#---------------------------------------------------------
 fix npt_equ all npt temp ${T1} ${T1} 0.01 iso 1.0 1.0 0.1 
 fix_modify npt_equ temp CStemp press thermo_press_lmp
 
-run 2000 # 2 [ps]
+run 40000 # 4 [ps]
 
 #unfix 2 
 unfix npt_equ
@@ -212,11 +209,11 @@ variable msdtot equal "c_mymsd[4]"
 fix msdT1 lithium ave/time 1 1 10000 v_msdx v_msdy v_msdz v_msdtot file msdLi${T1}K
 
 #fix 3 all nvt temp ${T1} ${T1} 0.01 
-
+#---------------------------------------------------------
 fix nvt_msd all nvt temp ${T1} ${T1} 0.01 
-fix_modify nvt_msd temp CStemp press thermo_press_lmp
+fix_modify nvt_msd temp CStemp
 
-thermo 5000 
+thermo 2500 
 thermo_style custom step v_Timer cpu temp etotal fmax lx ly lz vol press 
 
 #dump dynamics all xyz 100 dynamics.xyz 
@@ -226,7 +223,7 @@ dump            d2 all cfg 2500 cfg/run.nvt_${T1}K.no.*.cfg mass type xs ys zs i
 dump_modify     d2 element Li O Cl Os Cls
 #---------------------------------------------------------
 
-run 5000000 # 5 [ns]
+run 1000000 # 100 [ps]
 
 #unfix 3 
 unfix nvt_msd
