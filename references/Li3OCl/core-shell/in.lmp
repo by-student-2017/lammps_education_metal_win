@@ -37,8 +37,10 @@ set type 5 charge -2.485 # Cls shell
 # The total charge: O + Os = -2.0 [e]
 # The total charge: Cl + Cls = -1.0 [e]
 
-group  cores  type 2 4 # O and Cl
-group  shells type 3 5 # Os and Cls
+group  cores  type 2 3 # O and Cl
+group  shells type 4 5 # Os and Cls
+
+comm_modify vel yes # shell atoms store velocities
 
 variable T1 equal 700  # Temperature [K]
 variable Timer equal step*dt
@@ -159,7 +161,7 @@ unfix 1
 
 reset_timestep 0 
 
-timestep 0.002 # 2 [fs]
+timestep 0.001 # 1 [fs]
 
 compute           CStemp all temp/cs cores shells
 compute thermo_press_lmp all pressure thermo_temp # pressure for individual particles
@@ -181,8 +183,8 @@ velocity all create ${T1} 4928459 rot yes dist gaussian
 
 #fix 2 all npt temp ${T1} ${T1} 0.01 aniso 1.0 1.0 0.1 
 
-fix npt_equ all npt temp ${T1} ${T1} $(100*dt) iso 0 0 $(1000*dt)
-fix_modify  npt_equ temp CStemp press thermo_press_lmp # pressure for correct kinetic scalar
+fix 2 all npt temp ${T1} ${T1} 0.01 aniso 1.0 1.0 0.1 
+fix_modify 2 temp CStemp press thermo_press_lmp
 
 run 2000 # 4 [ps]
 
@@ -195,7 +197,7 @@ undump          d1
 
 reset_timestep 0 
 
-timestep 0.002 # 2 [fs]
+timestep 0.001 # 1 [fs]
 
 compute mymsd lithium msd com yes 
 
@@ -207,8 +209,9 @@ variable msdtot equal "c_mymsd[4]"
 fix msdT1 lithium ave/time 1 1 10000 v_msdx v_msdy v_msdz v_msdtot file msdLi${T1}K
 
 #fix 3 all nvt temp ${T1} ${T1} 0.01 
-fix 3 all nvt temp ${T1} ${T1} $(100*dt)
-fix_modify 3 temp CStemp press thermo_press_lmp # pressure for correct kinetic scalar
+
+fix 3 all nvt temp ${T1} ${T1} 0.01 
+fix_modify 3 temp CStemp press thermo_press_lmp
 
 thermo 5000 
 thermo_style custom step v_Timer cpu temp etotal fmax lx ly lz vol press 
