@@ -15,7 +15,7 @@ for /f "tokens=1-4" %%a in (%file_name%) do (
   )
 )
 
-plot_rdf_all_v2.gpl
+rem plot_rdf_all_v2.gpl
 
 rem findstr /V/R/C "^* 100" %file_name% > new_rdf.dat
 rem findstr /V/R/C " 100$" %file_name% > new_rdf.dat
