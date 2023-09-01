@@ -1,0 +1,78 @@
+clear
+#-------------------- Initialization -----------------------------------------------------
+echo both
+units metal
+boundary p p p
+
+#-------------------- Read structure file ------------------------------------------------
+atom_style charge
+read_data Li4OCl2.data
+
+variable plx equal lx
+variable ply equal ly
+variable plz equal lz
+
+#-------------------- making supercell ---------------------------------------------------
+replicate 5 5 2
+
+group Lis type 1
+group Cls type 2
+group Os  type 3
+
+variable nat1s equal $( count(Lis) )
+variable nat2s equal $( count(Cls) )
+variable nat3s equal $( count(Os)  )
+variable nalls equal $( count(all) )
+
+#-------------------- Force field --------------------------------------------------------
+# dummy (for delete_atoms command)
+pair_style lj/cut 2.5
+pair_coeff * * 1.0 1.0
+
+#-------------------- Settings -----------------------------------------------------------
+
+# delete atoms settings
+#----------------------------------------------------------
+# delete atoms: X/Li ratio (for Li:Cl:O = 4:2:1 system)
+variable dc equal $(0.01*(2/4))
+
+set group Lis type/fraction 3 ${dc} 123456 # Li -> O
+
+group On type 3
+group dO subtract On Os
+
+# Li-Cl: 2.74907 Angstrom
+variable LiCl_dist equal 2.74907
+
+variable dr equal ${LiCl_dist}*0.2
+#displace_atoms dO move ${dr} ${dr} ${dr} units box
+displace_atoms dO random ${dr} ${dr} ${dr} 123456 units box
+
+variable rcut equal ${LiCl_dist}*0.9
+
+# delete Cl-dO(on Li)
+delete_atoms overlap ${rcut} Cls dO
+delete_atoms group dO
+#----------------------------------------------------------
+
+group Lid type 1
+group Cld type 2
+group Od  type 3
+
+variable nat1d equal count(Lid)
+variable nat2d equal count(Cld)
+variable nat3d equal count(Od)
+variable nalld equal count(all)
+
+#---------------------------------------------------
+print "Before: Li:${nat1s}, Cl:${nat2s}, O:${nat3s}, All:${nalls}"
+print "After : Li:${nat1d}, Cl:${nat2d}, O:${nat3d}, All:${nalld}"
+#---------------------------------------------------
+
+variable ndc equal ${nat2s}-${nat2d}
+
+#-------------------- Output structure file ----------------------------------------------
+write_data Li4OCl2_5x5x2_${ndc}LiCl_defect.data
+
+print "All done !"
+#-------------------- End ----------------------------------------------------------------
