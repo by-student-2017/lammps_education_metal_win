@@ -1,44 +1,52 @@
-echo "-------------------------------------------------------------"
-echo erate1e-1 %date% %time%
-cd ./erate1e-1
-rem call ../run_msmpi_v2.bat
-plot_stress_vs_strain_v2.gpl
-rem call ./../plot_rdf.bat
-rem plot_rdf_all_v2.gpl
-cd ../
+rem for %%i in (1 2 3 4 5 6 7 8 9 10 11) do (
+for %%i in (1,1,11) do (
+  cd ./erate1e-%%i
+  
+  echo "-------------------------------------------------------------"
+  echo erate1e-%%i %date% %time% ": start, Run" 
+  echo "-------------------------------------------------------------"
+  
+  call ./../run_msmpi_v2.bat
+  
+  echo "-------------------------------------------------------------"
+  echo erate1e-%%i %date% %time% ": end, Run" 
+  echo "-------------------------------------------------------------"
+  
+  cd ..
+)
 
-echo "-------------------------------------------------------------"
-echo erate1e-2 %date% %time%
-cd ./erate1e-2
-call ../run_msmpi_v2.bat
-plot_stress_vs_strain_v2.gpl
-rem call ./../plot_rdf.bat
-rem plot_rdf_all_v2.gpl
-cd ../
+rem for %%i in (1 2 3 4 5 6 7 8 9 10 11) do (
+for %%i in (1,1,11) do (
+  cd ./erate1e-%%i
+  
+  echo "-------------------------------------------------------------"
+  echo erate1e-%%i %date% %time% ": start, Stress plot" 
+  echo "-------------------------------------------------------------"
+  
+  plot_stress_vs_strain_v2.gpl
+  
+  echo "-------------------------------------------------------------"
+  echo erate1e-%%i %date% %time% ": end, Stress plot" 
+  echo "-------------------------------------------------------------"
+  
+  cd ..
+)
+)
 
-echo "-------------------------------------------------------------"
-echo erate1e-3 %date% %time%
-cd ./erate1e-3
-call ../run_msmpi_v2.bat
-plot_stress_vs_strain_v2.gpl
-rem call ./../plot_rdf.bat
-rem plot_rdf_all_v2.gpl
-cd ../
-
-echo "-------------------------------------------------------------"
-echo erate1e-4 %date% %time%
-cd ./erate1e-4
-call ../run_msmpi_v2.bat
-plot_stress_vs_strain_v2.gpl
-rem call ./../plot_rdf.bat
-rem plot_rdf_all_v2.gpl
-cd ../
-
-echo "-------------------------------------------------------------"
-echo erate1e-5 %date% %time%
-cd ./erate1e-5
-call ../run_msmpi_v2.bat
-plot_stress_vs_strain_v2.gpl
-rem call ./../plot_rdf.bat
-rem plot_rdf_all_v2.gpl
-cd ../
+rem for %%i in (1 2 3 4 5 6 7 8 9 10 11) do (
+for %%i in (1,1,11) do (
+  cd ./erate1e-%%i
+  
+  echo "-------------------------------------------------------------"
+  echo erate1e-%%i %date% %time% ": start, RDF plot" 
+  echo "-------------------------------------------------------------"
+  
+  call ./../plot_rdf.bat
+  plot_rdf_all_v2.gpl
+  
+  echo "-------------------------------------------------------------"
+  echo erate1e-%%i %date% %time% ": end, RDF plot" 
+  echo "-------------------------------------------------------------"
+  
+  cd ..
+)
