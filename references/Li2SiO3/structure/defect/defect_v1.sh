@@ -35,7 +35,7 @@ echo "Line of Atoms + 1 : "${La1}
 echo "Line of Masses: "${Lm}
 echo "-----------------------------------------------------------------"
 
-awk -v La1=${La1} '(NR>La1){print $0}' tmp1.data > tmp2.data
+awk -v La1=${La1} '(NR>La1){printf "%s # %d \n",$0,(NR-La1)}' tmp1.data > tmp2.data
 
 for i in $(seq 1 $1)
 do
@@ -62,7 +62,7 @@ do
       }else{x=$5;y=$6;z=$7}
     }
     END{
-      printf "%12.5f %12.5f %12.5f # DNR %d",$5,$6,$7,DNR
+      printf "%12.5f %12.5f %12.5f # DNR %d",x,y,z,DNR
     }' tmp2.data > tmp3.data
   grep DNR tmp3.data > E1_DNR.data
   
