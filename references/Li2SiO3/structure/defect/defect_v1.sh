@@ -69,7 +69,7 @@ do
   x=`awk 'END{printf "%f",$1}' E1_DNR.data`
   y=`awk 'END{printf "%f",$2}' E1_DNR.data`
   z=`awk 'END{printf "%f",$3}' E1_DNR.data`
-  E1_DNR=`awk 'END{printf "%d",$4}' E1_DNR.data`
+  #E1_DNR=`awk 'END{printf "%d",$4}' E1_DNR.data`
   
   for j in $(seq 1 $3)
   do
