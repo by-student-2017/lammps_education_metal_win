@@ -1,11 +1,11 @@
-# 4.2 Creation of Cu-Zr-Al-Ni glassy alloys
-#  4.2.1 Creation of Cu30Zr55Al10Ni5 alloy
+# 4.2 Creation of Zn-Mg-Al-Cu glassy alloys
+#  4.2.1 Creation of Zn39Mg33Al15Cu13 alloy
 #(for size X=50 Angstrom, Y=100 Angstrom, Z=100 Angstrom & cooling rate 10^14 K/s)
 #-----------------------------------------------------------------------------------------
 # LAMMPS 64-bit 22Dec2022-MSMPI
 clear
 #-------------------- Environment Settings -----------------------------------------------
-variable  Tdesird equal 2300.0 # Desired Temperature [K]
+variable  Tdesird equal  450.0 # Desired Temperature [K]
 
 variable Nsteps_h equal  10000 # Number of simulation cycles (heating process)
 variable Nsteps_a equal  20000 # Number of simulation cycles (anneling process)
@@ -13,7 +13,7 @@ variable Nsteps_c equal  10000 # Number of simulation cycles (cooling process)
 
 variable DumpFreq equal   1000 # For print out
 
-variable    dt_ps equal 0.0001 # 0.0001 [ps] = 0.1 [fs] (Atoms were lost at 0.00025 (0.25 [fs]).)
+variable    dt_ps equal  0.002 # 0.002 [ps] = 2 [fs]
 
 #-------------------- Initialization -----------------------------------------------------
 echo both
@@ -35,10 +35,10 @@ atom_style atomic
 #
 #create_atoms 1 region cu units box
 #
-# creating composition by using set command for Ni60-Zr25-Nb10-Al5 alloy 
-#set region cu type/fraction 2 0.25 12393 # set Zr 25%, randomly
-#set region cu type/fraction 3 0.10 12393 # set Nb 10%, randomly
-#set region cu type/fraction 4 0.05 12393 # set Al  5%, randomly
+# creating composition by using set command for Zn39-Mg33-Al15-Cu13 alloy 
+#set region cu type/fraction 2 0.25 12393 # set Mg 33%, randomly
+#set region cu type/fraction 3 0.10 12393 # set Al 15%, randomly
+#set region cu type/fraction 4 0.05 12393 # set Cu 13%, randomly
 #----------------------------------------------------------------------
 
 # method 2 (layer type)
@@ -47,71 +47,54 @@ lattice fcc 3.61
 region new_region block 0 50 0 100 0 50 units box 
 create_box 4 new_region # set 4 types (4 elements)
 
-# Ni (type 1)
-region nizr1 block 0 50  0 20  0 50 units box
+# Zn (type 1) only, 20%
+region znzn block 0 50  0 20  0 50 units box
 lattice fcc 3.61 orient x 1 0 0 orient y 0 1 0 orient z 0 0 1 
-create_atoms 1 region nizr1
+create_atoms 1 region znzn
 
-# Ni (type 1)
-region nizr2 block 0 50 20 40  0 50 units box
+# Zn (type 1)
+region znal block 0 50 20 40  0 50 units box
 lattice fcc 3.61 orient x 1 0 0 orient y 0 1 0 orient z 0 0 1 
-create_atoms 1 region nizr2
+create_atoms 1 region znal
 
-# Ni (type 1) main
-region nizr3 block 0 50 40 60  0 50 units box 
+# Mg (type 2) only, 20%
+region mgmg block 0 50 40 60  0 50 units box 
 lattice fcc 3.61 orient x 1 0 0 orient y 0 1 0 orient z 0 0 1 
-create_atoms 1 region nizr3
+create_atoms 2 region mgmg
 
-# Ni (type 1) main
-region ninb block  0 50 60 80  0 50 units box 
+# Mg (type 2) main
+region mgcu block  0 50 60 80 0 50 units box 
 lattice fcc 3.61 orient x 1 0 0 orient y 0 1 0 orient z 0 0 1 
-create_atoms 1 region ninb
+create_atoms 2 region mgcu
 
-# Ni (type 1) main
-region nial block  0 50 80 100 0 50 units box 
+# Mg (type 2) main
+region mgzn block  0 50 80 100 0 50 units box 
 lattice fcc 3.61 orient x 1 0 0 orient y 0 1 0 orient z 0 0 1 
-create_atoms 1 region nial
+create_atoms 2 region mgzn
 
-# creating composition by using set command for Ni60-Zr25-Nb10-Al5 alloy 
-set region nizr1 type/fraction 2 $(0.10*5) 12393 # set Zr 10%, randomly
-set region nizr2 type/fraction 2 $(0.10*5) 12393 # set Zr 10%, randomly
-set region nizr3 type/fraction 2 $(0.05*5) 12393 # set Zr  5%, randomly
-set region ninb  type/fraction 3 $(0.10*5) 12393 # set Nb 10%, randomly
-set region nial  type/fraction 4 $(0.05*5) 12393 # set Al  5%, randomly
+# creating composition by using set command for Zn39-Mg33-Al15-Cu13 alloy 
+set region znal  type/fraction 3 $(0.15*5) 12393 # set Al 15%, randomly
+set region mgcu  type/fraction 4 $(0.13*5) 12393 # set Cu 13%, randomly
+set region mgzn  type/fraction 1 $(0.14*5) 12393 # set Zn 14% (=39-20-20*(1-0.15*5)), randomly
+# check: Mg = 20(at mgmg) + 20*(1-0.13*5)(at mgcu) + 20*(1-0.14*5)(at mgzn) = 33 %
 
-#group gnizr1 region nizr1
-#group gnizr2 region nizr2
-#group gnizr3 region nizr3
-#group gninb  region ninb
-#group gnial  region nial
 #----------------------------------------------------------------------
 
 #-------------------- Force field --------------------------------------------------------
-#---------- timestep 0.0001 # 0.1 [fs] ---------
-pair_style hybrid eam/alloy eam/alloy eam/fs adp
-pair_coeff * * eam/alloy 1 ./POT/ZrAlNiTiTa_Zhou04.eam.alloy          Ni   Zr   NULL Al # Ni-Zr-Al
-pair_coeff * * eam/alloy 2 ./POT/Farkas_Nb-Ti-Al_1996.eam.alloy       NULL NULL Nb   Al # Al-Nb
-pair_coeff * * eam/fs      ./POT/Ni-Nb_1.eam.fs                       Ni   NULL Nb NULL # Ni-Nb
-pair_coeff * * adp         ./POT/Zr_Nb.2021.adp.txt                   NULL Zr   Nb NULL # Zr-Nb
+pair_style hybrid eam/alloy eam/alloy meam
+pair_coeff * * eam/alloy 1 ./POT/MgAlCu_Zhou04.eam.alloy                                  NULL Mg   Al   Cu   # Mg-Al-Cu
+pair_coeff * * eam/alloy 2 ./POT/CuZn.eam.alloy                                           Zn   NULL NULL Cu   # Zn-Cu
+pair_coeff * * meam        ./POT/MgAlZn.library.meam Mg Al Zn ./POT/MgAlZn.parameter.meam Zn   Mg   Al   NULL # Mg-Al-Zn
 #----------------------------------------------
 
-# other settings
-#---------- timestep 0.0001 # 0.1 [fs] --------
-#pair_style hybrid eam/alloy eam/alloy eam/fs meam
-#pair_coeff * * eam/alloy 1 ./POT/ZrAlNiTiTa_Zhou04.eam.alloy                Ni   Zr   NULL Al # Ni-Zr-Al
-#pair_coeff * * eam/alloy 2 ./POT/Farkas_Nb-Ti-Al_1996.eam.alloy             NULL NULL Nb   Al # Al-Nb
-#pair_coeff * * eam/fs      ./POT/v1_18_NiNb_B2.eam.fs                       Ni   NULL Nb NULL # Ni-Nb
-#pair_coeff * * meam ./POT/library.meam Hf Nb Ta Ti Zr ./POT/HfNbTaTiZr.meam NULL Zr   Nb NULL # Zr-Nb
-#----------------------------------------------
-
-#-------------------- Monte Carlo swaps (method 2 case at 9000000 K) ------------------------
-fix mc_nizr all atom/swap 1 1 12345 9000000 ke no types 1 2
-fix mc_ninb all atom/swap 1 1 12345 9000000 ke no types 1 3
-fix mc_nial all atom/swap 1 1 12345 9000000 ke no types 1 4
-run 20000
-unfix mc_nizr
-unfix mc_ninb
-unfix mc_nial
+#-------------------- Monte Carlo swaps (method 2 case at ${Tdesird} K) ------------------------
+fix mc_znmg all atom/swap 1 1 12345 ${Tdesird} ke no types 1 2
+fix mc_znal all atom/swap 1 1 12345 ${Tdesird} ke no types 1 3
+fix mc_zncu all atom/swap 1 1 12345 ${Tdesird} ke no types 1 4
+run 4000
+unfix mc_znmg
+unfix mc_znal
+unfix mc_zncu
 
 replicate 1 1 1 # Extend to 1x1x1 cell
 
@@ -139,7 +122,7 @@ fix 11 all ave/time 1000 1 1000 c_myRDF[*] file CuZrAlNi.rdf mode vector
 # heating proces
 #---------------------------------------------------------
 dump            d2 all cfg ${DumpFreq} cfg/run.heating.*.cfg mass type xs ys zs id type vx vy vz fx fy fz
-dump_modify     d2 element Ni Zr Nb Al
+dump_modify     d2 element Zn Mg Al Cu
 #---------------------------------------------------------
 fix 2 all npt temp        300 ${Tdesird} $(100*dt) iso 0.0 0.0 $(1000*dt)
 run ${Nsteps_h}
@@ -149,7 +132,7 @@ undump d2
 # anneling process
 #---------------------------------------------------------
 dump            d3 all cfg ${DumpFreq} cfg/run.anneling.*.cfg mass type xs ys zs id type vx vy vz fx fy fz
-dump_modify     d3 element Ni Zr Nb Al
+dump_modify     d3 element Zn Mg Al Cu
 #---------------------------------------------------------
 fix 3 all npt temp ${Tdesird} ${Tdesird} $(100*dt) iso 0.0 0.0 $(1000*dt)
 run ${Nsteps_a}
@@ -159,7 +142,7 @@ undump d3
 # cooling process
 #---------------------------------------------------------
 dump            d4 all cfg ${DumpFreq} cfg/run.cooling.*.cfg mass type xs ys zs id type vx vy vz fx fy fz
-dump_modify     d4 element Ni Zr Nb Al
+dump_modify     d4 element Zn Mg Al Cu
 #---------------------------------------------------------
 fix 4 all npt temp ${Tdesird}        300 $(100*dt) iso 0.0 0.0 $(1000*dt)
 run ${Nsteps_c}
@@ -184,44 +167,44 @@ print "cooling rate = ${cooling_rate} x 10^14 [K/s]"
 # the composition ratio is as follows. Also keep in mind that this value will change 
 # if you change the random number seed.
 #--------------------------------------------------------------------------------
-group ni type 1
-group zr type 2
-group nb type 3
-group al type 4
+group zn type 1
+group mg type 2
+group al type 3
+group cu type 4
 #----------------------------
-variable  nni equal count(ni)
-variable  nzr equal count(zr)
-variable  nnb equal count(nb)
+variable  nzn equal count(zn)
+variable  nmg equal count(mg)
 variable  nal equal count(al)
+variable  ncu equal count(cu)
 #----------------------------
-variable ntot equal ${nni}+${nzr}+${nnb}+${nal}
+variable ntot equal ${nzn}+${nmg}+${nal}+${ncu}
 #----------------------------
-variable nnni equal ${nni}/${ntot}
-variable nnzr equal ${nzr}/${ntot}
-variable nnnb equal ${nnb}/${ntot}
+variable nnzn equal ${nzn}/${ntot}
+variable nnmg equal ${nmg}/${ntot}
 variable nnal equal ${nal}/${ntot}
+variable nncu equal ${ncu}/${ntot}
 #-----------------------------
-variable snnni format nnni %05.3f
-variable snnzr format nnzr %05.3f
-variable snnnb format nnnb %05.3f
+variable snnzn format nnzn %05.3f
+variable snnmg format nnmg %05.3f
 variable snnal format nnal %05.3f
+variable snncu format nncu %05.3f
 #----------------------------
-variable pnni equal ${nni}/${ntot}*100
-variable pnzr equal ${nzr}/${ntot}*100
-variable pnnb equal ${nnb}/${ntot}*100
+variable pnzn equal ${nzn}/${ntot}*100
+variable pnmg equal ${nmg}/${ntot}*100
 variable pnal equal ${nal}/${ntot}*100
+variable pncu equal ${ncu}/${ntot}*100
 #-----------------------------
-variable spnni format pnni %4.1f
-variable spnzr format pnzr %4.1f
-variable spnnb format pnnb %4.1f
+variable spnzn format pnzn %4.1f
+variable spnmg format pnmg %4.1f
 variable spnal format pnal %4.1f
+variable spncu format pncu %4.1f
 #--------------------------------------------------------------------------------
-print "Ni: ${snnni}, Zr: ${snnzr}, Nb: ${snnnb}, Al: ${snnal} [ratio]"
-print "Ni: ${spnni}, Zr: ${spnzr}, Nb: ${spnnb}, Al: ${spnal} [%]"
+print "Zn: ${snnzn}, Mg: ${snnmg}, Al: ${snnal}, Cu: ${snncu} [ratio]"
+print "Zn: ${spnzn}, Mg: ${spnmg}, Al: ${spnal}, Cu: ${spncu} [%]"
 #--------------------------------------------------------------------------------
 
 #-------------------- Output data file ---------------------------------------------------
-write_data Ni60-Zr25-Nb10-Al5.data # output data for "4.2.1.4_Tensile_deformation"
+write_data Zn39-Mg33-Al15-Cu13.data # output data for "4.2.1.4_Tensile_deformation"
 
 #-------------------- End ----------------------------------------------------------------
 
