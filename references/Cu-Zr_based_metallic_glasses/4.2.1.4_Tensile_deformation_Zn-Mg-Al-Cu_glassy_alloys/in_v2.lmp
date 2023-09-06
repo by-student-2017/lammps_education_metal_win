@@ -4,17 +4,17 @@
 # LAMMPS 64-bit 22Dec2022-MSMPI
 clear
 #-------------------- Environment Settings -----------------------------------------------
-variable  Tdesird equal  300.0 # Desired Temperature [K]
+variable  Tdesird equal   300.0 # Desired Temperature [K]
 
-variable   Nsteps equal  40000 # Number of simulation cycles
-variable DumpFreq equal   1000 # For print out
+variable   Nsteps equal   20000 # Number of simulation cycles
+variable DumpFreq equal    1000 # For print out
 
-variable    dt_ps equal  0.001 # 0.001 [ps] = 1 [fs]
+variable    dt_ps equal   0.002 # 0.002 [ps] = 2 [fs]
 
-variable  es_rate equal   0.01 # engineering strain rate (1/time units)
-# Note: es_rate/dt_ps = 0.01 / (1e-15) = 1.0e13 [1/s]
+variable  es_rate equal     0.01 # engineering strain rate (1/time units)
+# Note: es_rate/dt_ps = 0.01 / (2e-15) = 5.0e12 [1/s]
 # L(t) = L(0)*(1 + es_rate*dt*step)
-# strain [%] = es_rate*dt*Nstep*100 [%] = 0.01 * 0.001 * 40000 * 100 = 40 [%]
+# strain [%] = es_rate*dt*Nstep*100 [%] = 0.01 * 0.002 * 20000 * 100 = 40 [%]
 
 #-------------------- Initialization -----------------------------------------------------
 echo both
@@ -24,13 +24,14 @@ boundary p p p
 #-------------------- Read structure file ------------------------------------------------
 atom_style atomic
 
-read_data cu49zr49al2.txt
-
-#read_data cu50zr50.txt
+read_data Ni60-Zr25-Nb10-Al5.data
 
 #-------------------- Force field --------------------------------------------------------
-pair_style eam/alloy
-pair_coeff * * CuZrAl_Zhou04.eam.alloy Cu Zr Al
+pair_style hybrid eam/alloy eam/alloy meam
+pair_coeff * * eam/alloy 1 ./POT/MgAlCu_Zhou04.eam.alloy                                  NULL Mg   Al   Cu   # Mg-Al-Cu
+pair_coeff * * eam/alloy 2 ./POT/CuZn.eam.alloy                                           Zn   NULL NULL Cu   # Zn-Cu
+pair_coeff * * meam        ./POT/MgAlZn.library.meam Mg Al Zn ./POT/MgAlZn.parameter.meam Zn   Mg   Al   NULL # Mg-Al-Zn
+#----------------------------------------------
 
 #-------------------- Energy Minimization ------------------------------------------------
 # 0 [K], structure optimization
@@ -67,7 +68,7 @@ fix fo1 all ave/time 1 3 3 c_2 v_strain v_stress v_stress_GPa v_p3 file stress_v
 ##dumps atom type; x,y,z coordinates; 6 stress tensors computed in 1 to an array of 6 elements
 #---------------------------------------------------------
 dump            d1 all cfg ${DumpFreq} cfg/run.*.cfg mass type xs ys zs id type vx vy vz fx fy fz
-dump_modify     d1 element Cu Zr Al
+dump_modify     d1 element Zn Mg Al Cu
 #---------------------------------------------------------
 #log log2al_300k_test.dat
 
@@ -88,7 +89,7 @@ fix 3 all temp/rescale 10 ${Tdesird} ${Tdesird} 0.05 1.0
 
 # calculates the radial distribution function (RDF) and output file
 compute 11 all rdf 100
-fix 4 all ave/time 100 1 100 c_11[*] file rdf_2al_300k_test.rdf mode vector
+fix 4 all ave/time 100 1 100 c_11[*] file CuZrAlNi_300k_Tensile.rdf mode vector
 
 # number of iterations is given so as to give 40% strain to the material
 run ${Nsteps}
