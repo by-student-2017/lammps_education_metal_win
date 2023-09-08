@@ -199,6 +199,11 @@ input file (metal unit, lammps)
 - Introduction to atomman: Running LAMMPS and the Log class
   https://www.ctcms.nist.gov/potentials/testing/atomman/tutorial/2.2._Running_LAMMPS_and_the_Log_class.html
   
+- 
+  Al_comp_stress-strain
+  https://ma.issp.u-tokyo.ac.jp/app-post/2315
+  https://github.com/cmsi/malive-tutorial/tree/master/lammps
+  
 - Divya and Kamal, Zeba (2013)
   http://ethesis.nitrkl.ac.in/5337/
   3d-crystal-2013D
