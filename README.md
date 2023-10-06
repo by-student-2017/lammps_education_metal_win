@@ -479,3 +479,10 @@ pair_coeff      * * ../potentials/eam/Fe-Ni-Cr_fcc.eam.fs Fe Ni Cr
 # Deep-MD
   Ren, Q., et al., Nat. Mater. (2023). https://doi.org/10.1038/s41563-023-01560-x
 ------------------------------------------------------------------------------ 
+
+
+## Acknowledgment ######################################
+- This project (modified version) is/was partially supported by the following :
+  + meguREnergy Co., Ltd.
+  + ATSUMITEC Co., Ltd.
+  + RIKEN
