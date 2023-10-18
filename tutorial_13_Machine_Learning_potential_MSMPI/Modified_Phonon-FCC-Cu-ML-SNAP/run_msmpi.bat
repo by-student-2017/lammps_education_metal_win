@@ -1,4 +1,5 @@
 set ncore=4
+set OMP_NUM_THREADS=1
 
 REM "make data.pos from POSCAR"
 findstr /V /I /R [a-z] < POSCAR > tmp.in

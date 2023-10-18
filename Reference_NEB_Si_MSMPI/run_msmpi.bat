@@ -1,4 +1,5 @@
 REM mkdir cfg
+set OMP_NUM_THREADS=1
 
 REM 4 core case
 "C:\Program Files\Microsoft MPI\Bin\mpiexec.exe" -np 4 "C:\Program Files\LAMMPS 64-bit 22Dec2022-MSMPI\bin\lmp.exe" -partition 4x1 -in in.neb.hop1
