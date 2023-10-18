@@ -1,4 +1,5 @@
 set ncore=1
+set OMP_NUM_THREADS=1
 
 set pistvel=100.0    REM The desired initial velocity.
 set temp=300         REM The desired initial temperature.
