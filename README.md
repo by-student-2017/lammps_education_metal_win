@@ -104,7 +104,7 @@ pair_coeff      * * ../potentials/eam/Fe-Ni-Cr_fcc.eam.fs Fe Ni Cr
 - If you are lucky enough to have all the potentials you want to calculate, even if they are separate, you can calculate them by hybridizing them like this.
 
 ## tutorial_12_interface
-- It is an example of an interface. In addition, I recommend watching ÅgTutorials_by_NextZenStudentÅh and Youtube videos.
+- It is an example of an interface. In addition, I recommend watching ‚ÄúTutorials_by_NextZenStudent‚Äù and Youtube videos.
 
 ## tutorial_13_Machine_Learning_potential_MSMPI
 - Calculation using potential by neural network. OpenKIM is available in the Linux version, so if you want to use more potential, please try the Linux version.
@@ -153,29 +153,29 @@ pair_coeff      * * ../potentials/eam/Fe-Ni-Cr_fcc.eam.fs Fe Ni Cr
 
 ## units metal
 
-ÅEStillinger-Weber (SW)
+„ÉªStillinger-Weber (SW)
 
-ÅETersoff
+„ÉªTersoff
 
-ÅEEAM, FS
+„ÉªEAM, FS
 
-ÅEMEAM
+„ÉªMEAM
 
-ÅEADP
+„ÉªADP
 
-ÅEREBO, AIREBO
+„ÉªREBO, AIREBO
 
-ÅECOMB
+„ÉªCOMB
 
-ÅEEIM
+„ÉªEIM
 
-ÅEBOP
+„ÉªBOP
 
-ÅEadiabatic core/shell model
+„Éªadiabatic core/shell model
 
-ÅEStreitz-Mintmire
+„ÉªStreitz-Mintmire
 
-ÅEvashishta
+„Éªvashishta
 
 ------------------------------------------------------------------------------
 # potential files
@@ -485,4 +485,3 @@ pair_coeff      * * ../potentials/eam/Fe-Ni-Cr_fcc.eam.fs Fe Ni Cr
 - This project (modified version) is/was partially supported by the following :
   + meguREnergy Co., Ltd.
   + ATSUMITEC Co., Ltd.
-  + RIKEN
