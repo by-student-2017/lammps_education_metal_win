@@ -1,0 +1,80 @@
+# The following script introduces a point defect, specifically a vacancy, into 
+#  the Fe sublattice of the FeCo system. The simulation captures the energy of
+#  the ground state for both the initial system and the system after removing the Fe atom, 
+#  yielding valuable insights into the vacancy formation energy. Furthermore, 
+#  this script can be readily adapted to calculate formation energies for 
+#  the other types of vacancies and antisites.
+
+
+# --- Initialize Simulation ---
+units metal
+dimension 3
+boundary p p p 
+atom_style atomic
+
+# --- Atom & Box definition ---
+variable ao equal 2.84
+#lattice constant/2
+variable b equal 4 #box side size in unit cells
+variable c equal "v_ao * v_b" #box side size in Angstroms
+
+# --- Create Atoms ---
+region simbox block -$c $c -$c $c -$c $c
+create_box 3 simbox
+
+# --- Fe ---
+lattice custom 1 a1 ${ao} 0 0 a2 0 ${ao} 0 a3 0 0 ${ao} &
+ basis 0.0 0 0.0
+create_atoms 1 region simbox
+
+# --- Co ---
+lattice custom 1 a1 ${ao} 0 0 a2 0 ${ao} 0 a3 0 0 ${ao} &
+ basis 0.5 0.5 0.5
+create_atoms 2 region simbox
+
+# --- POTENTIAL ---
+pair_style meam
+pair_coeff * * library.meam Fe Co V FeCoV.meam Fe Co V 
+
+# --- Settings ---
+compute csym all centro/atom bcccompute eng all pe/atom 
+compute eatoms all reduce sum c_eng
+
+# --- Minimization ---
+reset_timestep 0
+
+thermo 10
+thermo_style custom step pe lx ly lz press pxx pyy pzz c_eatoms 
+
+min_style cg
+minimize 1e-15 1e-15 5000 5000
+
+variable N equal count(all)
+variable No equal $N
+variable E equal "c_eatoms"
+variable Ei equal $E
+
+# --- Atom removal ---
+variable r2 equal sqrt(${ao}^2+${ao}^2)/4
+region select sphere 0 0 0 ${r2} units box
+delete_atoms region select compress yes
+
+# --- Minimization ---
+reset_timestep 0
+
+thermo 10
+thermo_style custom step pe lx ly lz press pxx pyy pzz c_eatoms 
+
+dump 1 all custom 500 VacancyFe.ovi id type xs ys zs c_csym c_eng 
+
+min_style cg
+minimize 1e-15 1e-15 5000 5000
+
+variable Ef equal "c_eatoms"
+variable Ev equal (${Ef}-((${No}-1)/${No})*${Ei})
+print "=================="
+print "Results for vacancy in Fe(alpha) sublattice"
+print "=================="
+print "Total number of atoms = ${No}"print "Initial energy of atoms = ${Ei} eV"
+print "Final energy of atoms = ${Ef} eV"
+print "Formation energy = ${Ev} eV"
