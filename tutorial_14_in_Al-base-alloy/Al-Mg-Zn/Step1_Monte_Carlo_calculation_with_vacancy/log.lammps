@@ -1,0 +1,170 @@
+LAMMPS (22 Dec 2022)
+  using 1 OpenMP thread(s) per MPI task
+Loaded 1 plugins from C:\Program Files\LAMMPS 64-bit 23Jun2022\plugins
+Loaded 0 plugins from C:\Program Files\LAMMPS 64-bit 23Jun2022-MPI\plugins
+Loaded 1 plugins from C:\Program Files\LAMMPS 64-bit 22Dec2022-MSMPI\plugins
+Loaded 1 plugins from C:\Program Files\LAMMPS 64-bit 28Mar2023-MPI\plugins
+#-----------------------------------------------------------------------------------------
+# 4.2 Creation of Al-Mg-Zn alloys
+#  Test: LAMMPS 64-bit 22Dec2022-MSMPI version
+#-----------------------------------------------------------------------------------------
+clear
+  using 1 OpenMP thread(s) per MPI task
+Loaded 1 plugins from C:\Program Files\LAMMPS 64-bit 23Jun2022\plugins
+Loaded 0 plugins from C:\Program Files\LAMMPS 64-bit 23Jun2022-MPI\plugins
+Loaded 1 plugins from C:\Program Files\LAMMPS 64-bit 22Dec2022-MSMPI\plugins
+Loaded 1 plugins from C:\Program Files\LAMMPS 64-bit 28Mar2023-MPI\plugins
+echo both
+#-------------------- Environment Settings -----------------------------------------------
+variable  Tdesird equal  273+200.0 # Desired Temperature [K]
+
+variable      cMg equal   0.066 # Mg concentration
+variable      cZn equal   0.003 # Zn concentration
+
+variable      cVa equal 0.00016 # vacancy concentration (e.g., 0.016%)
+
+variable      xha equal     100 # simulation size, x axis [Angstrom] (e.g., 50 - 1000)
+variable      yha equal     100 # simulation size, y axis [Angstrom] (e.g., 50 - 1000)
+variable      zha equal      10 # simulation size, z axis [Angstrom] (e.g.,  8 - 20)
+
+variable Nsteps   equal  100000 # The number of calculations (e.g., 1000 - 100000)
+variable Nout     equal    1000 # output (e.g., 10 - 1000)
+
+variable rseed    equal   12345 # random seed (Note: If you want different results, use different values.)
+
+#-------------------- Initialization -----------------------------------------------------
+units metal
+dimension 3
+boundary p p p
+
+#-------------------- Atom & Lattice description ----------------------------------------
+atom_style atomic
+
+#----------------------------------------------------------------------
+region box block 0 ${xha} 0 ${yha} 0 ${zha} units box
+region box block 0 100 0 ${yha} 0 ${zha} units box
+region box block 0 100 0 100 0 ${zha} units box
+region box block 0 100 0 100 0 10 units box
+create_box 3 box
+Created orthogonal box = (0 0 0) to (100 100 10)
+  2 by 5 by 1 MPI processor grid
+
+lattice fcc 4.04685 # Al FCC lattice constant [Angstrom]
+Lattice spacing in x,y,z = 4.04685 4.04685 4.04685
+region al block 0 ${xha} 0 ${yha} 0 ${zha} units box
+region al block 0 100 0 ${yha} 0 ${zha} units box
+region al block 0 100 0 100 0 ${zha} units box
+region al block 0 100 0 100 0 10 units box
+create_atoms 1 region al units box
+Created 6250 atoms
+  using box units in orthogonal box = (0 0 0) to (100 100 10)
+  create_atoms CPU = 0.001 seconds
+
+# creating composition by using set command for AlMgZn alloy
+set region al type/fraction 2 ${cMg} ${rseed} # set Mg (type = 2) concentration randomly
+set region al type/fraction 2 0.066 ${rseed} 
+set region al type/fraction 2 0.066 12345 
+Setting atom values ...
+  434 settings made for type/fraction
+set region al type/fraction 3 ${cZn} ${rseed} # set Zn (type = 3) concentration randomly
+set region al type/fraction 3 0.003 ${rseed} 
+set region al type/fraction 3 0.003 12345 
+Setting atom values ...
+  19 settings made for type/fraction
+
+# vacancy
+delete_atoms random fraction ${cVa} yes all NULL ${rseed}
+delete_atoms random fraction 0.00016 yes all NULL ${rseed}
+delete_atoms random fraction 0.00016 yes all NULL 12345
+Deleted 1 atoms, new total = 6249
+#delete_atoms random count 1 yes all NULL ${rseed}
+#----------------------------------------------------------------------
+
+variable elem string "Al Mg Zn"
+
+#-------------------- Force field --------------------------------------------------------
+pair_style meam
+
+#----- MEAM_potential_2021_version -----
+variable padress string "./../MEAM_potential_2021_version"
+pair_coeff * *  ${padress}/library.meam ${elem}  ${padress}/AlZnMg.meam ${elem}
+pair_coeff * *  ./../MEAM_potential_2021_version/library.meam ${elem}  ${padress}/AlZnMg.meam ${elem}
+pair_coeff * *  ./../MEAM_potential_2021_version/library.meam Al Mg Zn  ${padress}/AlZnMg.meam ${elem}
+pair_coeff * *  ./../MEAM_potential_2021_version/library.meam Al Mg Zn  ./../MEAM_potential_2021_version/AlZnMg.meam ${elem}
+pair_coeff * *  ./../MEAM_potential_2021_version/library.meam Al Mg Zn  ./../MEAM_potential_2021_version/AlZnMg.meam Al Mg Zn
+
+#----- MEAM_potential_2018_version -----
+#variable padress string "./../MEAM_potential_2018_version"
+#pair_coeff * *  ${padress}/MgAlZn.library.meam ${elem}  ${padress}/MgAlZn.parameter.meam ${elem}
+
+#-----------------------------------------------------------------------------------------
+
+#---------- output file settings --------------------------------------
+dump            d1 all cfg ${Nout} cfg/run.mc.*.cfg mass type xs ys zs id type vx vy vz fx fy fz
+dump            d1 all cfg 1000 cfg/run.mc.*.cfg mass type xs ys zs id type vx vy vz fx fy fz
+dump_modify     d1 element ${elem}
+dump_modify     d1 element Al Mg Zn
+#----------------------------------------------------------------------
+
+#----- the uniform-acceptance force-bias Monte Carlo (fbMC) simulations -----
+fix f0 all tfmc 0.1 ${Tdesird} ${rseed} com 1 1 1 rot
+fix f0 all tfmc 0.1 473 ${rseed} com 1 1 1 rot
+fix f0 all tfmc 0.1 473 12345 com 1 1 1 rot
+
+run ${Nsteps}
+run 100000
+Neighbor list info ...
+  update: every = 1 steps, delay = 0 steps, check = yes
+  max neighbors/atom: 2000, page size: 100000
+  master list distance cutoff = 8
+  ghost atom cutoff = 8
+  binsize = 4, bins = 25 25 3
+  2 neighbor lists, perpetual/occasional/extra = 2 0 0
+  (1) pair meam, perpetual
+      attributes: full, newton on
+      pair build: full/bin/atomonly
+      stencil: full/bin/3d
+      bin: standard
+  (2) pair meam, perpetual, half/full from (1)
+      attributes: half, newton on
+      pair build: halffull/newton
+      stencil: none
+      bin: none
+Per MPI rank memory allocation (min/avg/max) = 11.84 | 11.86 | 11.88 Mbytes
+   Step          Temp          E_pair         E_mol          TotEng         Press     
+         0   0             -15842.032      0             -15842.032      152815.58    
+    100000   0             -19383.646      0             -19383.646      51133.667    
+Loop time of 2287.62 on 10 procs for 100000 steps with 6249 atoms
+
+Performance: 3.777 ns/day, 6.355 hours/ns, 43.714 timesteps/s, 273.166 katom-step/s
+49.2% CPU use with 10 MPI tasks x 1 OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 1898.5     | 1910.2     | 1926.1     |  16.4 | 83.50
+Neigh   | 2.0837     | 2.1088     | 2.1535     |   1.3 |  0.09
+Comm    | 173.76     | 189.54     | 200.98     |  51.9 |  8.29
+Output  | 0.47148    | 0.53054    | 0.60861    |   6.5 |  0.02
+Modify  | 174.41     | 176.01     | 177.99     |   8.6 |  7.69
+Other   |            | 9.23       |            |       |  0.40
+
+Nlocal:          624.9 ave         633 max         613 min
+Histogram: 1 1 1 0 0 0 3 0 2 2
+Nghost:         3243.1 ave        3279 max        3214 min
+Histogram: 2 1 0 0 1 4 1 0 0 1
+Neighs:        42497.6 ave       43177 max       41710 min
+Histogram: 2 0 1 1 2 0 0 0 1 3
+FullNghs:      84995.2 ave       86316 max       83419 min
+Histogram: 2 0 1 1 0 2 0 0 1 3
+
+Total # of neighbors = 849952
+Ave neighs/atom = 136.01408
+Neighbor list builds = 875
+Dangerous builds = 0
+
+write_data data_after_step1.lammps
+System init for write_data ...
+
+#-------------------- End ----------------------------------------------------------------
+Total wall time: 0:38:07
