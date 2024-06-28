@@ -1,0 +1,70 @@
+#-----------------------------------------------------------------------------------------
+# 4.2 Creation of Al-Mg-Zn alloys
+#  Test: LAMMPS 64-bit 22Dec2022-MSMPI version
+#-----------------------------------------------------------------------------------------
+clear
+echo both
+#-------------------- Environment Settings -----------------------------------------------
+variable  Tdesird equal  273+200.0 # Desired Temperature [K]
+
+variable      cMg equal   0.066 # Mg concentration
+variable      cZn equal   0.003 # Zn concentration
+
+variable      xha equal     100 # simulation size, x axis [Angstrom] (e.g., 50 - 1000)
+variable      yha equal     100 # simulation size, y axis [Angstrom] (e.g., 50 - 1000)
+variable      zha equal      10 # simulation size, z axis [Angstrom] (e.g.,  8 - 20)
+
+variable Nsteps   equal  100000 # The number of calculations (e.g., 1000 - 100000)
+variable Nout     equal    1000 # output (e.g., 10 - 1000)
+
+variable rseed    equal   12345 # random seed (Note: If you want different results, use different values.)
+
+#-------------------- Initialization -----------------------------------------------------
+units metal
+dimension 3
+boundary p p p
+
+#-------------------- Atom & Lattice description ----------------------------------------
+atom_style atomic
+
+#----------------------------------------------------------------------
+region box block 0 ${xha} 0 ${yha} 0 ${zha} units box
+create_box 3 box
+
+lattice fcc 4.04685 # Al FCC lattice constant [Angstrom]
+region al block 0 ${xha} 0 ${yha} 0 ${zha} units box
+create_atoms 1 region al units box
+
+# creating composition by using set command for AlMgZn alloy 
+set region al type/fraction 2 ${cMg} ${rseed} # set Mg (type = 2) concentration randomly
+set region al type/fraction 3 ${cZn} ${rseed} # set Zn (type = 3) concentration randomly
+#----------------------------------------------------------------------
+
+variable elem string "Al Mg Zn"
+
+#-------------------- Force field --------------------------------------------------------
+pair_style meam
+
+#----- MEAM_potential_2021_version -----
+variable padress string "./../MEAM_potential_2021_version"
+pair_coeff * *  ${padress}/library.meam ${elem}  ${padress}/AlZnMg.meam ${elem}
+
+#----- MEAM_potential_2018_version -----
+#variable padress string "./../MEAM_potential_2018_version"
+#pair_coeff * *  ${padress}/MgAlZn.library.meam ${elem}  ${padress}/MgAlZn.parameter.meam ${elem}
+
+#-----------------------------------------------------------------------------------------
+
+#---------- output file settings --------------------------------------
+dump            d1 all cfg ${Nout} cfg/run.mc.*.cfg mass type xs ys zs id type vx vy vz fx fy fz
+dump_modify     d1 element ${elem}
+#----------------------------------------------------------------------
+
+#----- the uniform-acceptance force-bias Monte Carlo (fbMC) simulations -----
+fix f0 all tfmc 0.1 ${Tdesird} ${rseed} com 1 1 1 rot
+
+run ${Nsteps}
+
+write_data data_after_step1.lammps
+
+#-------------------- End ----------------------------------------------------------------
