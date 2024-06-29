@@ -2,10 +2,13 @@
 # 4.2 Creation of Al-Mg-Zn alloys
 #  Test: LAMMPS 64-bit 22Dec2022-MSMPI version
 #-----------------------------------------------------------------------------------------
+# Note: The key is to set the temperature process so that the nucleus of 
+#   the desired crystal (in this case, FCC Al) remains as small as possible.
+#-----------------------------------------------------------------------------------------
 clear
 echo both
 #-------------------- Environment Settings -----------------------------------------------
-variable       Tm equal  273+710.0 # <= near the melting point + 50 K
+variable       Tm equal  273+690.0 # <= near the melting point (640) + 50 K
 variable  Tdesird equal  273+200.0 # Desired Temperature [K]
 
 variable      cMg equal   0.066 # Mg concentration
@@ -88,21 +91,21 @@ velocity all create 4.0 ${rseed} mom yes rot yes dist gaussian
 # Heating
 #fix f1 all nvt temp 4.0 ${Tm} $(100*dt)
 fix f1 all npt temp 4.0 ${Tm} $(100*dt) iso 1.0 1.0 $(1000*dt)
-run 5000 # 10 [ps] (e.g., 6 - 20 [ps])
+run 5000 # 10 [ps] (e.g., 10 - 100 [ps])
 unfix f1
 
 #-------------------- Run the simulation -------------------------------------------------
 # Annealing
 #fix f2 all nvt temp ${Tm} ${Tm} $(100*dt)
 fix f2 all npt temp ${Tm} ${Tm} $(100*dt) iso 1.0 1.0 $(1000*dt)
-run 5000 # 10 [ps] (e.g., 8 - 20 [ps])
+run 5000 # 10 [ps] (e.g., 10 - 100 [ps])
 unfix f2
 
 #-------------------- Run the simulation -------------------------------------------------
 # Cooling
 #fix f3 all nvt temp ${Tm} ${Tdesird} $(100*dt)
 fix f3 all npt temp ${Tm} ${Tdesird} $(100*dt) iso 1.0 1.0 $(1000*dt)
-run 10000 # 20 [ps] (e.g., 10 - 40 [ps])
+run 25000 # 50 [ps] (e.g., 50 - 500 [ps])
 unfix f3
 
 undump d1
