@@ -91,27 +91,30 @@ velocity all create 4.0 ${rseed} mom yes rot yes dist gaussian
 # Heating
 #fix f1 all nvt temp 4.0 ${Tm} $(100*dt)
 fix f1 all npt temp 4.0 ${Tm} $(100*dt) iso 1.0 1.0 $(1000*dt)
-run 5000 # 10 [ps] (e.g., 10 - 100 [ps])
+run 5000 # 10 [ps] (e.g., 10 - 100 [ps]) # <= run $(int(5000*exp(-640/670)/exp(-640/v_Tm)))
 unfix f1
 
 #-------------------- Run the simulation -------------------------------------------------
 # Annealing
 #fix f2 all nvt temp ${Tm} ${Tm} $(100*dt)
 fix f2 all npt temp ${Tm} ${Tm} $(100*dt) iso 1.0 1.0 $(1000*dt)
-run 3000 # 6 [ps] (e.g., 6 - 60 [ps])
+run 3000 # 6 [ps] (e.g., 6 - 60 [ps]) # <= run $(int(3000*exp(-640/670)/exp(-640/v_Tm)))
 unfix f2
 
 #-------------------- Run the simulation -------------------------------------------------
 # Cooling
 #fix f3 all nvt temp ${Tm} ${Tdesird} $(100*dt)
 fix f3 all npt temp ${Tm} ${Tdesird} $(100*dt) iso 1.0 1.0 $(1000*dt)
-run 30000 # 60 [ps] (e.g., 60 - 600 [ps])
+run 30000 # 60 [ps] (e.g., 60 - 600 [ps]) # <= run $(int(30000*exp(-640/670)/exp(-640/v_Tm)))
 unfix f3
 
 undump d1
 
 #-------------------- Run the simulation -------------------------------------------------
 reset_timestep 0
+
+thermo       1000
+thermo_style custom step temp pe etotal ke vol
 
 #---------- output file settings --------------------------------------
 dump            d2 all cfg ${Nout} cfg/run.mc.*.cfg mass type xs ys zs id type vx vy vz fx fy fz
