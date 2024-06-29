@@ -8,7 +8,7 @@ for %%1 in (in.lmp) do (
   echo input file: %%1
 )
 
-rem call plot_rdf_all.gpl
+rem call plot_rdf.gpl
 rem call plot_msd.gpl
 
 pause
