@@ -8,7 +8,8 @@
 clear
 echo both
 #-------------------- Environment Settings -----------------------------------------------
-variable       Tm equal  273+710.0 # <= near the melting point (660) + 50 K
+variable       Tm equal  273+690.0 # <= near the melting point (640) + 50 K
+variable       Tc equal  273+590.0 # <= near the melting point (640) - 50 K (initial temperature of cooling process)
 variable  Tdesird equal  273+200.0 # Desired Temperature [K]
 
 variable      cMg equal   0.066 # Mg concentration
@@ -24,7 +25,7 @@ variable Nout     equal    1000 # output (e.g., 10 - 1000)
 
 variable rseed    equal   12345 # random seed (Note: If you want different results, use different values.)
 
-variable     rnuc equal       6 # radius of nuclei
+variable     rnuc equal       8 # radius of nuclei
 
 #-------------------- Initialization -----------------------------------------------------
 units metal
@@ -66,12 +67,12 @@ pair_coeff * *  ${padress}/library.meam ${elem}  ${padress}/AlZnMg.meam ${elem}
 
 #-------------------- Energy Minimization ------------------------------------------------
 # 0 [K], structure optimization
-fix             emin all box/relax iso 1.0
-min_style       cg
-min_modify      dmax 0.2
-min_modify      line quadratic
-minimize        1.0e-6 1.0e-8 4000 10000
-unfix           emin
+#fix             emin all box/relax iso 1.0
+#min_style       cg
+#min_modify      dmax 0.2
+#min_modify      line quadratic
+#minimize        1.0e-6 1.0e-8 4000 10000
+#unfix           emin
 
 #-------------------- Settings -----------------------------------------------------------
 reset_timestep 0
@@ -92,14 +93,14 @@ velocity all create 4.0 ${rseed} mom yes rot yes dist gaussian
 # Heating
 #fix f1 all nvt temp 4.0 ${Tm} $(100*dt)
 fix f1 all npt temp 4.0 ${Tm} $(100*dt) iso 1.0 1.0 $(1000*dt)
-run 5000 # 10 [ps] (e.g., 10 - 100 [ps]) # <= run $(int(5000*exp(-640/710)/exp(-640/v_Tm)))
+run 5000 # 10 [ps] (e.g., 10 - 100 [ps]) # <= run $(int(5000*exp(-640/690)/exp(-640/v_Tm)))
 unfix f1
 
 #-------------------- Run the simulation -------------------------------------------------
 # Annealing
 #fix f2 all nvt temp ${Tm} ${Tm} $(100*dt)
 fix f2 all npt temp ${Tm} ${Tm} $(100*dt) iso 1.0 1.0 $(1000*dt)
-run 15000 # 30 [ps] (e.g., 24 - 60 [ps]) # <= run $(int(12000*exp(-640/710)/exp(-640/v_Tm)))
+run 13000 # 26 [ps] (e.g., 24 - 60 [ps]) # <= run $(int(13000*exp(-640/690)/exp(-640/v_Tm)))
 unfix f2
 
 undump d1
@@ -113,13 +114,13 @@ variable     ryhi equal $(yhi-v_rnuc)
 variable     rzlo equal $(zlo)
 variable     rzhi equal $(zhi)
 
-variable        N equal 2 # The number of nucleus
+variable        N equal 3 # The number of nucleus
 #------------------------------------
 variable I loop 1 $N
 label LOOP
 
-variable       rx equal random(${rxlo},${rxhi},$(v_rseed+v_I*10))
-variable       ry equal random(${rylo},${ryhi},$(v_rseed+v_I*10))
+variable       rx equal random(${rxlo},${rxhi},$(v_rseed+v_I))
+variable       ry equal random(${rylo},${ryhi},$(v_rseed+v_I))
 
 region nucl_$I cylinder z ${rx} ${ry} ${rnuc} ${rzlo} ${rzhi} units box
 #region nucl_$I block $(v_rx-v_rnuc) $(v_rx+v_rnuc) $(v_ry-v_rnuc) $(v_ry+v_rnuc) ${rzlo} ${rzhi} units box
@@ -132,18 +133,21 @@ next I
 jump SELF LOOP
 #------------------------------------
 
-delete_atoms overlap 0.9 all all # <= about 90% of H-H distance
+delete_atoms overlap $(1.429*2.0*0.84) all all # set 2.4 = 84% of Al-Al distance (Al: atomic radii = 1.429 Angstrom)
+# Note: 2.2 Angstrom is a lower bound in RDF data of this Al-Mg-Zn composition.
 
 #------------------------------
 dump            d2 all cfg ${Nout} cfg/run.cool.*.cfg mass type xs ys zs id type vx vy vz fx fy fz
 dump_modify     d2 element ${elem}
 #------------------------------
 
+velocity all create ${Tc} ${rseed} mom yes rot yes dist gaussian
+
 #-------------------- Run the simulation -------------------------------------------------
 # Cooling
-#fix f3 all nvt temp ${Tm} ${Tdesird} $(100*dt)
-fix f3 all npt temp ${Tm} ${Tdesird} $(100*dt) iso 1.0 1.0 $(1000*dt)
-run 40000 # 80 [ps] (e.g., 80 - 800 [ps]) # <= run $(int(40000*exp(-640/710)/exp(-640/v_Tm)))
+#fix f3 all nvt temp ${Tc} ${Tdesird} $(100*dt)
+fix f3 all npt temp ${Tc} ${Tdesird} $(100*dt) iso 1.0 1.0 $(1000*dt)
+run 40000 # 80 [ps] (e.g., 80 - 800 [ps]) # <= run $(int(40000*exp(-640/690)/exp(-640/v_Tm)))
 unfix f3
 
 write_data data_after_step1.lammps
