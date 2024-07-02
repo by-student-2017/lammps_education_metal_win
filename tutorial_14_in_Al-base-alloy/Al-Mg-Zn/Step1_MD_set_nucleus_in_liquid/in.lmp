@@ -1,0 +1,151 @@
+#-----------------------------------------------------------------------------------------
+# 4.2 Creation of Al-Mg-Zn alloys
+#  Test: LAMMPS 64-bit 22Dec2022-MSMPI version
+#-----------------------------------------------------------------------------------------
+# Note: The key is to set the temperature process so that the nucleus of 
+#   the desired crystal (in this case, FCC Al) remains as small as possible.
+#-----------------------------------------------------------------------------------------
+clear
+echo both
+#-------------------- Environment Settings -----------------------------------------------
+variable       Tm equal  273+710.0 # <= near the melting point (660) + 50 K
+variable  Tdesird equal  273+200.0 # Desired Temperature [K]
+
+variable      cMg equal   0.066 # Mg concentration
+variable      cZn equal   0.003 # Zn concentration
+
+#variable      cVa equal 0.00016 # vacancy concentration (e.g., 0.016%)
+
+variable      xha equal     100 # simulation size, x axis [Angstrom] (e.g., 50 - 1000)
+variable      yha equal     100 # simulation size, y axis [Angstrom] (e.g., 50 - 1000)
+variable      zha equal      10 # simulation size, z axis [Angstrom] (e.g.,  8 - 20)
+
+variable Nout     equal    1000 # output (e.g., 10 - 1000)
+
+variable rseed    equal   12345 # random seed (Note: If you want different results, use different values.)
+
+variable     rnuc equal       6 # radius of nuclei
+
+#-------------------- Initialization -----------------------------------------------------
+units metal
+dimension 3
+boundary p p p
+
+#-------------------- Atom & Lattice description ----------------------------------------
+atom_style atomic
+
+#----------------------------------------------------------------------
+region box block 0 ${xha} 0 ${yha} 0 ${zha} units box
+create_box 3 box
+
+lattice fcc 4.04685 # Al FCC lattice constant [Angstrom]
+region al block 0 ${xha} 0 ${yha} 0 ${zha} units box
+create_atoms 1 region al units box
+
+# creating composition by using set command for AlMgZn alloy 
+set region al type/fraction 2 ${cMg} ${rseed} # set Mg (type = 2) concentration randomly
+set region al type/fraction 3 ${cZn} ${rseed} # set Zn (type = 3) concentration randomly
+
+# vacancy
+#delete_atoms random fraction ${cVa} yes all NULL ${rseed}
+#delete_atoms random count 1 yes all NULL ${rseed}
+#----------------------------------------------------------------------
+
+variable elem string "Al Mg Zn"
+
+#-------------------- Force field --------------------------------------------------------
+pair_style meam
+
+#----- MEAM_potential_2021_version -----
+variable padress string "./../MEAM_potential_2021_version"
+pair_coeff * *  ${padress}/library.meam ${elem}  ${padress}/AlZnMg.meam ${elem}
+
+#----- MEAM_potential_2018_version -----
+#variable padress string "./../MEAM_potential_2018_version"
+#pair_coeff * *  ${padress}/MgAlZn.library.meam ${elem}  ${padress}/MgAlZn.parameter.meam ${elem}
+
+#-------------------- Energy Minimization ------------------------------------------------
+# 0 [K], structure optimization
+fix             emin all box/relax iso 1.0
+min_style       cg
+min_modify      dmax 0.2
+min_modify      line quadratic
+minimize        1.0e-6 1.0e-8 4000 10000
+unfix           emin
+
+#-------------------- Settings -----------------------------------------------------------
+reset_timestep 0
+
+timestep     0.002 # 2.0 [fs] (Recommend 0.1-3.5 [fs]), sets the timestep for subsequent simulations
+
+thermo       100
+thermo_style custom step temp pe etotal ke vol
+
+#------------------------------
+dump            d1 all cfg ${Nout} cfg/run.melt.*.cfg mass type xs ys zs id type vx vy vz fx fy fz
+dump_modify     d1 element ${elem}
+#------------------------------
+
+velocity all create 4.0 ${rseed} mom yes rot yes dist gaussian
+
+#-------------------- Run the simulation -------------------------------------------------
+# Heating
+fix f1 all nvt temp 4.0 ${Tm} $(100*dt)
+fix f1 all npt temp 4.0 ${Tm} $(100*dt) iso 1.0 1.0 $(1000*dt)
+run 5000 # 10 [ps] (e.g., 10 - 100 [ps]) # <= run $(int(5000*exp(-640/710)/exp(-640/v_Tm)))
+unfix f1
+
+#-------------------- Run the simulation -------------------------------------------------
+# Annealing
+fix f2 all nvt temp ${Tm} ${Tm} $(100*dt)
+fix f2 all npt temp ${Tm} ${Tm} $(100*dt) iso 1.0 1.0 $(1000*dt)
+run 15000 # 30 [ps] (e.g., 24 - 60 [ps]) # <= run $(int(15000*exp(-640/710)/exp(-640/v_Tm)))
+unfix f2
+
+undump d1
+#-------------------- Set the nucleus ----------------------------------------------------
+reset_timestep 0
+
+variable     rxlo equal $(xlo+v_rnuc)
+variable     rxhi equal $(xhi-v_rnuc)
+variable     rylo equal $(ylo+v_rnuc)
+variable     ryhi equal $(yhi-v_rnuc)
+variable     rzlo equal $(zlo)
+variable     rzhi equal $(zhi)
+
+variable        N equal 2 # The number of nucleus
+#------------------------------------
+variable I loop 1 $N
+label LOOP
+
+variable       rx equal random(${rxlo},${rxhi},$(v_rseed+v_I*10))
+variable       ry equal random(${rylo},${ryhi},$(v_rseed+v_I*10))
+
+region nucl_$I cylinder z ${rx} ${ry} ${rnuc} ${rzlo} ${rzhi} units box
+#region nucl_$I block $(v_rx-v_rnuc) $(v_rx+v_rnuc) $(v_ry-v_rnuc) $(v_ry+v_rnuc) ${rzlo} ${rzhi} units box
+delete_atoms region nucl_$I
+lattice fcc 4.04685 orient x $I 1 0 orient y -1 $I 0
+create_atoms 1 region nucl_$I units box
+#region nucl_$I delete
+
+next I
+jump SELF LOOP
+#------------------------------------
+
+delete_atoms overlap 0.9 all all # <= about 90% of H-H distance
+
+#------------------------------
+dump            d2 all cfg ${Nout} cfg/run.cool.*.cfg mass type xs ys zs id type vx vy vz fx fy fz
+dump_modify     d2 element ${elem}
+#------------------------------
+
+#-------------------- Run the simulation -------------------------------------------------
+# Cooling
+#fix f3 all nvt temp ${Tm} ${Tdesird} $(100*dt)
+fix f3 all npt temp ${Tm} ${Tdesird} $(100*dt) iso 1.0 1.0 $(1000*dt)
+run 40000 # 80 [ps] (e.g., 80 - 800 [ps]) # <= run $(int(40000*exp(-640/710)/exp(-640/v_Tm)))
+unfix f3
+
+write_data data_after_step1.lammps
+
+#-------------------- End ----------------------------------------------------------------
