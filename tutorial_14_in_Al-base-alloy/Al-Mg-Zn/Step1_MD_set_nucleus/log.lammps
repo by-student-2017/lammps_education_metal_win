@@ -1,0 +1,1293 @@
+LAMMPS (22 Dec 2022)
+  using 1 OpenMP thread(s) per MPI task
+Loaded 1 plugins from C:\Program Files\LAMMPS 64-bit 23Jun2022\plugins
+Loaded 0 plugins from C:\Program Files\LAMMPS 64-bit 23Jun2022-MPI\plugins
+Loaded 1 plugins from C:\Program Files\LAMMPS 64-bit 22Dec2022-MSMPI\plugins
+Loaded 1 plugins from C:\Program Files\LAMMPS 64-bit 28Mar2023-MPI\plugins
+#-----------------------------------------------------------------------------------------
+# 4.2 Creation of Al-Mg-Zn alloys
+#  Test: LAMMPS 64-bit 22Dec2022-MSMPI version
+#-----------------------------------------------------------------------------------------
+# Note: The key is to set the temperature process so that the nucleus of
+#   the desired crystal (in this case, FCC Al) remains as small as possible.
+#-----------------------------------------------------------------------------------------
+clear
+  using 1 OpenMP thread(s) per MPI task
+Loaded 1 plugins from C:\Program Files\LAMMPS 64-bit 23Jun2022\plugins
+Loaded 0 plugins from C:\Program Files\LAMMPS 64-bit 23Jun2022-MPI\plugins
+Loaded 1 plugins from C:\Program Files\LAMMPS 64-bit 22Dec2022-MSMPI\plugins
+Loaded 1 plugins from C:\Program Files\LAMMPS 64-bit 28Mar2023-MPI\plugins
+echo both
+#-------------------- Environment Settings -----------------------------------------------
+variable  Tdesird equal  273+200.0 # Desired Temperature [K]
+
+variable      cMg equal   0.066 # Mg concentration
+variable      cZn equal   0.003 # Zn concentration
+
+#variable      cVa equal 0.00016 # vacancy concentration (e.g., 0.016%)
+
+variable      xha equal     100 # simulation size, x axis [Angstrom] (e.g., 50 - 1000)
+variable      yha equal     100 # simulation size, y axis [Angstrom] (e.g., 50 - 1000)
+variable      zha equal      10 # simulation size, z axis [Angstrom] (e.g.,  8 - 20)
+
+variable Nout     equal    1000 # output (e.g., 10 - 1000)
+
+variable rseed    equal   12345 # random seed (Note: If you want different results, use different values.)
+
+variable        N equal      15 # The number of nucleus
+variable     rnuc equal      12 # radius of nuclei
+
+#-------------------- Initialization -----------------------------------------------------
+units metal
+dimension 3
+boundary p p p
+
+#-------------------- Atom & Lattice description ----------------------------------------
+atom_style atomic
+
+#----------------------------------------------------------------------
+region box block 0 ${xha} 0 ${yha} 0 ${zha} units box
+region box block 0 100 0 ${yha} 0 ${zha} units box
+region box block 0 100 0 100 0 ${zha} units box
+region box block 0 100 0 100 0 10 units box
+create_box 3 box
+Created orthogonal box = (0 0 0) to (100 100 10)
+  2 by 5 by 1 MPI processor grid
+
+lattice fcc 4.04685 # Al FCC lattice constant [Angstrom]
+Lattice spacing in x,y,z = 4.04685 4.04685 4.04685
+region al block 0 ${xha} 0 ${yha} 0 ${zha} units box
+region al block 0 100 0 ${yha} 0 ${zha} units box
+region al block 0 100 0 100 0 ${zha} units box
+region al block 0 100 0 100 0 10 units box
+create_atoms 1 region al units box
+Created 6250 atoms
+  using box units in orthogonal box = (0 0 0) to (100 100 10)
+  create_atoms CPU = 0.001 seconds
+#------------------------------------
+group al region al
+6250 atoms in group al
+variable    natom equal count(al)
+variable   natom0 equal $(v_natom)
+variable   natom0 equal 6250
+delete_atoms group al
+Deleted 6250 atoms, new total = 0
+create_atoms 1 random ${natom0} ${rseed} al units box
+create_atoms 1 random 6250 ${rseed} al units box
+create_atoms 1 random 6250 12345 al units box
+Created 6250 atoms
+  using box units in orthogonal box = (0 0 0) to (100 100 10)
+  create_atoms CPU = 0.000 seconds
+#------------------------------------
+
+variable     rxlo equal $(xlo+v_rnuc)
+variable     rxlo equal 12
+variable     rxhi equal $(xhi-v_rnuc)
+variable     rxhi equal 88
+variable     rylo equal $(ylo+v_rnuc)
+variable     rylo equal 12
+variable     ryhi equal $(yhi-v_rnuc)
+variable     ryhi equal 88
+variable     rzlo equal $(zlo)
+variable     rzlo equal 0
+variable     rzhi equal $(zhi)
+variable     rzhi equal 10
+#------------------------------------
+variable I loop 1 $N
+variable I loop 1 15
+label LOOP
+
+variable       rx equal random(${rxlo},${rxhi},$(v_rseed+v_I))
+variable       rx equal random(12,${rxhi},$(v_rseed+v_I))
+variable       rx equal random(12,88,$(v_rseed+v_I))
+variable       rx equal random(12,88,12346)
+variable       ry equal random(${rylo},${ryhi},$(v_rseed+v_I))
+variable       ry equal random(12,${ryhi},$(v_rseed+v_I))
+variable       ry equal random(12,88,$(v_rseed+v_I))
+variable       ry equal random(12,88,12346)
+
+region nucl_$I cylinder z ${rx} ${ry} ${rnuc} ${rzlo} ${rzhi} units box
+region nucl_1 cylinder z ${rx} ${ry} ${rnuc} ${rzlo} ${rzhi} units box
+region nucl_1 cylinder z 43.7061784267426 ${ry} ${rnuc} ${rzlo} ${rzhi} units box
+region nucl_1 cylinder z 43.7061784267426 13.8155643939972 ${rnuc} ${rzlo} ${rzhi} units box
+region nucl_1 cylinder z 43.7061784267426 13.8155643939972 12 ${rzlo} ${rzhi} units box
+region nucl_1 cylinder z 43.7061784267426 13.8155643939972 12 0 ${rzhi} units box
+region nucl_1 cylinder z 43.7061784267426 13.8155643939972 12 0 10 units box
+#region nucl_$I block $(v_rx-v_rnuc) $(v_rx+v_rnuc) $(v_ry-v_rnuc) $(v_ry+v_rnuc) ${rzlo} ${rzhi} units box
+delete_atoms region nucl_$I
+delete_atoms region nucl_1
+Deleted 265 atoms, new total = 5985
+lattice fcc 4.04685 orient x $I 1 0 orient y -1 $I 0
+lattice fcc 4.04685 orient x 1 1 0 orient y -1 $I 0
+lattice fcc 4.04685 orient x 1 1 0 orient y -1 1 0
+Lattice spacing in x,y,z = 5.7231102 5.7231102 4.04685
+create_atoms 1 region nucl_$I units box
+create_atoms 1 region nucl_1 units box
+Created 275 atoms
+  using box units in orthogonal box = (0 0 0) to (100 100 10)
+  create_atoms CPU = 0.000 seconds
+#region nucl_$I delete
+
+next I
+jump SELF LOOP
+
+variable       rx equal random(${rxlo},${rxhi},$(v_rseed+v_I))
+variable       rx equal random(12,${rxhi},$(v_rseed+v_I))
+variable       rx equal random(12,88,$(v_rseed+v_I))
+variable       rx equal random(12,88,12347)
+variable       ry equal random(${rylo},${ryhi},$(v_rseed+v_I))
+variable       ry equal random(12,${ryhi},$(v_rseed+v_I))
+variable       ry equal random(12,88,$(v_rseed+v_I))
+variable       ry equal random(12,88,12347)
+
+region nucl_$I cylinder z ${rx} ${ry} ${rnuc} ${rzlo} ${rzhi} units box
+region nucl_2 cylinder z ${rx} ${ry} ${rnuc} ${rzlo} ${rzhi} units box
+region nucl_2 cylinder z 30.3014314174652 ${ry} ${rnuc} ${rzlo} ${rzhi} units box
+region nucl_2 cylinder z 30.3014314174652 69.8034052848816 ${rnuc} ${rzlo} ${rzhi} units box
+region nucl_2 cylinder z 30.3014314174652 69.8034052848816 12 ${rzlo} ${rzhi} units box
+region nucl_2 cylinder z 30.3014314174652 69.8034052848816 12 0 ${rzhi} units box
+region nucl_2 cylinder z 30.3014314174652 69.8034052848816 12 0 10 units box
+#region nucl_$I block $(v_rx-v_rnuc) $(v_rx+v_rnuc) $(v_ry-v_rnuc) $(v_ry+v_rnuc) ${rzlo} ${rzhi} units box
+delete_atoms region nucl_$I
+delete_atoms region nucl_2
+Deleted 281 atoms, new total = 5979
+lattice fcc 4.04685 orient x $I 1 0 orient y -1 $I 0
+lattice fcc 4.04685 orient x 2 1 0 orient y -1 $I 0
+lattice fcc 4.04685 orient x 2 1 0 orient y -1 2 0
+Lattice spacing in x,y,z = 5.429419 5.429419 4.04685
+create_atoms 1 region nucl_$I units box
+create_atoms 1 region nucl_2 units box
+Created 270 atoms
+  using box units in orthogonal box = (0 0 0) to (100 100 10)
+  create_atoms CPU = 0.000 seconds
+#region nucl_$I delete
+
+next I
+jump SELF LOOP
+
+variable       rx equal random(${rxlo},${rxhi},$(v_rseed+v_I))
+variable       rx equal random(12,${rxhi},$(v_rseed+v_I))
+variable       rx equal random(12,88,$(v_rseed+v_I))
+variable       rx equal random(12,88,12348)
+variable       ry equal random(${rylo},${ryhi},$(v_rseed+v_I))
+variable       ry equal random(12,${ryhi},$(v_rseed+v_I))
+variable       ry equal random(12,88,$(v_rseed+v_I))
+variable       ry equal random(12,88,12348)
+
+region nucl_$I cylinder z ${rx} ${ry} ${rnuc} ${rzlo} ${rzhi} units box
+region nucl_3 cylinder z ${rx} ${ry} ${rnuc} ${rzlo} ${rzhi} units box
+region nucl_3 cylinder z 33.9309566020966 ${ry} ${rnuc} ${rzlo} ${rzhi} units box
+region nucl_3 cylinder z 33.9309566020966 23.2241816520691 ${rnuc} ${rzlo} ${rzhi} units box
+region nucl_3 cylinder z 33.9309566020966 23.2241816520691 12 ${rzlo} ${rzhi} units box
+region nucl_3 cylinder z 33.9309566020966 23.2241816520691 12 0 ${rzhi} units box
+region nucl_3 cylinder z 33.9309566020966 23.2241816520691 12 0 10 units box
+#region nucl_$I block $(v_rx-v_rnuc) $(v_rx+v_rnuc) $(v_ry-v_rnuc) $(v_ry+v_rnuc) ${rzlo} ${rzhi} units box
+delete_atoms region nucl_$I
+delete_atoms region nucl_3
+Deleted 303 atoms, new total = 5946
+lattice fcc 4.04685 orient x $I 1 0 orient y -1 $I 0
+lattice fcc 4.04685 orient x 3 1 0 orient y -1 $I 0
+lattice fcc 4.04685 orient x 3 1 0 orient y -1 3 0
+Lattice spacing in x,y,z = 5.1189053 5.1189053 4.04685
+create_atoms 1 region nucl_$I units box
+create_atoms 1 region nucl_3 units box
+Created 275 atoms
+  using box units in orthogonal box = (0 0 0) to (100 100 10)
+  create_atoms CPU = 0.000 seconds
+#region nucl_$I delete
+
+next I
+jump SELF LOOP
+
+variable       rx equal random(${rxlo},${rxhi},$(v_rseed+v_I))
+variable       rx equal random(12,${rxhi},$(v_rseed+v_I))
+variable       rx equal random(12,88,$(v_rseed+v_I))
+variable       rx equal random(12,88,12349)
+variable       ry equal random(${rylo},${ryhi},$(v_rseed+v_I))
+variable       ry equal random(12,${ryhi},$(v_rseed+v_I))
+variable       ry equal random(12,88,$(v_rseed+v_I))
+variable       ry equal random(12,88,12349)
+
+region nucl_$I cylinder z ${rx} ${ry} ${rnuc} ${rzlo} ${rzhi} units box
+region nucl_4 cylinder z ${rx} ${ry} ${rnuc} ${rzlo} ${rzhi} units box
+region nucl_4 cylinder z 65.9773163795471 ${ry} ${rnuc} ${rzlo} ${rzhi} units box
+region nucl_4 cylinder z 65.9773163795471 52.5488867759705 ${rnuc} ${rzlo} ${rzhi} units box
+region nucl_4 cylinder z 65.9773163795471 52.5488867759705 12 ${rzlo} ${rzhi} units box
+region nucl_4 cylinder z 65.9773163795471 52.5488867759705 12 0 ${rzhi} units box
+region nucl_4 cylinder z 65.9773163795471 52.5488867759705 12 0 10 units box
+#region nucl_$I block $(v_rx-v_rnuc) $(v_rx+v_rnuc) $(v_ry-v_rnuc) $(v_ry+v_rnuc) ${rzlo} ${rzhi} units box
+delete_atoms region nucl_$I
+delete_atoms region nucl_4
+Deleted 282 atoms, new total = 5939
+lattice fcc 4.04685 orient x $I 1 0 orient y -1 $I 0
+lattice fcc 4.04685 orient x 4 1 0 orient y -1 $I 0
+lattice fcc 4.04685 orient x 4 1 0 orient y -1 4 0
+Lattice spacing in x,y,z = 4.9075265 4.9075265 4.04685
+create_atoms 1 region nucl_$I units box
+create_atoms 1 region nucl_4 units box
+Created 273 atoms
+  using box units in orthogonal box = (0 0 0) to (100 100 10)
+  create_atoms CPU = 0.000 seconds
+#region nucl_$I delete
+
+next I
+jump SELF LOOP
+
+variable       rx equal random(${rxlo},${rxhi},$(v_rseed+v_I))
+variable       rx equal random(12,${rxhi},$(v_rseed+v_I))
+variable       rx equal random(12,88,$(v_rseed+v_I))
+variable       rx equal random(12,88,12350)
+variable       ry equal random(${rylo},${ryhi},$(v_rseed+v_I))
+variable       ry equal random(12,${ryhi},$(v_rseed+v_I))
+variable       ry equal random(12,88,$(v_rseed+v_I))
+variable       ry equal random(12,88,12350)
+
+region nucl_$I cylinder z ${rx} ${ry} ${rnuc} ${rzlo} ${rzhi} units box
+region nucl_5 cylinder z ${rx} ${ry} ${rnuc} ${rzlo} ${rzhi} units box
+region nucl_5 cylinder z 65.6880788803101 ${ry} ${rnuc} ${rzlo} ${rzhi} units box
+region nucl_5 cylinder z 65.6880788803101 75.239086151123 ${rnuc} ${rzlo} ${rzhi} units box
+region nucl_5 cylinder z 65.6880788803101 75.239086151123 12 ${rzlo} ${rzhi} units box
+region nucl_5 cylinder z 65.6880788803101 75.239086151123 12 0 ${rzhi} units box
+region nucl_5 cylinder z 65.6880788803101 75.239086151123 12 0 10 units box
+#region nucl_$I block $(v_rx-v_rnuc) $(v_rx+v_rnuc) $(v_ry-v_rnuc) $(v_ry+v_rnuc) ${rzlo} ${rzhi} units box
+delete_atoms region nucl_$I
+delete_atoms region nucl_5
+Deleted 298 atoms, new total = 5914
+lattice fcc 4.04685 orient x $I 1 0 orient y -1 $I 0
+lattice fcc 4.04685 orient x 5 1 0 orient y -1 $I 0
+lattice fcc 4.04685 orient x 5 1 0 orient y -1 5 0
+Lattice spacing in x,y,z = 4.7619155 4.7619155 4.04685
+create_atoms 1 region nucl_$I units box
+create_atoms 1 region nucl_5 units box
+Created 275 atoms
+  using box units in orthogonal box = (0 0 0) to (100 100 10)
+  create_atoms CPU = 0.000 seconds
+#region nucl_$I delete
+
+next I
+jump SELF LOOP
+
+variable       rx equal random(${rxlo},${rxhi},$(v_rseed+v_I))
+variable       rx equal random(12,${rxhi},$(v_rseed+v_I))
+variable       rx equal random(12,88,$(v_rseed+v_I))
+variable       rx equal random(12,88,12351)
+variable       ry equal random(${rylo},${ryhi},$(v_rseed+v_I))
+variable       ry equal random(12,${ryhi},$(v_rseed+v_I))
+variable       ry equal random(12,88,$(v_rseed+v_I))
+variable       ry equal random(12,88,12351)
+
+region nucl_$I cylinder z ${rx} ${ry} ${rnuc} ${rzlo} ${rzhi} units box
+region nucl_6 cylinder z ${rx} ${ry} ${rnuc} ${rzlo} ${rzhi} units box
+region nucl_6 cylinder z 50.6692416667938 ${ry} ${rnuc} ${rzlo} ${rzhi} units box
+region nucl_6 cylinder z 50.6692416667938 14.5731899738312 ${rnuc} ${rzlo} ${rzhi} units box
+region nucl_6 cylinder z 50.6692416667938 14.5731899738312 12 ${rzlo} ${rzhi} units box
+region nucl_6 cylinder z 50.6692416667938 14.5731899738312 12 0 ${rzhi} units box
+region nucl_6 cylinder z 50.6692416667938 14.5731899738312 12 0 10 units box
+#region nucl_$I block $(v_rx-v_rnuc) $(v_rx+v_rnuc) $(v_ry-v_rnuc) $(v_ry+v_rnuc) ${rzlo} ${rzhi} units box
+delete_atoms region nucl_$I
+delete_atoms region nucl_6
+Deleted 285 atoms, new total = 5904
+lattice fcc 4.04685 orient x $I 1 0 orient y -1 $I 0
+lattice fcc 4.04685 orient x 6 1 0 orient y -1 $I 0
+lattice fcc 4.04685 orient x 6 1 0 orient y -1 6 0
+Lattice spacing in x,y,z = 4.6570863 4.6570863 4.04685
+create_atoms 1 region nucl_$I units box
+create_atoms 1 region nucl_6 units box
+Created 280 atoms
+  using box units in orthogonal box = (0 0 0) to (100 100 10)
+  create_atoms CPU = 0.000 seconds
+#region nucl_$I delete
+
+next I
+jump SELF LOOP
+
+variable       rx equal random(${rxlo},${rxhi},$(v_rseed+v_I))
+variable       rx equal random(12,${rxhi},$(v_rseed+v_I))
+variable       rx equal random(12,88,$(v_rseed+v_I))
+variable       rx equal random(12,88,12352)
+variable       ry equal random(${rylo},${ryhi},$(v_rseed+v_I))
+variable       ry equal random(12,${ryhi},$(v_rseed+v_I))
+variable       ry equal random(12,88,$(v_rseed+v_I))
+variable       ry equal random(12,88,12352)
+
+region nucl_$I cylinder z ${rx} ${ry} ${rnuc} ${rzlo} ${rzhi} units box
+region nucl_7 cylinder z ${rx} ${ry} ${rnuc} ${rzlo} ${rzhi} units box
+region nucl_7 cylinder z 25.4858829975128 ${ry} ${rnuc} ${rzlo} ${rzhi} units box
+region nucl_7 cylinder z 25.4858829975128 74.1232273578644 ${rnuc} ${rzlo} ${rzhi} units box
+region nucl_7 cylinder z 25.4858829975128 74.1232273578644 12 ${rzlo} ${rzhi} units box
+region nucl_7 cylinder z 25.4858829975128 74.1232273578644 12 0 ${rzhi} units box
+region nucl_7 cylinder z 25.4858829975128 74.1232273578644 12 0 10 units box
+#region nucl_$I block $(v_rx-v_rnuc) $(v_rx+v_rnuc) $(v_ry-v_rnuc) $(v_ry+v_rnuc) ${rzlo} ${rzhi} units box
+delete_atoms region nucl_$I
+delete_atoms region nucl_7
+Deleted 264 atoms, new total = 5920
+lattice fcc 4.04685 orient x $I 1 0 orient y -1 $I 0
+lattice fcc 4.04685 orient x 7 1 0 orient y -1 $I 0
+lattice fcc 4.04685 orient x 7 1 0 orient y -1 7 0
+Lattice spacing in x,y,z = 4.5784881 4.5784881 4.04685
+create_atoms 1 region nucl_$I units box
+create_atoms 1 region nucl_7 units box
+Created 270 atoms
+  using box units in orthogonal box = (0 0 0) to (100 100 10)
+  create_atoms CPU = 0.000 seconds
+#region nucl_$I delete
+
+next I
+jump SELF LOOP
+
+variable       rx equal random(${rxlo},${rxhi},$(v_rseed+v_I))
+variable       rx equal random(12,${rxhi},$(v_rseed+v_I))
+variable       rx equal random(12,88,$(v_rseed+v_I))
+variable       rx equal random(12,88,12353)
+variable       ry equal random(${rylo},${ryhi},$(v_rseed+v_I))
+variable       ry equal random(12,${ryhi},$(v_rseed+v_I))
+variable       ry equal random(12,88,$(v_rseed+v_I))
+variable       ry equal random(12,88,12353)
+
+region nucl_$I cylinder z ${rx} ${ry} ${rnuc} ${rzlo} ${rzhi} units box
+region nucl_8 cylinder z ${rx} ${ry} ${rnuc} ${rzlo} ${rzhi} units box
+region nucl_8 cylinder z 56.654899597168 ${ry} ${rnuc} ${rzlo} ${rzhi} units box
+region nucl_8 cylinder z 56.654899597168 34.5797319412231 ${rnuc} ${rzlo} ${rzhi} units box
+region nucl_8 cylinder z 56.654899597168 34.5797319412231 12 ${rzlo} ${rzhi} units box
+region nucl_8 cylinder z 56.654899597168 34.5797319412231 12 0 ${rzhi} units box
+region nucl_8 cylinder z 56.654899597168 34.5797319412231 12 0 10 units box
+#region nucl_$I block $(v_rx-v_rnuc) $(v_rx+v_rnuc) $(v_ry-v_rnuc) $(v_ry+v_rnuc) ${rzlo} ${rzhi} units box
+delete_atoms region nucl_$I
+delete_atoms region nucl_8
+Deleted 269 atoms, new total = 5921
+lattice fcc 4.04685 orient x $I 1 0 orient y -1 $I 0
+lattice fcc 4.04685 orient x 8 1 0 orient y -1 $I 0
+lattice fcc 4.04685 orient x 8 1 0 orient y -1 8 0
+Lattice spacing in x,y,z = 4.5175497 4.5175497 4.04685
+create_atoms 1 region nucl_$I units box
+create_atoms 1 region nucl_8 units box
+Created 287 atoms
+  using box units in orthogonal box = (0 0 0) to (100 100 10)
+  create_atoms CPU = 0.000 seconds
+#region nucl_$I delete
+
+next I
+jump SELF LOOP
+
+variable       rx equal random(${rxlo},${rxhi},$(v_rseed+v_I))
+variable       rx equal random(12,${rxhi},$(v_rseed+v_I))
+variable       rx equal random(12,88,$(v_rseed+v_I))
+variable       rx equal random(12,88,12354)
+variable       ry equal random(${rylo},${ryhi},$(v_rseed+v_I))
+variable       ry equal random(12,${ryhi},$(v_rseed+v_I))
+variable       ry equal random(12,88,$(v_rseed+v_I))
+variable       ry equal random(12,88,12354)
+
+region nucl_$I cylinder z ${rx} ${ry} ${rnuc} ${rzlo} ${rzhi} units box
+region nucl_9 cylinder z ${rx} ${ry} ${rnuc} ${rzlo} ${rzhi} units box
+region nucl_9 cylinder z 84.2044067382812 ${ry} ${rnuc} ${rzlo} ${rzhi} units box
+region nucl_9 cylinder z 84.2044067382812 57.2597570419312 ${rnuc} ${rzlo} ${rzhi} units box
+region nucl_9 cylinder z 84.2044067382812 57.2597570419312 12 ${rzlo} ${rzhi} units box
+region nucl_9 cylinder z 84.2044067382812 57.2597570419312 12 0 ${rzhi} units box
+region nucl_9 cylinder z 84.2044067382812 57.2597570419312 12 0 10 units box
+#region nucl_$I block $(v_rx-v_rnuc) $(v_rx+v_rnuc) $(v_ry-v_rnuc) $(v_ry+v_rnuc) ${rzlo} ${rzhi} units box
+delete_atoms region nucl_$I
+delete_atoms region nucl_9
+Deleted 266 atoms, new total = 5942
+lattice fcc 4.04685 orient x $I 1 0 orient y -1 $I 0
+lattice fcc 4.04685 orient x 9 1 0 orient y -1 $I 0
+lattice fcc 4.04685 orient x 9 1 0 orient y -1 9 0
+Lattice spacing in x,y,z = 4.4689982 4.4689982 4.04685
+create_atoms 1 region nucl_$I units box
+create_atoms 1 region nucl_9 units box
+Created 278 atoms
+  using box units in orthogonal box = (0 0 0) to (100 100 10)
+  create_atoms CPU = 0.000 seconds
+#region nucl_$I delete
+
+next I
+jump SELF LOOP
+
+variable       rx equal random(${rxlo},${rxhi},$(v_rseed+v_I))
+variable       rx equal random(12,${rxhi},$(v_rseed+v_I))
+variable       rx equal random(12,88,$(v_rseed+v_I))
+variable       rx equal random(12,88,12355)
+variable       ry equal random(${rylo},${ryhi},$(v_rseed+v_I))
+variable       ry equal random(12,${ryhi},$(v_rseed+v_I))
+variable       ry equal random(12,88,$(v_rseed+v_I))
+variable       ry equal random(12,88,12355)
+
+region nucl_$I cylinder z ${rx} ${ry} ${rnuc} ${rzlo} ${rzhi} units box
+region nucl_10 cylinder z ${rx} ${ry} ${rnuc} ${rzlo} ${rzhi} units box
+region nucl_10 cylinder z 28.4403727054596 ${ry} ${rnuc} ${rzlo} ${rzhi} units box
+region nucl_10 cylinder z 28.4403727054596 81.440994977951 ${rnuc} ${rzlo} ${rzhi} units box
+region nucl_10 cylinder z 28.4403727054596 81.440994977951 12 ${rzlo} ${rzhi} units box
+region nucl_10 cylinder z 28.4403727054596 81.440994977951 12 0 ${rzhi} units box
+region nucl_10 cylinder z 28.4403727054596 81.440994977951 12 0 10 units box
+#region nucl_$I block $(v_rx-v_rnuc) $(v_rx+v_rnuc) $(v_ry-v_rnuc) $(v_ry+v_rnuc) ${rzlo} ${rzhi} units box
+delete_atoms region nucl_$I
+delete_atoms region nucl_10
+Deleted 276 atoms, new total = 5944
+lattice fcc 4.04685 orient x $I 1 0 orient y -1 $I 0
+lattice fcc 4.04685 orient x 10 1 0 orient y -1 $I 0
+lattice fcc 4.04685 orient x 10 1 0 orient y -1 10 0
+Lattice spacing in x,y,z = 4.4294429 4.4294429 4.04685
+create_atoms 1 region nucl_$I units box
+create_atoms 1 region nucl_10 units box
+Created 270 atoms
+  using box units in orthogonal box = (0 0 0) to (100 100 10)
+  create_atoms CPU = 0.000 seconds
+#region nucl_$I delete
+
+next I
+jump SELF LOOP
+
+variable       rx equal random(${rxlo},${rxhi},$(v_rseed+v_I))
+variable       rx equal random(12,${rxhi},$(v_rseed+v_I))
+variable       rx equal random(12,88,$(v_rseed+v_I))
+variable       rx equal random(12,88,12356)
+variable       ry equal random(${rylo},${ryhi},$(v_rseed+v_I))
+variable       ry equal random(12,${ryhi},$(v_rseed+v_I))
+variable       ry equal random(12,88,$(v_rseed+v_I))
+variable       ry equal random(12,88,12356)
+
+region nucl_$I cylinder z ${rx} ${ry} ${rnuc} ${rzlo} ${rzhi} units box
+region nucl_11 cylinder z ${rx} ${ry} ${rnuc} ${rzlo} ${rzhi} units box
+region nucl_11 cylinder z 44.5092575550079 ${ry} ${rnuc} ${rzlo} ${rzhi} units box
+region nucl_11 cylinder z 44.5092575550079 75.327175617218 ${rnuc} ${rzlo} ${rzhi} units box
+region nucl_11 cylinder z 44.5092575550079 75.327175617218 12 ${rzlo} ${rzhi} units box
+region nucl_11 cylinder z 44.5092575550079 75.327175617218 12 0 ${rzhi} units box
+region nucl_11 cylinder z 44.5092575550079 75.327175617218 12 0 10 units box
+#region nucl_$I block $(v_rx-v_rnuc) $(v_rx+v_rnuc) $(v_ry-v_rnuc) $(v_ry+v_rnuc) ${rzlo} ${rzhi} units box
+delete_atoms region nucl_$I
+delete_atoms region nucl_11
+Deleted 279 atoms, new total = 5935
+lattice fcc 4.04685 orient x $I 1 0 orient y -1 $I 0
+lattice fcc 4.04685 orient x 11 1 0 orient y -1 $I 0
+lattice fcc 4.04685 orient x 11 1 0 orient y -1 11 0
+Lattice spacing in x,y,z = 4.396615 4.396615 4.04685
+create_atoms 1 region nucl_$I units box
+create_atoms 1 region nucl_11 units box
+Created 270 atoms
+  using box units in orthogonal box = (0 0 0) to (100 100 10)
+  create_atoms CPU = 0.000 seconds
+#region nucl_$I delete
+
+next I
+jump SELF LOOP
+
+variable       rx equal random(${rxlo},${rxhi},$(v_rseed+v_I))
+variable       rx equal random(12,${rxhi},$(v_rseed+v_I))
+variable       rx equal random(12,88,$(v_rseed+v_I))
+variable       rx equal random(12,88,12357)
+variable       ry equal random(${rylo},${ryhi},$(v_rseed+v_I))
+variable       ry equal random(12,${ryhi},$(v_rseed+v_I))
+variable       ry equal random(12,88,$(v_rseed+v_I))
+variable       ry equal random(12,88,12357)
+
+region nucl_$I cylinder z ${rx} ${ry} ${rnuc} ${rzlo} ${rzhi} units box
+region nucl_12 cylinder z ${rx} ${ry} ${rnuc} ${rzlo} ${rzhi} units box
+region nucl_12 cylinder z 25.9013159275055 ${ry} ${rnuc} ${rzlo} ${rzhi} units box
+region nucl_12 cylinder z 25.9013159275055 14.1220293045044 ${rnuc} ${rzlo} ${rzhi} units box
+region nucl_12 cylinder z 25.9013159275055 14.1220293045044 12 ${rzlo} ${rzhi} units box
+region nucl_12 cylinder z 25.9013159275055 14.1220293045044 12 0 ${rzhi} units box
+region nucl_12 cylinder z 25.9013159275055 14.1220293045044 12 0 10 units box
+#region nucl_$I block $(v_rx-v_rnuc) $(v_rx+v_rnuc) $(v_ry-v_rnuc) $(v_ry+v_rnuc) ${rzlo} ${rzhi} units box
+delete_atoms region nucl_$I
+delete_atoms region nucl_12
+Deleted 279 atoms, new total = 5926
+lattice fcc 4.04685 orient x $I 1 0 orient y -1 $I 0
+lattice fcc 4.04685 orient x 12 1 0 orient y -1 $I 0
+lattice fcc 4.04685 orient x 12 1 0 orient y -1 12 0
+Lattice spacing in x,y,z = 4.3689438 4.3689438 4.04685
+create_atoms 1 region nucl_$I units box
+create_atoms 1 region nucl_12 units box
+Created 273 atoms
+  using box units in orthogonal box = (0 0 0) to (100 100 10)
+  create_atoms CPU = 0.000 seconds
+#region nucl_$I delete
+
+next I
+jump SELF LOOP
+
+variable       rx equal random(${rxlo},${rxhi},$(v_rseed+v_I))
+variable       rx equal random(12,${rxhi},$(v_rseed+v_I))
+variable       rx equal random(12,88,$(v_rseed+v_I))
+variable       rx equal random(12,88,12358)
+variable       ry equal random(${rylo},${ryhi},$(v_rseed+v_I))
+variable       ry equal random(12,${ryhi},$(v_rseed+v_I))
+variable       ry equal random(12,88,$(v_rseed+v_I))
+variable       ry equal random(12,88,12358)
+
+region nucl_$I cylinder z ${rx} ${ry} ${rnuc} ${rzlo} ${rzhi} units box
+region nucl_13 cylinder z ${rx} ${ry} ${rnuc} ${rzlo} ${rzhi} units box
+region nucl_13 cylinder z 18.0452404022217 ${ry} ${rnuc} ${rzlo} ${rzhi} units box
+region nucl_13 cylinder z 18.0452404022217 26.8084208965302 ${rnuc} ${rzlo} ${rzhi} units box
+region nucl_13 cylinder z 18.0452404022217 26.8084208965302 12 ${rzlo} ${rzhi} units box
+region nucl_13 cylinder z 18.0452404022217 26.8084208965302 12 0 ${rzhi} units box
+region nucl_13 cylinder z 18.0452404022217 26.8084208965302 12 0 10 units box
+#region nucl_$I block $(v_rx-v_rnuc) $(v_rx+v_rnuc) $(v_ry-v_rnuc) $(v_ry+v_rnuc) ${rzlo} ${rzhi} units box
+delete_atoms region nucl_$I
+delete_atoms region nucl_13
+Deleted 281 atoms, new total = 5918
+lattice fcc 4.04685 orient x $I 1 0 orient y -1 $I 0
+lattice fcc 4.04685 orient x 13 1 0 orient y -1 $I 0
+lattice fcc 4.04685 orient x 13 1 0 orient y -1 13 0
+Lattice spacing in x,y,z = 4.3453092 4.3453092 4.04685
+create_atoms 1 region nucl_$I units box
+create_atoms 1 region nucl_13 units box
+Created 275 atoms
+  using box units in orthogonal box = (0 0 0) to (100 100 10)
+  create_atoms CPU = 0.000 seconds
+#region nucl_$I delete
+
+next I
+jump SELF LOOP
+
+variable       rx equal random(${rxlo},${rxhi},$(v_rseed+v_I))
+variable       rx equal random(12,${rxhi},$(v_rseed+v_I))
+variable       rx equal random(12,88,$(v_rseed+v_I))
+variable       rx equal random(12,88,12359)
+variable       ry equal random(${rylo},${ryhi},$(v_rseed+v_I))
+variable       ry equal random(12,${ryhi},$(v_rseed+v_I))
+variable       ry equal random(12,88,$(v_rseed+v_I))
+variable       ry equal random(12,88,12359)
+
+region nucl_$I cylinder z ${rx} ${ry} ${rnuc} ${rzlo} ${rzhi} units box
+region nucl_14 cylinder z ${rx} ${ry} ${rnuc} ${rzlo} ${rzhi} units box
+region nucl_14 cylinder z 81.3947033882141 ${ry} ${rnuc} ${rzlo} ${rzhi} units box
+region nucl_14 cylinder z 81.3947033882141 54.5076293945312 ${rnuc} ${rzlo} ${rzhi} units box
+region nucl_14 cylinder z 81.3947033882141 54.5076293945312 12 ${rzlo} ${rzhi} units box
+region nucl_14 cylinder z 81.3947033882141 54.5076293945312 12 0 ${rzhi} units box
+region nucl_14 cylinder z 81.3947033882141 54.5076293945312 12 0 10 units box
+#region nucl_$I block $(v_rx-v_rnuc) $(v_rx+v_rnuc) $(v_ry-v_rnuc) $(v_ry+v_rnuc) ${rzlo} ${rzhi} units box
+delete_atoms region nucl_$I
+delete_atoms region nucl_14
+Deleted 273 atoms, new total = 5920
+lattice fcc 4.04685 orient x $I 1 0 orient y -1 $I 0
+lattice fcc 4.04685 orient x 14 1 0 orient y -1 $I 0
+lattice fcc 4.04685 orient x 14 1 0 orient y -1 14 0
+Lattice spacing in x,y,z = 4.3248919 4.3248919 4.04685
+create_atoms 1 region nucl_$I units box
+create_atoms 1 region nucl_14 units box
+Created 275 atoms
+  using box units in orthogonal box = (0 0 0) to (100 100 10)
+  create_atoms CPU = 0.000 seconds
+#region nucl_$I delete
+
+next I
+jump SELF LOOP
+
+variable       rx equal random(${rxlo},${rxhi},$(v_rseed+v_I))
+variable       rx equal random(12,${rxhi},$(v_rseed+v_I))
+variable       rx equal random(12,88,$(v_rseed+v_I))
+variable       rx equal random(12,88,12360)
+variable       ry equal random(${rylo},${ryhi},$(v_rseed+v_I))
+variable       ry equal random(12,${ryhi},$(v_rseed+v_I))
+variable       ry equal random(12,88,$(v_rseed+v_I))
+variable       ry equal random(12,88,12360)
+
+region nucl_$I cylinder z ${rx} ${ry} ${rnuc} ${rzlo} ${rzhi} units box
+region nucl_15 cylinder z ${rx} ${ry} ${rnuc} ${rzlo} ${rzhi} units box
+region nucl_15 cylinder z 43.8385527133942 ${ry} ${rnuc} ${rzlo} ${rzhi} units box
+region nucl_15 cylinder z 43.8385527133942 81.3431751728058 ${rnuc} ${rzlo} ${rzhi} units box
+region nucl_15 cylinder z 43.8385527133942 81.3431751728058 12 ${rzlo} ${rzhi} units box
+region nucl_15 cylinder z 43.8385527133942 81.3431751728058 12 0 ${rzhi} units box
+region nucl_15 cylinder z 43.8385527133942 81.3431751728058 12 0 10 units box
+#region nucl_$I block $(v_rx-v_rnuc) $(v_rx+v_rnuc) $(v_ry-v_rnuc) $(v_ry+v_rnuc) ${rzlo} ${rzhi} units box
+delete_atoms region nucl_$I
+delete_atoms region nucl_15
+Deleted 265 atoms, new total = 5930
+lattice fcc 4.04685 orient x $I 1 0 orient y -1 $I 0
+lattice fcc 4.04685 orient x 15 1 0 orient y -1 $I 0
+lattice fcc 4.04685 orient x 15 1 0 orient y -1 15 0
+Lattice spacing in x,y,z = 4.3070793 4.3070793 4.04685
+create_atoms 1 region nucl_$I units box
+create_atoms 1 region nucl_15 units box
+Created 270 atoms
+  using box units in orthogonal box = (0 0 0) to (100 100 10)
+  create_atoms CPU = 0.000 seconds
+#region nucl_$I delete
+
+next I
+jump SELF LOOP
+#------------------------------------
+
+# creating composition by using set command for AlMgZn alloy
+set region al type/fraction 2 ${cMg} ${rseed} # set Mg (type = 2) concentration randomly
+set region al type/fraction 2 0.066 ${rseed} 
+set region al type/fraction 2 0.066 12345 
+Setting atom values ...
+  400 settings made for type/fraction
+set region al type/fraction 3 ${cZn} ${rseed} # set Zn (type = 3) concentration randomly
+set region al type/fraction 3 0.003 ${rseed} 
+set region al type/fraction 3 0.003 12345 
+Setting atom values ...
+  19 settings made for type/fraction
+
+# vacancy
+#delete_atoms random fraction ${cVa} yes all NULL ${rseed}
+#delete_atoms random count 1 yes all NULL ${rseed}
+#----------------------------------------------------------------------
+
+variable elem string "Al Mg Zn"
+
+#-------------------- Force field --------------------------------------------------------
+pair_style meam
+
+#----- MEAM_potential_2021_version -----
+variable padress string "./../MEAM_potential_2021_version"
+pair_coeff * *  ${padress}/library.meam ${elem}  ${padress}/AlZnMg.meam ${elem}
+pair_coeff * *  ./../MEAM_potential_2021_version/library.meam ${elem}  ${padress}/AlZnMg.meam ${elem}
+pair_coeff * *  ./../MEAM_potential_2021_version/library.meam Al Mg Zn  ${padress}/AlZnMg.meam ${elem}
+pair_coeff * *  ./../MEAM_potential_2021_version/library.meam Al Mg Zn  ./../MEAM_potential_2021_version/AlZnMg.meam ${elem}
+pair_coeff * *  ./../MEAM_potential_2021_version/library.meam Al Mg Zn  ./../MEAM_potential_2021_version/AlZnMg.meam Al Mg Zn
+
+#----- MEAM_potential_2018_version -----
+#variable padress string "./../MEAM_potential_2018_version"
+#pair_coeff * *  ${padress}/MgAlZn.library.meam ${elem}  ${padress}/MgAlZn.parameter.meam ${elem}
+
+#-------------------- Atom & Lattice description -----------------------------------------
+delete_atoms overlap 0.3 all all
+System init for delete_atoms ...
+Neighbor list info ...
+  update: every = 1 steps, delay = 0 steps, check = yes
+  max neighbors/atom: 2000, page size: 100000
+  master list distance cutoff = 8
+  ghost atom cutoff = 8
+  binsize = 4, bins = 25 25 3
+  3 neighbor lists, perpetual/occasional/extra = 2 1 0
+  (1) command delete_atoms, occasional, copy from (2)
+      attributes: full, newton on
+      pair build: copy
+      stencil: none
+      bin: none
+  (2) pair meam, perpetual
+      attributes: full, newton on
+      pair build: full/bin/atomonly
+      stencil: full/bin/3d
+      bin: standard
+  (3) pair meam, perpetual, half/full from (2)
+      attributes: half, newton on
+      pair build: halffull/newton
+      stencil: none
+      bin: none
+Deleted 18 atoms, new total = 6182
+
+#-------------------- Energy Minimization ------------------------------------------------
+# 0 [K], structure optimization
+fix             emin all box/relax iso 1.0
+min_style       cg
+min_modify      dmax 0.2
+min_modify      line quadratic
+minimize        1.0e-6 1.0e-8 4000 10000
+Neighbor list info ...
+  update: every = 1 steps, delay = 0 steps, check = yes
+  max neighbors/atom: 2000, page size: 100000
+  master list distance cutoff = 8
+  ghost atom cutoff = 8
+  binsize = 4, bins = 25 25 3
+  2 neighbor lists, perpetual/occasional/extra = 2 0 0
+  (1) pair meam, perpetual
+      attributes: full, newton on
+      pair build: full/bin/atomonly
+      stencil: full/bin/3d
+      bin: standard
+  (2) pair meam, perpetual, half/full from (1)
+      attributes: half, newton on
+      pair build: halffull/newton
+      stencil: none
+      bin: none
+Per MPI rank memory allocation (min/avg/max) = 11.57 | 11.66 | 11.83 Mbytes
+   Step          Temp          E_pair         E_mol          TotEng         Press          Volume    
+         0   0              62120.457      0              62120.457      1369867.1      100000       
+      4000   0              12228.763      0              12228.763      142914.48      274400       
+Loop time of 44.9963 on 10 procs for 4000 steps with 6182 atoms
+
+52.4% CPU use with 10 MPI tasks x 1 OpenMP threads
+
+Minimization stats:
+  Stopping criterion = max iterations
+  Energy initial, next-to-last, final = 
+      62120.4567192102   12234.1495807213   12228.8718880864
+  Force two-norm initial, final = 256627.5 52608.274
+  Force max component initial, final = 256500.98 52449.358
+  Final line search alpha, max atom move = 1.9059251e-09 9.9964545e-05
+  Iterations, force evaluations = 4000 4000
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 39.19      | 40.127     | 41.387     |   9.6 | 89.18
+Neigh   | 0.08312    | 0.092317   | 0.098474   |   1.5 |  0.21
+Comm    | 2.742      | 3.9836     | 4.925      |  31.5 |  8.85
+Output  | 2.7e-05    | 3.68e-05   | 0.000114   |   0.0 |  0.00
+Modify  | 0          | 0          | 0          |   0.0 |  0.00
+Other   |            | 0.7934     |            |       |  1.76
+
+Nlocal:          618.2 ave         654 max         589 min
+Histogram: 1 0 3 1 0 2 1 1 0 1
+Nghost:         1863.7 ave        1956 max        1782 min
+Histogram: 2 0 0 3 0 2 1 1 0 1
+Neighs:        15046.9 ave       17176 max       13654 min
+Histogram: 1 1 3 0 1 3 0 0 0 1
+FullNghs:      30093.8 ave       34330 max       27381 min
+Histogram: 1 2 2 0 2 2 0 0 0 1
+
+Total # of neighbors = 300938
+Ave neighs/atom = 48.679715
+Neighbor list builds = 56
+Dangerous builds = 0
+unfix           emin
+
+#-------------------- Settings -----------------------------------------------------------
+reset_timestep 0
+
+timestep     0.002 # 2.0 [fs] (Recommend 0.1-3.5 [fs]), sets the timestep for subsequent simulations
+
+thermo       100
+thermo_style custom step temp pe etotal ke vol
+
+#------------------------------
+dump            d1 all cfg ${Nout} cfg/run.md.*.cfg mass type xs ys zs id type vx vy vz fx fy fz
+dump            d1 all cfg 1000 cfg/run.md.*.cfg mass type xs ys zs id type vx vy vz fx fy fz
+dump_modify     d1 element ${elem}
+dump_modify     d1 element Al Mg Zn
+#------------------------------
+
+velocity all create 4.0 ${rseed} mom yes rot yes dist gaussian
+velocity all create 4.0 12345 mom yes rot yes dist gaussian
+
+#-------------------- Run the simulation -------------------------------------------------
+# Heating
+#fix f1 all nvt temp 4.0 ${Tdesird} $(100*dt)
+fix f1 all npt temp 4.0 ${Tdesird} $(100*dt) iso 1.0 1.0 $(1000*dt)
+fix f1 all npt temp 4.0 473 $(100*dt) iso 1.0 1.0 $(1000*dt)
+fix f1 all npt temp 4.0 473 0.2000000000000000111 iso 1.0 1.0 $(1000*dt)
+fix f1 all npt temp 4.0 473 0.2000000000000000111 iso 1.0 1.0 2
+run 5000 # 10 [ps] (e.g., 10 - 100 [ps]) # <= run $(int(5000*exp(-640/670)/exp(-640/v_Tm)))
+Per MPI rank memory allocation (min/avg/max) = 11.76 | 11.86 | 12.02 Mbytes
+   Step          Temp          PotEng         TotEng         KinEng         Volume    
+         0   4              12228.763      12231.959      3.1958278      274400       
+       100   15.852278     -13880.108     -13867.443      12.665288      205974.27    
+       200   9.5692284     -15857.64      -15849.995      7.6454016      158341.31    
+       300   4.9210302     -16807.677     -16803.745      3.9316913      142595.54    
+       400   2.9137516     -17314.661     -17312.333      2.3279621      135139.05    
+       500   1.9065412     -17624.554     -17623.031      1.5232443      130740.78    
+       600   1.3461        -17831.978     -17830.902      1.075476       127833.83    
+       700   1.0136692     -17980.708     -17979.898      0.80987808     125760.68    
+       800   0.77849068    -18092.011     -18091.389      0.62198055     124205.92    
+       900   0.64322697    -18178.786     -18178.272      0.51391067     122978.8     
+      1000   0.55367084    -18251.273     -18250.83       0.44235917     121967.09    
+      1100   0.47619221    -18312.409     -18312.028      0.38045708     121116.65    
+      1200   0.41839214    -18364.808     -18364.473      0.33427731     120392.13    
+      1300   0.36782777    -18410.304     -18410.011      0.29387855     119764.92    
+      1400   0.32554919    -18449.534     -18449.274      0.26009979     119222.38    
+      1500   0.2950197     -18484.144     -18483.909      0.23570804     118743.07    
+      1600   0.2663727     -18514.76      -18514.547      0.21282032     118317.63    
+      1700   0.24166122    -18542.158     -18541.965      0.19307692     117931.71    
+      1800   0.2245566     -18566.666     -18566.487      0.17941106     117587.29    
+      1900   0.2127309     -18589.395     -18589.225      0.16996283     117272.92    
+      2000   0.19754626    -18610.214     -18610.056      0.15783096     116983.58    
+      2100   0.18726737    -18629.476     -18629.327      0.14961857     116715.86    
+      2200   0.18118498    -18647.435     -18647.29       0.144759       116463.73    
+      2300   0.18166687    -18664.887     -18664.742      0.14514401     116223.19    
+      2400   0.1781226     -18681.908     -18681.766      0.14231229     115991.56    
+      2500   0.17153585    -18698.113     -18697.976      0.13704976     115770.1     
+      2600   0.16917414    -18713.485     -18713.349      0.13516286     115553.33    
+      2700   0.17183357    -18728.557     -18728.419      0.13728762     115341.27    
+      2800   0.17040825    -18743.579     -18743.443      0.13614886     115135.49    
+      2900   0.16792337    -18757.988     -18757.854      0.13416354     114951.54    
+      3000   0.16455184    -18772.048     -18771.917      0.13146984     114894.91    
+      3100   0.16379661    -18785.774     -18785.643      0.13086644     114673.73    
+      3200   0.16559759    -18799.05      -18798.917      0.13230535     114366.01    
+      3300   0.16575187    -18812.095     -18811.963      0.13242861     114160.71    
+      3400   0.16025142    -18824.455     -18824.327      0.12803399     113977.45    
+      3500   0.15935808    -18836.457     -18836.329      0.12732024     113802.18    
+      3600   0.14983288    -18847.58      -18847.46       0.11971002     113634.84    
+      3700   0.14782548    -18858.134     -18858.016      0.1181062      113477.2     
+      3800   0.14569037    -18868.299     -18868.182      0.11640033     113326.26    
+      3900   0.14497497    -18878.124     -18878.008      0.11582876     113181.64    
+      4000   0.1423757     -18887.565     -18887.452      0.11375206     113047.71    
+      4100   0.13986964    -18896.591     -18896.479      0.11174982     112956.37    
+      4200   0.13319387    -18905.307     -18905.201      0.10641617     112804.12    
+      4300   0.13927297    -18913.422     -18913.311      0.11127311     112643.03    
+      4400   0.13325416    -18921.38      -18921.273      0.10646434     112516.5     
+      4500   0.13516255    -18929.052     -18928.944      0.10798906     112397.7     
+      4600   0.12963551    -18936.48      -18936.377      0.10357319     112283.86    
+      4700   0.12717553    -18943.326     -18943.225      0.10160777     112173.51    
+      4800   0.13593932    -18950.364     -18950.255      0.10860966     112058.26    
+      4900   0.13269564    -18957.125     -18957.019      0.10601811     111918.59    
+      5000   0.14003667    -18963.639     -18963.527      0.11188327     111603.46    
+Loop time of 89.1449 on 10 procs for 5000 steps with 6182 atoms
+
+Performance: 9.692 ns/day, 2.476 hours/ns, 56.088 timesteps/s, 346.739 katom-step/s
+63.5% CPU use with 10 MPI tasks x 1 OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 80.941     | 82.352     | 84.254     |  11.3 | 92.38
+Neigh   | 0.11279    | 0.12081    | 0.12672    |   1.1 |  0.14
+Comm    | 3.9447     | 5.8366     | 7.2021     |  41.6 |  6.55
+Output  | 0.034002   | 0.034031   | 0.034183   |   0.0 |  0.04
+Modify  | 0.4987     | 0.68727    | 0.92725    |  17.4 |  0.77
+Other   |            | 0.114      |            |       |  0.13
+
+Nlocal:          618.2 ave         632 max         587 min
+Histogram: 1 0 0 1 0 1 2 0 1 4
+Nghost:         2985.2 ave        3093 max        2907 min
+Histogram: 1 0 3 1 2 1 1 0 0 1
+Neighs:        36829.2 ave       38358 max       33497 min
+Histogram: 1 0 0 1 0 1 2 0 1 4
+FullNghs:      73658.4 ave       76976 max       67013 min
+Histogram: 1 0 1 0 0 1 2 0 2 3
+
+Total # of neighbors = 736584
+Ave neighs/atom = 119.14979
+Neighbor list builds = 66
+Dangerous builds = 4
+unfix f1
+
+#-------------------- Run the simulation -------------------------------------------------
+# Annealing
+#fix f2 all nvt temp ${Tdesird} ${Tdesird} $(100*dt)
+fix f2 all npt temp ${Tdesird} ${Tdesird} $(100*dt) iso 1.0 1.0 $(1000*dt)
+fix f2 all npt temp 473 ${Tdesird} $(100*dt) iso 1.0 1.0 $(1000*dt)
+fix f2 all npt temp 473 473 $(100*dt) iso 1.0 1.0 $(1000*dt)
+fix f2 all npt temp 473 473 0.2000000000000000111 iso 1.0 1.0 $(1000*dt)
+fix f2 all npt temp 473 473 0.2000000000000000111 iso 1.0 1.0 2
+run 40000 # 80 [ps] (e.g., 80 - 800 [ps]) # <= run $(int(40000*exp(-640/670)/exp(-640/v_Tm)))
+Per MPI rank memory allocation (min/avg/max) = 11.76 | 11.86 | 12.02 Mbytes
+   Step          Temp          PotEng         TotEng         KinEng         Volume    
+      5000   0.14003667    -18963.639     -18963.527      0.11188327     111603.46    
+      5100   69.191133     -19012.844     -18957.564      55.280737      111539.34    
+      5200   127.95891     -19037.698     -18935.465      102.23366      109802.47    
+      5300   175.56116     -19038.164     -18897.899      140.26581      109614.16    
+      5400   223.83854     -19027.964     -18849.127      178.83736      109748.37    
+      5500   271.71992     -19007.734     -18790.642      217.09252      109348.13    
+      5600   323.64433     -18983.075     -18724.497      258.57789      109527.89    
+      5700   370.39049     -18949.917     -18653.991      295.92606      109725.9     
+      5800   422.94935     -18922.108     -18584.19       337.91833      109696.48    
+      5900   462.23719     -18891.971     -18522.663      369.30762      110176.25    
+      6000   485.32954     -18867.127     -18479.369      387.75741      110034.36    
+      6100   499.41722     -18866.849     -18467.836      399.01286      110036.98    
+      6200   486.48117     -18885.311     -18496.634      388.67751      110111.02    
+      6300   472.44664     -18913.183     -18535.719      377.46453      109520.61    
+      6400   460.57202     -18929.426     -18561.449      367.97722      109491.43    
+      6500   458.51427     -18931.642     -18565.309      366.33316      109485.89    
+      6600   476.40381     -18932.294     -18551.668      380.62614      109222.82    
+      6700   482.35201     -18930.073     -18544.695      385.3785       109521.06    
+      6800   479.96334     -18935.364     -18551.894      383.47005      109393.59    
+      6900   475.36049     -18951.313     -18571.52       379.79257      109166.96    
+      7000   465.78774     -18963.067     -18590.923      372.14435      109191.11    
+      7100   465.02488     -18969.968     -18598.433      371.53486      109060.81    
+      7200   474.39324     -18975.278     -18596.258      379.01978      109072.54    
+      7300   475.09384     -18971.246     -18591.666      379.57953      109085.27    
+      7400   478.07344     -18973.436     -18591.476      381.9601       108968.72    
+      7500   480.78257     -18982.899     -18598.774      384.12458      108986.46    
+      7600   475.73083     -18991.424     -18611.335      380.08846      108940.03    
+      7700   469.30059     -18997.973     -18623.023      374.95097      108683.18    
+      7800   464.52797     -19001.284     -18630.146      371.13785      108815.86    
+      7900   462.99802     -18998.388     -18628.472      369.91549      108759.36    
+      8000   477.43185     -19002.088     -18620.64       381.4475       108694.56    
+      8100   480.54853     -19001.453     -18617.516      383.93759      108849.91    
+      8200   473.38122     -19005.028     -18626.817      378.21122      108663.79    
+      8300   478.41497     -19025.296     -18643.063      382.23297      108575.39    
+      8400   469.44746     -19031.834     -18656.766      375.06832      108574.69    
+      8500   469.36499     -19036.844     -18661.841      375.00242      108387.17    
+      8600   470.71559     -19036.108     -18660.026      376.0815       108573.88    
+      8700   475.6726      -19037.018     -18656.976      380.04193      108455.22    
+      8800   477.24113     -19042.186     -18660.891      381.29512      108406.45    
+      8900   469.62447     -19046.704     -18671.494      375.20974      108565.37    
+      9000   472.23579     -19057.181     -18679.885      377.29607      108265.03    
+      9100   474.70064     -19065.031     -18685.765      379.26538      108344.93    
+      9200   467.00567     -19060.542     -18687.425      373.11743      108418.76    
+      9300   474.44607     -19064.171     -18685.109      379.06199      108127.98    
+      9400   474.57842     -19066.275     -18687.107      379.16773      108359.01    
+      9500   474.15845     -19071.911     -18693.079      378.8322       108338.83    
+      9600   474.22853     -19077.685     -18698.797      378.88819      108115.05    
+      9700   468.36569     -19077.197     -18702.993      374.20403      108199.22    
+      9800   471.40775     -19079.323     -18702.688      376.6345       108142.57    
+      9900   479.97348     -19086.413     -18702.935      383.47815      108055.71    
+     10000   475.6629      -19089.207     -18709.173      380.03418      108149.92    
+     10100   461.7661      -19087.702     -18718.771      368.93124      108033.67    
+     10200   467.4542      -19096.734     -18723.258      373.47579      107998.81    
+     10300   468.42401     -19095.632     -18721.381      374.25062      107987.65    
+     10400   474.44039     -19096.248     -18717.191      379.05745      108107.47    
+     10500   473.4218      -19094.346     -18716.102      378.24364      108066.61    
+     10600   469.77802     -19095.489     -18720.156      375.33242      107977.38    
+     10700   478.44145     -19110.175     -18727.921      382.25412      108057.92    
+     10800   465.49595     -19107.586     -18735.674      371.91123      107896.72    
+     10900   465.60501     -19111.26      -18739.261      371.99836      107941.62    
+     11000   471.22107     -19113.657     -18737.171      376.48535      108006.75    
+     11100   478.2835      -19112.513     -18730.385      382.12793      107816.27    
+     11200   476.26163     -19110.575     -18730.062      380.51254      108003.1     
+     11300   472.76288     -19113.932     -18736.215      377.71719      107992.7     
+     11400   477.92183     -19129.117     -18747.278      381.83897      107747.64    
+     11500   464.53342     -19128.908     -18757.765      371.14221      107927.97    
+     11600   466.90163     -19132.288     -18759.254      373.0343       107745.33    
+     11700   476.70534     -19135.581     -18754.714      380.86704      107748.88    
+     11800   477.54506     -19130.988     -18749.45       381.53795      108024.76    
+     11900   482.97736     -19134.263     -18748.385      385.87812      107707.62    
+     12000   474.39181     -19137.214     -18758.196      379.01864      107760.94    
+     12100   468.93797     -19144.272     -18769.611      374.66125      107878.75    
+     12200   468.83962     -19148.614     -18774.031      374.58267      107478.16    
+     12300   468.8094      -19146.84      -18772.281      374.55853      107847.23    
+     12400   472.91242     -19141.8       -18763.964      377.83667      107767.68    
+     12500   479.59021     -19143.739     -18760.567      383.17193      107515.45    
+     12600   468.84711     -19143.077     -18768.489      374.58866      107936.16    
+     12700   478.11105     -19160.276     -18778.286      381.99015      107531.85    
+     12800   474.28899     -19165.473     -18786.536      378.93649      107494.93    
+     12900   466.94737     -19163.36      -18790.289      373.07085      107711.02    
+     13000   465.11144     -19156.431     -18784.827      371.60402      107510.03    
+     13100   478.22847     -19161.623     -18779.539      382.08396      107674.38    
+     13200   484.17523     -19166.282     -18779.447      386.83517      107611.16    
+     13300   476.42803     -19167.557     -18786.911      380.64549      107451.73    
+     13400   465.87062     -19170.949     -18798.738      372.21058      107604.74    
+     13500   463.15683     -19175.717     -18805.675      370.04237      107355.43    
+     13600   475.40335     -19186.508     -18806.681      379.82681      107419.58    
+     13700   469.08746     -19179.169     -18804.388      374.78069      107549.92    
+     13800   475.66209     -19182.972     -18802.939      380.03353      107298.1     
+     13900   472.745       -19184.455     -18806.752      377.7029       107565.62    
+     14000   470.09188     -19187.41      -18811.827      375.58318      107393.13    
+     14100   474.59799     -19194.923     -18815.74       379.18337      107184.99    
+     14200   477.59076     -19199.997     -18818.422      381.57446      107503.69    
+     14300   471.12798     -19193.489     -18817.078      376.41098      107193.79    
+     14400   475.08922     -19194.42      -18814.844      379.57584      107370.09    
+     14500   474.36448     -19192.78      -18813.783      378.9968       107520.35    
+     14600   476.54155     -19196.018     -18815.282      380.73619      107126.82    
+     14700   469.22355     -19196.241     -18821.352      374.88942      107412.6     
+     14800   473.61802     -19204.427     -18826.026      378.40041      107331.33    
+     14900   466.15211     -19201.164     -18828.728      372.43547      107059.41    
+     15000   464.60778     -19201.914     -18830.712      371.20162      107442.28    
+     15100   468.56047     -19200.927     -18826.567      374.35965      107178.93    
+     15200   475.99694     -19201.805     -18821.504      380.30106      107198.81    
+     15300   479.33576     -19205.945     -18822.976      382.96864      107461.45    
+     15400   475.89669     -19209.638     -18829.417      380.22097      107048.34    
+     15500   472.71216     -19215.581     -18837.904      377.67667      107196.44    
+     15600   470.8509      -19217.923     -18841.734      376.18961      107286.88    
+     15700   471.67172     -19216.795     -18839.95       376.8454       107009.25    
+     15800   467.53318     -19209.993     -18836.454      373.53889      107325.2     
+     15900   474.44456     -19211.385     -18832.324      379.06078      107155.77    
+     16000   483.92967     -19219.146     -18832.507      386.63898      107084.45    
+     16100   467.40078     -19213.115     -18839.682      373.43311      107307.26    
+     16200   474.53664     -19226.123     -18846.989      379.13435      106992.8     
+     16300   473.92277     -19231.663     -18853.019      378.64389      107043.87    
+     16400   467.81105     -19228.677     -18854.916      373.76089      107155.5     
+     16500   476.4182      -19230.121     -18849.483      380.63763      106967.76    
+     16600   475.70847     -19224.613     -18844.542      380.07059      107143.84    
+     16700   481.55268     -19228.504     -18843.765      384.73986      107117.23    
+     16800   474.46116     -19229.012     -18849.938      379.07405      106943.73    
+     16900   469.48322     -19236.157     -18861.06       375.09689      107124.1     
+     17000   467.05429     -19239.071     -18865.915      373.15627      106920.45    
+     17100   469.62564     -19239.064     -18863.853      375.21067      106888.08    
+     17200   464.59253     -19229.323     -18858.133      371.18943      107183.1     
+     17300   475.14421     -19231.389     -18851.769      379.61977      106913.57    
+     17400   479.60083     -19237.626     -18854.446      383.18042      107019.29    
+     17500   466.90098     -19235.37      -18862.337      373.03379      107103.14    
+     17600   470.3799      -19245.923     -18870.109      375.81329      106819.64    
+     17700   469.64319     -19249.258     -18874.033      375.2247       106983.73    
+     17800   466.35838     -19245.433     -18872.832      372.60027      106956.73    
+     17900   474.87693     -19246.777     -18867.371      379.40623      106823.29    
+     18000   477.60861     -19244.985     -18863.396      381.58872      107068.92    
+     18100   481.39322     -19247.993     -18863.38       384.61246      106911.11    
+     18200   477.99454     -19251.969     -18870.072      381.89706      106885.94    
+     18300   473.13999     -19255.489     -18877.47       378.01849      106936.3     
+     18400   462.55031     -19249.546     -18879.988      369.55779      106791.82    
+     18500   474.15023     -19255.136     -18876.31       378.82562      106892.24    
+     18600   478.44469     -19253.037     -18870.78       382.25671      106915.21    
+     18700   479.31611     -19251.584     -18868.631      382.95294      106916.34    
+     18800   472.15241     -19248.833     -18871.604      377.22945      106926.83    
+     18900   474.0875      -19255.223     -18876.447      378.77551      106816.4     
+     19000   466.47286     -19253.649     -18880.958      372.69174      106816.7     
+     19100   471.3357      -19257.416     -18880.839      376.57694      106800.28    
+     19200   472.66027     -19254.723     -18877.088      377.63521      106850.61    
+     19300   470.99902     -19248.16      -18871.853      376.30794      106906.6     
+     19400   473.31803     -19248.304     -18870.143      378.16074      106815.59    
+     19500   475.72186     -19254.441     -18874.36       380.08129      106911.36    
+     19600   466.7962      -19252.541     -18879.591      372.95007      106804.7     
+     19700   467.77975     -19256.07      -18882.334      373.73588      106804.18    
+     19800   467.13882     -19251.953     -18878.729      373.22381      106912       
+     19900   480.71626     -19256.269     -18872.197      384.0716       106807.6     
+     20000   476.2157      -19250.787     -18870.311      380.47585      106933.26    
+     20100   476.58826     -19256.762     -18875.988      380.7735       106926.05    
+     20200   471.79181     -19261.83      -18884.889      376.94135      106732.22    
+     20300   472.30673     -19261.818     -18884.465      377.35275      106849.67    
+     20400   474.69895     -19258.393     -18879.129      379.26402      106818.89    
+     20500   479.56948     -19257.422     -18874.267      383.15537      106804.87    
+     20600   482.19403     -19260.518     -18875.266      385.25227      106921.8     
+     20700   473.69738     -19254.861     -18876.397      378.46382      106814.3     
+     20800   470.40182     -19255.837     -18880.006      375.83081      106792.38    
+     20900   482.1893      -19269.933     -18884.685      385.24849      106775.4     
+     21000   464.17995     -19263.108     -18892.248      370.8598       106759.65    
+     21100   465.97226     -19271.989     -18899.697      372.29178      106697.07    
+     21200   466.81445     -19264.305     -18891.34       372.96465      106710.84    
+     21300   468.56182     -19258.765     -18884.404      374.36073      106830.1     
+     21400   474.64653     -19259.295     -18880.073      379.22215      106861.49    
+     21500   478.54459     -19258.959     -18876.623      382.33653      106770.04    
+     21600   477.70747     -19257.77      -18876.102      381.66771      106854.18    
+     21700   471.12689     -19260.182     -18883.772      376.41011      106766.43    
+     21800   470.82052     -19266.311     -18890.146      376.16533      106746.35    
+     21900   467.46625     -19262.547     -18889.062      373.48541      106796.71    
+     22000   468.64455     -19257.791     -18883.364      374.42683      106698.25    
+     22100   475.04694     -19259.791     -18880.249      379.54205      106828.61    
+     22200   475.44849     -19260.285     -18880.422      379.86288      106830.91    
+     22300   477.2966      -19263.437     -18882.097      381.33944      106690.63    
+     22400   469.6267      -19262.643     -18887.431      375.21152      106812.8     
+     22500   467.88753     -19267.339     -18893.517      373.822        106715.28    
+     22600   468.24803     -19273.621     -18899.511      374.11002      106602.01    
+     22700   463.18637     -19264.708     -18894.642      370.06598      106750.59    
+     22800   474.74604     -19264.273     -18884.971      379.30165      106758.27    
+     22900   471.5391      -19258.329     -18881.59       376.73944      106763.16    
+     23000   469.32535     -19256.145     -18881.175      374.97075      106797.95    
+     23100   468.395       -19260.024     -18885.797      374.22744      106751.55    
+     23200   464.4873      -19263.946     -18892.841      371.10536      106668.84    
+     23300   460.74663     -19261.033     -18892.916      368.11673      106722.56    
+     23400   477.75583     -19262.962     -18881.255      381.70635      106741.14    
+     23500   480.91172     -19262.815     -18878.587      384.22776      106834.48    
+     23600   480.83411     -19265.948     -18881.782      384.16575      106772.27    
+     23700   468.94062     -19263.117     -18888.454      374.66337      106699.87    
+     23800   476.45214     -19272.417     -18891.753      380.66475      106776.09    
+     23900   468.62835     -19264.268     -18889.854      374.41388      106695.51    
+     24000   476.79509     -19258.425     -18877.486      380.93875      106767       
+     24100   479.76516     -19257.659     -18874.347      383.31172      106856.05    
+     24200   473.17273     -19259.508     -18881.464      378.04464      106748.76    
+     24300   474.25425     -19267.313     -18888.404      378.90874      106711.36    
+     24400   475.80806     -19271.405     -18891.255      380.15016      106757.58    
+     24500   467.52118     -19263.548     -18890.018      373.5293       106689.26    
+     24600   476.22714     -19262.23      -18881.745      380.48498      106758.78    
+     24700   484.84726     -19263.395     -18876.023      387.37209      106786.84    
+     24800   473.93683     -19259.34      -18880.685      378.65512      106708.28    
+     24900   472.04778     -19262.513     -18885.367      377.14585      106723.42    
+     25000   473.84137     -19267.122     -18888.543      378.57886      106716.21    
+     25100   468.45613     -19265.454     -18891.178      374.27629      106648.62    
+     25200   473.66033     -19270.75      -18892.316      378.43421      106733.18    
+     25300   475.19453     -19268.113     -18888.453      379.65997      106655.42    
+     25400   473.50322     -19260.794     -18882.485      378.30869      106764.82    
+     25500   478.58891     -19263.33      -18880.958      382.37194      106808.13    
+     25600   475.57723     -19268.335     -18888.37       379.96573      106600.72    
+     25700   471.98699     -19272.744     -18895.647      377.09729      106705.06    
+     25800   471.99592     -19270.917     -18893.812      377.10442      106716       
+     25900   472.46696     -19267.397     -18889.916      377.48077      106640.64    
+     26000   474.51862     -19266.78      -18887.66       379.11995      106821.51    
+     26100   482.25527     -19265.496     -18880.194      385.30121      106652.61    
+     26200   474.33555     -19254.159     -18875.185      378.97369      106789.58    
+     26300   475.96315     -19263.175     -18882.901      380.27407      106860.79    
+     26400   475.94523     -19269.268     -18889.008      380.25975      106552.02    
+     26500   467.24219     -19265.594     -18892.288      373.3064       106780.15    
+     26600   470.70602     -19268.624     -18892.551      376.07385      106726.22    
+     26700   481.40343     -19274.119     -18889.498      384.62062      106538.42    
+     26800   478.86345     -19269.007     -18886.416      382.59129      106822.08    
+     26900   479.95494     -19267.805     -18884.341      383.46334      106668.1     
+     27000   470.75139     -19265.019     -18888.909      376.1101       106636.06    
+     27100   472.13537     -19273.514     -18896.298      377.21584      106760.61    
+     27200   473.58791     -19275.188     -18896.811      378.37636      106515.99    
+     27300   480.88725     -19278.468     -18894.26       384.20821      106697.7     
+     27400   478.43974     -19265.517     -18883.264      382.25276      106782.88    
+     27500   477.40798     -19262.739     -18881.311      381.42842      106611.78    
+     27600   470.58439     -19264.72      -18888.743      375.97667      106764.52    
+     27700   477.68854     -19275.223     -18893.57       381.65258      106656.72    
+     27800   473.30833     -19274.536     -18896.383      378.15298      106545.12    
+     27900   461.87381     -19267.909     -18898.891      369.01729      106753.85    
+     28000   465.66689     -19267.884     -18895.837      372.0478       106561.51    
+     28100   472.024       -19264.618     -18887.491      377.12686      106677.28    
+     28200   470.01433     -19262.934     -18887.413      375.52122      106834.74    
+     28300   470.90463     -19270.982     -18894.749      376.23253      106519.52    
+     28400   471.68223     -19277.116     -18900.263      376.8538       106648.72    
+     28500   470.06678     -19274.179     -18898.616      375.56313      106646.99    
+     28600   471.25759     -19271.749     -18895.235      376.51453      106540.44    
+     28700   478.25557     -19274.158     -18892.052      382.10561      106764.9     
+     28800   476.17025     -19267.863     -18887.423      380.43953      106514.61    
+     28900   481.66133     -19269.225     -18884.398      384.82667      106659.92    
+     29000   480.78785     -19275.086     -18890.957      384.1288       106800.5     
+     29100   471.95375     -19276.151     -18899.08       377.07073      106387.68    
+     29200   468.96188     -19276.962     -18902.282      374.68036      106697.74    
+     29300   474.36418     -19278.729     -18899.732      378.99656      106630.64    
+     29400   479.72604     -19275.769     -18892.489      383.28046      106440.28    
+     29500   477.73369     -19268.289     -18886.6        381.68866      106868.84    
+     29600   482.34192     -19265.613     -18880.243      385.37043      106607.6     
+     29700   481.13011     -19269.738     -18885.336      384.40225      106566.5     
+     29800   472.68816     -19272.521     -18894.864      377.6575       106782.29    
+     29900   472.94612     -19277.407     -18899.543      377.8636       106446.81    
+     30000   466.51172     -19277.695     -18904.972      372.72278      106616.06    
+     30100   466.64987     -19276.348     -18903.515      372.83316      106644.62    
+     30200   477.86066     -19276.076     -18894.285      381.7901       106464.29    
+     30300   472.62249     -19270.699     -18893.094      377.60502      106791.16    
+     30400   473.35818     -19273.002     -18894.809      378.19281      106555.99    
+     30500   474.02439     -19278.231     -18899.506      378.72508      106510.12    
+     30600   478.69676     -19285.192     -18902.734      382.45811      106726.69    
+     30700   477.67127     -19283.244     -18901.606      381.63878      106472.66    
+     30800   470.78288     -19277.333     -18901.198      376.13526      106654.08    
+     30900   471.40905     -19276.483     -18899.847      376.63554      106584.94    
+     31000   477.14916     -19278.895     -18897.673      381.22164      106501.84    
+     31100   473.48641     -19274.002     -18895.707      378.29526      106730.75    
+     31200   478.06782     -19272.884     -18890.928      381.95561      106584.91    
+     31300   471.93766     -19269.15      -18892.092      377.05788      106626.03    
+     31400   476.98097     -19281.753     -18900.666      381.08726      106638.92    
+     31500   465.49251     -19277.183     -18905.274      371.90848      106468.76    
+     31600   468.91943     -19279.283     -18904.636      374.64644      106605.69    
+     31700   470.44091     -19275.362     -18899.5        375.86204      106625.29    
+     31800   477.95007     -19272.288     -18890.427      381.86154      106543.17    
+     31900   479.06311     -19274.17      -18891.42       382.7508       106668.22    
+     32000   472.04266     -19272.525     -18895.383      377.14177      106579.58    
+     32100   468.05472     -19275.345     -18901.39       373.95557      106607.76    
+     32200   475.4099      -19283.781     -18903.949      379.83204      106579.92    
+     32300   476.55329     -19282.324     -18901.579      380.74556      106472       
+     32400   477.64017     -19272.47      -18890.856      381.61394      106689.45    
+     32500   477.80834     -19269.185     -18887.436      381.7483       106685.96    
+     32600   476.80813     -19274.884     -18893.935      380.94917      106547.35    
+     32700   473.91327     -19278.329     -18899.692      378.6363       106596.73    
+     32800   469.26188     -19276.004     -18901.084      374.92004      106562.2     
+     32900   474.85126     -19280.083     -18900.697      379.38572      106553.01    
+     33000   476.56075     -19278.248     -18897.497      380.75153      106608.63    
+     33100   479.23979     -19274.038     -18891.146      382.89196      106596.19    
+     33200   477.56579     -19273.581     -18892.026      381.55451      106615.15    
+     33300   476.72098     -19282.839     -18901.959      380.87954      106575.52    
+     33400   475.08676     -19283.783     -18904.209      379.57387      106543.91    
+     33500   467.28119     -19275.595     -18902.257      373.33756      106574.13    
+     33600   474.58506     -19275.357     -18896.184      379.17303      106536.65    
+     33700   484.94175     -19278.161     -18890.713      387.44758      106657.61    
+     33800   480.31899     -19268.1       -18884.346      383.7542       106653.89    
+     33900   484.60145     -19274.013     -18886.837      387.1757       106619.82    
+     34000   473.63434     -19275.399     -18896.986      378.41345      106640       
+     34100   474.71922     -19281.201     -18901.921      379.28022      106505.76    
+     34200   474.15189     -19281.556     -18902.73       378.82695      106601.94    
+     34300   475.46        -19278.917     -18899.045      379.87207      106566.08    
+     34400   469.33273     -19265.837     -18890.86       374.97665      106612.38    
+     34500   484.52426     -19277.219     -18890.105      387.11403      106632.9     
+     34600   468.73242     -19275.464     -18900.967      374.49702      106550.25    
+     34700   465.64185     -19276.76      -18904.732      372.02779      106541.06    
+     34800   473.26048     -19279.529     -18901.414      378.11475      106499.05    
+     34900   473.17657     -19274.798     -18896.75       378.04771      106639.04    
+     35000   476.19519     -19272.392     -18891.933      380.45946      106613.62    
+     35100   478.11127     -19273.758     -18891.768      381.99032      106575.44    
+     35200   465.46963     -19274.568     -18902.678      371.8902       106675.58    
+     35300   470.40024     -19281.752     -18905.923      375.82954      106436.16    
+     35400   473.8155      -19282.888     -18904.33       378.55819      106538.15    
+     35500   468.81656     -19271.251     -18896.686      374.56425      106682.31    
+     35600   481.50428     -19276.019     -18891.318      384.70119      106518.25    
+     35700   472.57162     -19272.066     -18894.501      377.56438      106671.67    
+     35800   474.97891     -19277.796     -18898.309      379.48771      106535.26    
+     35900   472.39062     -19279.107     -18901.688      377.41977      106528.43    
+     36000   473.32046     -19280.757     -18902.594      378.16267      106651.38    
+     36100   471.31085     -19278.317     -18901.76       376.55709      106492.51    
+     36200   472.37243     -19276.555     -18899.15       377.40524      106569.24    
+     36300   481.57357     -19272.22      -18887.463      384.75655      106647.26    
+     36400   477.44302     -19269.882     -18888.425      381.45642      106611.57    
+     36500   469.68923     -19273.019     -18897.758      375.26148      106601.81    
+     36600   468.42071     -19276.966     -18902.718      374.24799      106559.54    
+     36700   473.99812     -19282.393     -18903.689      378.70409      106513.76    
+     36800   477.13665     -19281.797     -18900.585      381.21164      106649.88    
+     36900   477.01501     -19272.588     -18891.474      381.11446      106567.8     
+     37000   483.16664     -19274.364     -18888.335      386.02935      106630.05    
+     37100   470.04664     -19269.9       -18894.353      375.54704      106714.78    
+     37200   470.16575     -19274.066     -18898.423      375.64219      106472.07    
+     37300   473.26587     -19278.164     -18900.045      378.11906      106597.43    
+     37400   470.70516     -19277.148     -18901.075      376.07316      106653.1     
+     37500   474.07981     -19280.37      -18901.6        378.76936      106480.36    
+     37600   469.95819     -19278.905     -18903.429      375.47637      106609.71    
+     37700   466.90509     -19278.266     -18905.229      373.03707      106559.24    
+     37800   470.46094     -19279.685     -18903.806      375.87804      106490.53    
+     37900   475.81133     -19277.678     -18897.526      380.15277      106625.29    
+     38000   475.52654     -19272.532     -18892.607      379.92524      106572.54    
+     38100   474.36147     -19274.354     -18895.36       378.99439      106529.39    
+     38200   467.24666     -19280.152     -18906.842      373.30997      106596.34    
+     38300   471.37314     -19283.317     -18906.71       376.60685      106499.99    
+     38400   476.42749     -19282.634     -18901.989      380.64506      106621.36    
+     38500   478.40529     -19277.541     -18895.316      382.22523      106608.92    
+     38600   482.43737     -19279.294     -18893.848      385.44669      106538.37    
+     38700   472.95519     -19276.282     -18898.411      377.87084      106623.93    
+     38800   473.21914     -19278.615     -18900.533      378.08172      106465.68    
+     38900   472.04649     -19279.644     -18902.499      377.14482      106563.58    
+     39000   470.23144     -19279.304     -18903.609      375.69468      106575.94    
+     39100   470.09703     -19277.606     -18902.019      375.58729      106439.97    
+     39200   475.56999     -19278.175     -18898.215      379.95995      106637.81    
+     39300   481.22432     -19278.338     -18893.86       384.47752      106539.93    
+     39400   479.1066      -19279.593     -18896.807      382.78555      106515.14    
+     39500   470.82236     -19282.227     -18906.06       376.1668       106582.9     
+     39600   473.41029     -19286.195     -18907.96       378.23445      106459.78    
+     39700   467.30213     -19278.701     -18905.346      373.35428      106567.5     
+     39800   472.99065     -19276.324     -18898.425      377.89917      106621.45    
+     39900   475.64748     -19273.351     -18893.329      380.02187      106461.66    
+     40000   475.54669     -19278.566     -18898.625      379.94133      106682.06    
+     40100   467.65489     -19275.881     -18902.245      373.63612      106492.06    
+     40200   476.23173     -19283.589     -18903.101      380.48865      106455.28    
+     40300   470.94437     -19279.892     -18903.627      376.26428      106687.69    
+     40400   471.98239     -19278.873     -18901.78       377.09361      106437.62    
+     40500   473.68477     -19279.895     -18901.441      378.45374      106593.15    
+     40600   469.5787      -19277.108     -18901.934      375.17317      106627.18    
+     40700   472.09719     -19278.924     -18901.739      377.18534      106419.27    
+     40800   474.45074     -19283.856     -18904.79       379.06572      106603.03    
+     40900   471.1833      -19285.57      -18909.115      376.45517      106497.17    
+     41000   476.39834     -19291.818     -18911.196      380.62177      106375.42    
+     41100   471.11364     -19284.616     -18908.216      376.39952      106564.28    
+     41200   480.66582     -19282.829     -18898.798      384.0313       106531.38    
+     41300   471.51563     -19274.815     -18898.094      376.72069      106589.78    
+     41400   471.23455     -19279.673     -18903.177      376.49612      106551.27    
+     41500   475.37085     -19289.512     -18909.711      379.80085      106432.73    
+     41600   468.15811     -19287.312     -18913.274      374.03818      106571.49    
+     41700   479.55773     -19287.345     -18904.199      383.14598      106479.68    
+     41800   482.14046     -19282.454     -18897.245      385.20947      106516.67    
+     41900   477.54322     -19280.684     -18899.148      381.53647      106683.2     
+     42000   466.4551      -19278.876     -18906.199      372.67755      106407.96    
+     42100   468.16113     -19285.258     -18911.218      374.04059      106507.35    
+     42200   467.5457      -19284.077     -18910.529      373.54889      106584.84    
+     42300   483.06114     -19286.724     -18900.779      385.94506      106353.22    
+     42400   477.91707     -19278.981     -18897.146      381.83517      106773.59    
+     42500   479.70611     -19282.18      -18898.916      383.26454      106480.37    
+     42600   475.38792     -19284.295     -18904.481      379.81449      106391.01    
+     42700   474.06018     -19287.702     -18908.948      378.75368      106718.04    
+     42800   472.5497      -19284.974     -18907.427      377.54687      106309.24    
+     42900   469.62908     -19276.485     -18901.272      375.21342      106554.35    
+     43000   474.0005      -19269.649     -18890.943      378.706        106724.3     
+     43100   486.43841     -19283.3       -18894.657      388.64335      106334.11    
+     43200   472.22541     -19279.695     -18902.408      377.28778      106639.17    
+     43300   472.60608     -19282.706     -18905.114      377.59191      106564.35    
+     43400   475.8487      -19286.919     -18906.737      380.18263      106332.1     
+     43500   462.82948     -19282.358     -18912.577      369.78084      106681.25    
+     43600   470.60173     -19292.342     -18916.352      375.99053      106400.74    
+     43700   472.16225     -19289.413     -18912.175      377.23731      106417.09    
+     43800   474.62674     -19281.521     -18902.315      379.20634      106643.25    
+     43900   485.59355     -19287.68      -18899.711      387.96834      106408.71    
+     44000   469.99305     -19279.26      -18903.755      375.50422      106585.7     
+     44100   467.44712     -19284.394     -18910.924      373.47012      106524.54    
+     44200   470.62921     -19288.714     -18912.701      376.01249      106351.1     
+     44300   470.48767     -19285.965     -18910.066      375.8994       106584.84    
+     44400   488.42429     -19285.833     -18895.603      390.22999      106428.6     
+     44500   481.69677     -19282.277     -18897.422      384.85499      106528.27    
+     44600   474.69816     -19286.366     -18907.102      379.26339      106489.34    
+     44700   479.06597     -19296.787     -18914.034      382.75309      106337.12    
+     44800   469.82477     -19294.696     -18919.327      375.36977      106474.83    
+     44900   471.06901     -19296.376     -18920.012      376.36387      106374.91    
+     45000   469.64631     -19289.259     -18914.032      375.22718      106405.29    
+Loop time of 763.774 on 10 procs for 40000 steps with 6182 atoms
+
+Performance: 9.050 ns/day, 2.652 hours/ns, 52.372 timesteps/s, 323.761 katom-step/s
+61.3% CPU use with 10 MPI tasks x 1 OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 701.97     | 709.86     | 714.17     |  12.9 | 92.94
+Neigh   | 2.4607     | 2.5254     | 2.5799     |   2.0 |  0.33
+Comm    | 41.1       | 45.224     | 52.441     |  50.5 |  5.92
+Output  | 0.25144    | 0.25167    | 0.25298    |   0.1 |  0.03
+Modify  | 4.4504     | 4.991      | 5.6684     |  20.3 |  0.65
+Other   |            | 0.92       |            |       |  0.12
+
+Nlocal:          618.2 ave         626 max         612 min
+Histogram: 2 0 1 2 0 2 1 0 1 1
+Nghost:         3099.6 ave        3131 max        3074 min
+Histogram: 1 2 0 2 1 1 1 0 1 1
+Neighs:        40401.2 ave       41388 max       40014 min
+Histogram: 4 0 4 0 0 0 0 1 0 1
+FullNghs:      80802.4 ave       82735 max       79948 min
+Histogram: 3 1 3 1 0 0 0 1 0 1
+
+Total # of neighbors = 808024
+Ave neighs/atom = 130.70592
+Neighbor list builds = 1037
+Dangerous builds = 0
+unfix f2
+
+write_data data_after_step1.lammps
+System init for write_data ...
+
+#-------------------- End ----------------------------------------------------------------
+Total wall time: 0:14:58
