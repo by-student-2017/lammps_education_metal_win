@@ -12,9 +12,9 @@ variable      cMg equal   0.001116 # Mg concentration
 variable      cCu equal   0.001174 # Cu concentration
 variable      cFe equal   0.003400 # Fe concentration
 
-variable      xha equal     100 # simulation size, x axis [Angstrom] (e.g., 50 - 1000)
-variable      yha equal     100 # simulation size, y axis [Angstrom] (e.g., 50 - 1000)
-variable      zha equal      10 # simulation size, z axis [Angstrom] (e.g.,  8 - 20)
+variable      xha equal     256 # simulation size, x axis [Angstrom] (e.g., 50 - 1000)
+variable      yha equal     256 # simulation size, y axis [Angstrom] (e.g., 50 - 1000)
+variable      zha equal       4 # simulation size, z axis [Angstrom] (e.g.,  4 - 20)
 
 variable Nsteps   equal  100000 # The number of calculations (e.g., 1000 - 100000)
 variable Nout     equal    1000 # output (e.g., 10 - 1000)
@@ -34,14 +34,28 @@ region box block 0 ${xha} 0 ${yha} 0 ${zha} units box
 create_box 5 box
 
 lattice fcc 4.04685 # Al FCC lattice constant [Angstrom]
-region al block 0 ${xha} 0 ${yha} 0 ${zha} units box
-create_atoms 1 region al units box
+#-------------------------------------------------------
+region al2 block 0 ${xha} 0 ${yha} 0            $(v_zha*1/4) units box
+region al3 block 0 ${xha} 0 ${yha} $(v_zha*1/4) $(v_zha*2/4) units box
+region al4 block 0 ${xha} 0 ${yha} $(v_zha*2/4) $(v_zha*3/4) units box
+region al5 block 0 ${xha} 0 ${yha} $(v_zha*3/4) $(v_zha*4/4) units box
 
-# creating composition by using set command for Al-Si-Mg-Cu-Fe alloy 
-set region al type/fraction 2 ${cSi} ${rseed} # set Si (type = 2) concentration randomly
-set region al type/fraction 3 ${cMg} ${rseed} # set Mg (type = 3) concentration randomly
-set region al type/fraction 4 ${cCu} ${rseed} # set Cu (type = 4) concentration randomly
-set region al type/fraction 5 ${cFe} ${rseed} # set Fe (type = 5) concentration randomly
+create_atoms 1 region al2 units box
+create_atoms 1 region al3 units box
+create_atoms 1 region al4 units box
+create_atoms 1 region al5 units box
+
+# creating composition by using set command for Al-Si-Mg-Cu-Fe alloy
+#-------------------------------------------------------------------
+set region al2 type/ratio 2 ${cSi} ${rseed} # set Si (type = 2) concentration randomly
+#-------------------------------------------------------------------
+set region al3 type/ratio 3 ${cMg} ${rseed} # set Mg (type = 3) concentration randomly
+#-------------------------------------------------------------------
+set region al4 type/ratio 4 ${cCu} ${rseed} # set Cu (type = 4) concentration randomly
+#-------------------------------------------------------------------
+set region al5 type/ratio 5 ${cFe} ${rseed} # set Fe (type = 5) concentration randomly
+#-------------------------------------------------------------------
+
 #----------------------------------------------------------------------
 
 variable elem string "Al Si Mg Cu Fe"
