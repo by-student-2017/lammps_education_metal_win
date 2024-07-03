@@ -18,9 +18,9 @@ variable      cFe equal   0.003400 # Fe concentration
 
 #variable      cVa equal 0.00016 # vacancy concentration (e.g., 0.016%)
 
-variable      xha equal     100 # simulation size, x axis [Angstrom] (e.g., 50 - 1000)
-variable      yha equal     100 # simulation size, y axis [Angstrom] (e.g., 50 - 1000)
-variable      zha equal      10 # simulation size, z axis [Angstrom] (e.g.,  8 - 20)
+variable      xha equal     256 # simulation size, x axis [Angstrom] (e.g., 50 - 1000)
+variable      yha equal     256 # simulation size, y axis [Angstrom] (e.g., 50 - 1000)
+variable      zha equal       8 # simulation size, z axis [Angstrom] (e.g.,  8 - 20)
 
 variable Nout     equal    1000 # output (e.g., 10 - 1000)
 
@@ -100,7 +100,8 @@ unfix           emin
 #-------------------- Settings -----------------------------------------------------------
 reset_timestep 0
 
-timestep     0.002 # 2.0 [fs] (Recommend 0.1-3.5 [fs]), sets the timestep for subsequent simulations
+timestep     0.001 # 1.0 [fs] (Recommend 0.1-3.5 [fs]), sets the timestep for subsequent simulations
+# Note: decrease "timestep" for "ERROR: Lost atoms"
 
 thermo       100
 thermo_style custom step temp pe etotal ke vol
@@ -116,21 +117,21 @@ velocity all create 4.0 ${rseed} mom yes rot yes dist gaussian
 # Heating
 #fix f1 all nvt temp 4.0 ${Tm} $(100*dt)
 fix f1 all npt temp 4.0 ${Tm} $(100*dt) iso 1.0 1.0 $(1000*dt)
-run 5000 # 10 [ps] (e.g., 10 - 100 [ps]) # <= run $(int(5000*exp(-640/670)/exp(-640/v_Tm)))
+run 5000 # 5 [ps] (e.g., 5 - 100 [ps]) # <= run $(int(5000*exp(-640/670)/exp(-640/v_Tm)))
 unfix f1
 
 #-------------------- Run the simulation -------------------------------------------------
 # Annealing
 #fix f2 all nvt temp ${Tm} ${Tm} $(100*dt)
 fix f2 all npt temp ${Tm} ${Tm} $(100*dt) iso 1.0 1.0 $(1000*dt)
-run 3000 # 6 [ps] (e.g., 6 - 60 [ps]) # <= run $(int(3000*exp(-640/670)/exp(-640/v_Tm)))
+run 3000 # 3 [ps] (e.g., 3 - 60 [ps]) # <= run $(int(3000*exp(-640/670)/exp(-640/v_Tm)))
 unfix f2
 
 #-------------------- Run the simulation -------------------------------------------------
 # Cooling
 #fix f3 all nvt temp ${Tm} ${Tdesird} $(100*dt)
 fix f3 all npt temp ${Tm} ${Tdesird} $(100*dt) iso 1.0 1.0 $(1000*dt)
-run 100000 # 200 [ps] (e.g., 80 - 800 [ps]) # <= run $(int(40000*exp(-640/670)/exp(-640/v_Tm)))
+run 40000 # 40 [ps] (e.g., 40 - 800 [ps]) # <= run $(int(40000*exp(-640/670)/exp(-640/v_Tm)))
 unfix f3
 
 write_data data_after_step1.lammps
