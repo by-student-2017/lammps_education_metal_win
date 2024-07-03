@@ -1,0 +1,141 @@
+#-----------------------------------------------------------------------------------------
+# 4.2 Creation of Al-Si-Mg-Cu-Fe alloys
+#  Test: LAMMPS 64-bit 22Dec2022-MSMPI version
+#-----------------------------------------------------------------------------------------
+# Note: The key is to set the temperature process so that the nucleus of 
+#   the desired crystal (in this case, FCC Al) remains as small as possible.
+#-----------------------------------------------------------------------------------------
+clear
+echo both
+#-------------------- Environment Settings -----------------------------------------------
+variable  Tdesird equal  273+200.0 # Desired Temperature [K]
+
+variable      cSi equal   0.005794 # Si concentration
+variable      cMg equal   0.001116 # Mg concentration
+variable      cCu equal   0.001174 # Cu concentration
+variable      cFe equal   0.003400 # Fe concentration
+
+#variable      cVa equal 0.00016 # vacancy concentration (e.g., 0.016%)
+
+variable      xha equal     100 # simulation size, x axis [Angstrom] (e.g., 50 - 1000)
+variable      yha equal     100 # simulation size, y axis [Angstrom] (e.g., 50 - 1000)
+variable      zha equal      10 # simulation size, z axis [Angstrom] (e.g.,  8 - 20)
+
+variable Nout     equal    1000 # output (e.g., 10 - 1000)
+
+variable rseed    equal   12345 # random seed (Note: If you want different results, use different values.)
+
+variable        N equal      10 # The number of nucleus
+variable     rnuc equal      12 # radius of nuclei
+
+#-------------------- Initialization -----------------------------------------------------
+units metal
+dimension 3
+boundary p p p
+
+#-------------------- Atom & Lattice description ----------------------------------------
+atom_style atomic
+
+#----------------------------------------------------------------------
+region box block 0 ${xha} 0 ${yha} 0 ${zha} units box
+create_box 5 box
+
+lattice fcc 4.04685 # Al FCC lattice constant [Angstrom]
+region al block 0 ${xha} 0 ${yha} 0 ${zha} units box
+create_atoms 1 region al units box
+#------------------------------------
+group al region al
+variable    natom equal count(al)
+variable   natom0 equal $(v_natom)
+delete_atoms group al
+create_atoms 1 random ${natom0} ${rseed} al units box
+#------------------------------------
+
+variable     rxlo equal $(xlo+v_rnuc)
+variable     rxhi equal $(xhi-v_rnuc)
+variable     rylo equal $(ylo+v_rnuc)
+variable     ryhi equal $(yhi-v_rnuc)
+variable     rzlo equal $(zlo)
+variable     rzhi equal $(zhi)
+#------------------------------------
+variable I loop 1 $N
+label LOOP
+
+variable       rx equal random(${rxlo},${rxhi},$(v_rseed+v_I))
+variable       ry equal random(${rylo},${ryhi},$(v_rseed+v_I))
+
+region nucl_$I cylinder z ${rx} ${ry} ${rnuc} ${rzlo} ${rzhi} units box
+#region nucl_$I block $(v_rx-v_rnuc) $(v_rx+v_rnuc) $(v_ry-v_rnuc) $(v_ry+v_rnuc) ${rzlo} ${rzhi} units box
+delete_atoms region nucl_$I
+lattice fcc 4.04685 orient x $I 1 0 orient y -1 $I 0
+create_atoms 1 region nucl_$I units box
+#region nucl_$I delete
+
+next I
+jump SELF LOOP
+#------------------------------------
+
+# creating composition by using set command for Al-Si-Mg-Cu-Fe alloy 
+set region al type/fraction 2 ${cSi} ${rseed} # set Si (type = 2) concentration randomly
+set region al type/fraction 3 ${cMg} ${rseed} # set Mg (type = 3) concentration randomly
+set region al type/fraction 4 ${cCu} ${rseed} # set Cu (type = 4) concentration randomly
+set region al type/fraction 5 ${cFe} ${rseed} # set Fe (type = 5) concentration randomly
+
+# vacancy
+#delete_atoms random fraction ${cVa} yes all NULL ${rseed}
+#delete_atoms random count 1 yes all NULL ${rseed}
+#----------------------------------------------------------------------
+
+variable elem string "Al Si Mg Cu Fe"
+
+#-------------------- Force field --------------------------------------------------------
+pair_style meam
+
+#----- MEAM_potential_2012_version -----
+variable padress string "./../MEAM_potential_2012_version"
+pair_coeff * *  ${padress}/Jelinek_2012_meamf.txt ${elem}  ${padress}/Jelinek_2012_meam.alsimgcufe ${elem}
+
+#-------------------- Atom & Lattice description -----------------------------------------
+delete_atoms overlap 0.3 all all
+
+#-------------------- Energy Minimization ------------------------------------------------
+# 0 [K], structure optimization
+fix             emin all box/relax iso 1.0
+min_style       cg
+min_modify      dmax 0.2
+min_modify      line quadratic
+minimize        1.0e-6 1.0e-8 4000 10000
+unfix           emin
+
+#-------------------- Settings -----------------------------------------------------------
+reset_timestep 0
+
+timestep     0.002 # 2.0 [fs] (Recommend 0.1-3.5 [fs]), sets the timestep for subsequent simulations
+
+thermo       100
+thermo_style custom step temp pe etotal ke vol
+
+#------------------------------
+dump            d1 all cfg ${Nout} cfg/run.md.*.cfg mass type xs ys zs id type vx vy vz fx fy fz
+dump_modify     d1 element ${elem}
+#------------------------------
+
+velocity all create 4.0 ${rseed} mom yes rot yes dist gaussian
+
+#-------------------- Run the simulation -------------------------------------------------
+# Heating
+#fix f1 all nvt temp 4.0 ${Tdesird} $(100*dt)
+fix f1 all npt temp 4.0 ${Tdesird} $(100*dt) iso 1.0 1.0 $(1000*dt)
+run 5000 # 10 [ps] (e.g., 10 - 100 [ps]) # <= run $(int(5000*exp(-640/670)/exp(-640/v_Tm)))
+unfix f1
+
+#-------------------- Run the simulation -------------------------------------------------
+# Annealing
+#fix f2 all nvt temp ${Tdesird} ${Tdesird} $(100*dt)
+fix f2 all npt temp ${Tdesird} ${Tdesird} $(100*dt) iso 1.0 1.0 $(1000*dt)
+run 40000 # 80 [ps] (e.g., 80 - 800 [ps]) # <= run $(int(40000*exp(-640/670)/exp(-640/v_Tm)))
+unfix f2
+
+write_data data_after_step1.lammps
+
+#-------------------- End ----------------------------------------------------------------
