@@ -1,0 +1,204 @@
+LAMMPS (22 Dec 2022)
+  using 1 OpenMP thread(s) per MPI task
+Loaded 1 plugins from C:\Program Files\LAMMPS 64-bit 23Jun2022\plugins
+Loaded 0 plugins from C:\Program Files\LAMMPS 64-bit 23Jun2022-MPI\plugins
+Loaded 1 plugins from C:\Program Files\LAMMPS 64-bit 22Dec2022-MSMPI\plugins
+Loaded 1 plugins from C:\Program Files\LAMMPS 64-bit 28Mar2023-MPI\plugins
+#-----------------------------------------------------------------------------------------
+# 4.2 Creation of Al-Si-Mg-Cu-Fe alloys
+#  Test: LAMMPS 64-bit 22Dec2022-MSMPI version
+#-----------------------------------------------------------------------------------------
+clear
+  using 1 OpenMP thread(s) per MPI task
+Loaded 1 plugins from C:\Program Files\LAMMPS 64-bit 23Jun2022\plugins
+Loaded 0 plugins from C:\Program Files\LAMMPS 64-bit 23Jun2022-MPI\plugins
+Loaded 1 plugins from C:\Program Files\LAMMPS 64-bit 22Dec2022-MSMPI\plugins
+Loaded 1 plugins from C:\Program Files\LAMMPS 64-bit 28Mar2023-MPI\plugins
+echo both
+#-------------------- Environment Settings -----------------------------------------------
+variable  Tdesird equal  273+200.0 # Desired Temperature [K]
+
+variable      cSi equal   0.005794 # Si concentration
+variable      cMg equal   0.001116 # Mg concentration
+variable      cCu equal   0.001174 # Cu concentration
+variable      cFe equal   0.003400 # Fe concentration
+
+variable      xha equal     100 # simulation size, x axis [Angstrom] (e.g., 50 - 1000)
+variable      yha equal     100 # simulation size, y axis [Angstrom] (e.g., 50 - 1000)
+variable      zha equal      10 # simulation size, z axis [Angstrom] (e.g.,  8 - 20)
+
+variable Nsteps   equal  100000 # The number of calculations (e.g., 1000 - 100000)
+variable Nout     equal    1000 # output (e.g., 10 - 1000)
+
+variable rseed    equal   12345 # random seed (Note: If you want different results, use different values.)
+
+#-------------------- Initialization -----------------------------------------------------
+units metal
+dimension 3
+boundary p p p
+
+#-------------------- Atom & Lattice description ----------------------------------------
+atom_style atomic
+
+#----------------------------------------------------------------------
+region box block 0 ${xha} 0 ${yha} 0 ${zha} units box
+region box block 0 100 0 ${yha} 0 ${zha} units box
+region box block 0 100 0 100 0 ${zha} units box
+region box block 0 100 0 100 0 10 units box
+create_box 5 box
+Created orthogonal box = (0 0 0) to (100 100 10)
+  2 by 5 by 1 MPI processor grid
+
+lattice fcc 4.04685 # Al FCC lattice constant [Angstrom]
+Lattice spacing in x,y,z = 4.04685 4.04685 4.04685
+#-------------------------------------------------------
+region al2 block 0 ${xha} 0 ${yha} 0            $(v_zha*1/4) units box
+region al2 block 0 100 0 ${yha} 0            $(v_zha*1/4) units box
+region al2 block 0 100 0 100 0            $(v_zha*1/4) units box
+region al2 block 0 100 0 100 0            2.5 units box
+region al3 block 0 ${xha} 0 ${yha} $(v_zha*1/4) $(v_zha*2/4) units box
+region al3 block 0 100 0 ${yha} $(v_zha*1/4) $(v_zha*2/4) units box
+region al3 block 0 100 0 100 $(v_zha*1/4) $(v_zha*2/4) units box
+region al3 block 0 100 0 100 2.5 $(v_zha*2/4) units box
+region al3 block 0 100 0 100 2.5 5 units box
+region al4 block 0 ${xha} 0 ${yha} $(v_zha*2/4) $(v_zha*3/4) units box
+region al4 block 0 100 0 ${yha} $(v_zha*2/4) $(v_zha*3/4) units box
+region al4 block 0 100 0 100 $(v_zha*2/4) $(v_zha*3/4) units box
+region al4 block 0 100 0 100 5 $(v_zha*3/4) units box
+region al4 block 0 100 0 100 5 7.5 units box
+region al5 block 0 ${xha} 0 ${yha} $(v_zha*3/4) $(v_zha*4/4) units box
+region al5 block 0 100 0 ${yha} $(v_zha*3/4) $(v_zha*4/4) units box
+region al5 block 0 100 0 100 $(v_zha*3/4) $(v_zha*4/4) units box
+region al5 block 0 100 0 100 7.5 $(v_zha*4/4) units box
+region al5 block 0 100 0 100 7.5 10 units box
+
+create_atoms 1 region al2 units box
+Created 2500 atoms
+  using box units in orthogonal box = (0 0 0) to (100 100 10)
+  create_atoms CPU = 0.001 seconds
+create_atoms 1 region al3 units box
+Created 1250 atoms
+  using box units in orthogonal box = (0 0 0) to (100 100 10)
+  create_atoms CPU = 0.000 seconds
+create_atoms 1 region al4 units box
+Created 1250 atoms
+  using box units in orthogonal box = (0 0 0) to (100 100 10)
+  create_atoms CPU = 0.000 seconds
+create_atoms 1 region al5 units box
+Created 1250 atoms
+  using box units in orthogonal box = (0 0 0) to (100 100 10)
+  create_atoms CPU = 0.000 seconds
+
+# creating composition by using set command for Al-Si-Mg-Cu-Fe alloy
+#-------------------------------------------------------------------
+set region al2 type/ratio 2 ${cSi} ${rseed} # set Si (type = 2) concentration randomly
+set region al2 type/ratio 2 0.005794 ${rseed} 
+set region al2 type/ratio 2 0.005794 12345 
+Setting atom values ...
+  14 settings made for type/ratio
+#-------------------------------------------------------------------
+set region al3 type/ratio 3 ${cMg} ${rseed} # set Mg (type = 3) concentration randomly
+set region al3 type/ratio 3 0.001116 ${rseed} 
+set region al3 type/ratio 3 0.001116 12345 
+Setting atom values ...
+  1 settings made for type/ratio
+#-------------------------------------------------------------------
+set region al4 type/ratio 4 ${cCu} ${rseed} # set Cu (type = 4) concentration randomly
+set region al4 type/ratio 4 0.001174 ${rseed} 
+set region al4 type/ratio 4 0.001174 12345 
+Setting atom values ...
+  1 settings made for type/ratio
+#-------------------------------------------------------------------
+set region al5 type/ratio 5 ${cFe} ${rseed} # set Fe (type = 5) concentration randomly
+set region al5 type/ratio 5 0.0034 ${rseed} 
+set region al5 type/ratio 5 0.0034 12345 
+Setting atom values ...
+  4 settings made for type/ratio
+#-------------------------------------------------------------------
+
+#----------------------------------------------------------------------
+
+variable elem string "Al Si Mg Cu Fe"
+
+#-------------------- Force field --------------------------------------------------------
+pair_style meam
+
+#----- MEAM_potential_2012_version -----
+variable padress string "./../MEAM_potential_2012_version"
+pair_coeff * *  ${padress}/Jelinek_2012_meamf.txt ${elem}  ${padress}/Jelinek_2012_meam.alsimgcufe ${elem}
+pair_coeff * *  ./../MEAM_potential_2012_version/Jelinek_2012_meamf.txt ${elem}  ${padress}/Jelinek_2012_meam.alsimgcufe ${elem}
+pair_coeff * *  ./../MEAM_potential_2012_version/Jelinek_2012_meamf.txt Al Si Mg Cu Fe  ${padress}/Jelinek_2012_meam.alsimgcufe ${elem}
+pair_coeff * *  ./../MEAM_potential_2012_version/Jelinek_2012_meamf.txt Al Si Mg Cu Fe  ./../MEAM_potential_2012_version/Jelinek_2012_meam.alsimgcufe ${elem}
+pair_coeff * *  ./../MEAM_potential_2012_version/Jelinek_2012_meamf.txt Al Si Mg Cu Fe  ./../MEAM_potential_2012_version/Jelinek_2012_meam.alsimgcufe Al Si Mg Cu Fe
+
+#-----------------------------------------------------------------------------------------
+
+#---------- output file settings --------------------------------------
+dump            d1 all cfg ${Nout} cfg/run.mc.*.cfg mass type xs ys zs id type vx vy vz fx fy fz
+dump            d1 all cfg 1000 cfg/run.mc.*.cfg mass type xs ys zs id type vx vy vz fx fy fz
+dump_modify     d1 element ${elem}
+dump_modify     d1 element Al Si Mg Cu Fe
+#----------------------------------------------------------------------
+
+#----- the uniform-acceptance force-bias Monte Carlo (fbMC) simulations -----
+fix f0 all tfmc 0.1 ${Tdesird} ${rseed} com 1 1 1 rot
+fix f0 all tfmc 0.1 473 ${rseed} com 1 1 1 rot
+fix f0 all tfmc 0.1 473 12345 com 1 1 1 rot
+
+run ${Nsteps}
+run 100000
+Neighbor list info ...
+  update: every = 1 steps, delay = 0 steps, check = yes
+  max neighbors/atom: 2000, page size: 100000
+  master list distance cutoff = 7
+  ghost atom cutoff = 7
+  binsize = 3.5, bins = 29 29 3
+  2 neighbor lists, perpetual/occasional/extra = 2 0 0
+  (1) pair meam, perpetual
+      attributes: full, newton on
+      pair build: full/bin/atomonly
+      stencil: full/bin/3d
+      bin: standard
+  (2) pair meam, perpetual, half/full from (1)
+      attributes: half, newton on
+      pair build: halffull/newton
+      stencil: none
+      bin: none
+Per MPI rank memory allocation (min/avg/max) = 11.39 | 11.47 | 11.55 Mbytes
+   Step          Temp          E_pair         E_mol          TotEng         Press     
+         0   0             -17214.721      0             -17214.721      145483.48    
+    100000   0             -20322.108      0             -20322.108      53123.645    
+Loop time of 1537.97 on 10 procs for 100000 steps with 6250 atoms
+
+Performance: 5.618 ns/day, 4.272 hours/ns, 65.021 timesteps/s, 406.379 katom-step/s
+57.9% CPU use with 10 MPI tasks x 1 OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 1199.1     | 1206.4     | 1216       |  13.5 | 78.44
+Neigh   | 1.7053     | 1.746      | 1.805      |   2.4 |  0.11
+Comm    | 131.66     | 140.33     | 147.62     |  39.0 |  9.12
+Output  | 0.37098    | 0.43354    | 0.50165    |   6.1 |  0.03
+Modify  | 177.24     | 179.19     | 182.16     |  10.5 | 11.65
+Other   |            | 9.894      |            |       |  0.64
+
+Nlocal:            625 ave         639 max         617 min
+Histogram: 4 0 1 0 1 2 1 0 0 1
+Nghost:         2637.5 ave        2673 max        2590 min
+Histogram: 1 0 0 2 0 3 1 0 1 2
+Neighs:        26219.4 ave       26743 max       25850 min
+Histogram: 3 1 0 0 1 2 0 2 0 1
+FullNghs:      52438.8 ave       53923 max       51579 min
+Histogram: 2 2 0 2 0 2 1 0 0 1
+
+Total # of neighbors = 524388
+Ave neighs/atom = 83.90208
+Neighbor list builds = 882
+Dangerous builds = 0
+
+write_data data_after_step1.lammps
+System init for write_data ...
+
+#-------------------- End ----------------------------------------------------------------
+Total wall time: 0:25:38
