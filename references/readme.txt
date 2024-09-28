@@ -348,6 +348,9 @@ input file (metal unit, lammps)
 - P. Y. Simanjuntak, Master thesis (2024).
   https://bearworks.missouristate.edu/theses/3159/
   Ti-Al-N
+
+- https://dr.ntu.edu.sg/handle/10356/175396
+  Fe-Co
 -------------------------------------------------------------------
 - J. William, Thesis (2021).
   https://openscience.ub.uni-mainz.de/handle/20.500.12030/6656 
