@@ -332,6 +332,22 @@ input file (metal unit, lammps)
 - O. Takahiro, Chiba Univ.
   https://amorphous.tf.chiba-u.jp/lecture.files/ms-workshop/molten.html
   Lecture
+
+- Z. Luo et al., Carbon 183 (2021) 438-448.
+  https://www.sciencedirect.com/science/article/pii/S0008622321006837
+  Low-density_microporous_carbon
+
+- F. Faruq, Master thesis (2010).
+  https://digital.library.ncat.edu/theses/26/
+  Nano-Diamond
+
+- B. Crutchfield, Master thesis (2024).
+  https://www.proquest.com/openview/95d9950a23ab02ced3bfd2b782403241
+  NixCr_Ti3SiC2
+
+- P. Y. Simanjuntak, Master thesis (2024).
+  https://bearworks.missouristate.edu/theses/3159/
+  Ti-Al-N
 -------------------------------------------------------------------
 - J. William, Thesis (2021).
   https://openscience.ub.uni-mainz.de/handle/20.500.12030/6656 
