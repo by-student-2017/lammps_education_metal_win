@@ -1,0 +1,58 @@
+# LAMMPS input script by s.burrows@qmul.ac.uk
+
+                            # Metal units typically needed for Tersoff/REBO/AIREBO
+units       metal           # mass = grams/mole, distance = Angstroms, time = picosecond
+                            # energy = eV, pressure = bar
+
+atom_style      atomic
+
+boundary        p p p                                                      # Fully periodic boundary conditions
+
+region          carbonbox block 0 64 0 64 0 64 units box                   # Cubic box, 64 Angstrom width
+
+create_box      2 carbonbox
+
+create_atoms    1 random 801 123 carbonbox                                 # Void particles (123 is the random seed)
+create_atoms    2 random 13144 123 carbonbox                               # Carbon atoms
+ 
+mass            1 100.0                                                    # Arbitrary mass for voids (any finite value)
+mass            2 12.0107                                                  # Mass of C atom
+
+group           porons type 1
+group           cb type 2  
+
+pair_style      hybrid tersoff soft 5.7                                    # tersoff for C-C interaction, soft for void-C interaction
+pair_coeff      * * tersoff C.tersoff NULL C                               # C.tersoff is the default tersoff parameter file SiC.tersoff
+                                                                           # lammps/master/potentials/SiC.tersoff
+pair_coeff      1 1 soft 0.000 5.7                                         # 5.7 Angstrom cutoff is sum of void radius (4 A) 
+pair_coeff      1 2 soft 0.776 5.7                                         # and VdW radius of C atoms (1.7 A)
+
+velocity        porons set 0.0 0.0 0.0                                     # Voids are fixed in place, and not subject to any force
+fix             forceFix porons setforce 0.0 0.0 0.0
+
+comm_style      tiled                                                      # Tiled domain decomposition may be more efficient for
+balance         1.1 rcb                                                    # a porous structure with heterogeneous density
+
+
+minimize        0.0 1.0e-6 10000 100000                                    # Begin with energy minimization to avoid large forces
+
+compute         tempCB cb temp                                             # Only compute temperature using C atoms
+thermo          1000
+thermo_style    custom step temp press dt time                             # Customize thermo output to log file
+thermo_modify   temp tempCB                                                # Use temperature computed using C atoms only
+
+variable        prefactor equal ramp(0.776,0.039)                          # Set initial and final values of energy parameter A (eV)
+fix             softAdapt all adapt 1000 pair soft a 1 * v_prefactor       # in soft potential style (docs.lammps.org/pair_soft.html)
+
+fix             fixT1 cb nvt temp 6000 300 0.02                            # Set initial and final temperatures in Nose-Hoover thermostat
+
+timestep        0.0002                                                     # 0.2 fs time-step
+
+dump            dumpXYZ all xyz 11400000 cnc_tersoff_2.5_1112.xyz          # Final output
+dump            dumpb   all xyz 114000 cnc_tersoff_1112.xyz                # Trajectory output (100 frames)
+dump            dumpc all custom 1000 cnc_tersoff_1112.lammpstrj type x y z ix iy iz mass
+dump_modify     dumpXYZ element Ar C                                       # We label the voids as Ar/Argon for the output file
+
+restart         1140000 cnc_tersoff_1112.restart                           # Frequency of writing restart file
+run             11400000                                                   # Total number of time steps
+                                                                           # Quench rate = (T_initial - T_final)/(n_steps*dt)

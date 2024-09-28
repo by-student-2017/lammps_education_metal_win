@@ -1,0 +1,31 @@
+units metal
+boundary p p p
+atom_style atomic
+atom_modify map array
+variable latparam equal 4.225
+
+--- Create Atoms ------
+read_data aot_thick1_nm_40401
+mass 1 47.867
+mass 3 26.9815
+mass 2 14.0067
+
+--- Calling the potential file ------
+pair_style eam/alloy
+pair_coeff * * bilayer.lammps.eam Ti N Al
+
+--- Running NPT simulation ------
+timestep 0.001
+
+velocity all create 300 4928459 dist gaussian
+
+dump melt all atom 5000 dump.dat
+restart 100000 restart.*
+
+thermo 500
+thermo_style custom step temp etotal pe enthalpy press vol lx ly lz pxx pyy pzz pyz pxz pxy
+
+fix 1 all npt temp 300 300 0.1 aniso 0 0 0.1
+
+run 250000
+unfix 1 

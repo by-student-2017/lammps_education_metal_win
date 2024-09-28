@@ -1,0 +1,49 @@
+#----------------------------------------------------------------------------------------------
+# Atomsk was used to create supercells of NixCr, both with and without Ti3SiC2 inclusions, 
+# in a format that is compatible with the LAMMPS molecular dynamics code. The following 
+# code outlines the steps required to create Ni4Cr with an inclusion. To obtain the different 
+# sized supercells, the values after "-duplicate" can be changed to match those described in 
+# Chapter III, as well as the percentage after "-select random" corresponding to the Ni 
+# composition desired. The value before "-remove-atoms" corresponds to the radius of the 
+# nanoparticle inclusion that is to be merged. The Ti3SiC2 sphere .cfg files are obtained 
+# similarly by creating the supercell of the same dimensions first using the appropriate .cif 
+# from the Crystallography Open Database [34] and removing the atoms using "-select out 
+# sphere" rather than "-select in sphere". To obtain a supercell with no inclusion then no 
+# atoms are removed, no sphere is merged, and the "-properties" must use the .txt file with 
+# Ti, Si, and C omitted. 
+#----------------------------------------------------------------------------------------------
+
+atomsk --create fcc 3.52 Ni Fcc_Ni.cfg
+atomsk Fcc_Ni.cfg -duplicate 40 40 80 Ni_Supercell_512000.cfg
+atomsk Ni_Supercell_512000.cfg -select random 20% Ni -substitute Ni Cr Ni4Cr_Supercell_512000.cfg
+atomsk Ni4Cr_Supercell_512000.cfg -select in sphere .5*box .5*box .5*box 13 -removeatoms select Ni4Cr_13Void_Supercell_512000.cfg
+atomsk --merge 2 Ni4Cr_13Void_Supercell_512000.cfg 13Ti3SiC2_Sphere.cfg Ni4Cr_13Ti3SiC2_Supercell_512000.cfg
+atomsk Ni4Cr_13Ti3SiC2_Supercell_512000.cfg -properties NiCrTiSiC_atomtypes.txt lammps
+
+#----------------------------------------------------------------------------------------------
+# The text file associated with the "-properties" tag is used to consistently assign the order 
+# of atom types when converting from .cfg to .lmp, which matters for force field assignment 
+# in LAMMPS. For the supercells with inclusions, this file (NiCrTiSiC_atomtypes.txt) is 
+# shown. For no inclusion, simply remove atom types 3 through 5. 
+# 
+# 1 Ni
+# 2 Cr
+# 3 Ti
+# 4 Si
+# 5 C
+# 
+# The following molecular dynamics script is used to perform the uniaxial tension 
+# simulations within LAMMPS. The "log" command is used to generate a custom log file, 
+# with a file name that matches the variable "Header" that specifies alloy composition, 
+# inclusion size (if applicable), strain rate, and total applied strain. The variable "t1" 
+# corresponds to the desired simulation temperature. The variable "seed" is used to randomly 
+# assign velocities during thermalization, which can be changed to produce multiple 
+# statistically equivalent starting conditions for each model. The variables "StrRate" and 
+# "TotStr" are the strain rate and total strain to achieve respectively. The "read_data" 
+# command imports the supercell geometries that were constructed in Atomsk. Finally, the 
+# "pair_style" and "pair_coeff" commands assign the interatomic potential for Ni-Cr, Ti-SiC, 
+# and the cross interactions. For simulations without an inclusion, the last 2 "pair_coeff" 
+# commands can be omitted and the "pair_style" command can be updated appropriately.
+# The CrNi.adp and TSCBOP.tersoff interatomic potential files were obtained from the NIST 
+# Interatomic Potential Repository.
+#----------------------------------------------------------------------------------------------

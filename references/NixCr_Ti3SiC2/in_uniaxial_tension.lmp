@@ -1,0 +1,72 @@
+#--------------------------------------------------------------------------------------------------------
+# The CrNi.adp (CrNi.adp.txt) and TSCBOP.tersoff interatomic potential files were obtained from the NIST 
+# Interatomic Potential Repository. 
+#--------------------------------------------------------------------------------------------------------
+
+log NiCr_13Ti3SiC2_0.1_0.05.log
+
+# NiCr Block
+units metal
+boundary p p p
+atom_style atomic
+
+# Define Variables for Geometry and Simulation Parameters
+variable t1 equal 300
+
+variable Seed equal 12345
+variable StrRate equal 0.1
+variable TotStr equal 0.05
+variable Header string NiCr_13Ti3SiC2_${StrRate}_${TotStr}
+
+# Read Simulation Box of Compound
+read_data NiCr_13Ti3SiC2_Supercell_512000.lmp
+
+# Interatomic Potentials
+pair_style hybrid adp tersoff lj/cut 7 
+pair_coeff * * adp CrNi.adp Ni Cr NULL NULL NULL
+pair_coeff * * tersoff TSCBOP.tersoff NULL NULL Ti Si C
+pair_coeff 1*2 3* lj/cut 0.3 2.0
+
+# Screen and file output
+thermo 10
+thermo_style custom step ke pe etotal temp fmax fnorm
+compute pnrg all pe/atom
+dump cg all custom 1000 ${Header}.min id type x y z c_pnrg
+
+# Minimize total structure
+min_style cg
+min_modify line backtrack
+minimize 1.0e-8 1.0e-8 3000 100000
+undump cg
+
+# Equilibrate to Desired Temperature
+velocity all create ${t1} ${Seed} dist gaussian
+fix 2 all npt temp ${t1} ${t1} $(100*dt) iso 0 0 $(1000*dt)
+# Output commands
+thermo 200
+thermo_style custom step ke pe etotal temp press
+thermo_modify lost warn flush yes
+dump 1 all custom 2000 ${Header}.eqil id type x y z c_pnrg
+
+# Run Equilibration
+reset_timestep0
+run 50000
+undump 1
+
+# Apply Constant Strain Rate Deformation
+variable tmp equal "lz"
+variable L0 equal ${tmp}
+variable Strain equal "(lz - v_L0)/v_L0"
+variable p1 equal "-pxx/10000"
+variable p2 equal "-pyy/10000"
+variable p3 equal "-pzz/10000"
+fix StressStrain all print 100 "${Strain},${p3},${p1},${p2}" file ${Header}_StressStrain.csv screen no
+thermo_style custom step ke pe etotal temp press v_Strain v_p3
+unfix 2
+
+reset_timestep 0
+fix 3 all deform 1 z erate $(v_StrRate/1000) units box remap x
+fix 4 all npt temp ${t1} ${t1} $(100*dt) x 0 0 $(1000*dt) y 0 0 $(1000*dt)
+dump 2 all custom 2000 ${Header}.strain id type x y z c_pnrg
+variable StrTime equal round(${TotStr}/${StrRate}*1000000)
+run ${StrTime}

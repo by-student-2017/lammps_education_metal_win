@@ -1,0 +1,79 @@
+# Input file for uniaxial compressive loading of single crystal aluminum
+# Mark Tschopp, November 2010
+
+# -------- INITIALIZATION --------
+units metal
+dimension 3
+boundary p p p
+atom_style atomic
+# variable latparam equal 4.05
+
+# -------- ATOM DEFINITION --------
+read_data aot_thick1_45451
+mass 1 47.867  # Ti
+mass 3 26.9815 # Al
+mass 2 14.0067 # N
+
+# -------- FORCE FIELDS --------
+pair_style eam/alloy
+pair_coeff * * bilayer.lammps.eam Ti N Al
+
+# -------- SETTINGS --------———
+compute csym all centro/atom fcc
+compute peratom all pe/atom
+
+######################################
+# EQUILIBRATION
+reset_timestep 0
+timestep 0.001
+velocity all create 300 12345 mom yes rot no
+fix 1 all npt temp 300 300 1 aniso 0 0 1 drag 1
+
+# Set thermo output
+thermo 500
+thermo_style custom step lx ly lz press pxx pyy pzz pe temp
+
+# Run for at least 10 picosecond (assuming 1 fs timestep)
+run 40000
+unfix 1
+
+# Store final cell length for strain calculations
+variable tmp equal "lz"
+variable L0 equal $tmp
+print "Initial Length, L0: $L0"
+
+######################################
+# DEFORMATION
+reset_timestep 0
+fix 1 all npt temp 300 300 1 x 0 0 1 y 0 0 1 drag 1
+variable srate equal 5.0e9
+variable srate1 equal "-v_srate / 1.0e12"
+fix 2 all deform 1 z erate $srate1 units box remap x
+
+# Output strain and stress info to file
+# for units metal, pressure is in [bars] = 100 [kPa] = 1/10000 [GPa]
+# p2, p3, p4 are in GPa
+# Strain in percent
+variable strain equal "((lz - v_L0)*100)/v_L0"
+variable p1 equal "-v_strain"
+variable p2 equal "pxx/10000"
+variable p3 equal "pyy/10000"
+variable p4 equal "pzz/10000"
+fix def1 all print 200 "$p1 $p2 $p3 $p4" file aot1_u_z_rate_2.txt screen no
+
+# Use cfg for AtomEye
+dump 4 all cfg 3200 dump_cmp_aot1_u_rate_2.*.cfg mass type xs ys zs id c_csym cperatom fx fy fz
+dump_modify 4 element Ti N Al
+
+# Ovito dump
+dump mydump all atom 800 dump_aot1_u_z_rate_2.atom
+
+# Display thermo
+thermo 100
+thermo_style custom step v_strain temp v_p2 v_p3 v_p4 ke pe press
+thermo_modify lost warn norm yes flush yes
+run 160000
+
+######################################
+# SIMULATION DONE
+print "All done"

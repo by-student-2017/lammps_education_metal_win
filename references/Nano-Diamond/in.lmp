@@ -1,0 +1,56 @@
+#---------------------------------------------------------------------------------------------------
+## EXAMPLES OF INPUT SCRIPTS AND DATA FILES FOR LAMMPS
+#---------------------------------------------------------------------------------------------------
+# Given below is an example of an input script used to perform simulations on 
+# LAMMPS. The simulation to be performed based on the example calls for a 50,000 time 
+# step run starting from a restart file bulknptfull20.nano. Metal units are being used which 
+# uses picoseconds for time, Angstroms for length, Kelvin for temperature, bars for 
+# pressure, and eV for energy. The force field is set to the AIREBO potential with a cutoff 
+# factor of 3.5 for an all carbon system. An NVE run is to be done with temperature 
+# rescaling to a desired temperature of 298 K. Pressure tensors will be calculated and 
+# written into the dump file. Apart from the dump file, cfg files will also be created every 
+# 1,000 time steps. A restart start file will be created and a time step size of 0.0001 
+# picoseconds will be set. 
+#---------------------------------------------------------------------------------------------------
+
+units metal
+dimension 3
+
+atom_style molecular 
+read_restart bulknptfull20.nano
+
+pair_style airebo 3.5 1 1
+pair_coeff * * CH.airebo C 
+
+fix 1 all nve
+fix 2 all temp/rescale 1 298 298 0.1 1
+
+compute press all stress/atom
+compute 2 all reduce sum c_press[1] c_press[2] c_press[3] 
+
+variable p equal -(c_2[1]+c_2[2]+c_2[3])/(3*8359)
+
+timestep 0.0001
+log log.npt21
+
+neigh_modify one 2800 page 500000
+
+thermo_style custom step temp press etotal pe epair v_p 
+thermo 100
+
+dump 1 all custom 1000 nptnew.dump id mol x y z c_press[1] c_press[2] c_press[3]
+dump 2 all cfg 1000 ndnew.*.cfg id type xs ys zs
+dump_modify 2 element C 
+
+run 50000
+
+write_restart bulknptfull21.nano
+
+#---------------------------------------------------------------------------------------------------
+## bulknptfull20.nano
+# Given below is an example of a data file. The simulation box size is set to a length 
+# of 33 in the x,y, and z direction. The system contains 1890 atoms of 1 atom type. The 
+# mass of the single atom type (named 1) is 12 g/mole. The x, y, and z coordinates of each 
+# atom is given. Apart from the coordinates, an id number is attached to each atom. The 
+# columns of 1 pertain to the atom type number and the molecule id.
+#---------------------------------------------------------------------------------------------------
