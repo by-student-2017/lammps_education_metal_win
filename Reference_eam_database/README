@@ -172,18 +172,47 @@ Note: By increasing the read parameters and rewriting "psi=0.5d0*(f2/f1*psia+f1/
 
 Note: Relationship with the Morse potential and the Tersoff potential
 #--------------------------------------------------------------------
+Universal Relationships
+  Eu(ru) = E(r)/dE, ru = (r-r0)/sart(dE/(d(dE(r)/dr)/dr)) at r=r0
+Here, dE is the bond energy, E(r) is the total energy of the system, and r0 is the equilibrium interatomic distance.
+First-principles calculations have revealed that when represented in this form, molecules (covalent bonds), interfaces between different metals, chemical adsorption on metal surfaces, and bulk (metallic bonds, etc.) become a single universal curve.
+For this reason, Pt-H, etc. have been attempted to be calculated using potentials that take universal curves into account, such as EAM and Tersoff.
+#--------------------------------------------------------------------
+# chemical pesudopotential method
+U(r) = Z*{A*q*exp(-lambda1*r) - B*p*exp(-lambda2*r)}
+Here, Z is the coordination number, q is the number of valence electrons, and p is the bond order with neighboring atoms. A and lambda1 are the parameters of the repulsive term, and B and lambda2 are the parameters of the attractive term.
+Note: The exponential expression is for analytical convenience, but it is similar to the Morse potential in the analytical solution of the one-electron Schrödinger equation and has a sufficient theoretical basis.
+Note: If p is related to Z^(-1/2), the gravitational term becomes Z^(1/2) and the second moment approximation holds.
+#--------------------------------------------------------------------
 Morse potential: D0*exp(-2*alpha*(r-r0)) - 2.0*D0*exp(-alpha*(r-r0))
+Here, r0 is the bond length, and D0 is the bond energy.
+Note: This form corresponds to the one-electron Schrödinger equation solved analytically by Morse. [P. M. Morse, Phys. Rev. 34, 57-64 (1929).]
+Note: It is possible to reproduce the anharmonicity of the infrared absorption spectrum due to molecular vibrations.
+Note: Spring constant of a harmonic oscillator k = sqrt(2.0*D0*alpha)
 #--------------------------------------------------------------------
 Tersoff potential(tersoff1988): fc*A*exp(-lambda1*r) - fc*bij*B*exp(-lambda2*r)
 or
 Tersoff potential: fc*[D/(S-1)]*exp(-beta*sqrt(2*S)*(r-r0)) - fc*bij*[S*D/(S-1)]*exp(-beta*sqrt(2/S)*(r-r0)
 Note: A mixing rule is used with cutoffs on B, lambda1, lambda2, and distance.
 Note: Looking at previous papers, there is almost no mixing of "A" through repulsive forces, but mixing of "B" through attractive forces is taking place.
+Note: The expression for bij is the term related to the second moment approximation. The value does not change when it is less than 1/beta, but the effect of the second moment approximation comes into play when it is 1/beta or more.
+Note: In the Albe form, m = 1, and in the Tersoff form, m = 3. Tersoff uses m = 3 to smooth out the large change in the weight of the coordination number caused by a small change in r when m = 1.
 #--------------------------------------------------------------------
 EAM potential (Zhou2004): (1/2)*(sum phi(r_ij) for j) + F(sum rho_ij for j)
 phi(r_ij) is a pairwise potential and F(rho_i) is the embedding potential, which depends on the electron density rho_i at site i.
 Note: Mixing is done at phi(r_ij). fe means the coefficient of blending between element A and element B. It does not work in the case of the same element.
   Therefore, you can fit the parameters for a pure metal and then determine fe for the alloy. If fe is insufficient, you can increase the parameters and mix them, or expand it to take into account F(rho) and include the effects of coordination number and structure.
+#--------------------------------------------------------------------
+Foiles-Baskes-Daw EAM potential [S. M. Foiles et al., Rhys. Rev. B 33, 7983-7991 (1996).]
+Note: rho(r) = n_s * rho_s(r) + n_d * rho_d(r)
+  Here, n_s and n_d are the numbers of s and d electrons in the outer shell, and rho_s and rho_d are the density distributions due to s and d orbitals. rho_s and rho_d are calculated using the atomic wave functions analytically obtained by the Hartree-Fock molecular orbital method.
+Note: The embedding function F(rho) is determined to reproduce the universal potential proposed by J. H. Rose et al. [J. H. Rose et al., Phys. Rev. B 29 2963-2969 (1984).]
+  E(r) = -E_sub*(1+a+d*a^3)*exp(-a), a = (r/a0 -1)/sart(E_sum/(9*B*omega))
+  where E_sub is the sublimation energy of the metal, a0 is the lattice constant, B is the bulk modulus, and omega is the volume per atom at equilibrium.
+#--------------------------------------------------------------------
+Foiles-Baskes-Daw EAM: The pair potential is determined, and then an embedding function is determined to reproduce the universal potential.
+MEAM: An embedding function is defined, after which a pair potential is determined to reproduce the universal potential.
+Note: 
 #--------------------------------------------------------------------
 
 Note: rhoin(ntypes)=rhol(ntypes)*rhoe(ntypes) in long range part.
