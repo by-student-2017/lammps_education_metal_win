@@ -1,0 +1,106 @@
+#------------------------------------------------------------------------------------------
+### Molecular dynamics (MD) simulations are performed to investigate the effects of stress on 
+### generalized stacking fault (GSF) energy of three fcc metals (Cu, Al, and Ni). 
+#------------------------------------------------------------------------------------------
+### LAMMPS code for calculating the GSF energy curve of Cu
+### file_name in.gsf
+#------------------------------------------------------------------------------------------
+units metal
+boundary p s p
+atom_style atomic
+
+variable lattice equal 3.615 # Cu 3.615, Al 4.05, Ni 3.52 at 0 GPa
+variable partial equal "v_lattice/sqrt(6)"
+variable cna equal "v_lattice*(1+1/sqrt(2))/2"
+
+lattice fcc ${lattice} orient x 1 1 -2 orient y 1 1 1 orient z 1 -1 0
+region box block 0 21 0 20 0 20
+
+create_box 1 box
+create_atoms 1 box
+
+region up1 block INF INF 62 INF INF INF units box
+group up1 region up1
+
+region up2 block INF INF 64 INF INF INF units box
+group up2 region up2
+
+region energy block INF INF 45 80 INF INF units box
+group energy region energy
+
+neighbor 2.0 bin
+neigh_modify delay 1 check yes
+
+variable elem string "Cu"
+
+pair_style eam/alloy
+pair_coeff * * Cu01.eam.alloy ${elem}
+#Al: Al03.eam.alloy
+#Ni: Ni99.eam.alloy
+
+compute pe all pe/atom
+compute cna all cna/atom ${cna}
+
+#mass * 63.546 # It is written in the potential file.
+
+compute gbenergy energy reduce sum c_pe
+variable gbenergy equal c_gbenergy
+
+thermo 1
+thermo_style custom step temp pe ke etotal lx ly lz pxx pyy pzz c_gbenergy
+
+dump 1 all cfg 1 cfg/cell.*.cfg mass type xs ys zs id type xs ys zs c_cna c_pe
+dump_modify 1 element ${elem}
+
+dump 2 energy cfg 1 cfg/gsf.*.cfg mass type xs ys zs id type xs ys zs c_cna c_pe
+dump_modify 2 element ${elem}
+
+run 0
+
+#------------------------------------------------------------------------------------------
+variable gbenergy00 equal "v_gbenergy"
+variable gbenergy0 equal ${gbenergy00}
+#------------------------------------------------------------------------------------------
+print "#Disp_No, GSF_energy [mJ/m^2], Displacement [Angstrom], Displacement [a0/6^(1/2)]" file data.gsf
+#------------------------------------------------------------------------------------------
+### move up1 (Disp_No: 1-20)
+# Note: v_partial = lattice/sqrt(6)
+
+label forloopi
+variable a loop 1
+variable p equal "v_partial/20"
+displace_atoms up1 move ${p} 0 0 units box
+variable gsf equal "(v_gbenergy - v_gbenergy0)/lx/lz*16.02*1000" # Unit Conversion: 1.0 eV/A^2 -> 16.02*1000 mJ/m^2
+variable dis equal "v_p * v_a"
+variable disp equal "v_p * v_a / v_partial"
+fix extra all print 2 "$a ${gsf} ${dis} ${disp}" append data.gsf screen no title "0 0.00000 0.00000 0.00000"
+run 1
+next a
+jump in.gsf forloopi
+
+label forloopp
+variable a loop 2 20
+variable p equal "v_partial/20"
+displace_atoms up1 move ${p} 0 0 units box
+variable gsf equal "(v_gbenergy - v_gbenergy0)/lx/lz*16.02*1000"
+#fix extra all print 2 "$a ${gsf}" append data.gsf screen no title ""
+run 1
+next a
+jump in.gsf forloopp
+#------------------------------------------------------------------------------------------
+### move up2 (Disp_No: 21-40)
+
+label forloopt
+variable a loop 21 40
+variable p equal "v_partial/20"
+displace_atoms up2 move ${p} 0 0 units box
+variable gsf equal "(v_gbenergy - v_gbenergy0)/lx/lz*16.02*1000" # Unit Conversion: 1.0 eV/A^2 -> 16.02*1000 mJ/m^2
+variable no equal $a
+#fix extra all print 2 "$a ${gsf}" append data.gsf screen no title ""
+run 1
+next a
+jump in.gsf forloopt
+#------------------------------------------------------------------------------------------
+print "Amount to move at each step: ${p} [Angstrom]"
+print "Ende"
+#------------------------------------------------------------------------------------------
