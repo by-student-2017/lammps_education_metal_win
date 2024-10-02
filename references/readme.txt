@@ -333,7 +333,11 @@ input file (metal unit, lammps)
   https://amorphous.tf.chiba-u.jp/lecture.files/ms-workshop/molten.html
   Lecture
 
-- Liang Zhang et al 2015 Chinese Phys. B 24 088106.
+- S. K. Pinky et al., Master thesis (2019) 
+  https://www.osti.gov/biblio/1902939
+  Creep_Deformation
+
+- Liang Zhang et al., 2015 Chinese Phys. B 24 088106.
   https://iopscience.iop.org/article/10.1088/1674-1056/24/8/088106/meta
   GSF_energy_curve
 
