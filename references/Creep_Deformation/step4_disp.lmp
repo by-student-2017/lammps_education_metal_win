@@ -27,7 +27,7 @@ read_data ${atom_file}
 variable tmp0 equal "ylo+14.0"
 variable ylo0 equal ${tmp0}
 variable tmp1 equal "yhi-14.5"
-variable yhi0 equal ${tmp1}
+variable yhi0 equal ${tmp1}
 # variable for dumping
 variable ymid1 equal "0.5*ylo + 0.5*yhi - 30.0"
 variable ymiddlenegative equal ${ymid1}
@@ -68,12 +68,14 @@ fix 2 upper setforce 0.0 0.0 NULL
 compute pot_energy all pe/atom
 compute stress all stress/atom NULL
 
-dump 1 all custom 1000 dump.minimize id x y z c_pot_energy
+dump 1 all custom 1000 dump.minimize id x y z c_pot_energy
+
 # create the dislocation
 timestep 0.01
 minimize 0.0 1.0e-8 10000 100000
 
-undump 1unfix 1
+undump 1
+unfix 1
 unfix 2
 
 ###################################################
@@ -101,7 +103,7 @@ fix 3 lower setforce 0.0 0.0 NULL
 fix 4 upper setforce 0.0 0.0 NULL
 
 thermo 100
-thermo_modify temp temp1
+thermo_modify temp temp1
 thermo_style custom step pe ke temp pxx pyy pzz pxy pyz pxz
 dump 1 all custom 10000 dump.equilibration id x y z c_pot_energy c_stress[1] c_stress[2] c_stress[3] c_stress[4] c_stress[5] c_stress[6]
 dump 2 all cfg 100 cfg/equil.*.cfg mass type xs ys zs id type vx vy vz fx fy fz
@@ -115,7 +117,8 @@ unfix 3
 unfix 4
 undump 1
 undump 2
-uncompute temp1
+uncompute temp1
+
 ########################################################################################################
 # step 3: MD at finite temperatute and with constant force #
 # force (eV/angstrom) = stress (bar) * S (angstrom*angstrom) / (number of atoms in upper) / 1602191.7) #
