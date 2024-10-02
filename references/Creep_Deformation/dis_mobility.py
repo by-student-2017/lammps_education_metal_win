@@ -1,3 +1,16 @@
+# Ubuntu 22.04 LTS or WSL2
+# 
+# Installation Ovito
+#   pip install -U ovito
+#   or
+#   conda install --strict-channel-priority -c https://conda.ovito.org -c conda-forge ovito=3.10.6
+# 
+# Help
+# ovitos dis_mobility.py -h
+#
+# Usage
+# ovito dis_mobility.py FILENAME
+
 from ovito import *
 import numpy as np
 import os
@@ -64,7 +77,7 @@ if __name__ == "__main__":
       key = keyargs[i].split('-')[1]
       i += 1
       if (key is "h") or (key is "help"):
-        print("Usage: ovitos dis_mobility.py [OPTIONS] [FILENAME]\n\t-h,help\tThis help message\n")
+        print("Usage: ovito dis_mobility.py [OPTIONS] [FILENAME]\n\t-h,help\tThis help message\n")
       else:
         raise Exception("Unknown option: " + key)
   
