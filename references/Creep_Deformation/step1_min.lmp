@@ -1,0 +1,46 @@
+#------------------------------------------------------------------------------------------
+# 1. Structural minimization script
+#------------------------------------------------------------------------------------------
+# LAMMPS 64-bit 22Dec2022-MSMPI
+#------------------------------------------------------------------------------------------
+
+units metal
+boundary p p p 
+atom_style atomic
+
+read_data 4Ni3Al_1Ni.data
+
+replicate 6 6 6
+# It is written in the potential file.
+#mass 1 58.69
+#mass 2 26.98
+
+variable elem string "Ni Al"
+# ---------- Calling the potential file---------------------
+pair_style eam/alloy
+pair_coeff * * Mishin-Ni-Al-2009.eam.alloy ${elem}
+
+delete_atoms overlap 1.9 all all
+
+# ---------- Running NPT simulation----------------
+timestep 0.0001
+
+#velocity all create 300 4928459 dist gaussian
+
+#dump melt all atom 100 poly_dump_iso.dat
+dump 1 all cfg 100 cfg/min.*.cfg mass type xs ys zs id type vx vy vz fx fy fz
+dump_modify 1 element ${elem}
+
+#restart 1000 restart.*
+
+thermo 10
+thermo_style custom step temp etotal pe press vol lx ly lz pxx pyy pzz pyz pxz pxy
+
+minimize 0.0 1.0e-8 1000 100000
+
+#fix 1 all npt temp 300 300 0.1 iso 0.0 0.0 0.1
+
+#run 5000
+
+write_data 4Ni3Al_1Ni_supercell.data
+#------------------------------------------------------------------------------------------
