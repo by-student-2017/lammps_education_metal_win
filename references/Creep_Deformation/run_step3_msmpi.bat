@@ -1,8 +1,6 @@
 set ncore=4
 set OMP_NUM_THREADS=1
 
-del data.gsf
-
 mkdir cfg
 
 for %%1 in (step3_comp.lmp) do (
