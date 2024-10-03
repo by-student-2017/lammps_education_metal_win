@@ -12,11 +12,27 @@
 # atoms are removed, no sphere is merged, and the "-properties" must use the .txt file with 
 # Ti, Si, and C omitted. 
 #----------------------------------------------------------------------------------------------
+# Windows 11
+# atomsk: https://atomsk.univ-lille.fr/
+#   Download "atomsk_b0.13.1_Windows.zip", unpack it. Then, click "Atomsk_setup.exe"
+#----------------------------------------------------------------------------------------------
+# Ubuntu 22.04 LTS or WSL2
+# 1. wget https://atomsk.univ-lille.fr/code/atomsk_b0.13.1_amd64.deb
+# 2. sudo dpkg -i atomsk_b0.13.1_amd64.deb
+# 3. atomsk
+#----------------------------------------------------------------------------------------------
+# Crystallography Open Database
+# 9009647	CIF	C2 Si Ti3	P 63/m m c
+# https://www.crystallography.net/cod/result.php
+#----------------------------------------------------------------------------------------------
 
 atomsk --create fcc 3.52 Ni Fcc_Ni.cfg
 atomsk Fcc_Ni.cfg -duplicate 40 40 80 Ni_Supercell_512000.cfg
 atomsk Ni_Supercell_512000.cfg -select random 20% Ni -substitute Ni Cr Ni4Cr_Supercell_512000.cfg
-atomsk Ni4Cr_Supercell_512000.cfg -select in sphere .5*box .5*box .5*box 13 -removeatoms select Ni4Cr_13Void_Supercell_512000.cfg
+#atomsk Ni4Cr_Supercell_512000.cfg -select in sphere 0.5*box 0.5*box 0.5*box 13 -remove-atoms select Ni4Cr_13Void_Supercell_512000.cfg
+atomsk Ni4Cr_Supercell_512000.cfg -select in sphere 0.5*box 0.5*box 0.5*box 13 -rmatom select Ni4Cr_13Void_Supercell_512000.cfg
+atomsk Ti3SiC2_1x2x1.cif -duplicate 46 26 16 Ti3SiC2_Supercell.cfg
+atomsk Ti3SiC2_Supercell.cfg -select out sphere 0.5*box 0.5*box 0.5*box 13 -rmatom select 13Ti3SiC2_Sphere.cfg
 atomsk --merge 2 Ni4Cr_13Void_Supercell_512000.cfg 13Ti3SiC2_Sphere.cfg Ni4Cr_13Ti3SiC2_Supercell_512000.cfg
 atomsk Ni4Cr_13Ti3SiC2_Supercell_512000.cfg -properties NiCrTiSiC_atomtypes.txt lammps
 
