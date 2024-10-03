@@ -8,4 +8,6 @@ for %%1 in (in_uniaxial_tension.lmp) do (
   echo input file: %%1
 )
 
+plot_stress_vs_strain_v2.gpl
+
 pause
