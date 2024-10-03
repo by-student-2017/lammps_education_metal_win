@@ -385,6 +385,10 @@ input file (metal unit, lammps)
   https://bearworks.missouristate.edu/theses/3159/
   Ti-N-Al (need potential and structure files)
 
+- M. J. Buehler et al., Graduate Theses (2017)
+  https://dspace.mit.edu/handle/1721.1/109645
+  substrate-supported-graphene (need structure file)
+
 - B. Timalsina, Master thesis (2021).
   https://bearworks.missouristate.edu/theses/3670/
   (Rf-MEAM)
