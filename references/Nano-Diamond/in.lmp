@@ -11,27 +11,56 @@
 # written into the dump file. Apart from the dump file, cfg files will also be created every 
 # 1,000 time steps. A restart start file will be created and a time step size of 0.0001 
 # picoseconds will be set. 
-#---------------------------------------------------------------------------------------------------
-
+#------------------------------------------------------------------------------------------
+# LAMMPS 64-bit 22Dec2022-MSMPI
+clear
+#-------------------- Initialization ------------------------------------------------------
 units metal
 dimension 3
-
 atom_style molecular 
-read_restart bulknptfull20.nano
 
+#-------------------- set strcutre data ---------------------------------------------------
+# Here, a diamond structure is created and then a sphere is cut out, 
+# with the number of atoms being close to 1890 as specified in the literature.
+
+## Creating a diamond structure
+lattice diamond 3.57 # [A] unit: C 3.56, Si 5.43, Ge 5.65, alpha-Sn 6.46
+region box block 0 33 0 33 0 33 units box
+create_box 1 box
+create_atoms 1 region box
+mass 1 12.011  # C [g/mol]
+
+## Cutting out the ball
+variable radius equal 13.7
+region sphere_region sphere 16 16 16 ${radius} units box
+region outside_region block INF INF INF INF INF INF units box
+group inside_region region sphere_region
+group outside_region subtract all inside_region
+delete_atoms group outside_region
+
+## Output of the created structure, which can be viewed in Ovito.
+write_data bulknptfull20_init.data
+#-------------------- Read strcutre file --------------------------------------------------
+#read_restart bulknptfull21.nano
+
+#-------------------- Force field ---------------------------------------------------------
 pair_style airebo 3.5 1 1
 pair_coeff * * CH.airebo C 
 
+#-------------------- Settings ------------------------------------------------------------
 fix 1 all nve
 fix 2 all temp/rescale 1 298 298 0.1 1
 
-compute press all stress/atom
+compute press all stress/atom NULL
 compute 2 all reduce sum c_press[1] c_press[2] c_press[3] 
 
-variable p equal -(c_2[1]+c_2[2]+c_2[3])/(3*8359)
+variable rc equal 0.77 # Radius of carbon atom [A]
+variable Vc equal (4.0/3.0)*PI*${rc}^3 # Volume of carbon atom [A^3]
+variable p equal -(c_2[1]+c_2[2]+c_2[3])/(3*${Vc}) # Pressure calculation
+#variable p equal -(c_2[1]+c_2[2]+c_2[3])/(3*8359)
 
 timestep 0.0001
-log log.npt21
+#log log.npt21
 
 neigh_modify one 2800 page 500000
 
@@ -39,7 +68,7 @@ thermo_style custom step temp press etotal pe epair v_p
 thermo 100
 
 dump 1 all custom 1000 nptnew.dump id mol x y z c_press[1] c_press[2] c_press[3]
-dump 2 all cfg 1000 ndnew.*.cfg id type xs ys zs
+dump 2 all cfg 1000 cfg/mdnew.*.cfg mass type xsu ysu zsu id type xs ys zs
 dump_modify 2 element C 
 
 run 50000
