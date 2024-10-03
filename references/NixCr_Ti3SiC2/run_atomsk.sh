@@ -26,14 +26,11 @@ atomsk Ni4Cr_13Ti3SiC2_Supercell_512000.cfg -properties NiCrTiSiC_atomtypes.txt 
 EOF1
 
 cat << EOF2 > NiCrTiSiC_atomtypes.txt
-#Atom types for use with LAMMPS or IMD
-#Note that any number can be assigned to each species
-type
-Ni 1
-Cr 2
-Ti 3
-Si 4
-C  5
+1 Ni
+2 Cr
+3 Ti
+4 Si
+5 C
 EOF2
 
 while IFS= read -r line
