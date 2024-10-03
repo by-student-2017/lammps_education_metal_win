@@ -16,7 +16,7 @@ variable t1 equal 300
 variable Seed equal 12345
 variable StrRate equal 0.1
 variable TotStr equal 0.05
-variable Header string NiCr_13Ti3SiC2_${StrRate}_${TotStr}
+variable Header string Ni4Cr_13Ti3SiC2_${StrRate}_${TotStr}
 
 # Read Simulation Box of Compound
 #read_data NiCr_13Ti3SiC2_Supercell_512000.lmp
@@ -33,12 +33,15 @@ thermo 10
 thermo_style custom step ke pe etotal temp fmax fnorm
 compute pnrg all pe/atom
 dump cg all custom 1000 ${Header}.min id type x y z c_pnrg
+dump d0 all cfg 1000 cfg/min.*.cfg mass type xs ys zs id type vx vy vz fx fy fz
+dump_modify d0 element Ni Cr Ti Si C
 
 # Minimize total structure
 min_style cg
 min_modify line backtrack
 minimize 1.0e-8 1.0e-8 3000 100000
 undump cg
+undump d0
 
 # Equilibrate to Desired Temperature
 velocity all create ${t1} ${Seed} dist gaussian
@@ -48,11 +51,14 @@ thermo 200
 thermo_style custom step ke pe etotal temp press
 thermo_modify lost warn flush yes
 dump 1 all custom 2000 ${Header}.eqil id type x y z c_pnrg
+dump d1 all cfg 1000 cfg/equil_npt.*.cfg mass type xs ys zs id type vx vy vz fx fy fz
+dump_modify d1 element Ni Cr Ti Si C
 
 # Run Equilibration
 reset_timestep 0
 run 50000
 undump 1
+undump d1
 
 # Apply Constant Strain Rate Deformation
 variable tmp equal "xz"
@@ -70,5 +76,7 @@ reset_timestep 0
 fix 3 all deform 1 xz erate $(v_StrRate/1000) units box remap x
 fix 4 all npt temp ${t1} ${t1} $(100*dt) z 0 0 $(1000*dt)
 dump 2 all custom 2000 ${Header}.shearstrain id type x y z c_pnrg
+dump d2 all cfg 1000 cfg/shear_strain.*.cfg mass type xs ys zs id type vx vy vz fx fy fz
+dump_modify d2 element Ni Cr Ti Si C
 variable StrTime equal round(${TotStr}/${StrRate}*1000000)
 run ${StrTime}
