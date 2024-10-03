@@ -1,0 +1,185 @@
+#------------------------------------------------------------------------------------------
+# Appendix B
+# Representative LAMMPS Script
+#------------------------------------------------------------------------------------------
+# Ubuntu 22.04 LTS
+#   obabel -i xyz graphene_1000x100x1A.xyz -o lmpdat -O output.lmpdat
+#------------------------------------------------------------------------------------------
+
+#------------------------------------------------------------------------------------------
+processors * * 1
+#-------------------- Initialization ------------------------------------------------------
+units real
+dimension 3
+boundary p p p
+atom_style molecular
+
+#-------------------- Read strcutre file --------------------------------------------------
+# Read data file
+read_data data_1000x100x1A.graphene
+#read_data data.graphene
+
+#-------------------- Force field ---------------------------------------------------------
+# Carbon-Carbon interactions
+
+# E12:6-LJ = 4*e*[(s/r)^12 - (s/r)^6], e = 0.0861 [kcal/mol], s = 3.4 [A]
+pair_style lj/cut 10
+pair_coeff * * 0.0861 3.4
+
+# bond types
+# Emorse = D*[1-exp(-a*(r-r0)]^2, D = 114.460 [kcal/mol], a = 2.1867 [1/A], r0 = 1.418 [A]
+bond_style morse
+bond_coeff * 114.460 2.1867 1.418
+
+# angle types
+# Ecos-squared = K*[cos(theta) - cos(theta0)]^2, K = 67.185 [kcal/mol], theta0 = 120 [deg]
+angle_style cosine/squared
+angle_coeff * 67.185 120.0
+
+# dihedral types
+# Edihedral = K*[1+d*cos(n*phi)], K = 3.001 [kcal/mol], d = -1, n = 2
+dihedral_style harmonic
+dihedral_coeff * 3.001 -1 2
+
+#replicate 233 40 1
+
+#write_data data_1000x100x1A.graphene
+
+#-------------------- Settings ------------------------------------------------------------
+timestep 2 # [fs] (units real case)
+
+neighbor 5 bin
+neigh_modify every 1
+
+#-------------------- Force field --------------------------------------------------------
+# Carbon-bead interaction, E12:6-LJ = 4*e*[(s/r)^12 - (s/r)^6], e = varies, s = 3.35 [A]
+# Carbon-wall interaction, E9:3-LJ = e*[(2/15)*(s/r)^9 - (s/r)^3], e = veries, s = 3.35*(5/2)^(1/6) = 3.9027 [A]
+# Lennard-Jones energy parameter, e [kcal/mol], Interfacial Adhesion Energy [mJm^-2] (For Spacing (A): 500 333 143 71.4)
+# 0.03577 56.7 57.6 61.2 67.5
+# 0.35767 73.4 82.6 119.8 184.5
+# 1.03723 111.4 139.6 251.7 448.3
+# 1.60950 145.8 191.2 371.3 686.1
+# 2.39637 195.5 265.7 545.9 1031.5
+# 3.07594 241.3 334.2 705.2 1343.0
+# 3.57667 276.4 386.6 826.7 1579.2
+# 4.47084 340.5 482.5 1049.2 2013.9
+# 5.43654 411.4 589.4 1295.3 2496.9
+#------------------------------------------------------------------------------------------
+region 99 block INF INF INF INF INF -2.90 units box
+group wallsub region 99
+
+region 1 block INF 5 INF INF -2.90 INF units box
+group moving region 1
+
+region 2 block 991 INF INF INF -2.90 INF units box
+group fixed region 2
+
+region 3 block INF INF 93.2 INF -2.90 INF units box
+group top region 3
+
+region 4 block INF INF INF 4.5 -2.90 INF units box
+group bottom region 4
+
+group graphene subtract all wallsub
+
+#------------------------------------------------------------------------------------------
+#dump realtime all dcd 5000 dump.dcd
+
+compute x_max graphene reduce max x
+compute x_min graphene reduce min x
+
+compute y_max graphene reduce max y
+compute y_min graphene reduce min y
+
+compute z_max graphene reduce max z
+compute z_min graphene reduce min z
+
+compute s1 graphene stress/atom NULL
+compute pegrp graphene pe/atom
+compute pepair graphene pe/atom pair
+compute pebnd graphene pe/atom bond
+compute peang graphene pe/atom angle
+compute pedhd graphene pe/atom dihedral
+compute pesum graphene reduce sum c_pegrp
+compute sum1 graphene reduce sum c_s1[1] c_s1[2] c_s1[3] c_s1[4] c_s1[5] c_s1[6]
+
+#------------------------------------------------------------------------------------------
+fix wallhi126 graphene wall/lj126 zlo -3.35 0.037701432 2.984511 5.00 pbc yes units box
+fix wallhi graphene wall/lj93 zlo -3.35 0.357667188 3.90272672 5.00 pbc yes units box
+
+fix_modify wallhi energy yes
+fix_modify wallhi126 energy yes
+
+velocity graphene create 300.00 376847 rot yes
+fix nosehoover graphene nvt temp 300.0 300.0 300.0
+
+thermo 100
+thermo_style custom step pxx pyy pzz pxy pxz pyz c_sum1[1] c_sum1[2] c_sum1[3] c_sum1[4] c_sum1[5] c_sum1[6] lx ly lz temp c_pesum ke etotal &
+  enthalpy evdwl ecoul epair ebond eangle edihed eimp emol elong etail f_wallhi f_wallhi126 pe c_x_max c_x_min c_y_max c_y_min c_z_max c_z_min
+thermo_modify flush yes
+
+fix 23 all balance 0 1.0 shift xy 20 1.1
+
+velocity moving set 0.00 NULL 0.00 units box rot yes
+fix 1767 moving setforce 0.00 NULL 0.00
+
+velocity fixed set 0.00 NULL 0.00 units box rot yes
+fix 17676 fixed setforce 0.00 NULL 0.00
+
+velocity top set NULL 0.00 NULL units box rot yes
+fix 176789 top setforce NULL 0.00 NULL
+
+velocity bottom set NULL 0.00 NULL units box rot yes
+fix 1767898 bottom setforce NULL 0.00 NULL
+
+velocity wallsub set 0.00 0.00 0.00 units box rot yes
+fix 29999 wallsub setforce 0.00 0.00 0.00
+
+#------------------------------------------------------------------------------------------
+# structure minimization (at 0 K)
+min_style cg
+min_modify dmax 0.1
+#minimize 1.0e-4 1.0e-6 100 1000
+#minimize 0.0 1.0e-8 1000 100000
+minimize 0.0 0.0 10000 10000
+
+#------------------------------------------------------------------------------------------
+# NVT calculation at 300 K after minimization (before compression)
+reset_timestep 0
+
+#---------- output file settings -------------------------
+dump            d1 all cfg 1000 cfg/equil.*.cfg mass type xs ys zs id type vx vy vz fx fy fz
+dump_modify     d1 element C
+#---------------------------------------------------------
+
+run 100000
+
+undump d1
+
+#------------------------------------------------------------------------------------------
+# compression at x axis and 300 K
+reset_timestep 0
+
+fix compress all deform 10 x erate -2e-7 remap x
+
+#---------- output file settings -------------------------
+dump            d2 all cfg 1000 cfg/comp.*.cfg mass type xs ys zs id type vx vy vz fx fy fz
+dump_modify     d2 element C
+#---------------------------------------------------------
+
+run 1000000
+
+unfix compress
+undump d2
+
+#------------------------------------------------------------------------------------------
+# NVT calculation at 300 K after compression
+reset_timestep 0
+
+#---------- output file settings -------------------------
+dump            d3 all cfg 1000 cfg/nvt.*.cfg mass type xs ys zs id type vx vy vz fx fy fz
+dump_modify     d3 element C
+#---------------------------------------------------------
+
+run 500000
+#------------------------------------------------------------------------------------------
