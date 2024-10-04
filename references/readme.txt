@@ -1,5 +1,5 @@
 -------------------------------------------------------------------
-LAMMPS Tube: https://lammpstube.com/category/lammps-tutorials/
+- LAMMPS Tube: https://lammpstube.com/category/lammps-tutorials/
 -------------------------------------------------------------------
 input file (metal unit, lammps)
 
