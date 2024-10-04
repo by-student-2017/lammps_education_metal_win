@@ -1,4 +1,6 @@
 -------------------------------------------------------------------
+LAMMPS Tube: https://lammpstube.com/category/lammps-tutorials/
+-------------------------------------------------------------------
 input file (metal unit, lammps)
 
 - M. Shabani, Doctor thesis (2020).
