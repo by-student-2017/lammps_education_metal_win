@@ -1,5 +1,11 @@
 -------------------------------------------------------------------
-- LAMMPS Tube: https://lammpstube.com/category/lammps-tutorials/
+# LAMMPS Tube: https://lammpstube.com/category/lammps-tutorials/
+# Cold_Rolling: https://github.com/khaledb9/Cold_Rolling/tree/main
+# HandsOn_MD1: https://github.com/Gracen6/HandsOn_MD1
+# HandsOn_MD2: https://github.com/Gracen6/HandsOn_MD2
+# HandsOn_MD3: https://github.com/Gracen6/HandsOn_MD3
+# thermal_expansion: https://github.com/yanxon/thermal_expansion/tree/master
+# diffusion: https://github.com/yanxon/diffusion
 -------------------------------------------------------------------
 input file (metal unit, lammps)
 
