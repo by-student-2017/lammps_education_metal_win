@@ -1,0 +1,90 @@
+#------------------------------------------------------------------------------------------
+# C: Upgraded LAMMPS Script
+#   Including "charge" same as LAMMPS_UThO2_example.zip
+#------------------------------------------------------------------------------------------
+# LAMMPS 64-bit 22Dec2022-MSMPI
+clear
+# ---------- Initialize Simulation ---------------------
+boundary p p p
+atom_style full
+units metal
+atom_style charge
+
+variable THERMO_DAMP equal 0.1
+variable BARO_DAMP equal 0.5
+
+# ---------- Create Atomistic Structure ---------------------
+# import ThO2 grain boundary 
+read_data ./structure/Sym111tilt40.lmp
+
+variable O equal 1
+variable Th equal 2
+#variable U equal 3
+#variable Ce equal 4
+#variable Np equal 5
+#variable Pu equal 6
+#variable Am equal 7
+#variable Cm equal 8
+
+set type ${O}  charge -1.1104
+set type ${Th} charge 2.2208
+#set type ${U}  charge 2.2208
+#set type ${Ce} charge 2.2208
+#set type ${Np} charge 2.2208
+#set type ${Pu} charge 2.2208
+#set type ${Am} charge 2.2208
+#set type ${Cm} charge 2.2208
+
+compute csym all centro/atom fcc
+compute eng all pe/atom 
+compute eatoms all reduce sum c_eng
+
+# ---------- Define Interatomic Potential ---------------------
+#change_box ortho
+kspace_style pppm 1.0e-5
+
+variable SR_CUTOFF equal 11.0
+
+pair_style hybrid/overlay coul/long 11 eam/alloy
+pair_coeff * * coul/long
+pair_coeff * * eam/alloy CeThUNpPuAmCmO.eam.alloy O Th
+
+fix boxrelax_fix all box/relax aniso 0.0 vmax 0.001
+
+thermo 1
+thermo_style custom step pe lx ly lz press pxx pyy pzz c_eatoms temp
+
+dump 2 all cfg 25 cfg/dump.sig5_minimization_*.cfg mass type xs ys zs c_csym c_eng fx fy fz
+dump_modify 2 element Th O 
+
+min_style cg
+#Perform minimization
+minimize 1.0e-25 1.0e-25 1000 10000 
+
+undump 2
+
+# ---------- Calculate GB Energy ---------------------
+variable natoms equal "count(all)" 
+variable teng equal "c_eatoms"
+variable length equal "lx" 
+variable ecoh equal "v_teng/v_natoms"
+
+print "Total energy (eV = ${teng};"
+print "Number of atoms = ${natoms};" 
+print "Lattice constant (Angstoms) = ${length};" 
+print "Cohesive energy (eV) = ${ecoh};" 
+
+# ---------- Dump data into Data file -------------
+reset_timestep 0 
+
+dump 2 all cfg 10000 cfg/dump.al_sig5_310_*.cfg mass type xs ys zs c_csym c_eng fx fy fz
+dump_modify 2 element Th O
+
+minimize 1.0e-25 1.0e-25 1000 10000 
+
+undump 2
+
+write_restart restart.al_sig5_310_stgb
+
+print "All done"
+#------------------------------------------------------------------------------------------
