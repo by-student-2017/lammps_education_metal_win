@@ -361,6 +361,11 @@ input file (metal unit, lammps)
   https://www.proquest.com/openview/95d9950a23ab02ced3bfd2b782403241
   NixCr_Ti3SiC2
 
+- R. L. Morrison et al., Materialia 7 (2019) 100383.
+  https://doi.org/10.1016/j.mtla.2019.100383
+  https://data.mendeley.com/datasets/pgzgghnw89/1
+  Grain_boundary_NiAl
+
 - P. Y. Simanjuntak, Master thesis (2024).
   https://bearworks.missouristate.edu/theses/3159/
   Ti-Al-N
