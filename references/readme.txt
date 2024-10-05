@@ -13,6 +13,7 @@
 # capture electron-ion interaction and electronic stopping: https://github.com/LLNL/USER-EPH
 # Interatomic potentials: https://libatoms.github.io/matscipy/cli/calculators.html
 # APSOgenEAM: https://github.com/berkonat/APSOgenEAM
+# automated-twin-tracking: https://github.com/hehrich/automated-twin-tracking
 # EnCodeVentor: https://www.youtube.com/user/Jere5120/feed
 -------------------------------------------------------------------
 input file (metal unit, lammps)
