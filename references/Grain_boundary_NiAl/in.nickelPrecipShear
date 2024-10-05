@@ -1,0 +1,123 @@
+#Rachel Morrison 7/18/17
+#Applies a shear strain to the grain boundary to produce sliding 
+#Original code from Saryu Fensin, Philosophical Magazine 2012. 
+
+# ------------------------ INITIALIZATION ----------------------------
+echo both
+
+#Variable used for naming the output files 
+variable 	name string shearPreciponG1
+units 		metal
+dimension	3
+boundary	p	f	p
+atom_style	atomic
+#Lattice parameters from Mishin paper, 2003
+variable 	Nilatparam equal 3.52 #lattice parameter of nickel
+variable 	Ni3Allatparam equal 3.57 #lattice parameter of Ni3Al
+variable 	cutoff equal 6.724883999724820 #Angstroms
+variable	fixedWidth equal "3 * v_cutoff"
+
+#Read in grain boundary file- read in each GB system (0D, 1D, 2D) to recreate full data set 
+#read_data  	data.sigma11_1059_unexp_rep_precip_on_GB_1.10000 
+read_data	data.2D
+
+#Define boundaries for regions
+variable 	xl equal xlo
+variable 	xh equal xhi
+variable	yl equal ylo
+variable 	yh equal yhi
+variable	zl equal zlo
+variable 	zh equal zhi
+#Define the mobile y boundaries, 3 times the cutoff distance
+variable 	ml equal "v_yl + v_fixedWidth"
+variable 	mh equal "v_yh - v_fixedWidth"
+#Define intermediate boundaries for stress computations
+variable	stressWidth equal "(v_mh - v_ml)/4"
+variable 	ml1 equal "v_stressWidth + v_ml"
+variable 	ml2 equal "v_stressWidth + v_ml1"
+variable 	ml3 equal "v_stressWidth + v_ml2"
+
+#Divides the simulation box into 3 regions, top fixed region, bottom fixed region and mobile region
+region		bot block ${xl} ${xh} ${yl} ${ml} ${zl} ${zh} units box
+region		mobile block ${xl} ${xh} ${ml} ${mh} ${zl} ${zh} units box
+region 		top block ${xl} ${xh} ${mh} ${yh} ${zl} ${zh} units box
+#Regions for stress computes
+region		m1 block ${xl} ${xh} ${ml} ${ml1} ${zl} ${zh} units box
+region		m2 block ${xl} ${xh} ${ml1} ${ml2} ${zl} ${zh} units box
+region		m3 block ${xl} ${xh} ${ml2} ${ml3} ${zl} ${zh} units box
+region		m4 block ${xl} ${xh} ${ml3} ${mh} ${zl} ${zh} units box
+
+#Create groups from regions
+group 		top region top
+group		bot region bot
+group		mobile region mobile
+group		m1 region m1
+group 		m2 region m2
+group		m3 region m3
+group		m4 region m4
+
+pair_style 	eam/alloy
+#Nickel from grain 1, grain 2, and gamma prime all distinct
+pair_coeff	* * NiAl.eam.alloy.txt Ni Ni Ni Al
+
+velocity 	mobile create 1.0 120484 dist gaussian
+fix		1 mobile nvt temp 1.0 1.0 0.1
+
+#----------------- SHEAR ----------------------
+#Applying strain to the system by applying velocity to top region
+velocity	top set 0.01 0.0 0.0 units box
+fix		zfr top setforce 0.0 0.0 0.0
+fix		tve top nve
+
+#-------------- COMPUTE STRESS ----------------
+#Compute temp and NRG for mobile region
+compute         tmp mobile temp
+compute         kem mobile ke/atom
+compute         pem mobile pe/atom
+#Sum the per atom computes
+compute         kema mobile reduce sum c_kem
+compute         pema mobile reduce sum c_pem
+#Total energy of mobile region
+variable        tema equal "c_kema + c_pema"
+
+#Assume atoms are perfect spheres and only caculate stress due to pair potential
+compute 	stress all stress/atom NULL pair
+
+compute         m1s m1 reduce sum c_stress[4]
+compute         m2s m2 reduce sum c_stress[4]
+compute         m3s m3 reduce sum c_stress[4]
+compute         m4s m4 reduce sum c_stress[4]
+#Divide the stress above by Volume of the region 
+variable 	volume1 equal "(v_xh - v_xl) * (v_zh - v_zl) * (v_ml1 - v_ml)"
+variable	volume2 equal "(v_xh - v_xl) * (v_zh - v_zl) * (v_ml2 - v_ml1)"
+variable	volume3 equal "(v_xh - v_xl) * (v_zh - v_zl) * (v_ml3 - v_ml2)"
+variable	volume4 equal "(v_xh - v_xl) * (v_zh - v_zl) * (v_mh - v_ml3)"
+
+variable	m1ss equal "c_m1s/((v_xh - v_xl) * (v_zh - v_zl) * (v_ml1 - v_ml))"
+variable	m2ss equal "c_m2s/((v_xh - v_xl) * (v_zh - v_zl) * (v_ml2 - v_ml1))"
+variable        m3ss equal "c_m3s/((v_xh - v_xl) * (v_zh - v_zl) * (v_ml3 - v_ml2))"
+variable        m4ss equal "c_m4s/((v_xh - v_xl) * (v_zh - v_zl) * (v_mh - v_ml3))"
+
+compute         mstress mobile stress/atom tmp pair
+compute         press mobile reduce sum c_mstress[1] c_mstress[2] c_mstress[3]
+compute		pressx mobile reduce sum c_mstress[1]
+compute		pressy mobile reduce sum c_mstress[2]
+compute		pressz mobile reduce sum c_mstress[3]
+#divide by 3xvolume (see lammps pressure compute documentation)
+variable	midVol equal "(v_xh - v_xl) * (v_zh - v_zl) * (v_mh - v_ml)"
+variable        presst equal "(c_press[1]+c_press[2]+c_press[3])/(3 * (v_xh - v_xl) * (v_zh - v_zl) * (v_mh - v_ml))"
+variable 	pressxt equal "(c_pressx)/(3 * v_midVol)"
+variable	pressyt equal "(c_pressy)/(3 * v_midVol)"
+variable	presszt equal "(c_pressz)/(3 * v_midVol)"
+
+#dump		stress mobile custom 1000 dump.stress.${name}.* id type xu yu zu c_pem c_cnt c_mstress[1] c_mstress[2] c_mstress[3]
+dump		stress mobile custom 1000 dump.stress.${name}.* id type xu yu zu c_pem c_mstress[1] c_mstress[2] c_mstress[3]
+
+thermo		100
+thermo_style	custom step c_tmp v_presst v_pressxt v_pressyt v_presszt c_kema c_pema v_tema &
+                v_m1ss v_m2ss v_m3ss v_m4ss
+
+timestep        0.001
+run             1000000
+
+write_data 	data.${name}.*
