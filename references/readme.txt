@@ -14,6 +14,7 @@
 # APSOgenEAM: https://github.com/berkonat/APSOgenEAM
 # automated-twin-tracking: https://github.com/hehrich/automated-twin-tracking
 # EnCodeVentor: https://www.youtube.com/user/Jere5120/feed
+# LaBr3: https://www.osti.gov/servlets/purl/1241668 (slide)
 -------------------------------------------------------------------
 input file (metal unit, lammps)
 
