@@ -1,0 +1,125 @@
+#------------------------------------------------------------------------------------------
+# Appendix C – LAMMPS input script
+#------------------------------------------------------------------------------------------
+# LAMMPS 64-bit 22Dec2022-MSMPI
+clear
+# ============================================================
+# LAMMPS input script for Viscosity of CeO2 in water
+# Unit & Variable definition 
+# ============================================================
+units real
+variable T equal 323
+variable V equal vol
+variable dt equal 1e-3
+variable p equal 100 # correlation length
+variable s equal 10 # sample interval
+variable d equal $p*$s # dump interval 
+
+# ============================================================
+# Convert from LAMMPS real units to SI 
+# ============================================================
+variable kB equal 1.3806504e-23 # (Boltzmann Constant)
+variable atm2Pa equal 101325.0 # (atmospheric to Pascal)
+variable A2m equal 1.0e-10 # (Angstrom to meters)
+variable fs2s equal 1.0e-15 # (Femtosecond to seconds)
+variable convert equal ${atm2Pa}*${atm2Pa}*${fs2s}*${A2m}*${A2m}*${A2m}
+
+# ============================================================
+# Dimension settings and Reading atom file supplied by material studio
+# ============================================================
+dimension 3 # (3D)
+boundary p p p # (Periodic assumption)
+atom_style full # (Atom setting all inclusive)
+read_data data.wceo1pv # (Reads the initial configuration file)
+
+# ============================================================
+# Create groups
+# ============================================================
+group Ce1 type 1 # (Grouping atoms of same type)
+group H type 2
+group O type 3
+group O2 type 4
+group O3 type 5
+
+# ============================================================
+# Potential Parameters 
+# ============================================================
+pair_style hybrid/overlay sph/heatconduction dpd/tstat 1.0 1.0 2.5 34387 # # ( Pair potential settings)
+pair_coeff * * sph/heatconduction 2.0e-9 2.0e-9
+pair_coeff * * dpd/tstat 1.0
+bond_style harmonic
+bond_coeff 1 493.8480 0.9600 # Setting bonding coefficients
+thermo $d # (Number of steps for between each interval)
+
+# ============================================================
+# Velocity, fixes, equilibration and thermalization
+# ============================================================
+communicate single vel yes 
+fix 1 all viscosity 100 x z 60 
+velocity all create $T 4928459 rot yes dist gaussian
+fix 2 all npt temp $T $T 20 aniso 1.0 1.0 1000
+fix 3 all thermal/conductivity 100 z 20
+
+# ============================================================
+# Viscosity calculation
+# ============================================================
+variable pxy equal pxy
+variable pxz equal pxz
+variable pyz equal pyz
+fix SS all ave/correlate $s $p $d &
+ v_pxy v_pxz v_pyz type auto file S0St.dat ave running # (Stress autocorrelation command)
+variable scale equal ${convert}/(${kB}*$T)*$V*$s*${dt}
+variable v11 equal trap(f_SS[3])*${scale}
+variable v22 equal trap(f_SS[4])*${scale}
+variable v33 equal trap(f_SS[5])*${scale}
+#variable v_v equal (v11+v22+v33)/3
+thermo_style custom step temp press v_pxy v_pxz v_pyz v_v11 v_v22 v_v33
+
+# ============================================================
+# Neighbouring settings for inter-collision
+# ============================================================
+neighbor 2.5 bin
+neigh_modify delay 0
+thermo_style custom step temp press vol pe 
+thermo_modify norm no flush yes
+
+
+# ============================================================
+# Computer and fix different properties
+# ============================================================
+
+#============MSD===========================
+compute msd all msd com yes
+fix msd all ave/time 1 10 10 c_msd[4] file water_CeO2_308.msd
+
+#============RDF===========================
+compute myRDF all rdf 1000
+fix myRDF all ave/time 1 10 100 c_myRDF file tmp_CeO2_308.rdf mode vector
+
+#============Density===========================
+# Compute density in g/cm^3
+variable watMoleculeMass equal 18.0
+variable A3_in_cm3 equal 1.0e-24
+variable Avogadro equal 6.02214076e23
+variable dens equal (atoms/${Avogadro})*${watMoleculeMass}/(vol*${A3_in_cm3})
+fix dens all ave/time 1 10 100 v_dens file wat_CeO2.dens
+
+# ============================================================
+# screen dumps visualization
+# ============================================================ 
+dump waterdump all atom 1000 Viscosity_CeO
+restart 1000 Viscosity_ceO
+
+# ============================================================
+# Run Simulation
+# ============================================================ 
+timestep 0.156
+run 20000
+
+# ============================================================
+# Printing the required quantity
+# ============================================================
+variable v equal (v_v11+v_v22+v_v33)/3.0
+variable ndens equal count(all)/vol
+
+print "average viscosity. $v / Pa.s at $T K, ${ndens} / A^3"
