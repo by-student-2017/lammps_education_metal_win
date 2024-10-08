@@ -8,7 +8,6 @@
 # diffusion: https://github.com/yanxon/diffusion
 # CeO2: https://github.com/sebasatc-115/CeO2/tree/main
 # Tensile-Test-of-Functionally-Graded-Ni-Al-FGM-NW: https://github.com/msehabibur/Tensile-Test-of-Functionally-Graded-Ni-Al-FGM-NW
-# Cold_Rolling: https://github.com/khaledb9/Cold_Rolling/tree/main
 # Grand-canonical MD simulation with H4D method: https://github.com/Jeongmin0658/h4d_lammps
 # capture electron-ion interaction and electronic stopping: https://github.com/LLNL/USER-EPH
 # Interatomic potentials: https://libatoms.github.io/matscipy/cli/calculators.html
@@ -509,6 +508,10 @@ input file (metal unit, lammps)
 - R. Xie, Master thesis (2021).
   https://mds.marshall.edu/etd/1411/
   ZnS (need structure files) (core-shell model) (elastic) (MATLAB)
+
+- L. Adil et al., Doctor thesis (2015).
+  https://uhra.herts.ac.uk/handle/2299/15336
+  CeO2_in_water (need structure file) (failed)
 -------------------------------------------------------------------
 plot the temperature of each atom
 
