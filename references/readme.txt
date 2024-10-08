@@ -346,6 +346,10 @@ input file (metal unit, lammps)
   http://210.212.194.26/jspui/handle/123456789/14231 (do not get pdf)
   hBN
 
+- C. Zhang, Master thesis (2020).
+  https://mds.marshall.edu/etd/1324/
+  Pd1-y-zAgyCuzHx
+
 - O. Takahiro, Chiba Univ.
   https://amorphous.tf.chiba-u.jp/lecture.files/ms-workshop/molten.html
   Lecture
