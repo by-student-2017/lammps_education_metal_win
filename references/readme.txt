@@ -346,10 +346,6 @@ input file (metal unit, lammps)
   http://210.212.194.26/jspui/handle/123456789/14231 (do not get pdf)
   hBN
 
-- R. A. Miller, Master thesis (2015).
-  https://scholars.unh.edu/thesis/1087/
-  TTPO_on_Au
-
 - O. Takahiro, Chiba Univ.
   https://amorphous.tf.chiba-u.jp/lecture.files/ms-workshop/molten.html
   Lecture
@@ -517,6 +513,10 @@ input file (metal unit, lammps)
 - L. Adil et al., Doctor thesis (2015).
   https://uhra.herts.ac.uk/handle/2299/15336
   CeO2_in_water (need structure file) (failed)
+
+- R. A. Miller, Master thesis (2015).
+  https://scholars.unh.edu/thesis/1087/
+  TTPO_on_Au (need structure file, The topology file could not be created successfully on VMD (topotools).)
 -------------------------------------------------------------------
 plot the temperature of each atom
 
