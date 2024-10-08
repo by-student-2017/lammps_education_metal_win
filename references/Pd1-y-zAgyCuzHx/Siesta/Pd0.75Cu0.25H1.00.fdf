@@ -1,0 +1,92 @@
+# $Id: Fe.fdf,v 1.1 1999/04/20 12:52:43 emilio Exp $
+# --------------------------------------------------------------------
+# FDF for bcc iron 
+# GGA, Ferromagnetic. 
+# Scalar-relativistic pseudopotential with non-linear partial-core correction
+# E. Artacho, April 1999
+# --------------------------------------------------------------------
+
+SystemName fcc PdCuH LDA # Descriptive name of the system
+SystemLabel PdCuH # Short name for naming files
+
+# Output options
+WriteCoorStep
+WriteMullikenPop 1 
+
+# Species and atoms
+NumberOfSpecies 3 
+NumberOfAtoms 8 
+%block ChemicalSpeciesLabel
+ 1 46 Pd 
+ 2 29 Cu
+ 3 1 H
+%endblock ChemicalSpeciesLabel
+# Basis
+PAO.EnergyShift 50 meV
+PAO.BasisSize DZP
+
+LatticeConstant 4.22 Ang 
+
+%block LatticeVectors 
+ 1.00000 0.00000 0.00000
+ 0.00000 1.00000 0.00000 
+ 0.00000 0.00000 1.000000
+%endblock LatticeVectors
+
+#KgridCutoff 15. Ang
+
+%block kgrid_Monkhorst_Pack
+ 18  0  0 0.5
+  0 18  0 0.5
+  0  0 18 0.5
+%endblock kgrid_Monkhorst_Pack
+
+#%block BandLines
+# 1 0.00000 0.000000 0.000000 \Gamma
+# 40 2.00000 0.000000 0.000000 H
+# 28 1.00000 1.000000 0.000000 N
+# 28 0.00000 0.000000 0.000000 \Gamma
+# 34 1.00000 1.000000 1.000000 P
+#%endblock BandLines
+
+xc.functional LDA # Exchange-correlation functional
+xc.authors ca # Exchange-correlation version
+SpinPolarized true # Logical parameters are: yes or no
+#MeshCutoff 150. Ry # Mesh cutoff. real space mesh
+
+# SCF options
+MaxSCFIterations 200 # Maximum number of SCF iter
+DM.MixingWeight 0.1  # New DM amount for next SCF cycle
+DM.Tolerance 1.d-3   # Tolerance in maximum difference
+                     # between input and output DM
+DM.UseSaveDM true    # to use continuation files
+DM.NumberPulay 3
+
+SolutionMethod diagon # OrderN or Diagon
+ElectronicTemperature 25 meV # Temp. for Fermi smearing
+
+# MD options
+MD.TypeOfRun cg # Type of dynamics:
+MD.NumCGsteps 100 # Number of CG steps for 
+MD.VariableCell true # coordinate optimization
+%block GeometryConstraints
+ rigid 1 2 3 4 5 6 7 8
+ cellangle alpha beta gamma 
+%endblock GeometryConstraints
+MD.MaxCGDispl 0.2 Ang # Maximum atomic displacement 
+                      # in one CG step (Bohr)
+MD.MaxForceTol 0.0005 eV/Ang # Tolerance in the maximum 
+                      # atomic force (Ry/Bohr)
+
+# Atomic coordinates
+AtomicCoordinatesFormat Fractional 
+%block AtomicCoordinatesAndAtomicSpecies
+ 0.0 0.0 0.0 2 # Ag
+ 0.5 0.5 0.0 1 # Pd
+ 0.0 0.5 0.5 1 # Pd
+ 0.5 0.0 0.5 1 # Pd
+ 0.5 0.5 0.5 3 # H
+ 0.5 0.0 0.0 3 # H
+ 0.0 0.5 0.0 3 # H
+ 0.0 0.0 0.5 3 # H
+%endblock AtomicCoordinatesAndAtomicSpecies
