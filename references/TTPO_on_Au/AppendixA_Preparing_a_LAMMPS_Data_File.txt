@@ -1,0 +1,49 @@
+#------------------------------------------------------------------------------------------
+Appendix A (https://scholars.unh.edu/thesis/1087/)
+Preparing a LAMMPS Data File
+#------------------------------------------------------------------------------------------
+# Softwares
+# VMD, TopoTools (included withlatest versions of VMD)
+# Moltemplate: https://moltemplate.org/ , Download URL: https://moltemplate.org/download.html , Github: https://github.com/jewettaij/moltemplate
+#   Installation (Edit: 8/Oct/2024)
+#   1. cd $HOME
+#   2. wget https://moltemplate.org/downloads/moltemplate_2024-2-11.tar.gz
+#   3. tar -xzvf moltemplate_2024-2-11.tar.gz
+#   4. echo '# moltemplate environment settings' >> ~/.bashrc
+#   5. echo 'export PATH=$PATH:$HOME/moltemplate/moltemplate' >> ~/.bashrc
+#   6. echo 'export PATH=$PATH:$HOME/moltemplate/moltemplate/scripts' >> ~/.bashrc
+#   7. bash
+#   8. which moltemplate.sh
+#      (/home/username/.local/bin/moltemplate.sh) (Note: username is your pc name)
+#------------------------------------------------------------------------------------------
+Preparing a data file that can be easily manipulated and interpreted by LAMMPS is a multistep and multi-software process. The softwares used are VMD, TopoTools (included with latest versions of VMD), and Moltemplate. While there are several ways that this can be achieved, the following outlines how data file generation and tailoring was performed in this project, with the steps being in order of how they were performed. It should be noted that this procedure purely edits the topology information for a calculation, and the parameterization of force fields, bonds, dihedrals, etc. is a separate matter.
+
+0: An .xyz file with atomic species and coordinates was manually prepared. The atomic coordinates for TTPO were supplied to me by a past researcher who successfully modelled TTPO via DFT methods [6]. A small slab of gold was prepared manually in Excel with the same lattice constant as [6] as to maintain consistency. This is listed as Step 0 because the base atomic coordinates and structure information was entered manually, as to be consistent with both past work and physical data. This Appendix outlines how to manipulate topology information for a LAMMPS data file, but knowledge of the structure is required beforehand, and here it was prepared in an .xyz structure file with atomic coordinates used in both the DFT calculations in this work and that in [6] and the present work in LAMMPS. There is an .xyz file for TTPO (“TTPO.xyz”) and one for a small gold slab (“Au.xyz”).
+
+1: After an .xyz file of each component of a system was made, it can be uploaded into VMD. VMD has the ability to visualize many file types, and the structure was visible in the display window. After checking that it looked correct, the Tk console took was opened via “Extensions→ Tk Console” in the “VMD Main” window. Although TopoTools should come pre-installed with the latest editions of VMD, its installation is verified through the command “package require topotools” in the Tk console. This should return a number, which is the version of TopoTools installed. After verifying this TopoTools is installed, a LAMMPS data file (“TTPO.data”) (not necessarily the final data file to be used in a calculation) is generated using the TopoTools command
+  topo writelammpsdata TTPO.data
+This reads the .xyz file for the TTPO molecule, then writes its (purely structural) coordinate data to a LAMMPS-style data file.
+
+2: At this point, the data file will have three sections. The first is the header, which contains information about the number of atoms (36 for the TTPO molecule), number of bonds, angles, dihedrals, and impropers (all 0 at this point), atom types (5), and bond, angle, dihedral, and improper types (all 0 at this point), and contains the unit cell boundaries (xlo xhi ylo yhi zlo zhi). The second sections is the Masses section, which contains the mass of each atomic species (amu), and defines the atomic type (a number, 1-5 for TTPO, used as a label). The final section is the Atoms section, which has a row for each atom in the TTPO.xyz file. The line is in the format:
+  (Atom Number) (Molecule Number) (Atomic Type) Q X Y Z
+Where Q is the charge, and X,Y,Z are the atomic coordinates.
+3. The dihedrals, angles, and bonds must now be inputted manually in the corresponding sections in the corresponding section in the data file. While this step may not be necessary for every molecule (it is not necessary when making a gold slab, for example), it is needed for the TTPO molecule specifically. For the TTPO molecules in this study, these parameters were constructed from the geometry of the TTPO molecule by analysing its structure. Each molecule contained 42 bonds (7 bond types), 58 angles (4 angle types), and 101 dihedrals (5 dihedral types). Table 3.4 shows the different types of each of the parameters and the corresponding values of the potential energy terms. While there are ways for software like TopoTools to guess these interactions, it can often be unreliable without being well-versed in the software, so it was found to be easier to manually construct these interactions and input them directly into the data file. After it was done once, the molecule was copied all times in the future.
+
+Note: If a molecule is to be simulated by itself with no other contents in the unit cell, then this data file is ready to be used in LAMMPS (after setting the cell boundaries). However, often multiple pieces are required in a unit cell so further construction is ne
+
+4. Moltemplate contains a utility called ltemplify.py that is a Python script used to convert LAMMPS data files into .lt files (those used by Moltemplate). The function is used via the command line in the /src subdirectory within the main Moltemplate directory. To create a file TTPO.lt from TTPO.data, one uses the command
+  ltemplify.py -name TTPO TTPO.data > TTPO.lt
+The file TTPO.lt defines a TTPO molecule. Within it are information about charges, atomic coordinates, dihedrals, angles, and bonds. This can now be inserted and easily manipulated as part of a system.
+
+5. One now creates a file called “System.lt”. This will be the file that puts together all the pieces of the unit cell (the data file that will be used in a LAMMPS simulation). On the top line, one imports the TTPO.lt file via the command “import TTPO.lt”. To actually place a TTPO molecule in the cell, use the command
+  TTPO1 = new TTPO
+and so on for however many TTPO molecules are desired in the simulation. Note: If one wishes to also simulate a gold slab, “import slab.lt” would be issued if a slab.lt file was created following the preceding steps. From here, each molecule can be translated and rotated by appending a .move and .rot command:
+  TTPO1 = new TTPO.move(x,y,z).rot(θ,x0,y0,z0)
+which first moves the molecule by x,y,z Angstroms then rotates it θ degrees by an axis that passes through the origin and the point (x0,y0,z0). This is done for each molecule until the desired geometry is reached.
+
+6. The final step is to now convert the System.lt file into a data file to be used by LAMMPS and visualize it in VMD. This is done through the command
+  moltemplate.sh -atomstyle “full” -nocheck -vmd System.lt
+This command does three things. 1. It sets the atom style to full, which is a LAMMPS atom style that incorporates charge. 2. It creates a file System.data which can now be used in a LAMMPS simulation (after setting the boundaries) and represents a system of multiple components. 3. It opens the system in VMD for visualization. It is crucial to view each system before every simulation to ensure that the geometry is that desired.
+#------------------------------------------------------------------------------------------
+[6] https://scholars.unh.edu/dissertation/2206
+#------------------------------------------------------------------------------------------
