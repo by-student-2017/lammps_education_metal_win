@@ -150,19 +150,20 @@ Parameters of 18 elements: https://github.com/brucefan1983/GPUMD/tree/master/pot
 ------------------------------------------------------------------------------
 EAM_code
 Note: () indicates arguments for Zhou04_create_v2.f in the Fortran code.
-Ref: A. Clement et al., Modelling Simul. Mater. Sci. Eng. 31 (2023) 015004.: https://iopscience.iop.org/article/10.1088/1361-651X/aca4ec
+[1] A. Clement et al., Modelling Simul. Mater. Sci. Eng. 31 (2023) 015004.: https://iopscience.iop.org/article/10.1088/1361-651X/aca4ec
+[2] H. N. G. Wadley et al., Prog. Mater. Sci. 46 (2001) 329-377.
 
 Line  1 : element : W
 Line  2 : re      : 2.74084 (about the distance to the first neighbour fcc shell)
-Line  3 : fe      : 3.48734 (about the element's cohesive energy / characteristic atomic distance = Ec/(V^(1/3)), V is the atomic volume of the pure element) (the fe means the coefficient for mixing phi between A and B elements.)
+Line  3 : fe      : 3.48734 (= the element's cohesive energy / characteristic atomic distance = Ec/(V^(1/3)), V is the atomic volume of the pure element) (the fe means the coefficient for mixing phi between A and B elements.)
 Line  4 : rhoe    : 37.234847 (the equilibrium electronic density [eV/A] evaluated from DFT)) (in near equilibrium area)
 Line  5 : rhos    : 37.234847 (almost same value as rhoe) (In some literature, it is the same value as rhoe.)(in repulsive core area)
-Line  6 : alpha   : 8.900114 (about 1.875 * beta)
+Line  6 : alpha   : 8.900114 (= 1.875 * beta)
 Line  7 : beta    : 4.746728
 Line  8 : A       : 0.882435
 Line  9 : B       : 1.394592 (The formula used for B and fe is the same. Additional fe is used during mixing.)
 Line 10 : chi (cai): 0.139209
-Line 11 : lambda (ramda): 0.278417 (about 2 * chi)
+Line 11 : lambda (ramda): 0.278417 (= 2 * chi)
 Line 12 : Fn0 (Fi0): -4.946281 (=F0+(rhol-1)^2*F2+(rhol-1)^3*F3)) (continuity)
 Line 13 : Fn1 (Fi1): -0.148818 (=rhol*(2*(rhol-1)*F2+3*(rhol-1)^2*F3)) (1st derivative continuity)
 Line 14 : Fn2 (Fi2): 0.365057 (=rhol^2*(F2+3*(rhol-1)*F3)) (2nd derivative continuity)
@@ -180,6 +181,34 @@ Line 25 : beta1(=beta) : 4.746728
 Line 26 : lambda1(=lambda=ramda) : 0.278417
 Line 27 : rhol    : 0.85 (fix value ?) (Note: Anything other than Pt 0.25 will result in 0.85 (when I fitted it, it converged to an optimal solution with a value close to 0.85).)
 Line 28 : rhoh    : 1.15 (fix value ?)
+
+Table 3 [2]
+The universal relations used in the fitting EAM potentials.
+#-----------------------------------------------------------
+  alpha = 1.875 * beta
+  lambda = 2 * chi
+  m = 20
+  n = 20
+  fe = Ec/(V^(1/3))
+  rhol = 0.85
+  rhoh = 1.15
+#-----------------------------------------------------------
+  The parameters m and n were permitted to vary in the fitting procedure, but it was found that both should be near 20: 
+some metals could not be modeled with a value below 16, and higher values yield a very sharp cutoff. The repulsive and 
+attractive cutoffs are (1/2) when r=re*(1+chi) and r=re*(1+lambda), respectively. Again after much fitting, 
+it was found that lambda = 2 * chi provided satisfactory results, so this was also chosen as a universal relation. 
+  Finally, many rations involving A, B, alpha, and beta were tried. For all cases, alpha/beta was in the range of 1.8 to 2, 
+and the universal choice of 1.875 was made.Thus, although four parameters were introduced with the cutoff factors, 
+there was little flexibility available for fitting to metallic properties and four universal relations were found, leaving four adjustable parameters.
+#-----------------------------------------------------------
+  There is not an explicit anisotropy ratio for hcp metals so lambda = 1 was used as the fourth condition for the four hcp metals. 
+  The cutoff range is smallest for bcc metals, intermediate for fcc metals, and longest for hcp metals.
+#-----------------------------------------------------------
+  The value of fe has no effect on the calculation of any elemental property, but does affect alloy properties when the basic alloy cross potential is used. 
+  There is a dearth of alloy data for fitting purposes so minor adjustments may be made in the future, 
+but taking fe as proportional to the cohesive energy and inversely proportional to the characteristic length V^(1/3) (V = atomic volume) leads to realistic results. 
+  With this choice, the electron density functions for the various metals require no additional fitting parameters.
+#-----------------------------------------------------------
 
 Note: In the mixed case, first try changing fe. If that doesn't work, try using Tersoff and similar mixing rules to get a better fit. If that doesn't work, try fitting by adding constraints based on the relationships shown above. In the case of high entropy alloys (HEA), they basically have FCC, BCC, and HCP crystal structures, so it would be sufficient to make them into a shape that suits the crystal. Furthermore, the amount of each element is also small, so it is more likely to be within the applicable range (looking at the paper, there is a relatively good agreement with DFT up to around 20 at.% Zn. Even above that, semi-quantitative evaluation is possible). Furthermore, since the parameters of many pure metals reproduce FCC, BCC, and HCP quite well, it is possible that simply changing the fe value will not result in such bad results.
 Note: By increasing the read parameters and rewriting "psi=0.5d0*(f2/f1*psia+f1/f2*psib)", it is possible to flexibly exchange. I hope that this will be officially introduced in v3. Someone could publish it in a paper.
@@ -250,7 +279,7 @@ The paper erroneously states that F3 is 1.15^2 instead of 0.15^2.
 Note: For F3=(1/(3*2*(rhoh-1)))*(-2*F2+Fe*eta^2*(rhoh)^(eta-2)*(ln(rhoh)*(-eta+1)-1)) (2nd derivative continuity)
 Perhaps the formula in the paper is wrong. I don't know if the statement in the paper is wrong. If so, removing condition F3 was the right choice. Rather, this means that the fitting results are correct.
 
-[Ref] The constraints on the piecewise embedding function could however not all be simultaneously fullfilled strictly. To cope with this issue, the constraint derived from the continuity of
+[1] The constraints on the piecewise embedding function could however not all be simultaneously fullfilled strictly. To cope with this issue, the constraint derived from the continuity of
 the second derivative (F3 = ...) of the embedding energy function was removed. For copper and zinc, there is therefore a cusp at ρ = 1.15ρe with a mismatch of the second derivative of 0.145 eV for Cu and 0.125 eV at high density in the
 embedding term. The fact that this condition is not satisfied will trigger odd behaviour of the potential only at extremely large compression which is deemed not important in the context of our planned applications of these potentials for plasticity and fracture.
 
