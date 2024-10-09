@@ -1,0 +1,88 @@
+LAMMPS (22 Dec 2022)
+  using 1 OpenMP thread(s) per MPI task
+Loaded 1 plugins from C:\Program Files\LAMMPS 64-bit 23Jun2022\plugins
+Loaded 0 plugins from C:\Program Files\LAMMPS 64-bit 23Jun2022-MPI\plugins
+Loaded 1 plugins from C:\Program Files\LAMMPS 64-bit 22Dec2022-MSMPI\plugins
+Loaded 1 plugins from C:\Program Files\LAMMPS 64-bit 28Mar2023-MPI\plugins
+#------------------------------------------------------------------------------------------
+# APPENDIX 1: Explanation of LAMMPS Script
+#------------------------------------------------------------------------------------------
+# LAMMPS 64-bit 22Dec2022-MSMPI
+# 200 Ni-Cu 5-5--------------------- INITIALIZATION ----------------------------
+units metal
+dimension 3
+boundary p p p
+atom_style atomic
+
+# ----------------------- ATOM DEFINITION ----------------------------
+lattice fcc 3.52
+Lattice spacing in x,y,z = 3.52 3.52 3.52
+region upper block 0 28 0 28 0 14
+lattice fcc 3.61
+Lattice spacing in x,y,z = 3.61 3.61 3.61
+region lower block 0 28 0 28 14 28
+region whole union 2 upper lower
+
+create_box 2 whole
+Created orthogonal box = (0 0 0) to (101.08 101.08 101.08)
+  2 by 1 by 2 MPI processor grid
+lattice fcc 3.52 orient x 1 0 0 orient y 0 1 0 orient z 0 0 1
+Lattice spacing in x,y,z = 3.52 3.52 3.52
+create_atoms 1 region upper
+Created 47111 atoms
+  using lattice units in orthogonal box = (0 0 0) to (101.08 101.08 101.08)
+  create_atoms CPU = 0.001 seconds
+lattice fcc 3.61 origin 0 0 .247 orient x 1 0 0 orient y 0 1 0 orient z 0 0 1
+Lattice spacing in x,y,z = 3.61 3.61 3.61
+create_atoms 2 region lower
+Created 43904 atoms
+  using lattice units in orthogonal box = (0 0 0) to (101.08 101.08 101.08)
+  create_atoms CPU = 0.002 seconds
+
+# ------------------------ FORCE FIELDS ------------------------------
+pair_style eam/alloy
+pair_coeff * * CuNi_v2.eam.alloy Ni Cu
+
+# ------------------------- SETTINGS ---------------------------------
+compute csym all centro/atom fcc
+compute peratom all pe/atom
+
+# EQUILIBRATION
+reset_timestep 0
+timestep 0.001
+velocity all create 1 12345 mom yes rot no
+fix 1 all npt temp 1 1 1 iso 0 0 1 drag 1
+
+# Set thermo output
+thermo 300
+thermo_style custom step lx ly lz press pxx pyy pzz pe temp
+
+# Run for at least 10 picosecond (assuming 1 fs timestep)
+run 25000
+Neighbor list info ...
+  update: every = 1 steps, delay = 0 steps, check = yes
+  max neighbors/atom: 2000, page size: 100000
+  master list distance cutoff = 8.4527
+  ghost atom cutoff = 8.4527
+  binsize = 4.22635, bins = 24 24 24
+  2 neighbor lists, perpetual/occasional/extra = 1 1 0
+  (1) pair eam/alloy, perpetual
+      attributes: half, newton on
+      pair build: half/bin/atomonly/newton
+      stencil: half/bin/3d
+      bin: standard
+  (2) compute centro/atom, occasional
+      attributes: full, newton on
+      pair build: full/bin/atomonly
+      stencil: full/bin/3d
+      bin: standard
+Per MPI rank memory allocation (min/avg/max) = 20.02 | 20.44 | 21.06 Mbytes
+   Step           Lx             Ly             Lz           Press           Pxx            Pyy            Pzz           PotEng          Temp     
+         0   101.08         101.08         101.08         65497.712      45021.24       45021.28       106450.62     -330456.03      1            
+       300   101.79976      101.79976      101.79976     -11.85861      -4372.1173     -4346.7417      8683.2832     -358539.59      426.85902    
+       600   101.46601      101.46601      101.46601     -2.4623305     -3355.8325     -3346.9849      6695.4304     -361502.06      214.11691    
+       900   101.34469      101.34469      101.34469     -2.2902919     -2491.5145     -2462.1315      4946.7751     -362246.03      105.61985    
+      1200   101.28271      101.28271      101.28271      0.3143724     -2681.885      -2691.6769      5374.505      -363012.59      87.150729    
+      1500   101.25693      101.25693      101.25693      0.2555244     -2930.2085     -2929.6702      5860.6453     -363253.88      61.781684    
+      1800   101.22575      101.22575      101.22575      0.054289953   -2911.9144     -2888.5483      5800.6256     -363445.33      48.716086    
+      2
