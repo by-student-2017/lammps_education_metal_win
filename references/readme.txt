@@ -127,7 +127,11 @@ input file (metal unit, lammps)
 - Dora, Jay Krishan (2014)
   http://ethesis.nitrkl.ac.in/6375/
   Nanowire_PdPt
-  
+
+- G. S. Camprubi, Master thesis (2010).
+  https://upcommons.upc.edu/handle/2099.1/14585
+  Nanowire_Cu
+
 - D. Chen et al., Doctor Thesis (2014).
   https://oaktrust.library.tamu.edu/handle/1969.1/154160
   Radiation_grain_boundary (Structure of (013)[100]Σ = 5 symmetric-tilt grain boundary)
