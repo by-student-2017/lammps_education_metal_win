@@ -350,6 +350,10 @@ input file (metal unit, lammps)
   https://mds.marshall.edu/etd/1324/
   Pd1-y-zAgyCuzHx
 
+- D. K. Bommidi, Master thesis (2018).
+  https://huskiecommons.lib.niu.edu/allgraduate-thesesdissertations/5121/
+  Nickel-coated-CNT
+
 - O. Takahiro, Chiba Univ.
   https://amorphous.tf.chiba-u.jp/lecture.files/ms-workshop/molten.html
   Lecture
