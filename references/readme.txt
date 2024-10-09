@@ -358,6 +358,11 @@ input file (metal unit, lammps)
   https://huskiecommons.lib.niu.edu/allgraduate-thesesdissertations/5121/
   Nickel-coated-CNT
 
+- O. Guerrero, ResearchGate (2013)
+  https://www.researchgate.net/publication/259644293
+  Cu_comp_stress-strain
+  shock_Ni
+
 - O. Takahiro, Chiba Univ.
   https://amorphous.tf.chiba-u.jp/lecture.files/ms-workshop/molten.html
   Lecture
