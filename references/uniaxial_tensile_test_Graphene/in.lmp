@@ -1,0 +1,60 @@
+#------------------------------------------------------------------------------------------
+# LAMMPS input file in.graphene to simulate the uniaxial tensile test in Section 2.6 is given below.
+#------------------------------------------------------------------------------------------
+# making data.graphene file
+#   octave generate_data_file.m
+#------------------------------------------------------------------------------------------
+# generate_data_file.m
+#   wid: x axis, len: y axis
+#------------------------------------------------------------------------------------------
+
+#-------------------- Initialization -----------------------------------------------------
+clear
+units metal
+dimension 3
+boundary p p f
+newton on
+
+#-------------------- Read structure file ------------------------------------------------
+atom_style atomic
+read_data data.graphene
+
+#-------------------- Force field --------------------------------------------------------
+pair_style airebo 3.0
+pair_coeff * * CH.airebo C
+
+#-------------------- Settings -----------------------------------------------------------
+timestep 0.0005
+
+thermo 100
+thermo_style custom step temp pe ke etotal lx ly press
+
+#---------- output file settings -------------------------
+dump            d1 all cfg 1000 cfg/run.npt.*.cfg mass type xs ys zs id type vx vy vz fx fy fz
+dump_modify     d1 element C
+#---------------------------------------------------------
+
+#-------------------- Run the simulation --------------------------------------------------
+#-------------------- RELAXATION -------------------------
+fix 1 all npt temp 300 300 0.05 x 0 0 0.5 y 0 0 0.5
+run 60000
+unfix 1
+undump d1
+
+#-------------------- DEFORMATION -------------------------
+reset_timestep 0
+
+variable  srate equal 1.0e9
+variable srate1 equal "v_srate/1.0e12"
+
+fix 2 all npt temp 300 300 0.05 y 0 0 0.5
+fix 3 all deform 1 x erate ${srate1} units box remap x
+
+#---------- output file settings -------------------------
+dump            d2 all cfg 1000 cfg/run.deform.*.cfg mass type xs ys zs id type vx vy vz fx fy fz
+dump_modify     d2 element C
+#---------------------------------------------------------
+
+run 400000
+
+#-------------------- End ----------------------------------------------------------------
