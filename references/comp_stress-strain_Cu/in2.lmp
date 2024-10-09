@@ -1,0 +1,154 @@
+#------------------------------------------------------------------------------------------
+# 1.2 Quasi-Isentropic compression in Copper (SCRIPT2):
+# need to modifiy "fix_deform.h" in lammps code
+# 
+# Now I will show a LAMMPS script that implements Quasi-isentropic compression in Copper:
+# Quasi Isentropic deformation Copper along [100], [110] or [111]
+# The equilibration step allows the lattice to expand to a temperature of 300 K with a
+# pressure of 0 kbar at each simulation cell boundary. Then, the simulation cell is
+# deformed in the x-direction at, while the lateral boundaries are controlled using
+# the NVT equations of motion to mantain the lenght of the computational box constant.
+# The stress and strain values are output to a separate file, which can be imported in
+# a graphing application for plotting. The cfg dump files include the x, y, and z
+# coordinates, the centrosymmetry values, the potential energies, and forces for each atom.
+# This can be directly visualized using AtomEye We assume 1 timestep is equal to 0.0005
+# pico-seconds
+#------------------------------------------------------------------------------------------
+# LAMMPS 64-bit 22Dec2022-MSMPI
+# ---------- Initialize Simulation ---------------------
+clear
+units metal
+dimension 3
+boundary p p p
+atom_style atomic
+atom_modify map array
+
+# ---------- define variables ---------------------
+variable stemperature equal 300 # temperature in kelvin
+variable epercentage equal 0.19 # the percentage the body is compressed
+variable myseed equal 12345 # the value seed for the velocity
+variable atomrate equal 250 # the rate in timestep that atoms are dump as CFG
+variable time_step equal 0.0005 # time step in pico seconds (CHANGE THIS VALUE)
+variable tau equal 5 # quasi-isentropic scheme final run time (in time UNITS)
+variable time_eq equal 10000 # time steps for the equlibration part
+variable time_nvt equal 5000 # time steps for the NVT (NUCLEATION DEFECTS)
+variable tdamp equal "v_time_step*100" # DO NOT CHANGE
+variable pdamp equal "v_time_step*1000" # DO NOT CHANGE
+variable R equal "(v_epercentage/0.165)/v_tau" # Compress rate in EMAX
+variable time_run equal "v_tau/v_time_step" # time step for the deformation part
+
+timestep ${time_step} # DO NOT CHANGE
+
+# ---------- Create Atoms ---------------------
+lattice fcc 3.615 origin 0.0 0.0 0.0 orient x 1 0 0 orient y 0 1 0 orient z 0 0 1 # (100)
+# lattice fcc 3.615 origin 0.0 0.0 0.0 orient x 1 1 0 orient y 0 0 1 orient z 1 -1 0 # (110)
+# lattice fcc 3.615 origin 0.0 0.0 0.0 orient x 1 1 1 orient y 1 -1 0 orient z 1 1 -2 # (111)
+
+region box block 0 50 0 50 0 50 units lattice
+create_box 1 box
+create_atoms 1 box
+
+# ---------- Define Interatomic Potential ---------------------
+pair_style eam/alloy
+#pair_coeff * * Cu_mishin1.eam.alloy Cu
+pair_coeff * * Cu01.eam.alloy Cu
+
+# ---------- Define Settings ----------------------------------
+# "compute" Define a computation that will be performed on a group of atoms. Quantities
+# calculated by a compute are instantaneous values, meaning they are calculated from
+# information about atoms on the current timestep or iteration, though a compute may
+# internally store some information about a previous state of the system. Defining a
+# compute does not perform a computation.Instead computes are invoked by other LAMMPS
+# commands as needed
+
+compute myCN all cna/atom 3.8
+compute myKE all ke/atom
+compute myPE all pe/atom
+
+# ---------- Equilibration ---------------------------------------
+reset_timestep 0
+velocity all create ${stemperature} ${myseed} mom yes rot no
+fix equilibration all npt temp ${stemperature} ${stemperature} ${tdamp} iso 0 0 ${pdamp} drag 0.0
+
+# Output thermodynamics into outputfile
+# for units metal, pressure is in [bars] = 100 [kPa] = 1/10000 [GPa]
+# p2, p3, p4 are in GPa
+variable eq1 equal "step"
+variable eq2 equal "pxx/10000"
+variable eq3 equal "pyy/10000"
+variable eq4 equal "pzz/10000"
+variable eq5 equal "lx"
+variable eq6 equal "ly"
+variable eq7 equal "lz"
+variable eq8 equal "temp"
+variable eq9 equal "etotal"
+fix output1 all print 10 "${eq1} ${eq2} ${eq3} ${eq4} ${eq5} ${eq6} ${eq7} ${eq8} ${eq9}" file run.${stemperature}K.out screen no
+
+thermo 10
+thermo_style custom step pxx pyy pzz lx ly lz temp etotal
+
+# Use cfg for AtomEye (here only print the coordinates of the atoms)
+dump 1 all cfg ${time_eq} fcc.copper.*.cfg id type xs ys zs
+dump_modify 1 element Cu
+
+# RUN AT LEAST 10000 timesteps
+run ${time_eq}
+
+# Store final cell length for strain calculations
+variable tmp equal "lx"
+variable L0 equal ${tmp}
+print "Initial Length, L0: ${L0}"
+
+#reset
+unfix equilibration
+undump 1
+unfix output1
+
+# ---------- Deformation ---------------------------------
+reset_timestep 0
+
+# QRATE IS OUR MODIFIED FUNCTIONAL FORM AND IS A LAMMPS HACK
+fix 1 all nve
+fix 2 all deform 1 x qrate ${R} ${tau} units box remap x
+
+# Output strain and stress info to file
+# for units metal, pressure is in [bars] = 100 [kPa] = 1/10000 [GPa]
+# pxx, pyy, pzz are in GPa
+variable strain equal "-(lx - v_L0)/v_L0"
+variable shear equal "0.5*(pxx/10000 - 0.5*(pyy/10000 + pzz/10000))"
+variable tstep equal "step"
+variable out1 equal "v_strain"
+variable out2 equal "pxx/10000"
+variable out3 equal "pyy/10000"
+variable out4 equal "pzz/10000"
+variable out5 equal "v_shear"
+variable out6 equal "lx"
+variable out7 equal "ly"
+variable out8 equal "lz"
+variable out9 equal "temp"
+variable out10 equal "vol" # Volume Angstroms^3
+variable out11 equal "etotal" # ENERGY IN EV
+variable out12 equal "press/10000" # PRESSURE IN GPa
+variable out13 equal "((press/10000)*vol)/160.21" # MECHANICAL WORK W = PV in EV
+
+fix def1 all print 1 "${tstep} ${out2} ${out3} ${out4} ${out5} ${out6} ${out7} ${out8} ${out9} ${out10} ${out11} ${out12}" file stress.${stemperature}K.${epercentage}e.out screen no
+
+# Display thermo
+variable thermostep equal "v_time_run/10"
+thermo ${thermostep}
+thermo_style custom "v_strain" pxx pyy pzz lx ly lz temp etotal pe ke
+
+# Use cfg for AtomEye (here only print the coordinates of the atoms)
+dump 1 all cfg ${atomrate} dump.copper.*.cfg id type xs ys zs
+dump_modify 1 element Cu
+
+run ${time_run}
+
+unfix def1
+unfix 1
+unfix 2
+
+# SIMULATION DONE
+clear
+print "creo ya esta =)"
+#------------------------------------------------------------------------------------------
