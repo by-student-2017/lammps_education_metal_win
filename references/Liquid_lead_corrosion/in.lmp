@@ -1,0 +1,82 @@
+#------------------------------------------------------------------------------------------
+# LAMMPS 64-bit 22Dec2022-MSMPI
+#------------------------------------------------------------------------------------------
+
+#---------Initialize Simulation---------
+clear
+units metal
+dimension 3
+boundary p p p
+atom_style atomic
+atom_modify map array
+
+#---------Create Atoms---------
+#read_data FePbbaru
+read_data ./structure/FePbbaru.lmp
+
+mass 1 207.2  ##Pb
+mass 2 55.845 ##Fe
+
+#---------Define Interatomic Potential---------
+group timbal type 1
+group besi type 2
+
+#---------Force field---------
+pair_style morse 12.9
+pair_coeff 1 1 0.2348 1.1836 3.733  10.9 # Pb
+pair_coeff 2 2 0.4174 1.3885 2.845  10.9 # Fe
+pair_coeff 1 2 0.0490 1.2861 5.3102 12.9 # Pb-Fe
+
+#---------Structure minimization---------
+min_style sd
+minimize 1.0e-12 1.0e-25 5000 10000
+
+#---------settings---------
+timestep 0.001 # 1 [fs]
+
+thermo 1000
+thermo_style custom step temp vol press pe etotal
+
+#---------NPT calculation---------
+reset_timestep 0
+
+#velocity all create 1075 2231234 dist uniform mom yes rot yes
+#run 0
+#velocity all scale 1075
+
+#dump mydump all custom 1000 all_npt.dump type x y z
+dump            d1 all cfg 1000 cfg/run.npt.*.cfg mass type xs ys zs id type vx vy vz fx fy fz
+dump_modify     d1 element Pb Fe
+
+velocity all create 1023 41254 dist uniform mom yes rot yes
+
+fix mynpt all npt temp 1023.0 1023.0 10.0 iso 0.0 0.0 1000.0
+
+run 220000
+
+unfix mynpt
+undump d1
+
+#---------NVT and MSD calculation---------
+reset_timestep 0
+
+#velocity all create 1075 2231234 dist uniform mom yes rot yes
+#run 0
+#velocity all scale 1075
+
+#dump mydump all custom 1000 all_nvt.dump type x y z
+dump            d2 all cfg 1000 cfg/run.nvt.*.cfg mass type xs ys zs id type vx vy vz fx fy fz
+dump_modify     d2 element Pb Fe
+
+fix mynvt all nvt temp 1023 1023 100
+
+compute 2 besi msd com yes
+compute 3 besi vacf
+compute 4 besi temp
+
+fix 5 besi ave/time 1 1 1 c_4 c_2[2] c_3[4] file besi.msd
+
+run 50000
+
+undump mydump
+#------------------------------------------------------------------------------------------
