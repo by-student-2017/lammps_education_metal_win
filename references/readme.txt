@@ -372,6 +372,10 @@ input file (metal unit, lammps)
   comp_stress-strain_Cu
   shock_Ni
 
+- H. Karimah et al., AIP Conf. Proc. 2663, 030002 (2022).
+  https://doi.org/10.1063/5.0108088
+  Liquid_lead_corrosion
+
 - O. Takahiro, Chiba Univ.
   https://amorphous.tf.chiba-u.jp/lecture.files/ms-workshop/molten.html
   Lecture
