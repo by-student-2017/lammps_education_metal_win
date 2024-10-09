@@ -1,0 +1,158 @@
+#------------------------------------------------------------------------------------------
+# APPENDIX C: SAMPLE LAMMPS INPUT SCRIPT FOR FINDING THE THERMAL CONDUCTIVITY 
+# LAMMPS input file used to find the thermal conductivity of a Nickel-coated CNT is given below
+#------------------------------------------------------------------------------------------
+# LAMMPS 64-bit 22Dec2022-MSMPI
+clear
+####---------------KAPPA FOR A NICKEL-COATED 3WCNT---------------####
+#----------Defining the characteristics of the system----------#
+units metal
+dimension 3
+boundary s s s
+atom_style atomic
+newton on
+neigh_modify delay 5
+
+#----------creating the structure----------#
+read_data Ni3WCNT.data
+
+#----------applying interatomic potentials----------#
+pair_style hybrid airebo 3.0 eam/alloy morse 3.0
+pair_coeff * * airebo CH.airebo C NULL
+pair_coeff * * eam/alloy Ni99.eam.alloy NULL Ni
+pair_coeff 1 2 morse 0.234 1.975 2.27 3.0
+
+#mass 1 12.0111
+#mass 2 58.6934
+
+#----------Defining the variables and initial settings----------#
+variable T equal 300 # temperature 300 Kelvin
+variable dt equal 0.0005 # timestep(0.5fs)
+variable p equal 1 # Nevery
+variable s equal 50000 # Nrepeat
+variable d equal $p*$s # Nfreq
+variable Tlo equal 250 #cold region@250K
+variable Thi equal 350 #hot region@350K
+variable tdiff1 equal c_Thot-c_Tcold
+
+timestep ${dt}
+thermo $d
+thermo_style custom step vol temp pe ke etotal
+thermo_modify flush yes
+
+compute PE all pe/atom
+
+dump PEtotal all custom 20000 3WCNT.pe id type x y z c_PE
+
+dump 1 all cfg 1000 cfg/run.*.cfg mass type xs ys zs id type vx vy vz fx fy fz
+dump_modify 1 element C Ni
+
+#-----Energy Minimization-----#
+minimize 1.0e-4 1.0e-6 100 1000
+#minimize 0.0 1.0e-8 1000 100000
+#minimize 1.0e-10 1.0e-10 10000 10000
+
+velocity all create $T 8765432 mom yes rot yes dist gaussian
+
+restart 100000 Ni.restart
+
+variable grid equal 100
+variable gridsize equal lx/${grid}
+
+variable f1lo equal xlo
+variable f1hi equal xlo+1.0*${gridsize}
+
+variable f2lo equal xhi-1.0*${gridsize}
+variable f2hi equal xhi
+
+variable hlo equal xlo+2.0*${gridsize}
+variable hhi equal xlo+3.0*${gridsize}
+
+variable chi equal xhi-2.0*${gridsize}
+variable clo equal xhi-3.0*${gridsize}
+
+region hot block ${hlo} ${hhi} INF INF INF INF units box
+region cold block ${clo} ${chi} INF INF INF INF units box
+
+region F1 block ${f1lo} ${f1hi} INF INF INF INF units box
+region F2 block ${f2lo} ${f2hi} INF INF INF INF units box
+
+group CNT type 1
+group METAL type 2
+
+group HOT region hot
+group COLD region cold
+
+group FE1 region F1
+group FE2 region F2
+
+group MODEL subtract all FE1 FE2
+group CNTmodel intersect MODEL CNT
+group METALmodel intersect MODEL METAL
+
+fix FIX1 FE1 setforce 0.0 0.0 0.0 region F1
+fix FIX2 FE2 setforce 0.0 0.0 0.0 region F2
+
+fix MUCAN MODEL nve
+run 200000
+
+fix EQUIL MODEL langevin $T $T 0.05 1234567 zero yes
+
+thermo_style custom step vol temp pe ke etotal f_EQUIL
+
+run 100000
+
+unfix EQUIL
+unfix MUCAN
+
+thermo_style custom step vol temp pe ke etotal
+
+fix MUCAN2 MODEL nve
+run 50000
+unfix MUCAN2
+
+dump_modify PEtotal every 50000
+thermo 50000
+
+#----------Temperature setting on either ends----------#
+fix NVEmodel MODEL nve
+fix KEin HOT langevin ${Thi} ${Thi} 0.05 1234567 tally yes
+fix KEout COLD langevin ${Tlo} ${Tlo} 0.05 1234567 tally yes
+
+#----------Applying MTTM----------#
+variable C_e equal 21.82938e-6 #2.16117e-6
+variable rho_e equal 0.18298 #8.49e-2
+variable kep equal 0.0575155 #0.2503042
+variable gmp equal 5.575921 #4.69781640
+variable gms equal 0
+variable v_0 equal 0
+variable Nx equal 100
+variable Ny equal 1
+variable Nz equal 1
+
+fix METALmttm METALmodel mttm 699489 ${C_e} ${rho_e} ${kep} ${gmp} ${gms} ${v_0} ${Nx} ${Ny} ${Nz} inputx.txt 50000 Nimttmout.txt 1 1
+
+compute Thot HOT temp/region hot
+compute Tcold COLD temp/region cold
+
+compute KE all ke/atom
+compute KEHOT HOT ke
+compute KECOLD COLD ke
+
+compute KECNT CNTmodel ke
+compute KEMETAL METALmodel ke
+
+variable kB equal 8.6173324e-5 # Maxwell-Boltzmann constant in eV/K
+variable TEMP atom c_KE/(${kB}*1.5)
+
+fix AVE1 all ave/time $p $s $d v_tdiff1 ave running
+
+thermo_style custom step temp c_Thot c_Tcold f_KEin f_KEout v_tdiff1 f_AVE1 c_KEHOT c_KECOLD ke pe etotal
+
+compute CC1 all chunk/atom bin/1d x lower 0.01 units reduced
+
+fix AVECHUNKALL all ave/chunk $p $s $d CC1 v_TEMP file 1NiSWCNT_tempall.txt
+fix KECHUNKALL all ave/chunk $p $s $d CC1 c_KE file 1NiSWCNT_KEall.txt
+
+run 2000000
+#------------------------------------------------------------------------------------------

@@ -1,0 +1,90 @@
+#------------------------------------------------------------------------------------------
+# APPENDIX A: SAMPLE LAMMPS INPUT SCRIPT FOR NICKEL COATING
+# LAMMPS input file used for coating Nickel layer on a 3WCNT is given below
+#------------------------------------------------------------------------------------------
+# LAMMPS 64-bit 22Dec2022-MSMPI
+clear
+####---------------NICKEL COATING AROUND 3WCNT---------------####
+#----------Defining the characteristics of the system----------#
+units metal
+dimension 3
+boundary p s s
+atom_style atomic
+newton on
+neigh_modify delay 5
+
+#----------Creation of a hollow Nickel cylinder----------#
+lattice fcc 3.52 orient x 1 0 0 orient y 0 1 0 orient z 0 0 1
+
+region Ni2layer cylinder x 0 0 24 -2 570 units box
+create_box 2 Ni2layer
+create_atoms 2 region Ni2layer units box
+
+region Ni2layerin cylinder x 0 0 21 -2 570 units box
+
+group Ni2layer region Ni2layer
+group Ni2layerin region Ni2layerin
+
+delete_atoms group Ni2layerin
+
+#----------Inserting the CNT inside that hollow Ni cylinder----------#
+#read_data relaxed3Ni3wCNT.data add append
+read_data structure/3wCNT.data.lmp add append
+
+#----------Defining the interactions between the atoms----------#
+pair_style hybrid airebo 3.0 eam/alloy morse 3.0
+pair_coeff * * airebo CH.airebo C NULL
+pair_coeff * * eam/alloy Ni99.eam.alloy NULL Ni
+pair_coeff 1 2 morse 0.234 1.975 2.27 3.0
+
+#mass 1 12.0111
+#mass 2 58.6934
+
+write_data 3Ni3wCNT_init.data
+
+#-------------------- Settings -----------------------------------------------------------
+thermo 1000
+thermo_style custom step temp pe ke etotal press lx ly lz vol
+
+compute pe all pe/atom
+compute csp all centro/atom fcc
+
+dump CSP all custom 1000 TUBE.csp id type x y z c_csp c_pe
+dump PE all custom 1000 TUBE.pe id type x y z c_pe
+dump XYZ all xyz 1000 TUBE.xyz
+
+dump 1 all cfg 1000 cfg/run.*.cfg mass type xs ys zs id type vx vy vz fx fy fz
+dump_modify 1 element C Ni
+
+#-----Energy Minimization-----#
+minimize 1.0e-4 1.0e-6 100 1000
+#minimize 0.0 1.0e-8 1000 100000
+#minimize 1.0e-10 1.0e-10 10000 10000
+
+#-----Dynamic relaxation at 300 K-----#
+timestep 0.0005 # 0.5 [fs]
+
+velocity all create 300 102486 mom yes rot yes dist gaussian
+
+# ---------- Running NPT simulation----------------
+#reset_timestep 0
+fix NPT all npt temp 300 300 0.05 x 0 0 0.5
+run 40000
+unfix NPT
+
+# ---------- Running NVE simulation----------------
+#reset_timestep 0
+fix NVE all nve
+fix TEMP all temp/rescale 10 300 300 0.005 0.5
+run 40000
+unfix NVE
+unfix TEMP
+
+# ---------- Running NVT simulation----------------
+#reset_timestep 0
+fix NVT all nvt temp 300 300 0.05
+run 40000
+unfix NVT
+
+write_data Ni3WCNT.data
+#------------------------------------------------------------------------------------------

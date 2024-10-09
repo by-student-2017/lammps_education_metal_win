@@ -1,0 +1,37 @@
+#---------------------------------------------------------------------
+# Atomsk: https://atomsk.univ-lille.fr/tutorial_nanotubes.php
+# https://atomsk.univ-lille.fr/doc.php
+
+# length 57 nm = 570 A, 570/2.6 = 220
+atomsk --create nanotube 2.6 10 10 C CNT1010.cfg -duplicate 1 1 219 -orient 100 010 001 001 010 100
+atomsk --create nanotube 2.6 15 15 C CNT1515.cfg -duplicate 1 1 219 -orient 100 010 001 001 010 100
+atomsk --create nanotube 2.6 20 20 C CNT2020.cfg -duplicate 1 1 219 -orient 100 010 001 001 010 100
+#atomsk --merge 3 CNT2020.cfg CNT1515.cfg CNT1010.cfg 3MWNT.cfg -shift 0.0 0.5*box 0.5*box
+atomsk --merge 3 CNT2020.cfg CNT1515.cfg CNT1010.cfg 3MWNT.cfg
+atomsk 3MWNT.cfg 3wCNT_pre.data.lmp lammps
+#-------------------------------------
+    required by LAMMPS. Do you want to re-align the system? (y/n)
+    (This will affect only the LAMMPS output file)
+y
+#-------------------------------------
+for 3wCNT_pre.data.lmp
+0.0 50.0  xlo xhi
+0.0 50.0  ylo yhi
+0.0 570.0  zlo zhi
+0.0 0.0 0.0  xy xz yz
+#-------------------------------------
+atomsk 3wCNT_pre.data.lmp -center com 3wCNT.data.lmp lammps 
+#-------------------------------------
+cp 3wCNT.data.lmp input_file
+awk 'BEGIN{Ls=30}{if($1 == "Atoms"){Ls=NR};if(NR>=Ls+2){print $1, $2, $5, $3-25, $4-25}else{print}}' input_file > 3wCNT.data.lmp
+#-------------------------------------
+for 3wCNT.data.lmp
+-2.0 570.0  xlo xhi
+-24.0048  24.0048  ylo yhi
+-24.0048  24.0048  zlo zhi
+0.0 0.0 0.0  xy xz yz
+#-------------------------------------
+
+#---------------------------------------------------------------------
+# TubeGen Online - Version 3.4: https://turin.nss.udel.edu/research/tubegenonline.html
+#---------------------------------------------------------------------
