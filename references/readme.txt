@@ -368,7 +368,7 @@ input file (metal unit, lammps)
 
 - O. Guerrero, ResearchGate (2013)
   https://www.researchgate.net/publication/259644293
-  Cu_comp_stress-strain
+  comp_stress-strain_Cu
   shock_Ni
 
 - O. Takahiro, Chiba Univ.
