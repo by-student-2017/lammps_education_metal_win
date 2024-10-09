@@ -61,6 +61,10 @@ input file (metal unit, lammps)
   Carbon_Nanotubes (CNTs)
   ------------------------------------------------
   http://idr.mnit.ac.in/bitstream/123456789/776/1/2015PDE5197-Komal%20Rathi.pdf
+
+- A. Maulana et al., AIP Conf. Proc. 2314, 020008 (2020).
+  https://doi.org/10.1063/5.0034046
+  Fe-Ni_uniaxial_tensile_test
   
 - N. D. M. Arachchige, Doctor thesis (2016).
   https://summit.sfu.ca/item/16590
