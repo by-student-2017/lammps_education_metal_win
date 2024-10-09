@@ -65,7 +65,11 @@ input file (metal unit, lammps)
 - A. Maulana et al., AIP Conf. Proc. 2314, 020008 (2020).
   https://doi.org/10.1063/5.0034046
   Fe-Ni_uniaxial_tensile_test
-  
+
+- T. P. Bennett, Docter thesis (2019).
+  https://scholars.unh.edu/cgi/viewcontent.cgi?article=3467&context=dissertation
+  Ni-Cu_uniaxial_tensile_test
+
 - N. D. M. Arachchige, Doctor thesis (2016).
   https://summit.sfu.ca/item/16590
   Graphene_uniaxial_tensile_test
