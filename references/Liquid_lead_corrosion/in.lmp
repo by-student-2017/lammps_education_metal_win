@@ -14,6 +14,9 @@ atom_modify map array
 #read_data FePbbaru
 read_data ./structure/FePbbaru.lmp
 
+# Delete atoms created with atomsk if they are too close.
+delete_atoms overlap 1.0 all all
+
 mass 1 207.2  ##Pb
 mass 2 55.845 ##Fe
 
@@ -70,8 +73,8 @@ dump_modify     d2 element Pb Fe
 
 fix mynvt all nvt temp 1023 1023 100
 
-compute 2 besi msd com yes
-compute 3 besi vacf
+compute 2 besi msd com yes # If the com option is set to yes then the effect of any drift in the center-of-mass of the group of atoms is subtracted out before the displacement of each atom is calculated.
+compute 3 besi vacf        # velocity auto-correlation function (VACF)
 compute 4 besi temp
 
 fix 5 besi ave/time 1 1 1 c_4 c_2[2] c_3[4] file besi.msd
