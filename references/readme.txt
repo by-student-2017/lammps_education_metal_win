@@ -15,6 +15,7 @@
 # automated-twin-tracking: https://github.com/hehrich/automated-twin-tracking
 # EnCodeVentor: https://www.youtube.com/user/Jere5120/feed
 # LaBr3: https://www.osti.gov/servlets/purl/1241668 (slide)
+# SPIN: https://www.osti.gov/servlets/purl/1884091 (slide)
 -------------------------------------------------------------------
 input file (metal unit, lammps)
 
