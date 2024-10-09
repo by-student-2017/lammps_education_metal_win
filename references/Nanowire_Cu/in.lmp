@@ -1,0 +1,78 @@
+#------------------------------------------------------------------------------------------
+# 3.3. Input Script
+#------------------------------------------------------------------------------------------
+# LAMMPS 64-bit 22Dec2022-MSMPI
+clear
+########################################################
+### General Simulation Setup
+
+units metal # distance = A, time = picoseconds, energy = eV, velocity = A/ps, temperature = K, pressure = bar
+dimension 3
+boundary s s p
+
+atom_style atomic
+variable latconst equal 3.615
+lattice fcc ${latconst}
+region nanowire block 0 40 0 40 0 12
+create_box 3 nanowire
+lattice fcc ${latconst} orient x 1 0 0 orient y 0 1 0 orient z 0 0 1
+create_atoms 1 region nanowire
+
+# ---------- Calling the potential file---------------------
+pair_style eam
+pair_coeff * * Cu_u3.eam
+
+variable L equal 144.6 
+variable dy equal 14.46
+variable y1 equal -0.0
+variable y2 equal ${dy}
+region Lower block INF INF ${y1} ${y2} INF INF units box
+group Lower region Lower
+variable y1 equal ${L}-${dy}
+variable y2 equal ${L}
+region Upper block INF INF ${y1} ${y2} INF INF units box
+group Upper region Upper
+group boundary union Lower Upper
+group middle_atoms subtract all boundary
+
+velocity all create 0.01 511124 rot yes mom yes
+
+compute peratom all stress/atom NULL pair virial
+compute fy all reduce sum &
+ c_peratom[1] c_peratom[2] c_peratom[3] &
+ c_peratom[4] c_peratom[5] c_peratom[6]
+compute p all reduce sum c_peratom[1] c_peratom[2] c_peratom[3]
+
+variable sigmavolume equal c_fy[2]/vol
+variable strain equal (ly-v_L)/v_L
+variable press equal -(c_p[1]+c_p[2]+c_p[3])/(3*vol)
+
+thermo 10000
+thermo_style custom step ly vol v_strain v_sigmavolume temp etotal press v_press
+
+dump 1 all cfg 1000 cfg/run.*.cfg mass type xs ys zs id type vx vy vz fx fy fz
+dump_modify 1 element Cu Cu Cu
+
+# ---------- Running NVT simulation----------------
+fix relax all nvt temp 0.01 0.01 .01
+timestep 0.005
+run 500
+unfix relax
+
+variable upper_vel equal 0.01
+fix zeroing_force_on_lower Lower setforce 0.0 0.0 0.0
+fix zeroing_force_on_upper Upper setforce 0.0 0.0 0.0
+velocity Lower set 0.0 0.0 0.0 units box
+velocity Upper set 0.0 ${upper_vel} 0.0 units box
+
+# ---------- Running NVT and NVE simulation----------------
+# The motion of the middle_atoms is integrated using NVT while the boundary uses NVE.
+fix fix1 middle_atoms nvt temp 0.01 0.01 0.01
+fix fix2 boundary nve
+run 300000
+
+velocity Upper set 0 0 0 
+run 1000
+
+print "All done"
+#------------------------------------------------------------------------------------------
