@@ -25,15 +25,18 @@ atom_style atomic
 
 boundary p p p
 read_data ${data_filename}
+
 mass 1 12.0
 
 pair_style tersoff
 pair_coeff * * SiC.tersoff C
 
 timestep 0.00025 # 0.25 [fs]
+
 compute temp interface temp
-thermo_style custom step temp pe etotal press vol c_temp
+
 thermo 100
+thermo_style custom step temp pe etotal press vol c_temp
 
 #remove about 10% of atoms within 3 Ang of interface located at z=15.46
 
@@ -57,6 +60,7 @@ run 40000
 unfix 2
 
 timestep 0.001 # 1 [fs]
+
 fix 2 interface viscous 0.002
 run 5000
 unfix 2
@@ -65,10 +69,10 @@ unfix 1
 #output interface with first orientation
 
 dump forw_to_back all atom 10 &
-  ${csl_name}_forw_to_back.lammpstrj
+  dump/${csl_name}_forw_to_back.lammpstrj
 dump_modify forw_to_back sort id
 dump forw_to_back_pos all custom 10 &
-  ${csl_name}_forw_to_back.txt id type x y z
+  dump/${csl_name}_forw_to_back.txt id type x y z
 dump_modify forw_to_back_pos sort id
 
 run 0
@@ -82,10 +86,10 @@ displace_atoms all move -1.26126 -1.175594 0.0 units box
 displace_atoms all rotate 0.0 5.525 25.0 1.0 0.0 0.0 180.0 units box
 
 dump back_to_forw all atom 10 &
-  ${csl_name}_back_to_forw.lammpstrj
+  dump/${csl_name}_back_to_forw.lammpstrj
 dump_modify back_to_forw sort id
 dump back_to_forw_pos all custom 10 &
-  ${csl_name}_back_to_forw.txt id type x y z
+  dump/${csl_name}_back_to_forw.txt id type x y z
 dump_modify back_to_forw_pos sort id
 
 run 0
