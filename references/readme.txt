@@ -164,6 +164,10 @@ input file (metal unit, lammps)
   https://www.jstage.jst.go.jp/article/matertrans/47/11/47_11_2706/_pdf/-char/en
   -----------------------------------------------------------------------------------------------
 
+- D. Spiteri, ResearchGate (2016).
+  https://www.researchgate.net/publication/301552031
+  Grain_Boundary_Formation_diamond
+
 - X. Ke, Doctor Thesis (2019).
   https://scholarworks.uvm.edu/graddis/995/
   Cu-Ag_MC (python code)
