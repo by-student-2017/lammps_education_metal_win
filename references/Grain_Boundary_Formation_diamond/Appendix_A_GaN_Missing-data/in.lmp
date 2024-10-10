@@ -1,0 +1,72 @@
+#------------------------------------------------------------------------------------------
+# Appendix A
+# LAMMPS scripts for GaN
+# 
+# A.1 Main script
+#
+# atomsk --create wurtzite 3.189 5.185 Ga N GaN.cfg
+# atomsk GaN.cfg -duplicate 17 8 193 GaN_Supercell.cfg
+# atomsk GaN_Supercell.cfg GaN_pure_w54_1001.dat.lmp lammps
+# remove xy xz yz line or "0.0 0.0 0.0 xy xz yz"
+#------------------------------------------------------------------------------------------
+# LAMMPS 64-bit 22Dec2022-MSMPI
+#------------------------------------------------------------------------------------------
+
+variable name_basic string GaN_pure_w54_1001
+variable name_full string ${name_basic}
+variable data_filename string GaN_pure_w54_1001.dat.lmp
+variable regions_filename string regions_160_1001.txt
+variable temp_profile_filename string ${name_basic}_tp.txt
+
+log ${name_full}.log
+
+units metal
+boundary p p p
+atom_style atomic
+
+read_data ${data_filename}
+
+#mass 1 69.723
+#mass 2 14.007
+#mass 3 69.723
+#mass 4 14.007
+
+pair_style sw
+#pair_coeff * * GaN.sw Ga N Ga N
+pair_coeff * * GaN.sw Ga N
+
+neighbor 1.0 bin
+
+dump progress all atom 5000000 ${name_full}.lammpstrj
+dump_modify progress sort id
+
+#include ${regions_filename}
+
+restart 500000 ${name_basic}_*.res
+
+timestep 0.001 # 1 [fs]
+thermo 1000
+
+run 0
+
+variable curr_etotal equal etotal
+variable init_etotal equal ${curr_etotal}
+variable rel_etotal equal v_curr_etotal-v_init_etotal
+
+thermo_style custom step temp pe etotal press v_rel_etotal
+fix 1 all nve
+
+velocity all create 600.0 4928459 dist gaussian
+
+run 100000
+
+variable init_etotal equal ${curr_etotal}
+
+region cool block INF INF INF INF 0.000 25.039 units box
+region heat block INF INF INF INF 500.772 525.810 units box
+
+fix 3 all heat 100 2.400095 region heat
+fix 4 all heat 100 -2.400095 region cool
+
+run 19920000
+#------------------------------------------------------------------------------------------

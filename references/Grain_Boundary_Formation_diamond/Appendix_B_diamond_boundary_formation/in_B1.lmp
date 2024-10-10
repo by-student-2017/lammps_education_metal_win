@@ -1,0 +1,181 @@
+#------------------------------------------------------------------------------------------
+# Appendix B
+# LAMMPS scripts for diamond boundary formation
+# 
+# B.1 Script for creating ΣSigma9 low-energy tilt boundaries
+#------------------------------------------------------------------------------------------
+# LAMMPS 64-bit 22Dec2022-MSMPI
+#------------------------------------------------------------------------------------------
+variable csl_name string s9
+
+log Diamond_${csl_name}_bricks.log
+
+units metal
+atom_style atomic
+
+boundary p p p
+lattice diamond 3.57 orient x 1 0 1 orient z -1 0 1
+region chunkadiamond block 0.0 10.09 0.0 28.56 -143.0 142.0 &
+  units box #xhi just below 2*sqrt(2)*3.57 = 10.097
+create_box 1 chunkadiamond
+create_atoms 1 box
+change_box all y final -10.0 100.0 units box
+change_box all z final -250.0 250.0 units box
+mass 1 12.0
+
+pair_style tersoff
+pair_coeff * * SiC.tersoff C
+
+timestep 0.0002 # 0.2 [fs]
+compute press all pressure thermo_temp
+thermo_style custom step temp pe etotal press vol &
+  c_press[1] c_press[2] c_press[3]
+thermo 10
+
+dump progress all atom 10 Diamond_block_evolution.lammpstrj
+dump_modify progress sort id
+run 0
+
+#perform rotation
+
+region left_half block INF INF INF INF INF -0.1 units box
+region right_half block INF INF INF INF 0.1 INF units box
+group left_half region left_half
+group right_half region right_half
+displace_atoms left_half rotate 0.0 27.667519 0.0 1.0 0.0 0.0 19.47 &
+  units box
+displace_atoms right_half rotate 0.0 27.667519 0.0 1.0 0.0 0.0 -19.47 &
+  units box
+run 10 #10
+
+#remove middle atoms
+
+region to_delete block INF INF INF INF -8.15 9.4 units box
+delete_atoms region to_delete
+region to_delete delete
+run 10 #20
+
+#bring two halves together to form interface
+
+displace_atoms left_half move 0.0 0.0 9.0 units box
+displace_atoms right_half move 0.0 0.0 -9.0 units box
+run 10 #30
+
+#trim y
+
+region to_delete block INF INF INF 22.00 INF INF units box
+delete_atoms region to_delete
+run 10 #40
+
+region to_delete delete
+region to_delete block INF INF 29.68 INF INF INF units box
+delete_atoms region to_delete
+run 10 #50
+
+#shrink box y dimension
+
+change_box all y final 0.0 7.577 units box
+run 10 #60
+
+#trim z
+
+region to_delete delete
+region to_delete block INF INF INF INF INF -32.53 units box
+delete_atoms region to_delete
+run 10 #70
+
+region to_delete delete
+region to_delete block INF INF INF INF 31.27 INF units box
+delete_atoms region to_delete
+run 10 #80
+
+#shrink box z dimension - forms second interface
+
+change_box all z final 0.0 63.4 units box
+displace_atoms all move 0.0 0.0 42.16 units box
+run 10 #90
+
+#interface relaxation
+
+dump_modify progress every 100
+fix 1 all nve
+fix 2 all viscous 1.0
+run 210 #300
+unfix 2
+fix 2 all viscous 0.2
+run 200 #500
+unfix 2
+
+#relieve pressure necessary for proper interface formation
+
+dump_modify progress every 10
+change_box all x final 0.0 10.100 remap units box
+change_box all y final 0.0 7.585 remap units box
+change_box all z final 0.0 64.300 remap units box
+run 10 #510
+
+#final relaxation
+
+dump_modify progress every 100
+fix 2 all viscous 0.1
+run 290 #800
+unfix 2
+fix 2 all viscous 0.01
+run 400 #1200
+unfix 1
+unfix 2
+
+#centre x, y
+
+dump_modify progress every 10
+displace_atoms all move 0.627972175 -0.0729027 0.0 units box
+run 10 #1210
+
+#ouput: divide into 4 bricks for constructing custom simulation cells
+
+region back_to_forw block INF INF INF INF INF 21.26 units box
+region forw_slant block INF INF INF INF 21.26 32.11 units box
+region forw_to_back block INF INF INF INF 32.11 53.41 units box
+region back_slant block INF INF INF INF 53.41 INF units box
+group forw_slant region forw_slant
+group forw_to_back region forw_to_back
+group back_slant region back_slant
+group back_to_forw region back_to_forw
+
+dump back_to_forw back_to_forw atom 10 &
+  ${csl_name}_back_to_forw.lammpstrj
+dump_modify back_to_forw sort id
+dump back_to_forw_pos back_to_forw custom 10 &
+  ${csl_name}_back_to_forw.txt id type x y z
+dump_modify back_to_forw_pos sort id
+
+dump forw_slant forw_slant atom 10 &
+  ${csl_name}_forw_slant.lammpstrj
+dump_modify forw_slant sort id
+dump forw_slant_pos forw_slant custom 10 &
+  ${csl_name}_forw_slant.txt id type x y z
+dump_modify forw_slant_pos sort id
+
+dump forw_to_back forw_to_back atom 10 &
+  ${csl_name}_forw_to_back.lammpstrj
+dump_modify forw_to_back sort id
+dump forw_to_back_pos forw_to_back custom 10 &
+  ${csl_name}_forw_to_back.txt id type x y z
+dump_modify forw_to_back_pos sort id
+
+dump final all atom 10 &
+  Diamond_${csl_name}_interfaces.lammpstrj
+dump_modify final sort id
+dump final_pos all custom 10 &
+  Diamond_${csl_name}_interfaces.txt id type x y z
+dump_modify final_pos sort id
+
+dump back_slant back_slant atom 10 &
+  ${csl_name}_back_slant.lammpstrj
+dump_modify back_slant sort id
+dump back_slant_pos back_slant custom 10 &
+  ${csl_name}_back_slant.txt id type x y z
+dump_modify back_slant_pos sort id
+
+run 0
+#------------------------------------------------------------------------------------------
