@@ -388,6 +388,10 @@ input file (metal unit, lammps)
   https://theses.hal.science/tel-04540670v1 , https://theses.hal.science/tel-04540670/file/These-Iabadden-Djafar-2023.pdf
   laser-matter-interactions
 
+- W. T. Yorgason, Master thesis (2018).
+  https://digitalcommons.usu.edu/etd/7081 
+  Thermal_Conductivity_Mg2Si
+
 - O. Takahiro, Chiba Univ.
   https://amorphous.tf.chiba-u.jp/lecture.files/ms-workshop/molten.html
   Lecture
