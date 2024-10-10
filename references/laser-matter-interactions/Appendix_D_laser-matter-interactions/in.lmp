@@ -1,0 +1,118 @@
+#------------------------------------------------------------------------------------------
+# Appendix D
+# Simulation of laser-matter interactions using LAMMPS
+# 
+# This section shows an input example of LAMMPS to perform a laser-matter
+# interaction simulation in B2-Cu50Zr50 crystalline structure.
+#------------------------------------------------------------------------------------------
+# LAMMPS 64-bit 22Dec2022-MSMPI
+#------------------------------------------------------------------------------------------
+
+##################Laser-matter interaction#############################
+units metal
+dimension 3
+boundary p p p
+echo both
+
+variable Nevery equal 100
+variable Nrepeat equal 10
+variable Nfreq equal 10000
+variable deltax equal 30
+variable deltay equal 3
+variable deltaz equal 3
+
+neighbor 0.3 bin
+neigh_modify every 20 delay 0 check no
+
+atom_style atomic
+read_data int_B2.lmp
+
+pair_style eam/fs
+pair_coeff * * Cu-Zr_4.eam.fs Cu Zr
+
+timestep 0.001 # 1 [fs]
+
+thermo_style custom step lx ly lz xlo xhi ylo yhi zlo zhi temp press
+thermo 1000
+
+velocity all create 600 44543 dist gaussian
+fix 1 all nve
+run 5000
+unfix 1
+
+variable t equal temp
+run 0
+
+fix simnpt1 all npt temp ${t} 300 0.1 aniso 1.0 1.0 1.0
+run 5000
+unfix simnpt1
+
+fix simnpt2 all npt temp 300 300 0.1 aniso 1.0 1.0 1.0
+run 5000
+unfix simnpt2
+
+write_data stage_1.lmp
+
+variable l_map_x equal xhi-xlo
+variable l_map_y equal yhi-ylo
+variable l_map_z equal zhi-zlo
+
+change_box all x final 0 ${l_map_x} remap
+change_box all y final 0 ${l_map_y} remap
+change_box all z final 0 ${l_map_z} remap
+variable l_xlo equal xlo
+variable l_xhi equal xhi
+variable l_ylo_vac equal ylo
+variable l_yli_vac equal yhi
+variable l_zlo_vac equal zlo
+variable l_zli_vac equal zhi
+variable l_nrbc equal xhi-1000
+variable l_vac equal lx*(0.5)
+
+region del0 block ${l_xlo} ${l_vac} ${l_ylo_vac} ${l_yli_vac} ${l_zlo_vac} ${l_zli_vac}group del0 region del0
+delete_atoms group del0
+
+region NRBC block ${l_nrbc} ${l_xhi} ${l_ylo_vac} ${l_yli_vac} ${l_zlo_vac} ${l_zli_vac}group NRBC region NRBC
+write_data stage_2.lmp
+
+compute spa all stress/atom NULL
+compute volvoronoi all voronoi/atom
+compute KE all ke/atom
+
+reset_timestep 0
+thermo_style custom step temp press
+thermo 1000
+restart 20000 file.restart
+compute chunkX all chunk/atom bin/1d x lower ${deltax} units box
+fix density_X all ave/chunk ${Nevery} ${Nrepeat} ${Nfreq} chunkX density/number file density_X.out
+
+variable temp atom c_KE/(1.5*8.61e-5)
+fix temp_profile all ave/chunk ${Nevery} ${Nrepeat} ${Nfreq} chunkX v_temp file temp.out
+
+variable meanpress atom -(c_spa[1]+c_spa[2]+c_spa[3])/(3*10000)
+fix press_profile all ave/chunk ${Nevery} ${Nrepeat} ${Nfreq} chunkX v_meanpress c_volvoronoi[1] file pressure.out
+
+compute chunkYZ all chunk/atom bin/3d x lower ${deltax} y lower ${deltay} z lower ${deltaz} units box
+
+fix chunkYZ all ave/chunk ${Nevery} ${Nrepeat} ${Nfreq} chunkYZ density/number v_temp v_meanpress c_volvoronoi[1] file local_py.out
+fix 5 NRBC viscous 0.0025
+dump sn all custom 10000 TTM_MD.dump id type x y z v_meanpress c_volvoronoi[1]
+
+fix 1 all nve
+fix TTM all ttm/mod 13423 ttm_parameters 702 1 1 T_init 100 T_out.out
+thermo 1000
+thermo_style custom step temp press f_TTM[1] f_TTM[2]
+run 30000
+unfix TTM
+unfix 1
+
+fix 2 all nve
+thermo_style custom step temp press
+thermo 5000
+run 170000
+undump sn
+
+write_data final_strc.lmp
+unfix 2
+unfix visc
+############################ END script ##############################

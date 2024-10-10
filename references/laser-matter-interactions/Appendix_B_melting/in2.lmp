@@ -1,0 +1,30 @@
+#------------------------------------------------------------------------------------------
+# Appendix B
+# LAMMPS script to determine the melting temperatures
+# the B2-Cu50Zr50 crystal melting point:
+#------------------------------------------------------------------------------------------
+# LAMMPS 64-bit 22Dec2022-MSMPI
+#------------------------------------------------------------------------------------------
+
+############################PRDF######################
+variable t index 1000 # number of cycles
+
+units metal
+dimension 3
+boundary p p p
+atom_style atomic
+
+read_data liquid.lmp
+
+pair_style eam/fs
+pair_coeff * * Cu-Zr_4.eam.fs Cu Zr
+
+timestep 0.001 # 1 [fs]
+
+thermo 1000
+thermo_style custom step temp press vol
+
+compute RDF all rdf 100 1 1
+fix rdf all ave/time 1 1 $t c_RDF[*] file Cu-Cu.dat mode vector
+run $t
+####################################################

@@ -1,0 +1,76 @@
+#------------------------------------------------------------------------------------------
+# Appendix C
+# LAMMPS script to prepare amorphous sample
+# 
+# A LAMMPS script to build from scratch a MG sample by mimicking the experimental approach at 
+# each stage of the calculation. The first stage describes the atomic configuration production 
+# minimized and thermalized at 300 K. It was followed by heating above the melting temperature 
+# and fast quenching. The obtained structure will be replicated and used for 
+# laser-matter interaction investigations.
+#------------------------------------------------------------------------------------------
+# LAMMPS 64-bit 22Dec2022-MSMPI
+#------------------------------------------------------------------------------------------
+
+###################### MG elaboration ################################
+units metal
+dimension 3
+boundary p p p
+atom_style atomic
+
+lattice bcc 3.229
+region whole block 0 20 0 20 0 20
+create_box 2 whole
+lattice sc 3.229
+create_atoms 1 region whole
+lattice sc 3.229 origin 0.5 0.5 0.5
+create_atoms 2 region whole
+
+pair_style eam/fs
+pair_coeff * * Cu-Zr_4.eam.fs Cu Zr
+
+timestep 0.001 # 1 [fs]
+
+thermo 100000
+thermo_style custom step temp press fnorm vol pe density
+
+dump 2 all custom 10 rlx.dump id type x y z
+minimize 0 1.0e-8 100000 1000000
+fix 1 all box/relax aniso 1.0 vmax 0.001
+minimize 0 1.0e-8 100000 1000000
+unfix 1
+minimize 0 1.0e-8 100000 1000000
+undump 2
+
+thermo 100000
+thermo_style custom step temp press vol density
+velocity all create 600.0 873847
+fix 1 all nve
+run 100000
+unfix 1
+
+dump 3 all custom 100000 heating.dump id type x y z
+fix 1 all npt temp 300 2000 0.1 aniso 1.0 1.0 1.0
+run 1700000
+unfix 1
+undump 3
+
+dump 4 all custom 1000000 annealing.dump id type x y z
+fix 1 all npt temp 2000 2000 0.1 aniso 1.0 1.0 1.0
+run 10000000
+unfix 1
+undump 4
+
+dump 5 all custom 1000000 quenching.dump id type x y z
+fix 1 all npt temp 2000 300 0.1 aniso 1.0 1.0 1.0
+run 170000000
+unfix 1
+undump 5
+
+dump 6 all custom 1000000 relaxing.dump id type x y z
+fix 1 all npt temp 300 300 0.1 aniso 1.0 1.0 1.0
+run 10000000
+unfix 1
+undump 6
+
+write_data amorphous.lmp
+############################ END script ##############################

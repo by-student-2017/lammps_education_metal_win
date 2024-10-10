@@ -1,0 +1,37 @@
+#------------------------------------------------------------------------------------------
+# Appendix I
+# LAMMPS input script to compute the XRD pattern
+# 
+# A typical LAMMPS script is provided to perform virtual XRD simulations on
+# amorphous and crystalline CuZr alloy targets.
+#------------------------------------------------------------------------------------------
+# LAMMPS 64-bit 22Dec2022-MSMPI
+#------------------------------------------------------------------------------------------
+
+################################### XRD ######################################
+units metal
+dimension 3
+boundary p p p
+echo both
+processors 1 * *
+read_data slice_0ns_all
+
+pair_style eam/fs
+pair_coeff * * Cu-Zr_4.eam.fs Cu Zr
+timestep 0.001
+
+variable V string CuZr
+
+thermo_style custom step temp press
+thermo 100
+compute XRD all xrd 1.541838 Cu Zr 2Theta 20 120 c 5 5 5 LP 1 echo
+
+fix 1 all ave/histo/weight 1 100 100 20 120 1000 c_XRD[1] c_XRD[2] &
+  mode vector file $V.hist.xrd
+fix 2 all nve
+run 1000
+
+fix 2 all nve
+run 1000
+unfix 2
+################################### END script ############################

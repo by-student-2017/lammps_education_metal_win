@@ -1,0 +1,35 @@
+#------------------------------------------------------------------------------------------
+# Appendix K
+# LAMMPS script for calculating the total RDF
+# 
+# The script provided herein is a LAMMPS MD input used to compute the total
+# RDF in a specific portion of the target. A python script is also presented to
+# post-process the result and plot the curve.
+#------------------------------------------------------------------------------------------
+# LAMMPS 64-bit 22Dec2022-MSMPI
+#------------------------------------------------------------------------------------------
+
+#################################### RDF ################################
+echo both
+units metal
+dimension 3
+boundary p p p
+processors 1 * *
+
+atom_style atomic
+read_data slice_0ns.lmp
+
+neighbor 0.3 bin
+neigh_modify every 20 delay 0 check no
+pair_style eam/fs
+pair_coeff * * Cu-Zr_4.eam.fs Cu Zr
+
+timestep 0.001 # 1 [fs]
+
+thermo 100
+thermo_style custom step temp press
+
+compute RDF all rdf 100
+fix rdf all ave/time 1 1 1000 c_RDF[*] file rdf_all.dat mode vector
+run 1000
+#################################### END script###########################

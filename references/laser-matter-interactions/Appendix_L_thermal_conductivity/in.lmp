@@ -1,0 +1,69 @@
+#------------------------------------------------------------------------------------------
+# Appendix L
+# LAMMPS script for computing equilibrium phononic thermal conductivity
+# 
+# The script below is a typical LAMMPS MD input file in order to calculate the
+# atomic thermal conductivity of the composite produced sample at temperature T = 300 K.
+#------------------------------------------------------------------------------------------
+# LAMMPS 64-bit 22Dec2022-MSMPI
+#------------------------------------------------------------------------------------------
+
+#################################### Kappa ################################
+processors 1 * *
+
+variable T equal 300
+variable V equal vol
+variable dt equal 0.001
+
+variable kB equal 1.3806504e-23
+variable eV2J equal 1.602e-19
+variable A2m equal 1.0e-10
+variable ps2s equal 1.0e-12
+variable convert equal ${eV2J}*${eV2J}/${ps2s}/${A2m}
+variable p equal 10 # correlation length
+variable s equal 400 # sample interval
+variable d equal $p*$s # dump interval
+units metal
+boundary p p p
+atom_style atomic
+
+read_data amorphous_slice.lmp #first atomic configuration
+
+pair_style eam/fs
+pair_coeff * * Cu-Zr_4.eam.fs Cu Zr
+
+neighbor 2.0 bin
+neigh_modify delay 10
+
+timestep ${dt}
+
+thermo_style custom step temp etotal press vol lx
+thermo 1000
+
+velocity all create $T 49284 mom yes rot yes dist gaussian
+fix 1 all nve
+run 20000
+
+compute myKE all ke/atom
+compute myPE all pe/atom
+compute myStress all stress/atom NULL virial
+
+compute flux all heat/flux myKE myPE myStress
+variable Jx equal c_flux[1]/vol
+variable Jy equal c_flux[2]/vol
+variable Jz equal c_flux[4]/vol
+
+fix JJ all ave/correlate $s $p $d &
+  c_flux[1] c_flux[3] c_flux[4] type auto &
+  file JOJT.dat ave running
+variable scale equal ${convert}/${kB}/$T/$T/$V*$s*${dt}
+variable k11 equal trap(f_JJ[3])*${scale}
+variable k22 equal trap(f_JJ[4])*${scale}
+variable k33 equal trap(f_JJ[5])*${scale}
+thermo $d
+thermo_style custom step temp v_Jx v_Jy v_Jz v_k11 v_k22 v_k33
+run 400000
+unfix 1
+variable kappa equal (v_k11+v_k22+v_k33)/3.0
+print "average conductivity: ${kappa}[W/mK]"
+#################################### END script###########################

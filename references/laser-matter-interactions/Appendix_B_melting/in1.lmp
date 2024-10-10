@@ -1,0 +1,42 @@
+#------------------------------------------------------------------------------------------
+# Appendix B
+# LAMMPS script to determine the melting temperatures
+# the B2-Cu50Zr50 crystal melting point:
+#------------------------------------------------------------------------------------------
+# LAMMPS 64-bit 22Dec2022-MSMPI
+#------------------------------------------------------------------------------------------
+
+############################ Tm ######################
+units metal
+dimension 3
+boundary p p p
+atom_style atomic
+
+read_data CuZr_initial_54_000_B2_positions.lmp
+
+pair_style eam/fs
+pair_coeff * * Cu-Zr_4.eam.fs Cu Zr
+
+timestep 0.001 # 1 [fs]
+
+thermo 100000
+thermo_style custom step temp press pe vol
+
+minimize 0 1.0e-8 100000 1000000
+fix 1 all box/relax iso 1.0 vmax 0.001
+minimize 0 1.0e-8 1000000 10000000
+unfix 1
+minimize 0 1.0e-8 100000 1000000
+
+velocity all create 600.0 873847
+
+fix 1 all nve
+run 100000
+unfix 1
+
+fix 1 all npt temp 300 2000 0.1 iso 1.0 1.0 1.0
+run 1700000
+unfix 1
+
+write_data liquid.lmp
+########################### END script ############################

@@ -1,0 +1,47 @@
+#------------------------------------------------------------------------------------------
+# Appendix J
+# Entropy calculation using LAMMPS
+# 
+# A simple script to compute the entropy within slices of the transformed zone
+# within the CuZr alloy composite as a function of space (x-direction) is calculated
+# using the MD formalism achieved during 5 ps in the NVE ensemble. The output
+# data c entropy[*] is printed to a file named entropy 5ns.out.
+#------------------------------------------------------------------------------------------
+# LAMMPS 64-bit 22Dec2022-MSMPI
+#------------------------------------------------------------------------------------------
+
+################################## ENTROPY ##################################
+units metal
+dimension 3
+boundary p p p
+echo both
+processors 1 * *
+
+atom_style atomic
+read_data slice_0ns_all
+variable Nevery equal 100
+variable Nrepeat equal 10
+variable Nfreq equal 5000
+variable deltax equal 3
+
+neighbor 0.3 bin
+neigh_modify every 20 delay 0 check no
+
+pair_style eam/fs
+pair_coeff * * Cu-Zr_4.eam.fs Cu Zr
+
+timestep 0.001 # 1 [fs]
+thermo_style custom step temp press
+thermo 1000
+
+compute entropy all entropy/atom 0.25 2.5 avg yes 2.5
+
+thermo_style custom step temp press pe
+thermo 1000
+
+compute chunkX all chunk/atom bin/1d x lower ${deltax} units box
+fix density_X all ave/chunk ${Nevery} ${Nrepeat} ${Nfreq} chunkX c_entropy[*] file entropy_5ns.out
+fix 2 all nve
+run 5000
+unfix 2
+################################## END script ##############################
