@@ -1,0 +1,104 @@
+#------------------------------------------------------------------------------------------
+# Appendices
+# A Supporting Information
+# A.1 Tensile test for pristine graphene in LAMMPS
+# 
+# The following code is an example for the simulation of mechanical properties of 
+# the pristine graphene sheet in figure 4.1 in LAMMPS. The strain rate is 1e9 s^-1 and 
+# we use NC.tersoff as the force filed for C-C bond.
+#------------------------------------------------------------------------------------------
+# LAMMPS 64-bit 22Dec2022-MSMPI
+#------------------------------------------------------------------------------------------
+# NIST, Interatomic Potentials (Force Fields): https://www.ctcms.nist.gov/potentials/
+#------------------------------------------------------------------------------------------
+# atomsk --create graphite 3.21 5.213 C -cut above 0.2 Z -orthogonal-cell -shift 0 box/3 0 -wrap  graphene.cfg
+# atomsk graphene.cfg -duplicate 15 9 1 graphene_supercell.cfg
+# atomsk graphene_supercell.cfg Graphene.data.lmp lammps
+#------------------------------------------------------------------------------------------
+clear
+#--------------Initialize------------------------------------------------------------------
+echo screen
+units metal
+dimension 3
+boundary p p s
+newton on
+
+#--------------Input------------------------------------------------------------------------
+atom_style atomic
+
+read_data Graphene.data.lmp
+
+neighbor 2.0 nsq
+
+#--------------Parameters------------------------------------------------------------------
+variable LR equal 1e-3 # strain rate is 1e9 s^-1
+variable T1 equal 50
+variable T0 equal 300
+variable eqNPT equal 30000
+variable timeicrt equal 0.001
+variable Td equal 100
+variable DT equal ${Td}*${timeicrt}
+variable DT2 equal 10*${DT}
+
+#--------------Potentials------------------------------------------------------------------
+pair_style tersoff
+pair_coeff * * BNC.tersoff C
+
+#------------------------------------------------------------------------------------------
+timestep ${timeicrt}
+
+velocity all create ${T1} 2711 mom yes rot yes dist gaussian
+
+#--------------Equilibirum by NPT---------------------------------------------------------
+fix 14 all npt temp ${T1} ${T0} ${DT} y -100 -100 ${DT2} x -100 -100 ${DT2} drag 2
+run ${eqNPT}
+unfix 14
+
+fix 15 all npt temp ${T0} ${T0} ${DT} y -100 -100 ${DT2} x -100 -100 ${DT2} drag 2
+run ${eqNPT}
+unfix 15
+
+#--------------Deformation----------------------------------------------------------------
+reset_timestep 0
+
+compute 1 all stress/atom NULL # calculating the stress
+compute 2 all reduce sum c_1[1] c_1[2] # [1] stress(X), [2] stress(Y)
+
+thermo 100
+thermo_style custom step temp pe etotal
+thermo_modify norm yes
+
+variable Lx equal lx
+variable Ly equal ly
+variable Lz equal lz
+variable pote equal pe
+variable Vol equal vol
+variable N equal step
+variable T equal temp
+
+fix 1 all npt temp ${T0} ${T0} ${DT} y -10 -10 ${DT2} drag 2
+fix 2 all ave/time 1 100 100 c_2[1] c_2[2]
+fix 3 all ave/time 1 100 100 v_Lx v_Ly v_Lz v_Vol
+fix 4 all deform 1 x erate ${LR} units box remap x
+run 100
+
+#--------------Thermo output--------------------------------------------------------------
+# CorVol: The volume is corrected to one layer by dividing by the length in the z direction in 
+# the simulation cell and multiplying by the thickness of one graphene layer (3.35 A).
+variable CorVol equal f_3[4]*3.35/f_3[3]
+variable ConvoFac equal 1.0/1.0e4 # Coefficient for converting ber to GPa
+variable Sgigal equal f_2[1]*v_ConvoFac/v_CorVol # for x axis
+variable Sgigal3 equal f_2[2]*v_ConvoFac/v_CorVol # for y axis
+variable strain equal step*${timeicrt}*${LR}
+
+thermo 100
+thermo_style custom step temp v_strain v_Sgigal v_Sgigal3 pe ke lx ly lz vol
+thermo_modify norm yes
+
+#--------------Results--------------------------------------------------------------------
+fix extra all print 1000 "${N} ${T} ${strain} ${Sgigal} ${Sgigal3}" file data.txt
+dump 1 all cfg 1000 cfg/strain.*.cfg mass type xs ys zs id type vx vy vz fx fy fz
+dump_modify 1 element C
+run 300000
+
+#------------------------------------------------------------------------------------------
