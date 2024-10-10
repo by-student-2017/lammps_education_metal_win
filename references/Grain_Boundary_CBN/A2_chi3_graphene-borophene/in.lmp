@@ -7,8 +7,16 @@
 #------------------------------------------------------------------------------------------
 # NIST, Interatomic Potentials (Force Fields): https://www.ctcms.nist.gov/potentials/
 #------------------------------------------------------------------------------------------
-# beta12-Borophene.cif: https://doi.org/10.1021/acsanm.1c03855
-# atomsk chi3-Borophene.cif -duplicate 6 17 1 -properties properties.txt chi3-borophene.data.lmp lammps
+# ovito -> (input) *.cfg or *.lmp -> (output) VASP format -> VESTA -> VASP (Cartesian coordinate)
+#   -> expand x axis -> ovito -> (output) *.lmp
+# atomsk chi3-Borophene_supercell.lmp -shift 48.15 0.0 0.0 chi3-Borophene_supercell-shift.cfg
+# atomsk --merge 2 graphene_supercell.lmp chi3-Borophene_supercell-shift.cfg graphene-borophene.cfg
+# atomsk graphene-borophene.cfg -properties properties.txt graphene-borophene.data.lmp lammps
+# 
+# 2x1x1 case after making supercell 2x1x1 on VESTA (note set z = 0.0)
+# atomsk chi3-Borophene_2x1x1.lmp -shift 96.3 0.0 0.0 chi3-Borophene_2x1x1-shift.cfg
+# atomsk --merge 2 graphene_2x1x1.lmp chi3-Borophene_2x1x1-shift.cfg graphene-borophene_2x1x1.cfg
+# atomsk graphene-borophene_2x1x1.cfg -properties properties.txt graphene-borophene.data.lmp lammps
 #------------------------------------------------------------------------------------------
 clear
 #--------------Initialize------------------------------------------------------------------
@@ -87,7 +95,7 @@ run 100
 
 #--------------Thermo output--------------------------------------------------------------
 #variable CorVol equal f_3[1]*f_3[2]
-variable CorVol equal f_3[4]*(1.589*2)/f_3[3] # boron radii: 1.589 A
+variable CorVol equal f_3[4]*((3.35+1.589*2)/2)/f_3[3] # boron radii: 1.589 A
 variable ConvoFac equal 1.01325/1.0e4
 variable Sgigal equal f_2[1]*v_ConvoFac/v_CorVol # for x axis
 variable Sgigal3 equal f_2[2]*v_ConvoFac/v_CorVol # for y axis
