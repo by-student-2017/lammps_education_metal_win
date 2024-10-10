@@ -376,6 +376,10 @@ input file (metal unit, lammps)
   https://doi.org/10.1063/5.0108088
   Liquid_lead_corrosion
 
+- D. Iabbaden, Doctor thesis (2023).
+  https://theses.hal.science/tel-04540670v1 , https://theses.hal.science/tel-04540670/file/These-Iabadden-Djafar-2023.pdf
+  laser-matter-interactions
+
 - O. Takahiro, Chiba Univ.
   https://amorphous.tf.chiba-u.jp/lecture.files/ms-workshop/molten.html
   Lecture
