@@ -1,0 +1,192 @@
+#------------------------------------------------------------------------------------------
+# APPENDIX A
+# Sample LAMMPS MD Scripts
+# A.1 Sample LAMMPS MD Script for lambda_p of MgxSix Systems
+#------------------------------------------------------------------------------------------
+# LAMMPS 64-bit 22Dec2022-MSMPI
+#------------------------------------------------------------------------------------------
+##-simulation of lambda_p of Mg2Si with 2 Si NPs-##
+
+##-system intalization-##
+
+#clear
+#echo both
+units metal
+dimension 3
+atom_style atomic
+boundary p p p
+
+##-lattice information and region setup-##
+
+lattice fcc 6.338
+
+region box block 0 8 0 8 0 128 units lattice
+
+variable h equal 2
+variable s equal (64-($h/2))
+variable e equal (64+($h/2))
+variable g equal .25
+variable a equal ($s-$g)
+variable b equal ($e+$g)
+variable r equal 3
+variable R equal ($r+$g)
+
+region wall1 block 0 8 0 8 0 7 units lattice
+region cold block 0 8 0 8 7 14.5 units lattice
+region uppertube block 0 8 0 8 14.5 64 units lattice
+#------------------------------------------------------
+#region shield block 0 8 0 8 $a $b units lattice
+#region nanoparticle block 0 8 0 8 $s $e units lattice
+#------------------------------------------------------
+#region nanoparticle1 sphere 4 4 3.25 $r units lattice
+#region shield1 sphere 4 4 3.25 $R units lattice
+#------------------------------------------------------
+#region nanoparticle2 sphere 4 4 11.25 $r units lattice
+#region shield2 sphere 4 4 11.25 $R units lattice
+#------------------------------------------------------
+#region nanoparticle3 sphere 4 4 19.25 $r units lattice
+#region shield3 sphere 4 4 19.25 $R units lattice
+#------------------------------------------------------
+#region nanoparticle4 sphere 4 4 27.25 $r units lattice
+#region shield4 sphere 4 4 27.25 $R units lattice
+#------------------------------------------------------
+region nanoparticle5 sphere 4 4 35.25 $r units lattice
+region shield5 sphere 4 4 35.25 $R units lattice
+#------------------------------------------------------
+#region nanoparticle6 sphere 4 4 43.25 $r units lattice
+#region shield6 sphere 4 4 43.25 $R units lattice
+#------------------------------------------------------
+#region nanoparticle7 sphere 4 4 51.25 $r units lattice
+#region shield7 sphere 4 4 51.25 $R units lattice
+#------------------------------------------------------
+#region nanoparticle8 sphere 4 4 59.25 $r units lattice
+#region shield8 sphere 4 4 59.25 $R units lattice
+#------------------------------------------------------
+#region nanoparticle9 sphere 4 4 67.25 $r units lattice
+#region shield9 sphere 4 4 67.25 $R units lattice
+#------------------------------------------------------
+#region nanoparticle10 sphere 4 4 75.25 $r units lattice
+#region shield10 sphere 4 4 75.25 $R units lattice
+#------------------------------------------------------
+#region nanoparticle11 sphere 4 4 83.25 $r units lattice
+#region shield11 sphere 4 4 83.25 $R units lattice
+#------------------------------------------------------
+#region nanoparticle12 sphere 4 4 91.25 $r units lattice
+#region shield12 sphere 4 4 91.25 $R units lattice
+#------------------------------------------------------
+region nanoparticle13 sphere 4 4 99.25 $r units lattice
+region shield13 sphere 4 4 99.25 $R units lattice
+#------------------------------------------------------
+#region nanoparticle14 sphere 4 4 107.25 $r units lattice
+#region shield14 sphere 4 4 107.25 $R units lattice
+#------------------------------------------------------
+#region nanoparticle15 sphere 4 4 115.25 $r units lattice
+#region shield15 sphere 4 4 115.25 $R units lattice
+#------------------------------------------------------
+#region nanoparticle16 sphere 4 4 123.25 $r units lattice
+#region shield16 sphere 4 4 123.25 $R units lattice
+#------------------------------------------------------
+region lowertube block 0 8 0 8 64 113 units lattice
+region hot block 0 8 0 8 113 120.5 units lattice
+region wall2 block 0 8 0 8 120.5 128 units lattice
+
+create_box 3 box
+create_atoms 2 box
+
+##-SI NP lattice information and creation-##
+
+lattice sc 3.169 origin .5 .5 .5
+create_atoms 1 box
+
+#delete_atoms region shield1
+#delete_atoms region shield2
+#delete_atoms region shield3
+#delete_atoms region shield4
+delete_atoms region shield5
+#delete_atoms region shield6
+#delete_atoms region shield7
+#delete_atoms region shield8
+#delete_atoms region shield9
+#delete_atoms region shield10
+#delete_atoms region shield11
+#delete_atoms region shield12
+delete_atoms region shield13
+#delete_atoms region shield14
+#delete_atoms region shield15
+#delete_atoms region shield16
+
+lattice diamond 5.427
+#create_atoms 3 region nanoparticle1
+#create_atoms 3 region nanoparticle2
+#create_atoms 3 region nanoparticle3
+#create_atoms 3 region nanoparticle4
+create_atoms 3 region nanoparticle5
+#create_atoms 3 region nanoparticle6
+#create_atoms 3 region nanoparticle7
+#create_atoms 3 region nanoparticle8
+#create_atoms 3 region nanoparticle9
+#create_atoms 3 region nanoparticle10
+#create_atoms 3 region nanoparticle11
+#create_atoms 3 region nanoparticle12
+create_atoms 3 region nanoparticle13
+#create_atoms 3 region nanoparticle14
+#create_atoms 3 region nanoparticle15
+#create_atoms 3 region nanoparticle16
+
+##-interatomic potential information-##
+pair_style meam
+#pair_coeff * * newpotential.txt Mg Si Si6 mgsi.meam Mg Si Si6
+pair_coeff * * Jelinek_2012_meamf AlS SiS MgS CuS FeS Jelinek_2012_meam.alsimgcufe MgS SiS SiS
+
+##-grouping regions-##
+group wall1 region wall1
+group wall2 region wall2
+group cold region cold
+group hot region hot
+group uppertube region uppertube
+group lowertube region lowertube
+group nowalls union cold uppertube lowertube hot
+group tube union uppertube lowertube
+
+##-Teq set and initialization-##
+timestep 0.001
+restart 1000000 Restart_2multi_300K.*
+dump 6 all xyz 10000000 xyzcoord_2multi_300K*.txt
+variable t equal 300
+thermo 200
+neighbor 2.0 bin
+neigh_modify every 3 delay 3
+velocity nowalls create $t 49284121
+
+##-NEMD equilibration-##
+fix 10 nowalls npt temp $t $t 10 iso 0.0 0.0 10
+run 600000
+unfix 10
+
+fix 8 nowalls nvt temp $t $t 1
+run 600000
+unfix 8
+
+timestep 0.0001
+fix 1 nowalls nve
+variable g_ke equal ke(tube)
+variable g_temp equal v_g_ke/1.5/8.617343e-5/98305
+thermo 200
+thermo_style custom step temp ke etotal v_g_temp
+run 6000000
+
+##-constant heat flux application-##
+fix 3 cold heat 1 -0.19
+fix 4 hot heat 1 0.19
+compute coldBath cold temp
+compute hotBath hot temp
+thermo_style custom step temp ke etotal v_g_temp c_coldBath c_hotBath
+run 20000000
+
+##-temperature gradient data collection-##
+compute KE tube ke/atom
+variable temp atom c KE/1.5/8.617343e-5
+compute 2 tube chunk/atom bin/1d z lower 50 units box
+fix 5 tube ave/chunk 200 1 200 2 v_temp file Mg2Si1_2multi_nanopart_300K_HG_2ns_HF0.19_Chsz50.txt
+run 112000000
+#------------------------------------------------------------------------------------------
