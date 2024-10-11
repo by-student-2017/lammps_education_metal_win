@@ -22,9 +22,11 @@ variable rebalanceEvery equal 0.5 #Time in ps between processor rebalances. Each
 # processors 5 4 5 # Manual mapping of processors. If used, make sure the product matches the nbr of currently used nodes.
 
 # Material characteristics
-variable alattice equal 6.479 # lattice constant (unit A)
+# AlP: 5.4635, AlAs: 5.660, AlSb: 6.1355, GaP: 5.451, GaAs:5.65325, GaSb: 6.09, InP:5.8687, InAs: 6.0583, InSb: 6.47
+variable alattice equal 6.479 # lattice constant (unit A) of InSb
 variable massIn equal 114.8 # mass in u
 variable massSb equal 121.8 # mass in u
+# Al: 26.98, Ga: 69.72, P: 30.97, As: 74.921
 
 # Simulation parameters
 variable stemperature equal 300 # temperature in K
@@ -130,11 +132,13 @@ set group SbPiston type 2
 set group InBulk type 3
 set group SbBulk type 4
 
+variable elem string "In Sb In Sb"
+
 #----Define Interatomic Potential & Computes----
 #pair_style vashishta/table 1000000 0.2
 #pair_coeff * * InSb2.vashishta In Sb In Sb
 pair_style vashishta
-pair_coeff * * InSb.vashishta In Sb In Sb
+pair_coeff * * InSb.vashishta ${elem}
 
 mass 1 ${massIn}
 mass 2 ${massSb}
@@ -182,7 +186,7 @@ thermo_style custom step pxx pyy pzz lx ly lz temp etotal
 dump OVITOdump0 all cfg ${atomrate} cfg/equil_*.cfg mass type xs ys zs id c_myPE c_myKE c_myCN &
   c_peratom[1] c_peratom[2] c_peratom[3] c_peratom[4] c_peratom[5] c_peratom[6] &
   c_myVoronoi[1] c_myVoronoi[2]
-dump_modify OVITOdump0 element In Sb In Sb
+dump_modify OVITOdump0 element ${elem}
 
 run ${time_eq}
 
@@ -247,7 +251,7 @@ thermo_style custom step pxx pyy pzz lx ly lz temp etotal c_myCOM[3]
 dump OVITOdump all cfg ${atomrate} cfg/dump_*.cfg mass type xs ys zs id c_myPE c_myKE c_myCN &
   c_peratom[1] c_peratom[2] c_peratom[3] c_peratom[4] c_peratom[5] c_peratom[6] &
   c_myVoronoi[1] c_myVoronoi[2]
-dump_modify OVITOdump element In Sb In Sb
+dump_modify OVITOdump element ${elem}
 
 # Extra dump of atom positions. Can be used with fix xrd in another run to obtain virtual xrd-spectra. (Not used)
 # dump xrdDump bulk custom ${atomrate} InSbxrd.dump id type x y z
