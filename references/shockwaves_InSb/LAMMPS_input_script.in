@@ -7,6 +7,7 @@
 #------------------------------------------------------------------------------------------
 
 #----Initialize Simulation----
+
 clear
 units metal
 dimension 3
@@ -15,6 +16,7 @@ atom_style atomic
 atom_modify map array
 
 #----Define variables----
+
 # Controlling processors and balancing.
 variable rebalanceEvery equal 0.5 #Time in ps between processor rebalances. Each takes around 0.02 s (real time)
 # processors 5 4 5 # Manual mapping of processors. If used, make sure the product matches the nbr of currently used nodes.
@@ -38,7 +40,7 @@ variable vpiston equal 1.2 #1.2 # max piston speed in (km/s), multiply by ten to
 # test calculation settings
 variable xmax equal   5 # size in x-direction (units lattice)
 variable ymax equal   4 # size in y-direction
-variable zmax equal   6 # size in z-direction
+variable zmax equal  53 # size in z-direction
 
 # Simulation times
 variable time_step equal 0.001 # timestep in picoseconds
@@ -58,6 +60,7 @@ variable deltaz equal 3 # thickness of spatial bins in A.
 variable atomrate equal 1000 # the rate in timestep that atoms are dumped as CFG
 
 #----Intermidiate Calculations. Not modified between runs----
+
 # Set damping parameters for the thermostatting and barostatting during nvt equilibration.
 # Follows recommendation of 100 and 1000 timesteps given in the documentation.
 variable tdamp equal "v_time_step*100"
@@ -86,7 +89,9 @@ variable Nrebalance equal "v_rebalanceEvery/v_time_step"
 
 # Sets the timestep
 timestep ${time_step}
+
 #----Create Atoms & Divide into groups----
+
 # Creates Zinc-Blende lattice.
 variable originShift equal "sqrt(3)/4" #Shifts lattice to create whole layers in (111)
 lattice custom ${alattice} &
@@ -184,8 +189,11 @@ run ${time_eq}
 unfix equilibration
 unfix output1
 undump OVITOdump0
+
 print "Equilibration complete, initializing shock calculations..."
+
 #----Sets-up shock sequence----
+
 # Lifts periodic boundary in z change box all boundary p p s
 reset_timestep 0
 
@@ -210,12 +218,13 @@ fix pressure_profile bulk ave/chunk ${Nevery} ${Nrepeat} ${Nfreq} &
   chunkCompute v_meanpress file pressure.profile
 
 fix vel_profile bulk ave/chunk ${Nevery} ${Nrepeat} ${Nfreq} & 
-  chunkCompute c_vz file velocityZcomp.profil
+  chunkCompute c_vz file velocityZcomp.profile
 
 #Extra fix to check if piston behaves correctly
 compute chunkComputePiston piston chunk/atom bin/1d z lower ${deltaz} units box
 fix piston_vel_profile piston ave/chunk ${Nevery} ${Nrepeat} ${Nfreq} &
   chunkComputePiston c_vzPiston file velocityZpiston.profile
+
 #Prints system characteristics to file
 variable eq1 equal "step"
 variable eq2 equal "pxx/10000"
@@ -247,6 +256,7 @@ dump_modify OVITOdump element In Sb In Sb
 fix rebalancingFix all balance ${Nrebalance} 0.9 shift z 20 1.0001
 
 #----Running the shock sequence----
+
 # Linearly accelerates piston to velocity Up
 velocity piston set 0 0 0 sum no units box
 fix nveAcc all nve
@@ -264,11 +274,12 @@ fix nveCompress all nve
 velocity piston set 0 0 v_Up sum no units box #Should be redundant.
 fix pistonLin piston setforce 0.0 0.0 0.0
 
-run ${time compress}
+run ${time_compress}
 unfix nveCompress
 unfix pistonLin
 
 # Piston deceleration to rest
+
 fix nveDecel all nve
 fix InDecel InPiston setforce 0.0 0.0 v_forceZIn_decel
 fix SbDecel SbPiston setforce 0.0 0.0 v_forceZSb_decel
@@ -286,5 +297,6 @@ velocity piston set 0 0 0 sum no units box #Should be redundant.
 fix pistonFreeze piston setforce 0.0 0.0 0.0
 
 run ${time_remaning}
+
 print "All done! Did not crash or hit walltime limit."
 #------------------------------------------------------------------------------------------
