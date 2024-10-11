@@ -30,9 +30,15 @@ variable myseed equal 12345 # RNG velocity-seed
 variable vpiston equal 1.2 #1.2 # max piston speed in (km/s), multiply by ten to get (A/ps)
 
 # Dimensions
-variable xmax equal 44 # size in x-direction (units lattice)
-variable ymax equal 38 # size in y-direction
-variable zmax equal 53 # size in z-direction
+# original settings
+#variable xmax equal 44 # size in x-direction (units lattice)
+#variable ymax equal 38 # size in y-direction
+#variable zmax equal 53 # size in z-direction
+#
+# test calculation settings
+variable xmax equal   5 # size in x-direction (units lattice)
+variable ymax equal   4 # size in y-direction
+variable zmax equal   6 # size in z-direction
 
 # Simulation times
 variable time_step equal 0.001 # timestep in picoseconds
@@ -187,10 +193,12 @@ reset_timestep 0
 
 compute chunkCompute bulk chunk/atom bin/1d z lower ${deltaz} units box
 
-fix density_profile bulk ave/chunk ${Nevery} ${Nrepeat} ${Nfreq} & chunkCompute density/mass file denz.profile
+fix density_profile bulk ave/chunk ${Nevery} ${Nrepeat} ${Nfreq} & 
+  chunkCompute density/mass file denz.profile
 
 variable temp atom c_myKE/(1.5*8.61e-5)
-fix temp_profile bulk ave/chunk ${Nevery} ${Nrepeat} ${Nfreq} & chunkCompute v_temp file temp.profile
+fix temp_profile bulk ave/chunk ${Nevery} ${Nrepeat} ${Nfreq} & 
+  chunkCompute v_temp file temp.profile
 
 #Temperature neglecting COM movement for each bin.
 compute tempChunkCompute all temp/chunk chunkCompute temp com yes
@@ -198,9 +206,11 @@ fix temp_profile_corrected all ave/time ${Nevery} ${Nrepeat} ${Nfreq} &
   c_tempChunkCompute[1] file temp_COMcorrected.profile mode vector
 
 variable meanpress atom -(c_peratom[1]+c_peratom[2]+c_peratom[3])/3
-fix pressure_profile bulk ave/chunk ${Nevery} ${Nrepeat} ${Nfreq} & chunkCompute v_meanpress file pressure.profile
+fix pressure_profile bulk ave/chunk ${Nevery} ${Nrepeat} ${Nfreq} & 
+  chunkCompute v_meanpress file pressure.profile
 
-fix vel_profile bulk ave/chunk ${Nevery} ${Nrepeat} ${Nfreq} & chunkCompute c_vz file velocityZcomp.profil
+fix vel_profile bulk ave/chunk ${Nevery} ${Nrepeat} ${Nfreq} & 
+  chunkCompute c_vz file velocityZcomp.profil
 
 #Extra fix to check if piston behaves correctly
 compute chunkComputePiston piston chunk/atom bin/1d z lower ${deltaz} units box
