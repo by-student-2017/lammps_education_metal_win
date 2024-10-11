@@ -103,6 +103,10 @@ input file (metal unit, lammps)
 - G. V. Huerta et al., Doctoral Thesis (2019).
   https://www.repo.uni-hannover.de/bitstream/handle/123456789/4482/GesamtRevisedFinal.pdf
   YSZ (Yttria stabilized zirconia)
+
+- E. Lofquist, Master thesis (2021).
+  https://lup.lub.lu.se/student-papers/search/publication/9060962
+  shockwaves_InSb
   
 - R. G. Patel et al., J. Comput. Phys. 449 (2022) 110754.
   https://doi.org/10.1016/j.jcp.2021.110754
