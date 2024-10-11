@@ -1,0 +1,273 @@
+#------------------------------------------------------------------------------------------
+# Appendix E.3. LAMMPS input script
+# Shock Script Modified to compression along [111] in InSb and different piston behaviour
+# Based on a script by Oscar Guerrero-Miramontes
+# Updated to LAMMPS 2021 and tweaked by Erik Lofquist#------------------------------------------------------------------------------------------
+# LAMMPS 64-bit 22Dec2022-MSMPI
+#------------------------------------------------------------------------------------------
+
+#----Initialize Simulation----
+clear
+units metal
+dimension 3
+boundary p p p #Changes after equilibration to s along z.
+atom_style atomic
+atom_modify map array
+
+#----Define variables----
+# Controlling processors and balancing.
+variable rebalanceEvery equal 0.5 #Time in ps between processor rebalances. Each takes around 0.02 s (real time)
+# processors 5 4 5 # Manual mapping of processors. If used, make sure the product matches the nbr of currently used nodes.
+
+# Material characteristics
+variable alattice equal 6.479 # lattice constant (unit A)
+variable massIn equal 114.8 # mass in u
+variable massSb equal 121.8 # mass in u
+
+# Simulation parameters
+variable stemperature equal 300 # temperature in K
+variable myseed equal 12345 # RNG velocity-seed
+variable vpiston equal 1.2 #1.2 # max piston speed in (km/s), multiply by ten to get (A/ps)
+
+# Dimensions
+variable xmax equal 44 # size in x-direction (units lattice)
+variable ymax equal 38 # size in y-direction
+variable zmax equal 53 # size in z-direction
+
+# Simulation times
+variable time_step equal 0.001 # timestep in picoseconds
+variable t_eq equal 10 # equilibration time in ps
+variable t_shock equal 14 # time in ps for entire simulation (excluding equilibration)
+variable tpiston_accel equal 1 # duration of piston acceleration in ps
+variable tpiston_compress equal 5 # duration of piston moving with constant velocity
+variable tpiston_decel equal 2 # duration of piston deceleration in ps # Always manually check that t shock >= tpiston accel + tpiston compress + tpiston decel
+
+# Control behaviour of output files
+variable Nevery equal 10 # use input values every this many timesteps
+variable Nrepeat equal 5 # number of times to use input values for calculating
+
+variable Nfreq equal 100 # calculate averages every this many timesteps
+variable Nthermo equal 100 # Print to command line after Nthermo timesteps
+variable deltaz equal 3 # thickness of spatial bins in A.
+variable atomrate equal 1000 # the rate in timestep that atoms are dumped as CFG
+
+#----Intermidiate Calculations. Not modified between runs----
+# Set damping parameters for the thermostatting and barostatting during nvt equilibration.
+# Follows recommendation of 100 and 1000 timesteps given in the documentation.
+variable tdamp equal "v_time_step*100"
+variable pdamp equal "v_time_step*1000"
+
+variable Up equal "10*v_vpiston" #Unit conversion to A/ps
+
+# Calculates constant acceleration force for piston in eV/A
+variable forceZperMass_accel equal "1.036426958*0.001*v_vpiston/v_tpiston_accel"
+variable forceZIn_accel equal "v_forceZperMass_accel*v_massIn"
+variable forceZSb_accel equal "v_forceZperMass_accel*v_massSb"
+
+#Corresponding for the deceleration of the piston (Note sign)
+variable forceZperMass_decel equal "1.036426958*0.001*v_vpiston/v_tpiston_decel"
+variable forceZIn_decel equal "-v_forceZperMass_decel*v_massIn"
+variable forceZSb_decel equal "-v_forceZperMass_decel*v_massSb"
+
+# Converting time in ps to nbr of timesteps. MUST BE INTEGERS!
+variable time_eq equal "v_t_eq/v_time_step"
+variable time_shock equal "v_t_shock/v_time_step"
+variable time_accel equal "v_tpiston_accel/v_time_step"
+variable time_compress equal "v_tpiston_compress/v_time_step"
+variable time_decel equal "v_tpiston_decel/v_time_step"
+variable time_remaning equal "v_time_shock - v_time_accel - v_time_compress - v_time_decel"
+variable Nrebalance equal "v_rebalanceEvery/v_time_step"
+
+# Sets the timestep
+timestep ${time_step}
+#----Create Atoms & Divide into groups----
+# Creates Zinc-Blende lattice.
+variable originShift equal "sqrt(3)/4" #Shifts lattice to create whole layers in (111)
+lattice custom ${alattice} &
+  a1 1.0 0.0 0.0 &
+  a2 0.0 1.0 0.0 &
+  a3 0.0 0.0 1.0 &
+  basis 0.0 0.0 0.0 basis 0.5 0.0 0.5 basis 0.0 0.5 0.5 basis 0.5 0.5 0.0 &
+  basis 0.25 0.25 0.25 basis 0.75 0.25 0.75 basis 0.25 0.75 0.75 basis 0.75 0.75 0.25 &
+  origin 0.0 0.0 ${originShift} orient x 1 0 -1 orient y -1 2 -1 orient z 1 1 1
+# For compression in [001] instead of [111], change last line to:
+# origin 0.0 0.0 0.0 orient x 1 0 0 orient y 0 1 0 orient z 0 0 1
+
+# Set up simulation box
+region sim_box block 0 ${xmax} 0 ${ymax} 0 ${zmax} units lattice 
+create_box 4 sim_box
+
+create_atoms 2 box basis 1 2 basis 2 2 basis 3 2 basis 4 2 &
+  basis 5 1 basis 6 1 basis 7 1 basis 8 1
+
+# Assign groups and types. 1=InPiston 2=SbPiston, 3=InBulk, 4=SbBulk
+region pistonRegion block INF INF INF INF INF 4
+region bulkRegion block INF INF INF INF 4 INF
+
+group piston region pistonRegion
+group bulk region bulkRegion
+group InAtoms type 1
+group SbAtoms type 2
+
+group InPiston intersect InAtoms piston
+group SbPiston intersect SbAtoms piston
+group InBulk intersect InAtoms bulk
+group SbBulk intersect SbAtoms bulk
+
+set group InPiston type 1
+set group SbPiston type 2
+set group InBulk type 3
+set group SbBulk type 4
+
+#----Define Interatomic Potential & Computes----
+pair_style vashishta/table 1000000 0.2
+#pair_coeff * * InSb2.vashishta In Sb In Sb
+pair_coeff * * InP.vashishta In P In P # For Test
+
+mass 1 ${massIn}
+mass 2 ${massSb}
+mass 3 ${massIn}
+mass 4 ${massSb}
+
+compute myCN bulk cna/atom 1 #Centro-symmetry (useless for InSb)
+compute myKE bulk ke/atom #Kinetic energy
+compute myPE bulk pe/atom #Potential energy
+compute myCOM bulk com #Center of mass
+compute peratom bulk stress/atom NULL # Stress times volume tensor
+compute vz bulk property/atom vz #Velocity in z
+
+#Debug check of piston velocity
+compute vzPiston piston property/atom vz
+
+# Gives voronoi-volume and coordination number for each atom. Useful for calculating stresses later.
+compute myVoronoi all voronoi/atom
+
+#----Equilibrate----
+reset_timestep 0
+
+# Assigns initial velocities using a Maxwell-Boltzmann distribution & Equilibrates with nvt ensemble.
+velocity bulk create ${stemperature} ${myseed} rot yes dist gaussian
+
+fix equilibration bulk npt temp ${stemperature} ${stemperature} ${tdamp} iso 0 0 ${pdamp} drag 1
+
+# Prints equilibration characteristics to file
+variable eq1 equal "step"
+variable eq2 equal "pxx/10000" #(Converts pressure in bar to GPa)
+variable eq3 equal "pyy/10000"
+variable eq4 equal "pzz/10000"
+variable eq5 equal "lx" #Length of simulation box in x
+variable eq6 equal "ly"
+variable eq7 equal "lz"
+variable eq8 equal "temp" #System temperature
+variable eq9 equal "etotal" #System energy
+fix output1 bulk print ${Nthermo} "${eq1} ${eq2} ${eq3} ${eq4} ${eq5} ${eq6} ${eq7} ${eq8} ${eq9}" &
+  file initialConditions.out screen no
+
+# Prints to command-window (or standard job-output file on Aurora)
+thermo ${Nthermo}
+thermo_style custom step pxx pyy pzz lx ly lz temp etotal
+
+run ${time_eq}
+
+unfix equilibration
+unfix output1
+print "Equilibration complete, initializing shock calculations..."
+#----Sets-up shock sequence----
+# Lifts periodic boundary in z change box all boundary p p s
+reset_timestep 0
+
+# Creates bins to track the passing of the shockwave. Outputs each profile to a file.
+
+compute chunkCompute bulk chunk/atom bin/1d z lower ${deltaz} units box
+
+fix density_profile bulk ave/chunk ${Nevery} ${Nrepeat} ${Nfreq} & chunkCompute density/mass file denz.profile
+
+variable temp atom c_myKE/(1.5*8.61e-5)
+fix temp_profile bulk ave/chunk ${Nevery} ${Nrepeat} ${Nfreq} & chunkCompute v_temp file temp.profile
+
+#Temperature neglecting COM movement for each bin.
+compute tempChunkCompute all temp/chunk chunkCompute temp com yes
+fix temp_profile_corrected all ave/time ${Nevery} ${Nrepeat} ${Nfreq} &
+  c_tempChunkCompute[1] file temp_COMcorrected.profile mode vector
+
+variable meanpress atom -(c_peratom[1]+c_peratom[2]+c_peratom[3])/3
+fix pressure_profile bulk ave/chunk ${Nevery} ${Nrepeat} ${Nfreq} & chunkCompute v_meanpress file pressure.profile
+
+fix vel_profile bulk ave/chunk ${Nevery} ${Nrepeat} ${Nfreq} & chunkCompute c_vz file velocityZcomp.profil
+
+#Extra fix to check if piston behaves correctly
+compute chunkComputePiston piston chunk/atom bin/1d z lower ${deltaz} units box
+fix piston_vel_profile piston ave/chunk ${Nevery} ${Nrepeat} ${Nfreq} &
+  chunkComputePiston c_vzPiston file velocityZpiston.profile
+#Prints system characteristics to file
+variable eq1 equal "step"
+variable eq2 equal "pxx/10000"
+variable eq3 equal "pyy/10000"
+variable eq4 equal "pzz/10000"
+variable eq5 equal "lx"
+variable eq6 equal "ly"
+variable eq7 equal "lz"
+variable eq8 equal "temp"
+variable eq9 equal "etotal"
+variable eq10 equal "c_myCOM[3]"
+fix shock bulk print ${Nthermo} "${eq1} ${eq2} ${eq3} ${eq4} ${eq5} ${eq6} ${eq7} ${eq8} ${eq9} ${eq10}" &
+  file run.${stemperature}K.averagedQuantities.out screen no
+
+# Command window output
+thermo ${Nthermo}
+thermo_style custom step pxx pyy pzz lx ly lz temp etotal c_myCOM[3]
+
+# Dumps cfg-files for OVITO post-processing
+dump OVITOdump all cfg ${atomrate} cfg/dump._*.cfg mass type xs ys zs id c_myPE c_myKE c_myCN &
+  c_peratom[1] c_peratom[2] c_peratom[3] c_peratom[4] c_peratom[5] c_peratom[6] &
+  c_myVoronoi[1] c_myVoronoi[2]
+dump_modify OVITOdump element In Sb
+
+# Extra dump of atom positions. Can be used with fix xrd in another run to obtain virtual xrd-spectra. (Not used)
+# dump xrdDump bulk custom ${atomrate} InSbxrd.dump id type x y z
+
+# Rebalancing of processors.
+fix rebalancingFix all balance ${Nrebalance} 0.9 shift z 20 1.0001
+
+#----Running the shock sequence----
+# Linearly accelerates piston to velocity Up
+velocity piston set 0 0 0 sum no units box
+fix nveAcc all nve
+fix InAcc InPiston setforce 0.0 0.0 v_forceZIn_accel
+fix SbAcc SbPiston setforce 0.0 0.0 v_forceZSb_accel
+
+run ${time_accel}
+
+unfix nveAcc
+unfix InAcc
+unfix SbAcc
+
+# Compress with constant piston velocity Up
+fix nveCompress all nve
+velocity piston set 0 0 v_Up sum no units box #Should be redundant.
+fix pistonLin piston setforce 0.0 0.0 0.0
+
+run ${time compress}
+unfix nveCompress
+unfix pistonLin
+
+# Piston deceleration to rest
+fix nveDecel all nve
+fix InDecel InPiston setforce 0.0 0.0 v_forceZIn_decel
+fix SbDecel SbPiston setforce 0.0 0.0 v_forceZSb_decel
+
+run ${time_decel}
+
+unfix nveDecel
+unfix InDecel
+unfix SbDecel
+
+# Run remaning time with fixed piston.
+
+fix nveRemaning all nve
+velocity piston set 0 0 0 sum no units box #Should be redundant.
+fix pistonFreeze piston setforce 0.0 0.0 0.0
+
+run ${time_remaning}
+print "All done! Did not crash or hit walltime limit."
+#------------------------------------------------------------------------------------------
