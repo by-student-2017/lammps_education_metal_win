@@ -149,6 +149,10 @@ input file (metal unit, lammps)
   https://upcommons.upc.edu/handle/2099.1/14585
   Nanowire_Cu
 
+- E. Ercikan, Master thesis (2019).
+  https://docs.lib.purdue.edu/dissertations/AAI30503130/
+  Bombardment_D
+
 - D. Chen et al., Doctor Thesis (2014).
   https://oaktrust.library.tamu.edu/handle/1969.1/154160
   Radiation_grain_boundary (Structure of (013)[100]Σ = 5 symmetric-tilt grain boundary)
