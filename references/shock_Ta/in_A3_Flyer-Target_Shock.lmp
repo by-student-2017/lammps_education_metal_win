@@ -1,0 +1,84 @@
+#------------------------------------------------------------------------------------------
+# A-3, Flyer-Target Shock
+#------------------------------------------------------------------------------------------
+# LAMMPS 64-bit 22Dec2022-MSMPI
+#------------------------------------------------------------------------------------------
+# NIST, Interatomic Potentials (Force Fields): https://www.ctcms.nist.gov/potentials/
+#------------------------------------------------------------------------------------------
+
+units metal
+boundary p p s
+atom_style atomic
+
+neighbor 1.0 bin
+neigh_modify every 1 delay 2 check yes
+
+#VARIABLES
+#Target and projectile size, etc, 
+variable T equal 454.0
+variable CS equal 75.0
+variable F equal "v_T*0.5"
+variable Up equal 7.5
+variable Tu equal "v_Up*-2/3"
+variable Fu equal "v_Up*4/3"
+variable LO equal 4/3
+variable RO equal 2/3
+variable Tbox equal "v_T+v_RO"
+variable Fbox equal "v_F+v_LO"
+
+# The Flyer plate and target are assigned initial velocities of 4/3 Up and −2/3 Up 
+
+# CREATE GEOMETRY
+lattice bcc 3.304 orient x 1 0 0 orient y 0 1 0 orient z 0 0 1
+region box block -${CS} ${CS} -${CS} ${CS} -${Fbox} ${Tbox} units lattice
+create_box 1 box
+
+region flyer block -${CS} ${CS} -${CS} ${CS} -${Fbox} -${LO}
+create_atoms 1 region flyer
+group flyer region flyer
+
+region target block -${CS} ${CS} -${CS} ${CS} ${RO} ${Tbox}
+create_atoms 1 region target
+group target region target
+
+pair_style eam/alloy
+#pair_coeff * * ./Ta1-Ravelo.setfl Ta
+pair_coeff * * Ta1_Ravelo_2013.eam.alloy Ta
+
+velocity all create 300.0 482748 dist gaussian
+minimize 1.0e-4 1.0e-6 100 1000
+
+thermo_style custom step temp ke pe etotal press pxx pyy pzz pxy pxz pyz ly lx lz vol
+thermo_modify lost warn norm yes
+thermo 5
+
+fix e all nvt temp 300.0 300.0 1.0 
+fix t all temp/rescale 1 300.0 300.0 1.0 1.0 
+
+# equilibration for 2000 steps
+run 2000
+unfix e
+unfix t
+reset_timestep 0
+
+compute 1 all ke/atom
+compute 2 all centro/atom 14
+compute 3 all pe/atom
+compute 4 all stress/atom pair
+compute 5 all cna/atom 3.9 
+
+thermo 100
+fix 1 all nve
+velocity flyer set NULL NULL ${Fu} sum yes units box
+velocity target set NULL NULL ${Tu} sum yes units box
+
+dump OUT1 all custom 1000 dump/dump.flyer.spall.all100_454a_150a_300K_U750.* id x y z &
+  vx vy vz c_1 c_2 c_3 c_5 c_4[1] c_4[2] c_4[3] c_4[4] c_4[5] c_4[6]
+dump OUT2 all custom 1000 dump/dump.flyer.spall.notBCC_454a_150a_300K_U750.* id x y z &
+  vx vy vz c_3 c_4[1] c_4[2] c_4[3]
+
+## modify to get only non-bcc atoms (cna!=3)
+dump_modify OUT2 thresh c_5 != 3 
+
+run 100000
+#------------------------------------------------------------------------------------------

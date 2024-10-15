@@ -1,0 +1,116 @@
+#------------------------------------------------------------------------------------------
+# A-2, Piston-Driven Shock
+#------------------------------------------------------------------------------------------
+# LAMMPS 64-bit 22Dec2022-MSMPI
+#------------------------------------------------------------------------------------------
+# NIST, Interatomic Potentials (Force Fields): https://www.ctcms.nist.gov/potentials/
+#------------------------------------------------------------------------------------------
+
+# A few variables to make the piston velocity loop hardwired...
+# The length (in timesteps) of the ramp
+variable ramp_timeup equal 5000 #
+variable ramp_timedown equal 50000 #
+
+# The no. of steps in the ramp (more steps=closer to linear ramp)
+variable ramp_steps equal 1000 
+
+# This is the final shock strength in A per ps
+variable shock equal 7.5
+variable oblq equal 0.0
+variable ratio equal ${oblq}/${shock}
+
+#Initialization
+units metal
+boundary p p s
+atom_style atomic
+
+neighbor 1.0 bin
+neigh_modify every 1 delay 2 check yes
+
+#100 Lattice
+lattice bcc 3.304 orient x 1 0 0 orient y 0 1 0 orient z 0 0 1
+region box block -50 50 -50 50 0 1515 units lattice
+create_box 1 box
+create_atoms 1 box
+
+pair_style eam/alloy
+#pair_coeff * * ./Ta1-Ravelo.setfl Ta
+pair_coeff * * Ta1_Ravelo_2013.eam.alloy Ta
+
+minimize 1.0e-4 1.0e-6 100 1000
+
+velocity all create 600.0 482748 dist gaussian
+
+fix init all temp/rescale 1 300 300 1 1
+fix 1 all nve
+
+run 10000
+
+reset_timestep 0
+
+compute 1 all ke/atom
+compute 2 all centro/atom 14
+compute 3 all pe/atom
+compute 4 all stress/atom pair
+compute 5 all cna/atom 3.9
+
+thermo_style custom step temp ke pe etotal press pxx pyy pzz pxy pxz pyz ly lx lz vol zhi
+thermo_modify lost warn norm yes
+thermo 100
+
+reset_timestep 0
+
+# Apply shock fixes
+region piston block INF INF INF INF 0 2 units lattice 
+group piston region piston
+fix 2 piston setforce 0.0 0.0 0.0 
+
+#Set thermo and dump for run
+thermo 100
+
+dump OUT1 all custom 1000 dump/dump.Ta_piston_all.* id x y z vx vy vz c_1 c_2 c_3 c_5 &
+  c_4[1] c_4[2] c_4[3] c_4[4] c_4[5] c_4[6]
+dump OUT2 all custom 10000 dump/dump.Ta_piston_defects.* id x y z vx vy vz c_5 c_4[3]
+
+## modify to get only non-bcc atoms (cna!=3)
+dump_modify OUT2 thresh c_5 != 3 
+
+# THIS LOOP DOES THE RAMP UP
+variable i loop ${ramp_steps}
+label loop
+variable piston_vel equal ${shock}/(${ramp_steps}/$i)
+print "Vel=${piston_vel}"
+variable Up equal ${piston_vel}
+variable Vp equal ${piston_vel}*${ratio}
+velocity piston set 0.0 ${Vp} ${Up} sum no units box
+variable runfor equal (${ramp_timeup}/${ramp_steps})
+print "DIAG2 - Piston velocity is ${Up}:${Vp}, run for ${runfor}"
+run ${runfor}
+next i
+
+# THIS LINE MUST CHANGE IF YOU CHANGE THE FILENAME.....
+jump in.spall-sc100_UpVp loop
+
+run 50000
+
+# THIS LOOP DOES THE RAMP DOWN
+variable j loop ${ramp_steps}
+label loop2
+variable piston_vel equal ${shock}-${shock}/(${ramp_steps}/$j)
+print "Vel=${piston_vel}"
+variable Up equal ${piston_vel}
+variable Vp equal ${piston_vel}*${ratio}
+velocity piston set 0.0 ${Vp} ${Up} sum no units box
+variable runfor equal (${ramp_timedown}/${ramp_steps})
+print "DIAG2 - Piston velocity is ${piston_vel}, run for ${runfor}"
+run ${runfor}
+next j
+
+# THIS LINE MUST CHANGE IF YOU CHANGE THE FILENAME.....
+jump in.spall-sc100_UpVp loop2
+
+undump OUT1
+dump OUT3 all custom 500 dump/dump.Ta_piston.* id x y z vx vy vz c_1 c_2 c_3 c_5 c_4[1] &
+  c_4[2] c_4[3] c_4[4] c_4[5] c_4[6]
+run 100000
+#------------------------------------------------------------------------------------------
