@@ -1,7 +1,15 @@
-#Input file used for Al simulations
+#------------------------------------------------------------------------------------------
+# Annex A LAMMPS input files
+# Input file used for Al simulations
+# Shock_Hugoniots_Al
+#------------------------------------------------------------------------------------------
+# LAMMPS 64-bit 22Dec2022-MSMPI
+#------------------------------------------------------------------------------------------
+# NIST, Interatomic Potentials (Force Fields): https://www.ctcms.nist.gov/potentials/
+#------------------------------------------------------------------------------------------
 # SCRIPT MADE BY: OSCAR GUERRERO
 # modified by GMc for fcc Aluminum in Oct 2015
-# LAMMPS 64-bit 22Dec2022-MSMPI
+#------------------------------------------------------------------------------------------
 clear
 #-------------------- Initialize Simulation ----------------------------------------------
 units metal
@@ -161,7 +169,11 @@ compute cc1 bulk chunk/atom bin/1d z lower ${deltaz}
 # ERROR: This fix style is no longer available (src/fix_deprecated.cpp:55)
 #--------------------------------------------------------------------------
 # After 31May2016
-fix density_profile bulk ave/chunk ${Nevery} ${Nrepeat} ${Nfreq} cc1 density/mass file denz.profile
+#fix density_profile bulk ave/chunk ${Nevery} ${Nrepeat} ${Nfreq} cc1 density/mass file denz.profile
+#--------------------------------------------------------------------------
+# New settings
+compute myChunk all chunk/atom bin/1d z lower ${deltaz} units box
+fix myAveChunk all ave/chunk ${Nevery} ${Nrepeat} ${Nfreq} myChunk density/mass file denz.profile
 #--------------------------------------------------------------------------
 
 variable temp atom c_myKE/(1.5*8.61e-5)
@@ -171,7 +183,11 @@ variable temp atom c_myKE/(1.5*8.61e-5)
 # ERROR: This fix style is no longer available (src/fix_deprecated.cpp:55)
 #--------------------------------------------------------------------------
 # After 31May2016
-fix temp_profile bulk ave/chunk ${Nevery} ${Nrepeat} ${Nfreq} cc1 v_temp file temp.profile
+#fix temp_profile bulk ave/chunk ${Nevery} ${Nrepeat} ${Nfreq} cc1 v_temp file temp.profile
+#--------------------------------------------------------------------------
+# New settings
+#compute myChunk all chunk/atom bin/1d z lower ${deltaz} units box
+fix myAveChunk all ave/chunk ${Nevery} ${Nrepeat} ${Nfreq} myChunk v_temp file temp.profile
 #--------------------------------------------------------------------------
 
 # meanpress was originally pressure *volume per atom (cubic distance units)
@@ -185,7 +201,11 @@ variable meanpress atom -(c_peratom[1]+c_peratom[2]+c_peratom[3])/3/c_vorvol[1]
 #--------------------------------------------------------------------------
 # After 31May2016
 #compute cc3 bulk chunk/atom bin/1d z lower ${deltaz}
-fix pressure_profile bulk ave/chunk ${Nevery} ${Nrepeat} ${Nfreq} cc1 v_meanpress file pressure.profile
+#fix pressure_profile bulk ave/chunk ${Nevery} ${Nrepeat} ${Nfreq} cc1 v_meanpress file pressure.profile
+#--------------------------------------------------------------------------
+# New settings
+#compute myChunk all chunk/atom bin/1d z lower ${deltaz} units box
+fix myAveChunk all ave/chunk ${Nevery} ${Nrepeat} ${Nfreq} myChunk v_meanpress file pressure.profile
 #--------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------
@@ -193,7 +213,11 @@ fix pressure_profile bulk ave/chunk ${Nevery} ${Nrepeat} ${Nfreq} cc1 v_meanpres
 # ERROR: This fix style is no longer available (src/fix_deprecated.cpp:55)
 #--------------------------------------------------------------------------
 # After 31May2016
-fix velZ_profile bulk ave/chunk ${Nevery} ${Nrepeat} ${Nfreq} cc1 c_vz file velocityZcomp.profile
+#fix velZ_profile bulk ave/chunk ${Nevery} ${Nrepeat} ${Nfreq} cc1 c_vz file velocityZcomp.profile
+#--------------------------------------------------------------------------
+# New settings
+#compute myChunk all chunk/atom bin/1d z lower ${deltaz} units box
+fix myAveChunk all ave/chunk ${Nevery} ${Nrepeat} ${Nfreq} myChunk c_vz file velocityZcomp.profile
 #--------------------------------------------------------------------------
 
 variable eq1 equal "step"
