@@ -153,6 +153,10 @@ input file (metal unit, lammps)
   https://docs.lib.purdue.edu/dissertations/AAI30503130/
   Bombardment_D
 
+- K. Datadien, (2013).
+  https://essay.utwente.nl/63570/1/BscReport_KarunDatadien_s0208663_openbaar.pdf
+  Bombardment_Li_ion
+
 - D. Chen et al., Doctor Thesis (2014).
   https://oaktrust.library.tamu.edu/handle/1969.1/154160
   Radiation_grain_boundary (Structure of (013)[100]Σ = 5 symmetric-tilt grain boundary)
