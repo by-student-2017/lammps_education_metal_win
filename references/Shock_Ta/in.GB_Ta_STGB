@@ -1,0 +1,224 @@
+#------------------------------------------------------------------------------------------
+# A-1, Bicrystal Grain Boundaries
+# Filename: in.GB_Ta_STGB
+# LAMMPS Input File for Bicrystal Grain Boundaries
+#------------------------------------------------------------------------------------------
+# LAMMPS 64-bit 22Dec2022-MSMPI
+#------------------------------------------------------------------------------------------
+# NIST, Interatomic Potentials (Force Fields): https://www.ctcms.nist.gov/potentials/
+#------------------------------------------------------------------------------------------
+
+# ---------- Setup Variables ---------------------
+variable etol equal 1.0e-25 
+variable ftol equal 1.0e-25 
+variable maxiter equal 5000 
+variable maxeval equal 10000 
+variable latparam equal 3.304
+variable minimumenergy equal -8.100
+variable overlapboth equal 1 
+variable gbname index Ta_Sigma5
+variable counter equal 0 
+variable inc equal "v_latparam / 12"
+
+# -------- How Big -----------------------
+# -- measured in unit cells --------------
+variable xuh equal 4
+variable yuh equal 4
+variable zuh equal 4
+
+variable xul equal -4
+variable yul equal -4
+variable zul equal -4
+
+# -------- Grain1 ------------------------
+
+# These variable can be hardwired as written or read into lammps via the command line
+# at run time
+variable 1x1 equal 0 
+variable 1x2 equal 1
+variable 1x3 equal -3
+
+variable 1y1 equal 0
+variable 1y2 equal 3
+variable 1y3 equal 1
+
+variable 1z1 equal 1
+variable 1z2 equal 0
+variable 1z3 equal 0
+# -------- Grain2 ------------------------
+
+variable 2x1 equal ${1x1}
+variable 2x2 equal -1*${1x2}
+variable 2x3 equal ${1x3}
+
+variable 2y1 equal -1*${1y1}
+variable 2y2 equal ${1y2}
+variable 2y3 equal -1*${1y3}
+
+variable 2z1 equal ${1z1}
+variable 2z2 equal -${1z2}
+variable 2z3 equal ${1z3}
+
+# Insert x,y,z sizes in LU and calculate in Angstroms 
+variable xsize1 equal "sqrt(v_1x1^2 + v_1x2^2 + v_1x3^2)" 
+variable ysize1 equal "sqrt(v_1y1^2 + v_1y2^2 + v_1y3^2)"
+variable zsize1 equal "sqrt(v_1z1^2 + v_1z2^2 + v_1z3^2)" 
+
+variable xsize2 equal "sqrt(v_2x1^2 + v_2x2^2 + v_2x3^2)" 
+variable ysize2 equal "sqrt(v_2y1^2 + v_2y2^2 + v_2y3^2)"
+variable zsize2 equal "sqrt(v_2z1^2 + v_2z2^2 + v_2z3^2)" 
+
+if "${xsize1} <= ${xsize2}" then "variable xsize equal ${xsize1}" else "variable xsize equal ${xsize2}" 
+if "${zsize1} <= ${zsize2}" then "variable zsize equal ${zsize1}" else "variable zsize equal ${zsize2}" 
+variable xlen equal "v_xsize * v_latparam"
+variable zlen equal "v_zsize * v_latparam"
+
+# Determine number of increments for displacement grid in the in-plane GB directions 
+variable xinc equal "floor(v_xlen / v_inc)"
+variable zinc equal "floor(v_zlen / v_inc)"
+
+# Implement overlap criterion 
+variable overlapinc equal 86
+
+# ---------- Define loops for simulation --------------------- 
+label loopa 
+variable a loop ${xinc} 
+variable tx equal "(v_a-1) / v_xinc * v_xsize" 
+
+label loopb 
+variable b loop ${zinc} 
+variable tz equal "(v_b-1) / v_zinc * v_zsize" 
+
+label loopd 
+variable d loop ${overlapboth} 
+
+label loopc 
+variable c loop ${overlapinc} 
+variable overlapdist equal "(0.275 + 0.005 * (v_c-1))*v_latparam"
+
+# ---------- Calculate counter and create data directory ---------------------
+variable ctemp equal ${counter}+1 
+variable counter equal ${ctemp} 
+variable ctemp delete 
+print "Counter: ${counter}" 
+shell mkdir ${gbname} 
+
+# ---------- Initialize Simulation ---------------------
+clear 
+units metal 
+dimension 3 
+boundary p p p 
+atom_style atomic
+
+# ---------- Create Atomistic Structure ---------------------
+#lattice bcc ${latparam} spacing ${xsize1} ${ysize1} ${zsize1}
+lattice bcc ${latparam} orient x ${1x1} ${1x2} ${1x3} orient y ${1y1} ${1y2} ${1y3} &
+  orient z ${1z1} ${1z2} ${1z3} spacing ${xsize1} ${ysize1} ${zsize1}
+region whole block ${xul} ${xuh} ${yul} ${yuh} ${zul} ${zuh} units lattice
+create_box 2 whole 
+region upper block INF INF 0.0 ${yuh} INF INF units lattice
+create_atoms 1 region upper 
+
+lattice bcc ${latparam} orient x ${2x1} ${2x2} ${2x3} orient y ${2y1} ${2y2} ${2y3} &
+  orient z ${2z1} ${2z2} ${2z3} spacing ${xsize2} ${ysize2} ${zsize2}
+region lower block INF INF ${yul} 0.0 INF INF units lattice 
+create_atoms 2 region lower 
+
+group upper type 1 
+group lower type 2 
+
+# ---------- Define Interatomic Potential ---------------------
+pair_style eam/alloy 
+#pair_coeff * * Ta-v13.setfl Ta Ta
+pair_coeff * * Ta1_Ravelo_2013.eam.alloy Ta Ta
+
+neighbor 2.0 bin 
+neigh_modify delay 10 check yes 
+
+# ---------- Displace atoms and delete overlapping atoms ---------------------
+displace_atoms upper move ${tx} 0 ${tz} units lattice 
+if "$d == 1" then "delete_atoms overlap ${overlapdist} lower upper" 
+if "$d == 2" then "delete_atoms overlap ${overlapdist} upper lower" 
+if "$c == 1" then "variable atomprev equal 1" 
+variable natoms equal "count(all)" 
+print "Previous: ${atomprev}, Present: ${natoms}" 
+if "${atomprev} == ${natoms}" then "jump in.GB_Ta_STGB loopend"
+
+# ---------- Define Settings ---------------------
+compute csym all centro/atom bcc
+compute eng all pe/atom 
+compute eatoms all reduce sum c_eng 
+# compute 4 all stress/atom pair
+
+# ---------- Run Minimization ---------------------
+reset_timestep 0 
+
+thermo 10 
+thermo_style custom step pe lx ly lz press pxx pyy pzz c_eatoms
+
+min_style cg 
+minimize ${etol} ${ftol} ${maxiter} ${maxeval} 
+
+# ---------- Run Minimization 2---------------------
+# Now allow the box to expand/contract perpendicular to the grain boundary
+reset_timestep 0 
+
+thermo 10 
+thermo_style custom step pe lx ly lz press pxx pyy pzz c_eatoms 
+
+fix 1 all box/relax y 0.0 vmax 0.001
+
+min_style cg 
+minimize ${etol} ${ftol} ${maxiter} ${maxeval} 
+
+# ---------- Calculate GB Energy ---------------------
+variable esum equal "v_minimumenergy * count(all)" 
+variable xseng equal "c_eatoms - (v_minimumenergy * count(all))" 
+variable gbarea equal "lx * lz * 2" 
+variable gbe equal "(c_eatoms - (v_minimumenergy * count(all)))/v_gbarea" 
+variable gbemJm2 equal ${gbe}*16021.7733 
+variable gbernd equal round(${gbemJm2}) 
+
+print "After third minimization:" 
+print "GB energy is ${gbemJm2} mJ/m^2"
+
+# Store number of atoms for overlap criterion, i.e., do not rerun equivalent configurations 
+variable atomprev equal "v_natoms"
+
+#predump
+if "${counter} < 2" then "dump 1 all custom 1000 dump/dump.${gbname}.pre id type x y z c_csym c_eng"
+
+# ---------- Dump data into Data file -------------
+reset_timestep 0 
+
+timestep 0.001 
+
+velocity all create 10 95812384 
+
+fix 2 all nvt temp 5 5 100
+#fix 2 all npt temp 5 5 100 iso 0 0 100 drag 0.2
+
+dump 2 all custom 1000 dump/dump.${gbname}_${gbernd} id type x y z c_csym c_eng
+run 0 
+#shell cd ..
+
+# ---------- End of loop structure -------------
+label loopend 
+
+next c 
+jump in.GB_Ta_STGB loopc 
+variable c delete 
+
+next d 
+jump in.GB_Ta_STGB loopd 
+variable d delete 
+
+next b 
+jump in.GB_Ta_STGB loopb 
+variable b delete 
+
+next a 
+jump in.GB_Ta_STGB loopa 
+
+print "All done"
+#------------------------------------------------------------------------------------------
