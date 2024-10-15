@@ -1,0 +1,81 @@
+#------------------------------------------------------------------------------------------
+# Appendix B: Cohesive energy of NaCl script
+#
+# Find minimum energy configuration
+#------------------------------------------------------------------------------------------
+# LAMMPS 64-bit 22Dec2022-MSMPI
+#------------------------------------------------------------------------------------------
+# NIST, Interatomic Potentials (Force Fields): https://www.ctcms.nist.gov/potentials/
+#------------------------------------------------------------------------------------------
+clear 
+# ---------- Initialize Simulation ---------------------
+units metal 
+dimension 3 
+boundary p p p 
+atom_style hybrid atomic charge
+
+variable latparam equal 5.7
+
+# ---------- Create Atoms ---------------------
+# Na atoms
+lattice fcc ${latparam} origin 0 0 0 # Lattice for Na system
+region sample block 0 1.0 0 1.0 0 1.0 # x-begin x-eind y-begin y-eind z-begin z-eind
+
+create_box 2 sample
+
+#Na+
+lattice fcc ${latparam} origin 0 0 0
+create_atoms 1 region sample
+
+#Cl-
+lattice fcc ${latparam} origin 0.5 0.5 0.5
+create_atoms 2 region sample
+
+# Set masses
+mass 1 22.98976928 #atomic weight sodium
+mass 2 35.453 #atomic weight of chlorine
+
+# Set charges
+set type 1 charge +0.988
+set type 2 charge -0.988
+
+# ---------- Define Interatomic Potential ---------------------
+pair_style buck/coul/long 10.0 8.0
+pair_coeff 1 1 7895.4 0.1709 29.06 #Na+ Na+
+pair_coeff 2 2 1227.2 0.3214 29.06 #Cl- Cl-
+pair_coeff 1 2 2314.7 0.2903 0.0   #Na+ Cl-
+kspace_style ewald 1.0E-6
+
+neighbor 2.0 bin 
+neigh_modify delay 10 check yes 
+
+group samplegroup region sample
+
+# ---------- Define Settings ---------------------
+compute eng all pe/atom 
+compute eatoms all reduce sum c_eng 
+compute tempcompute samplegroup temp
+
+# ---------- Run Minimization ---------------------
+fix 1 all box/relax iso 0.0 vmax 0.001
+
+thermo 10 
+thermo_style custom step pe lx ly lz press pxx pyy pzz c_eatoms c_tempcompute
+
+dump d1 all cfg 10 cfg/dump.mini.cohesive.*.cfg mass type xs ys zs id type vx vy vz fx fy fz
+dump_modify d1 element Na Cl
+
+min_style cg 
+minimize 1e-25 1e-25 5000 10000
+
+variable natoms equal "count(all)" 
+variable teng equal "c_eatoms"
+variable length equal "lx"
+variable ecoh equal "v_teng/v_natoms"
+
+print "Total energy (eV) = ${teng};"
+print "Number of atoms = ${natoms};"
+print "Lattice constant (Angstroms) = ${length};"
+print "Cohesive energy (eV) = ${ecoh};"
+
+#------------------------------------------------------------------------------------------

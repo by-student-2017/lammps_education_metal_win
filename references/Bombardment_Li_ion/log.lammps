@@ -1,0 +1,118 @@
+LAMMPS (22 Dec 2022)
+  using 1 OpenMP thread(s) per MPI task
+Loaded 1 plugins from C:\Program Files\LAMMPS 64-bit 23Jun2022\plugins
+Loaded 0 plugins from C:\Program Files\LAMMPS 64-bit 23Jun2022-MPI\plugins
+Loaded 1 plugins from C:\Program Files\LAMMPS 64-bit 22Dec2022-MSMPI\plugins
+Loaded 1 plugins from C:\Program Files\LAMMPS 64-bit 28Mar2023-MPI\plugins
+#------------------------------------------------------------------------------------------
+# Appendix C: Stress-strain curve of a cubic NaCl crystal scripts at 500 K
+#------------------------------------------------------------------------------------------
+# LAMMPS 64-bit 22Dec2022-MSMPI
+#------------------------------------------------------------------------------------------
+# NIST, Interatomic Potentials (Force Fields): https://www.ctcms.nist.gov/potentials/
+#------------------------------------------------------------------------------------------
+
+# ------------------------ INITIALIZATION ----------------------------
+units metal
+dimension 3
+boundary p p p
+atom_style hybrid atomic charge
+
+variable latparam equal 5.57
+
+# ----------------------- ATOM DEFINITION ----------------------------
+# Na atoms
+lattice fcc ${latparam} origin 0 0 0 # Lattice for Na system
+lattice fcc 5.57 origin 0 0 0 
+Lattice spacing in x,y,z = 5.57 5.57 5.57
+region sample block 0 10.0 0 10.0 0 10.0 # x-begin x-eind y-begin y-eind z-begin z-eind
+
+create_box 2 sample
+Created orthogonal box = (0 0 0) to (55.7 55.7 55.7)
+  1 by 2 by 2 MPI processor grid
+
+#Na+
+lattice fcc ${latparam} origin 0 0 0
+lattice fcc 5.57 origin 0 0 0
+Lattice spacing in x,y,z = 5.57 5.57 5.57
+create_atoms 1 region sample
+Created 4000 atoms
+  using lattice units in orthogonal box = (0 0 0) to (55.7 55.7 55.7)
+  create_atoms CPU = 0.000 seconds
+
+#Cl-
+lattice fcc ${latparam} origin 0.5 0.5 0.5
+lattice fcc 5.57 origin 0.5 0.5 0.5
+Lattice spacing in x,y,z = 5.57 5.57 5.57
+create_atoms 2 region sample
+Created 4000 atoms
+  using lattice units in orthogonal box = (0 0 0) to (55.7 55.7 55.7)
+  create_atoms CPU = 0.000 seconds
+
+# Set masses
+mass 1 22.98976928 #atomic weight sodium
+mass 2 35.453 #atomic weight of chlorine
+
+# Set charges
+set type 1 charge +0.988
+Setting atom values ...
+  4000 settings made for charge
+set type 2 charge -0.988
+Setting atom values ...
+  4000 settings made for charge
+
+# ------------------------ FORCE FIELDS ------------------------------
+pair_style buck/coul/long 10.0 8.0
+pair_coeff 1 1 7895.4 0.1709 29.06 #Na+ Na+
+pair_coeff 2 2 1227.2 0.3214 29.06 #Cl- Cl-
+pair_coeff 1 2 2314.7 0.2903 0.00  #Na+ Cl-
+kspace_style ewald 1.0E-4
+
+neighbor 2.0 bin
+neigh_modify delay 10 check yes
+
+# ------------------------- SETTINGS ---------------------------------
+compute csym all centro/atom 6
+compute peratom all pe/atom
+
+######################################
+# EQUILIBRATION
+reset_timestep 0
+
+timestep 0.001 # 1 [fs]
+
+velocity all create 500 12345 mom yes rot no
+
+fix 1 all npt temp 500 500 1 iso 0 0 1 drag 1
+
+# Set thermo output
+thermo 1000
+thermo_style custom step lx ly lz press pxx pyy pzz pe temp
+
+# Run for at least 10 picosecond (assuming 1 fs timestep)
+run 20000
+Ewald initialization ...
+  using 12-bit tables for long-range coulomb (src/kspace.cpp:342)
+  G vector (1/distance) = 0.33780657
+  estimated absolute RMS force accuracy = 0.0015846359
+  estimated relative force accuracy = 0.00011004687
+  KSpace vectors: actual max1d max3d = 10239 17 21437
+                  kxmax kymax kzmax  = 17 17 17
+Generated 0 of 1 mixed pair_coeff terms from geometric mixing rule
+Neighbor list info ...
+  update: every = 1 steps, delay = 10 steps, check = yes
+  max neighbors/atom: 2000, page size: 100000
+  master list distance cutoff = 12
+  ghost atom cutoff = 12
+  binsize = 6, bins = 10 10 10
+  2 neighbor lists, perpetual/occasional/extra = 1 1 0
+  (1) pair buck/coul/long, perpetual
+      attributes: half, newton on
+      pair build: half/bin/atomonly/newton
+      stencil: half/bin/3d
+      bin: standard
+  (2) compute centro/atom, occasional
+      attributes: full, newton on
+      pair build: full/bin/atomonly
+      stencil: full/bin/3d
+      bin: standard
