@@ -257,6 +257,10 @@ input file (metal unit, lammps)
 - C. K. Mallick, Thesis (2014).
   http://ethesis.nitrkl.ac.in/6566/
   3d-crystal-2014M
+
+- BibhudattaSahu, Thesis (2014).
+  http://ethesis.nitrkl.ac.in/6239/1/110MM0378-17.pdf
+  3d-crystal-2014B
   
 - Sethy, Bipin Kumar and Mishra, Siddharth (2013) 
   http://ethesis.nitrkl.ac.in/5403/
