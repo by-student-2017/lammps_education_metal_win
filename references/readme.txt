@@ -115,6 +115,10 @@ input file (metal unit, lammps)
 - G. W. J. Mclntosh et al., (2016)
   https://cradpdf.drdc-rddc.gc.ca/PDFS/unc244/p804516_A1b.pdf
   shock_Al and Explosive
+
+- E. N. Hahn, Doctor thesis (2016).
+  https://escholarship.org/content/qt79j2w03v/qt79j2w03v.pdf
+  shock_Ta
   
 - J. M. O.-Roldan et al., Proc. Math. Phys. Eng. Sci. 478 (2022).
   https://doi.org/10.1098/rspa.2022.0201
