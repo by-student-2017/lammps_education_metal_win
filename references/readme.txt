@@ -396,6 +396,10 @@ input file (metal unit, lammps)
   https://digitalcommons.usu.edu/etd/7081 
   Thermal_Conductivity_Mg2Si
 
+- S. Ariga et al., Phys. Chem. Chem. Phys., 2022,24, 2567-2581.
+  https://pubs.rsc.org/en/content/articlelanding/2022/cp/d1cp05393k
+  Li2S-P2S5 (real units type)
+
 - O. Takahiro, Chiba Univ.
   https://amorphous.tf.chiba-u.jp/lecture.files/ms-workshop/molten.html
   Lecture
