@@ -1,0 +1,118 @@
+#------------------------------------------------------------------------------------------
+# APPENDIX 2.
+# Substrate Creation Script:
+#------------------------------------------------------------------------------------------
+# LAMMPS 64-bit 22Dec2022-MSMPI
+#------------------------------------------------------------------------------------------
+# NIST, Interatomic Potentials (Force Fields): https://www.ctcms.nist.gov/potentials/
+#------------------------------------------------------------------------------------------
+clear
+
+variable temperature equal 800 # e.g., 800 or 1000 [K]
+variable thisfile string W${temperature}K.txt 
+variable restartfile string Base_W${temperature}K 
+#variable dumptrjfile string W${temperature}K.*.lammpstrj.gz 
+#variable dumpimagefile string W${temperature}K.*.jpg 
+
+# --- Initional variables --- # 
+units metal 
+dimension 3 
+boundary p p f 
+atom_style atomic 
+atom_modify map array 
+
+# --- Geometry in unit A --- # 
+variable max_x equal 25.342 
+variable max_y equal 25.342 
+variable min_z equal -200.0
+variable mid_z equal -60.0
+variable max_z equal 80.0
+variable fixed_W_topline equal -190.0
+variable D_init_position equal 30.0
+variable berendsen_xmin equal 3.165 
+variable berendsen_xmax equal ${max_x}-3.165 
+variable berendsen_ymin equal 3.165 
+variable berendsen_ymax equal ${max_y}-3.165 
+variable berendsen_zmin equal ${fixed_W_topline}+12.66 
+variable berendsen_zmax equal 3.165 
+
+variable mid_zu equal ${mid_z}+1.5825
+variable mid_zl equal ${mid_z}-1.5825
+
+# --- Steps --- # 
+variable Wtemp_rescall_step equal 6000
+
+# --- Create W atoms --- # 
+lattice bcc 3.165 
+region rgn_everything block 0 ${max_x} 0 ${max_y} ${min_z} ${max_z} units box 
+create_box 3 rgn_everything 
+#region rgn_w_upper_lattice block 0.3165 ${max_x} 0.3165 ${max_y} ${mid_z}+1.5825 0.0 units box
+region rgn_w_upper_lattice block 0.3165 ${max_x} 0.3165 ${max_y} ${mid_zu} 0.0 units box 
+lattice bcc 3.165 orient x 1 0 0 orient y 0 1 0 orient z 0 0 1 
+create_atoms 1 region rgn_w_upper_lattice
+#region rgn_w_lower_lattice block 0.3165 ${max_x} 0.3165 ${max_y} ${min_z} ${mid_z}-1.5825 units box 
+region rgn_w_lower_lattice block 0.3165 ${max_x} 0.3165 ${max_y} ${min_z} ${mid_zl} units box 
+lattice bcc 3.165 orient x 1 0 0 orient y 0 1 0 orient z 0 0 1 
+create_atoms 2 region rgn_w_lower_lattice
+
+# --- Mass --- # 
+variable mass_W equal 183.84 
+variable mass_D equal 2.01410178 
+mass 1 ${mass_W} 
+mass 2 ${mass_W} 
+mass 3 ${mass_D} 
+
+# --- W temp --- # 
+variable W_temp equal ${temperature} #kelvin
+
+# --- Potential --- # 
+pair_style tersoff 
+pair_coeff * * HW.tersoff W W H 
+
+neighbor 2.0 bin 
+neigh_modify delay 0 every 1 check yes 
+
+# --- Fix the bottom W --- # 
+region rgn_fixed_W block 0 ${max_x} 0 ${max_y} ${min_z} ${fixed_W_topline} units box 
+group grp_fixed_W region rgn_fixed_W 
+fix zeroforce grp_fixed_W setforce 0 0 0 
+
+# --- berendsen group, must define before the rescalling --- # 
+region rgn_1 block ${berendsen_xmin} ${berendsen_xmax} & 
+ ${berendsen_ymin} ${berendsen_ymax} & 
+ ${berendsen_zmin} ${berendsen_zmax} units box 
+group grp_1 region rgn_1 
+group grp_berendsen_W subtract all grp_1 grp_fixed_W 
+group grp_1 delete 
+
+# ---- Init W temp ---- # 
+group grp_mobile_W subtract all grp_fixed_W 
+velocity grp_mobile_W create ${W_temp} 12345 rot yes dist gaussian 
+
+# ---- Temp rescalling ---- 
+fix 1 all nve 
+fix 2 grp_mobile_W temp/rescale 100 ${W_temp} ${W_temp} 0.1 1.0 
+
+compute cmp_Wtemp grp_mobile_W temp
+
+timestep 0.01 # 10 [fs]
+
+thermo_style custom step temp pe c_cmp_Wtemp cpu tpcpu spcpu 
+thermo_modify lost warn 
+thermo 25 
+
+#dump 1 all atom 100 cfg/W${temperature}K.*.LAMMPStrj.gz 
+#dump 2 all image ${Wtemp_rescall_step} cfg/W${temperature}K.*.jpg type type size 1024 1280 & 
+#  zoom 2.0 box yes 0.005 axes yes 0.5 0.05 view 60 -30 
+#dump_modify 2 adiam 1 2.0 adiam 2 2.0
+dump 1 all cfg 100 cfg/run.*.cfg mass type xs ys zs id type vx vy vz fx fy fz
+dump_modify 1 element W W H 
+
+run ${Wtemp_rescall_step} 
+
+unfix 1 
+unfix 2 
+unfix zeroforce 
+
+write_restart ${restartfile} 
+#------------------------------------------------------------------------------------------

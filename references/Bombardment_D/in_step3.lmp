@@ -1,0 +1,143 @@
+#------------------------------------------------------------------------------------------
+# APPENDIX 4. 
+# Cumulative Bombardment Script: 
+#------------------------------------------------------------------------------------------
+# LAMMPS 64-bit 22Dec2022-MSMPI
+#------------------------------------------------------------------------------------------
+# NIST, Interatomic Potentials (Force Fields): https://www.ctcms.nist.gov/potentials/
+#------------------------------------------------------------------------------------------
+clear
+
+variable temperature equal 1000 # [K]
+variable Denergy equal 100 # [eV]
+#variable thisfile string W${temperature}K_${Denergy}eV.txt 
+variable thisfile string in_step3.lmp
+variable restartfile string Base_W${temperature}K 
+variable logfile string result_W${temperature}K_D${Denergy}eV.log 
+#variable dumptrjfile string W${temperature}K.*.lammpstrj.gz 
+#variable dumpimagefile string W${temperature}K.*.jpg 
+# --- Geometry in unit A --- # 
+variable max_x equal 25.342 
+variable max_y equal 25.342 
+variable min_z equal -200 
+variable mid_z equal -90 
+variable max_z equal 80 
+variable fixed_W_topline equal -190 
+variable D_init_position equal 40 
+# --- Steps --- # 
+variable Wtemp_rescall_step equal 2000 
+variable total_cycles equal 3000 
+variable cycle_steps equal 5000 
+variable restart equal 10 
+# ---Create Simulation box--- # 
+#region rgn_everything block 0 ${max_x} 0 ${max_y} ${min_z} ${max_z} units box 
+#create_box 3 rgn_everything 
+read_restart ${restartfile} 
+
+# ---Mass--- # 
+variable mass_W equal 183.84 
+variable mass_D equal 2.01410178 
+mass 1 ${mass_W} 
+mass 2 ${mass_W} 
+mass 3 ${mass_D} 
+
+# ---D energy and W temp--- # 
+variable W_temp equal ${temperature} #kelvin 
+variable D_energy equal ${Denergy} #eV 
+variable D_speed equal (-1)*sqrt(${D_energy}*1.602e-19*2.0/(${mass_D}*1.661e-27))*1.e10/1.e12 # A/ps
+
+# ---Potential--- # 
+pair_style tersoff 
+pair_coeff * * HW.tersoff W W H 
+
+neighbor 2.0 bin 
+neigh_modify delay 0 every 1 check yes
+
+# ---Fix the bottom W--- # 
+
+#group grp_fixed_W region rgn_fixed_W 
+fix zeroforce grp_fixed_W setforce 0 0 0
+
+# ---- Init W temp ---- 
+group grp_mobile_W subtract all grp_fixed_W 
+velocity grp_mobile_W create ${W_temp} 12345 rot yes dist gaussian 
+
+# ---- Temp rescalling ---- 
+fix 1 all nve 
+fix 2 grp_berendsen_W temp/berendsen ${W_temp} ${W_temp} 0.01 
+
+#==== ==== ==== 
+# Bombardment begins 
+#==== ==== ==== 
+
+#---- D velocity ---- 
+variable D_azi_angle equal random(0,6.2831852,13531) 
+variable D_polar_angle equal 0
+
+variable rn equal 0.0 
+
+variable D_x equal random(0,${max_x},13531) 
+variable D_y equal random(0,${max_y},13531) 
+variable D_z equal ${D_init_position}
+
+variable Dz_bottom equal ${D_init_position}-0.5 
+variable Dz_top equal ${D_init_position}+0.5 
+
+region rgn_D_born block 0 ${max_x} 0 ${max_y} ${Dz_bottom} ${Dz_top} units box 
+
+reset_timestep 0 
+
+timestep 0.0005 # 0.5 [fs]
+
+#---- SHOOTING THE D ------ 
+group grp_all_D type 3 
+group grp_rgn_born region rgn_D_born 
+group grp_D_born intersect grp_rgn_born grp_all_D
+
+variable Dke equal ke(grp_D_born) #kinetic energy 
+variable dzz equal xcm(grp_all_D,z) #z coord of D 
+compute cmp_Wtemp grp_mobile_W temp 
+
+thermo_style custom step temp c_cmp_Wtemp v_Dke v_dzz cpu tpcpu spcpu 
+thermo_modify lost warn 
+thermo 1000
+
+#dump D-text all atom ${cycle_steps} ${dumptrjfile} 
+#dump D-images all image ${cycle_steps} ${dumpimagefile} type type size 1024 1280 & 
+#  zoom 2.0 box yes 0.005 axes yes 0.5 0.05 view 60 -30 
+#dump_modify D-images adiam 1 2.0 adiam 2 2.0 
+dump 1 all cfg 100 cfg/run.*.cfg mass type xs ys zs id type vx vy vz fx fy fz
+dump_modify 1 element W W H 
+variable i loop ${total_cycles} #cycle_loop 
+label cycle_loop 
+print "====>>>> Shooting $i -th D..." 
+create_atoms 3 single ${D_x} ${D_y} ${D_z} units box 
+group grp_all_D type 3 
+# get random number -------- 
+ variable rn equal ${D_azi_angle} 
+ variable rnp equal ${D_polar_angle} 
+ variable D_vx equal ${D_speed}*sin(${rnp})*cos(${rn}) 
+ variable D_vy equal ${D_speed}*sin(${rnp})*sin(${rn}) 
+ variable D_vz equal ${D_speed}*cos(${rnp}) 
+group grp_rgn_born delete 
+group grp_D_born delete
+
+group grp_rgn_born region rgn_D_born 
+group grp_D_born intersect grp_rgn_born grp_all_D 
+
+velocity grp_D_born set ${D_vx} ${D_vy} ${D_vz} units box 
+
+variable dx equal xcm(grp_all_D,x) 
+variable dy equal xcm(grp_all_D,y) 
+variable dz equal xcm(grp_all_D,z) 
+print "The $i -th D initial location is ${dx} ${dy} ${dz}"
+
+run ${cycle_steps}
+
+if "${i} == ${restart}" then & 
+"write_restart $i${restartfile}" & 
+"variable restart equal ${restart}+10" 
+
+next i 
+jump ${thisfile} cycle_loop 
+#------------------------------------------------------------------------------------------
