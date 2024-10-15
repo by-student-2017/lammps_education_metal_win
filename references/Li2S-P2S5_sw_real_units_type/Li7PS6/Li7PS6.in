@@ -1,0 +1,85 @@
+units             real
+atom_style        full
+pair_style        hybrid/overlay lj/class2/coul/long 12.0 12.0 sw
+kspace_style      ewald 1.0e-5
+
+bond_style        class2
+angle_style       class2
+read_data         Li7PS6.data
+
+special_bonds     lj 0.0 0.0 0.5 coul 0.0 0.0 0.8333  # amber
+pair_coeff  *  *  sw ./../Li-S.sw Li NULL S4 S
+# epsilon sigma 1:Li 2:P4 3:S4 4:S
+variable LJe_P4 equal 68.4661
+variable LJs_P4 equal 1.42927
+variable LJe_S4 equal 0.0310997
+variable LJs_S4 equal 5.27676
+variable LJe_S equal 1.56282
+variable LJs_S equal 4.50173
+variable LJe_P4_P4 equal 2*sqrt(${LJe_P4}*${LJe_P4})*${LJs_P4}^3*${LJs_P4}^3/(${LJs_P4}^6+${LJs_P4}^6)
+variable LJs_P4_P4 equal (0.5*(${LJs_P4}^6+${LJs_P4}^6))^(1/6)
+variable LJe_P4_S4 equal 2*sqrt(${LJe_P4}*${LJe_S4})*${LJs_P4}^3*${LJs_S4}^3/(${LJs_P4}^6+${LJs_S4}^6)
+variable LJs_P4_S4 equal (0.5*(${LJs_P4}^6+${LJs_S4}^6))^(1/6)
+variable LJe_P4_S equal 2*sqrt(${LJe_P4}*${LJe_S})*${LJs_P4}^3*${LJs_S}^3/(${LJs_P4}^6+${LJs_S}^6)
+variable LJs_P4_S equal (0.5*(${LJs_P4}^6+${LJs_S}^6))^(1/6)
+variable LJe_S4_S4 equal 2*sqrt(${LJe_S4}*${LJe_S4})*${LJs_S4}^3*${LJs_S4}^3/(${LJs_S4}^6+${LJs_S4}^6)
+variable LJs_S4_S4 equal (0.5*(${LJs_S4}^6+${LJs_S4}^6))^(1/6)
+variable LJe_S4_S equal 2*sqrt(${LJe_S4}*${LJe_S})*${LJs_S4}^3*${LJs_S}^3/(${LJs_S4}^6+${LJs_S}^6)
+variable LJs_S4_S equal (0.5*(${LJs_S4}^6+${LJs_S}^6))^(1/6)
+variable LJe_S_S equal 2*sqrt(${LJe_S}*${LJe_S})*${LJs_S}^3*${LJs_S}^3/(${LJs_S}^6+${LJs_S}^6)
+variable LJs_S_S equal (0.5*(${LJs_S}^6+${LJs_S}^6))^(1/6)
+pair_coeff  1  1  lj/class2/coul/long 0 0
+pair_coeff  1  2  lj/class2/coul/long 0 0
+pair_coeff  1  3  lj/class2/coul/long 1.092 2.734
+pair_coeff  1  4  lj/class2/coul/long 1.16211 2.8351
+pair_coeff  2  2  lj/class2/coul/long ${LJe_P4_P4} ${LJs_P4_P4}
+pair_coeff  2  3  lj/class2/coul/long ${LJe_P4_S4} ${LJs_P4_S4}
+pair_coeff  2  4  lj/class2/coul/long ${LJe_P4_S} ${LJs_P4_S}
+pair_coeff  3  3  lj/class2/coul/long ${LJe_S4_S4} ${LJs_S4_S4}
+pair_coeff  3  4  lj/class2/coul/long ${LJe_S4_S} ${LJs_S4_S}
+pair_coeff  4  4  lj/class2/coul/long ${LJe_S_S} ${LJs_S_S}
+# r0 K2 K3 K4
+bond_coeff  1     2.09744 121.563 6.356 644.743
+# theta0 K2 K3 K4
+# bb M r1 r2
+# ba N1 N2 r1 r2
+# S4-P4-S4
+angle_coeff 1     109.46 48.2328 17.9674 192.083
+angle_coeff 1     bb 30.5069 2.17645 2.18138
+angle_coeff 1     ba 16.9159 23.001 2.17645 2.18138
+
+variable charge_Li equal 0.610
+variable charge_P4 equal 0.546416
+variable charge_S4 equal (-3*${charge_Li}-${charge_P4})/4
+variable charge_P2 equal 0.601676
+variable charge_S2 equal (-2*${charge_Li}-${charge_P2})/3
+variable charge_Pa equal 0.554651
+variable charge_Z equal 0.640098
+variable charge_S1 equal (-4*${charge_Li}-2*${charge_Pa})/(6+${charge_Z})
+variable charge_Sc equal ${charge_Z}*${charge_S1}
+variable charge_S equal -2*${charge_Li}
+set type 1 charge ${charge_Li}
+set type 2 charge ${charge_P4}
+set type 3 charge ${charge_S4}
+set type 4 charge ${charge_S}
+
+group             Li type 1
+replicate         6 5 5
+timestep          1
+thermo            100
+thermo_style      custom step temp etotal press vol density cella cellb cellc cellalpha cellbeta cellgamma
+dump              1 all custom 1000 500K.lammpstrj id type element x y z
+dump_modify       1 element Li P S S sort id
+velocity          all create 500 777
+fix               1 all npt temp 500 500 100 aniso 1 1 1000
+run               500000  # annealing
+fix               1 all npt temp 500 500 100 aniso 1 1 1000
+run               1000000  # equilibration
+
+compute           a Li msd
+fix               2 all ave/time 1 1 1000 c_a[*] file Li500K.msd title1 "# dt=1fs"
+run               1000000
+
+compute           b all rdf 1200 3 1 4 1 cutoff 12.0
+fix               3 all ave/time 1 1000 1000 c_b[*] file S-Li500K.gr mode vector
+run               10000

@@ -1,0 +1,93 @@
+units             real
+atom_style        full
+pair_style        hybrid/overlay lj/class2/coul/long 12.0 12.0 sw
+kspace_style      ewald 1.0e-5
+
+bond_style        class2
+angle_style       class2
+dihedral_style    class2
+read_data         Li4P2S6.data
+
+special_bonds     lj 0.0 0.0 0.5 coul 0.0 0.0 0.8333  # amber
+pair_coeff  *  *  sw ./../Li-S.sw Li NULL S2
+# epsilon sigma 1:Li 2:P2 3:S2
+variable LJe_P2 equal 24.4519
+variable LJs_P2 equal 0.9353
+variable LJe_S2 equal 0.408754
+variable LJs_S2 equal 4.07182
+variable LJe_P2_P2 equal 2*sqrt(${LJe_P2}*${LJe_P2})*${LJs_P2}^3*${LJs_P2}^3/(${LJs_P2}^6+${LJs_P2}^6)
+variable LJs_P2_P2 equal (0.5*(${LJs_P2}^6+${LJs_P2}^6))^(1/6)
+variable LJe_P2_S2 equal 2*sqrt(${LJe_P2}*${LJe_S2})*${LJs_P2}^3*${LJs_S2}^3/(${LJs_P2}^6+${LJs_S2}^6)
+variable LJs_P2_S2 equal (0.5*(${LJs_P2}^6+${LJs_S2}^6))^(1/6)
+variable LJe_S2_S2 equal 2*sqrt(${LJe_S2}*${LJe_S2})*${LJs_S2}^3*${LJs_S2}^3/(${LJs_S2}^6+${LJs_S2}^6)
+variable LJs_S2_S2 equal (0.5*(${LJs_S2}^6+${LJs_S2}^6))^(1/6)
+pair_coeff  1  1  lj/class2/coul/long 0 0
+pair_coeff  1  2  lj/class2/coul/long 0 0
+pair_coeff  1  3  lj/class2/coul/long 0.761 2.87451
+pair_coeff  2  2  lj/class2/coul/long ${LJe_P2_P2} ${LJs_P2_P2}
+pair_coeff  2  3  lj/class2/coul/long ${LJe_P2_S2} ${LJs_P2_S2}
+pair_coeff  3  3  lj/class2/coul/long ${LJe_S2_S2} ${LJs_S2_S2}
+# r0 K2 K3 K4
+bond_coeff   1  2.058 181.497 58.1043 40.2771
+bond_coeff   2  2.31455 157.603 150.088 143.735
+# theta0 K2 K3 K4
+# bb M r1 r2
+# ba N1 N2 r1 r2
+# P2-P2-S2
+angle_coeff 1 104.305 32.4491 48.6496 183.885
+angle_coeff 1 bb 5.15375 2.26144 2.05203
+angle_coeff 1 ba 4.69868 26.746 2.26144 2.05203
+# S2-P2-S2
+angle_coeff 2 115.313 42.4781 63.8853 431.709
+angle_coeff 2 bb 10.4361 1.96742 2.07272
+angle_coeff 2 ba 43.8527 53.6314 1.96742 2.07272
+# K1 phi1 K2 phi2 K3 phi3
+# mbt A1 A2 A3 r2
+# ebt B1 B2 B3 C1 C2 C3 r1 r3
+# at D1 D2 D3 E1 E2 E3 theta1 theta2
+# aat M theta1 theta2
+# bb13 N r1 r3
+# S2-P2-P2-S2
+dihedral_coeff 1 0 0 0 0 0 0
+dihedral_coeff 1 mbt 0 0 0 0
+dihedral_coeff 1 ebt 0 0 0 0 0 0 0 0
+dihedral_coeff 1 at 0 0 0 0 0 0 0 0
+dihedral_coeff 1 aat 0 0 0
+dihedral_coeff 1 bb13 0 0 0
+
+variable charge_Li equal 0.610
+variable charge_P4 equal 0.546416
+variable charge_S4 equal (-3*${charge_Li}-${charge_P4})/4
+variable charge_P2 equal 0.601676
+variable charge_S2 equal (-2*${charge_Li}-${charge_P2})/3
+variable charge_Pa equal 0.554651
+variable charge_Z equal 0.640098
+variable charge_S1 equal (-4*${charge_Li}-2*${charge_Pa})/(6+${charge_Z})
+variable charge_Sc equal ${charge_Z}*${charge_S1}
+variable charge_S equal -2*${charge_Li}
+set type 1 charge ${charge_Li}
+set type 2 charge ${charge_P2}
+set type 3 charge ${charge_S2}
+
+group             Li type 1
+replicate         9 9 9
+timestep          1
+thermo            100
+thermo_style      custom step temp etotal press vol density cella cellb cellc cellalpha cellbeta cellgamma
+dump              1 all custom 1000 300K.lammpstrj id type element x y z
+dump_modify       1 element Li P S sort id
+velocity          all create 500 777
+fix               1 all npt temp 500 500 100 tri 1 1 1000
+run               500000  # annealing
+fix               1 all npt temp 500 300 100 tri 1 1 1000
+run               200000  # cooling
+fix               1 all npt temp 300 300 100 tri 1 1 1000
+run               1000000  # equilibration
+
+compute           a Li msd
+fix               2 all ave/time 1 1 1000 c_a[*] file Li300K.msd title1 "# dt=1fs"
+run               500000
+
+compute           b all rdf 1200 3 1 cutoff 12.0
+fix               3 all ave/time 1 1000 1000 c_b[*] file S-Li300K.gr mode vector
+run               10000
