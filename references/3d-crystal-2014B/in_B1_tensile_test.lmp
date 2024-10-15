@@ -1,0 +1,67 @@
+#------------------------------------------------------------------------------------------
+# 3.5.1. Input file for tensile testing of a previously equilibrated crystal: 
+# 3d tensile simulation JP4review 
+# 
+# e = loading rate * time
+# Where time = time step * step number (time step = 0.001 ps) 
+# Loading rate = 0.1/ps
+#------------------------------------------------------------------------------------------
+# LAMMPS 64-bit 22Dec2022-MSMPI
+#------------------------------------------------------------------------------------------
+# NIST, Interatomic Potentials (Force Fields): https://www.ctcms.nist.gov/potentials/
+#------------------------------------------------------------------------------------------
+
+echo both        # reverberates each input script command to log file and screen
+units metal      # specifies units of every quantity used in the input file 
+atom_style atomic
+dimension 3
+boundary p p p   # periodic boundary condition 
+
+read_data Test.dat # reads the data file consisting the atom positions of the equilibrated crystal in the defined file
+
+timestep 0.001   # sets the timestep for subsequent simulations
+
+pair_style eam/alloy
+pair_coeff * * Cu_Zhou04.eam.alloy Cu # defines the potential file used
+
+# Energy Minimization 
+#minimize 1.0e-5 1.0e-10 10000 100000 
+
+dump 1 all atom 100 dump.Test_40%strain.lammpstrj
+
+log log5050_Test_40%strain.dat
+
+# initial velocities 
+velocity all create 300 482748 rot yes mom yes dist gaussian 
+
+fix 1 all deform 1 y erate 1.0 # strain rate of 0.1 sec^-1 is applied in y direction
+fix 2 all npt temp 100.0 100.0 10.0 x 0 0 10.0 z 0 0 10.0 dilate all # all atoms rescaled to new positions while temp and pressure is conserved 
+fix 3 all temp/rescale 10 100 100 0.05 1.0 # Resets the temp of atoms to 100K by rescaling velocities after every 10 steps
+
+compute 11 all rdf 100
+fix 4 all ave/time 100 1 100 c_11[*] file rdf_Test_40%strain.rdf mode vector
+
+compute 1 all stress/atom NULL # computes the symmetric per-atom stress tensor for each atom in a group.
+compute 2 all temp # computes the temp of a group of atoms
+
+dump 2 all custom 1000 dump.stress_atom_Test_40%strain type x y z &
+  c_1[1] c_1[2] c_1[3] c_1[4] c_1[5] c_1[6] # dumps atom type; x,y,z coordinates; 6 stress tensors computed in 1 to an array of 6 elements
+
+compute 3 all reduce sum c_1[2] # decreases vector quantities of every stress tensor in y-direction and adds all the quantities to a single
+
+variable stress equal c_3/(3*40000) # prescribes a value to the variable name stress
+variable stress_GPa equal v_stress/10000 # changes the stress determined to GPa
+variable stress_MPa equal v_stress_GPa*10000 
+variable tmp equal ly 
+variable lo equal ${tmp} 
+variable strain equal (ly-v_lo)/v_lo 
+variable p equal -pyy/10000 # prescribe a value to the variable name strain
+
+thermo 10
+thermo_style custom step temp press vol etotal c_2 v_stress v_stress_GPa v_stress_MPa v_strain
+
+fix fo1 all ave/time 1 3 3 c_2 v_strain v_stress v_stress_GPa v_p file stress_vs_strain.txt
+
+run 4000 # number of iterations is given so as to give 40% strain to the material
+
+#------------------------------------------------------------------------------------------

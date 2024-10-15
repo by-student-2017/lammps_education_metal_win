@@ -1,0 +1,56 @@
+#------------------------------------------------------------------------------------------
+# 3.4.4. Input file for obtaining equilibrated 3D-crystal lattice of V-notched sample using  LAMMPS:
+# This program is for obtaining 3d-crystal lattice
+#------------------------------------------------------------------------------------------
+# LAMMPS 64-bit 22Dec2022-MSMPI
+#------------------------------------------------------------------------------------------
+# NIST, Interatomic Potentials (Force Fields): https://www.ctcms.nist.gov/potentials/
+#------------------------------------------------------------------------------------------
+
+echo both        # reverberates each input script command to log file and screen
+units metal      # specifies units of every quantity used in the input file 
+atom_style atomic
+dimension 3
+boundary p p p   # periodic boundary condition
+
+region box block 0 50 0 100 0 50 units box # specifies a geometric region of space
+create_box 1 box # generates a simulation box in the defined region
+
+lattice fcc 3.61 # lattice type and lattice parameter
+region cu block 0 50 0 100 0 50 units box 
+create_atoms 1 region cu units box # generates copper atoms in the simulation box
+
+region cu1 prism 30 50 40 60 0 50 20 0 0 units box # defines a geometric region of V-notch
+group crystal region cu1 
+delete_atoms group crystal # generates square-notch in the simulation box
+
+timestep 0.002   # sets the timestep for subsequent simulations
+
+pair_style eam/alloy
+pair_coeff * * Cu_Zhou04.eam.alloy Cu # defines the potential file used
+
+# Energy Minimization 
+#minimize 1.0e-7 1.0e-8 1000 1000 
+
+thermo 100       # computes and prints thermodynamic
+thermo_style custom step temp vol press etotal # defines content of thermodynamic data to be printed in screen
+
+compute myRDF all rdf 1000
+fix 11 all ave/time 10 1 10 c_myRDF[*] file cu_melt_new.rdf mode vector
+
+dump 1 all atom 10 Cu_crystal_melt_3d_s_dump_new.lammpstrj # dumps a snapshot of atom quantities every 10 time steps to the specified file
+dump_modify 1 scale no # changes parameters of prior specified dump command. A value of scale ‘no’ means atom coordinates are written in absolute distance units. 
+
+log logCu_crystal_melt_3d_s_new.data # closes the current log file, opens a new log file, and begins logging information to it
+
+velocity all create 300 873847 rot yes mom yes dist gaussian # assigns the velocity of a group of atoms
+
+#fixes
+fix 1 all npt temp 100 100 0.1 iso 0 0 0.1 # temp and pressure preserved
+
+run 1000 # program is run for 1000 iterations
+
+unfix 1  # omits the previously defined fix 1 
+
+write_data Test.dat
+#------------------------------------------------------------------------------------------
