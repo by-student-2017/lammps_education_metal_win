@@ -8,6 +8,6 @@ for %%1 in (StressStrainNaCl.txt) do (
   echo input file: %%1
 )
 
-plot_shear_stress_vs_strain_v2.gpl
+plot_stress_vs_strain_v2.gpl
 
 pause
