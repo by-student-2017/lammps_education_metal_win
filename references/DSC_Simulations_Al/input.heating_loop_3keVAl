@@ -1,0 +1,105 @@
+#------------------------------------------------------------------------------------------
+# Appendix B
+# LAMMPS Calorimetry Heating Code
+# F:\DSC Simulations\Al_3keV_Simulation_10K_ps\Attempt_2\input.heating_loop_3keVAl Monday, May 01, 2017 11:30 AM
+#------------------------------------------------------------------------------------------
+# LAMMPS 64-bit 22Dec2022-MSMPI
+#------------------------------------------------------------------------------------------
+# NIST, Interatomic Potentials (Force Fields): https://www.ctcms.nist.gov/potentials/
+#------------------------------------------------------------------------------------------
+clear
+# ------------------------ INITIALIZATION ----------------------------
+echo both
+units metal
+dimension 3
+boundary p p p
+atom_style atomic
+
+variable latparam equal 4.05
+
+# ------------------------ ATOM AND FORCE FIELDS ---------------------
+lattice fcc ${latparam}
+region whole block 0 8 0 8 0 8
+create_box 1 whole
+region upper block INF INF INF INF INF INF units box 
+lattice fcc ${latparam} orient x 1 0 0 orient y 0 1 0 orient z 0 0 1
+create_atoms 1 region upper
+
+#read_data quenched0.data
+
+# ------------------------ FORCE FIELDS ------------------------------
+pair_style eam/alloy 
+pair_coeff * * Al_wkg_MSMSE_2009.set Al
+
+neigh_modify every 1 delay 0 check yes
+
+# ------------------------ SET TEMP TO 300K --------------------------
+thermo 1000 #output every 10000 time steps
+thermo_style custom step dt time lx ly lz press pxx pyy pzz pe temp
+
+velocity all create 300.0 4928459 
+
+fix 1 all nvt temp 300 300 0.1
+run 100000
+unfix 1 
+
+write_data quenched0.data
+#------------------------------------------------------------------------------------------
+clear
+
+# ------------------------ LOOP HEATING ------------------------------ 
+variable a loop 12 
+label loop
+variable myT equal "300+100*v_a"
+
+# ------------------------ INITIALIZATION ----------------------------
+echo both
+units metal
+dimension 3
+boundary p p p
+atom_style atomic
+
+# ----------------------- ATOM DEFINITION ----------------------------
+variable c equal $a-1
+
+read_data quenched$c.data
+
+# ------------------------ FORCE FIELDS ------------------------------
+pair_style eam/alloy 
+pair_coeff * * Al_wkg_MSMSE_2009.set Al
+
+neigh_modify every 1 delay 0 check yes
+
+# ------------------------- SETTINGS ---------------------------------
+thermo 1000 #output every 1000 time steps
+thermo_style custom step dt time lx ly lz press pxx pyy pzz pe temp 
+
+#-------------------------- heating -----------------------------
+fix 1 all nvt temp ${myT} ${myT} 0.1
+dump 1 all cfg 1000 cfg/dump.nvt_*.cfg mass type xs ys zs vx vy vz fx fy fz
+dump_modify 1 element Al
+run 10000 
+undump 1
+unfix 1
+
+write_data quenched$a.data
+shell rm quenched$c.data
+
+compute csym all centro/atom fcc
+compute PE all pe/atom
+compute CNA all cna/atom 3.1002
+
+dump minimized all custom 1000 dump/minimized_No${a}_${myT}K.data id type x y z c_csym c_PE c_CNA
+dump 2 all cfg 1000 cfg/dump.mini_No${a}_${myT}K_*.cfg mass type xs ys zs c_csym c_PE c_CNA vx vy vz fx fy fz 
+dump_modify 2 element Al
+minimize 1e-10 1e-10 10000 10000
+undump 2
+
+variable e equal pe
+print "$e" file dump/PE_$a_${myT}.dat
+
+clear
+
+next a
+jump input.heating_loop_3keVAl loop
+#------------------------------------------------------------------------------------------
