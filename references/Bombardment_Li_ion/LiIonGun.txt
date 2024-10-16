@@ -9,7 +9,8 @@
 # NIST, Interatomic Potentials (Force Fields): https://www.ctcms.nist.gov/potentials/
 # lammps/bench/POTENTIALS: https://github.com/lammps/lammps/tree/develop/bench/POTENTIALS
 #------------------------------------------------------------------------------------------
-
+clear
+echo both
 # ------------------------ INITIALIZATION ----------------------------
 units metal
 dimension 3
@@ -17,9 +18,18 @@ boundary f f f
 atom_style hybrid atomic charge bond
 processors * * * # Use multiple cores
 
+variable latparam equal 5.64
+
+variable ion_energy equal 0.16 # [eV]
+variable ion_mass   equal 6.94 # Li
+variable ion_velocity equal (${ion_energy}/5.18e-6/(0.5*${ion_mass}))^0.5
+
+print "set ion energy: ${ion_energy} [eV]"
+print "use ion velocity: ${ion_velocity} [A/ps] for -z direction"
+
 # ----------------------- ATOM DEFINITION ----------------------------
 # Na atoms region
-lattice fcc 5.64 origin 0 0 0 # Na lattice
+lattice fcc ${latparam} origin 0 0 0 # Na lattice
 region sample block 0 15 0 15 0 15 # x-begin x-eind y-begin y-eind z-begin z-eind
 
 # Li atoms region
@@ -34,11 +44,15 @@ region whole union 3 sample beam boundary
 #create viewing box
 create_box 3 boundary
 
-lattice fcc 5.64 origin 0 0 0
+# Na
+lattice fcc ${latparam} origin 0 0 0
 create_atoms 1 region sample
-lattice fcc 5.64 origin .5 0.5 0.5
+
+# Cl
+lattice fcc ${latparam} origin .5 0.5 0.5
 create_atoms 2 region sample
 
+# Li
 create_atoms 3 random 1 111422 beam #region beam
 
 # Set wall
@@ -58,7 +72,7 @@ fix temp3 samplegroup nvt temp 1.0 1.0 5.0
 
 #Beam velocity
 group beamgroup region beam
-velocity beamgroup set 0 0 -95 # !!! In lattice constants: a/ps
+velocity beamgroup set 0 0 -${ion_velocity} # [Angstrom/ps] = [A/ps] units
 fix beam3 beamgroup nve
 
 # ------------------------- COMPUTING ---------------------------------
