@@ -1,0 +1,79 @@
+#------------------------------------------------------------------------------------------
+# APPENDIX C
+# LAMMPS Scripts
+# C.3 Non-Equilibrium Thermodynamic Integration
+#------------------------------------------------------------------------------------------
+# LAMMPS 64-bit 22Dec2022-MSMPI
+#------------------------------------------------------------------------------------------
+
+# Author: Nicholas Karlsen
+#
+# Performs Non-Equilibrium Thermodynamic integration from an Einstein crystal to
+# Vashishta SiO2 along the homotopy:
+#
+# U(lambda) = (1 - lambda) * U_Vashishta + lambda * U_Einstein
+#
+# Thus the simulation is follows the pathway:
+# -> Equilibriate pure Vashishta crystal
+# -> Integrate from Vashishta to Einstein
+# -> Equilibriate pure Einstein crystal
+# -> Integrate from Einstein to Vashishta
+#
+# Command line variables:
+# seed Seed used in the random number generator
+# nsteps_eq Number of steps to equilibriate during the before the fw and bw processes
+# nsteps_ti Number of steps to perform the backward and forward processes
+# spring_const_O Spring constant of the Oxygen atoms in the ideal einstein crystal
+# spring_const_Si Spring constant of the Silicon atoms in the ideal einstein crystal
+# temp Temperature imposed by the Langevin thermostat
+
+log neq_ti_${seed}.lammps
+
+# Prepare the system
+dimension 3
+boundary p p p
+units metal
+atom_style atomic
+
+read_data optim_config.data
+
+mass 1 15.999400 # O
+mass 2 28.085501 # Si
+
+group O type 1
+group Si type 2
+
+pair_style vashishta
+pair_coeff * * SiO.1997.vashishta O Si
+
+velocity all create ${temp} ${seed} mom yes rot yes dist gaussian
+
+fix NVE all nve
+fix ti_O O ti/spring ${spring_const_O} ${nsteps_ti} ${nsteps_eq} function 2
+fix ti_Si Si ti/spring ${spring_const_Si} ${nsteps_ti} ${nsteps_eq} function 2
+fix thermostat all langevin ${temp} ${temp} $(100*dt) ${seed} zero yes
+
+compute Tcm all temp/com
+fix_modify thermostat temp Tcm
+
+# Energies
+variable U_O equal f_ti_O
+variable U_Si equal f_ti_Si
+variable dU equal (pe-v_U_O-v_U_Si)
+# Integration variable
+variable lambda_O equal f_ti_O[1]
+variable lambda_Si equal f_ti_Si[1]
+variable dlambda equal f_ti_O[2]
+# Fix the center of mass by manually removing any drift of the COM after integration
+fix fmomentum all momentum 1 linear 1 1 1 rescale
+fix frecenter all recenter INIT INIT INIT
+
+dump df all custom 5000 dump_neq_ti_${seed}.lammpstrj id type x y z
+thermo_style custom step time pe ke v_dU v_U_O v_U_Si v_dlambda v_lambda_O v_lambda_Si
+thermo 10
+
+run ${nsteps_eq} # Equilibriate Vashishta
+run ${nsteps_ti} # Vashishta -> Einstein
+run ${nsteps_eq} # Equilibriate Einstein
+run ${nsteps_ti} # Einstein -> Vashishta
+#------------------------------------------------------------------------------------------

@@ -1,0 +1,55 @@
+#------------------------------------------------------------------------------------------
+# APPENDIX C
+# LAMMPS Scripts
+# C.4 Free Energy Perturbation (Vega Path)
+#------------------------------------------------------------------------------------------
+# LAMMPS 64-bit 22Dec2022-MSMPI
+#------------------------------------------------------------------------------------------
+
+# Run simulation with atoms governed by harmonic potential centered on the initial positions
+dimension 3
+boundary p p p
+units metal
+atom_style atomic
+pair_style none
+
+read_data optim_config.data
+
+mass 1 20 # O
+mass 2 20 # Si
+
+velocity all create ${temp} ${seed}
+velocity all zero linear
+velocity all zero angular
+
+# Set NVT conditions
+fix fix_langevin all langevin ${temp} ${temp} $(100*dt) ${seed}
+fix fix_nve all nve
+
+# Harmonic potential located at init positions of each atom
+fix fix_spring all spring/self ${k}
+# Adds spring potential to the PotEng computation
+fix_modify fix_spring energy yes
+
+# Fix the center of mass
+fix fix_recenter all recenter INIT INIT INIT
+
+dump dumpfile all custom 10 dump_id_${index}.lammpstrj id type x y z
+run ${N_STEPS}
+
+clear
+
+# rerun the dump file to sample the PE in the Vashishta potential
+dimension 3
+units metal
+atom_style atomic
+
+pair_style vashishta
+pair_coeff * * SiO.1997.vashishta O Si
+
+thermo 1
+thermo_style custom step time pe
+log log_real_${index}.lammps
+rerun dump_id_${index}.lammpstrj dump x y z
+
+#------------------------------------------------------------------------------------------

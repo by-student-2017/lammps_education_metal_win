@@ -1,0 +1,55 @@
+#------------------------------------------------------------------------------------------
+# APPENDIX C
+# LAMMPS Scripts
+# C.5 Thermodynamic Integration (Vega Path)
+#------------------------------------------------------------------------------------------
+# LAMMPS 64-bit 22Dec2022-MSMPI
+#------------------------------------------------------------------------------------------
+
+# Author: Nicholas Karlsen
+#
+# Performs Thermodynamic integration from an an interacting Einstein crystal
+# to a crystal by integrating along the homotopy:
+#
+# U(lambda) = (1 - lambda) * (U_Vashishta + U_Einstein) + lambda * U_Vashishta
+#
+# -> Integrate from interacting Einstein crystal to Vashishta crystal
+#
+# Command line variables:
+# seed Seed used in the random number generator
+# temperature Temperature imposed by the Langevin thermostat
+# nsteps Number of simulation timesteps
+# k spring constant
+# idx Index of the computation (useful in post processing)
+dimension 3
+boundary p p p
+units metal
+atom_style atomic
+
+read_data optim_config.data
+
+mass 1 20 # O
+mass 2 20 # S
+
+pair_style vashishta
+pair_coeff * * SiO.1997.vashishta O Si
+
+velocity all create ${temp} ${seed}
+fix fix_langevin all langevin ${temp} ${temp} $(100*dt) ${seed} zero yes
+fix fix_nve all nve
+
+if "${k} != 0" then &
+  "fix fix_spring all spring/self ${k}" &
+  "fix_modify fix_spring energy yes"
+
+fix fix_recenter all recenter INIT INIT INIT
+
+compute MSD all msd
+
+dump dumpfile all custom 100 dump_${idx}.lammpstrj id type x y z
+thermo 1
+thermo_style custom step time ke pe atoms c_MSD[4]
+log log_${idx}.lammps
+run ${nsteps}
+
+#------------------------------------------------------------------------------------------

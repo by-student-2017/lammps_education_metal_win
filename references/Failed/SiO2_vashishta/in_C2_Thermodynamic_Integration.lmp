@@ -1,0 +1,71 @@
+#------------------------------------------------------------------------------------------
+# APPENDIX C
+# LAMMPS Scripts
+# C.2 Thermodynamic Integration
+#------------------------------------------------------------------------------------------
+# LAMMPS 64-bit 22Dec2022-MSMPI
+#------------------------------------------------------------------------------------------
+
+# Author: Nicholas Karlsen
+#
+# Performs Thermodynamic integration from an Einstein crystal to Vashishta SiO2
+#
+# IMPORTANT: This file requires a modified version of LAMMPS that has a "scale" parameter
+# in the Vashishta pair-style such that fix_adapt may be used.
+# see the changes made in the fork: https://github.com/nicholaskarlsen/lammps-scale-vashishta
+#
+# Command line variables:
+# T Temperature
+# N_STEPS Number of timesteps
+# lambda Integration variable/scaling parameter
+# index Index corresponding to the integration step (ie I = \sum_i^N w_i * f(x_i))
+
+variable lambda equal ${lamb}
+variable k_O equal ((1-v_lambda)*${spring_const_O})
+variable k_Si equal ((1-v_lambda)*${spring_const_Si})
+# Prepare the system
+dimension 3
+boundary p p p
+units metal
+atom_style atomic
+
+read_data optim_config.data
+mass 1 15.999400 # O
+mass 2 28.085501 # Si
+
+group 1 type 1
+group 2 type 2
+
+pair_style vashishta
+pair_coeff * * SiO.1997.vashishta O Si
+
+velocity all create ${temperature} ${seed}
+velocity all zero linear
+velocity all zero angular
+
+# Set NVT conditions
+fix fix_nve all nve
+fix fix_langevin all langevin ${temperature} ${temperature} $(100*dt) ${seed} zero yes
+fix fix_adapt all adapt 0 pair vashishta scale 1 1 v_lambda
+if "${k_O} != 0" then &
+  "fix fix_spring_O 1 spring/self ${k_O}" &
+  "fix fix_spring_Si 2 spring/self ${k_Si}"
+# Recenter COM after every step
+fix fix_momentum all momentum 1 linear 1 1 1 rescale
+fix fix_recenter all recenter INIT INIT INIT
+
+variable UE_O equal (f_fix_spring_O)
+variable UE_Si equal (f_fix_spring_Si)
+
+compute MSD_O 1 msd
+compute MSD_Si 2 msd
+
+#dump df all custom 1000 dump_${index}.lammpstrj id type element x y z
+#dump_modify df element O Si
+thermo 10
+# Note: pe corresponds to U_C
+thermo_style custom step time ke pe v_UE_O v_UE_Si c_MSD_O[4] c_MSD_Si[4]
+log log_ti_${index}.lammps
+run ${nsteps}
+
+#------------------------------------------------------------------------------------------
