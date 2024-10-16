@@ -23,10 +23,12 @@ y2((2:2:end),:) = [];
 
 %plot(x1,y1,x2,y2);
 plot(x1, y1, 'r--', x2, y2, 'b-');
+legend('calculated potential from Ref. 9','current simulation');
 xlabel('Interatomic distance (Angstrom)'); % add axis labels and plot title
-ylabel('Potential (eV)');
-title('Diatomic potential Na+Cl-');
+ylabel('Potential energy (eV)');
+title('Diatomic potential energy of Na+Cl-');
 yticks(-6:1:2);
 xticks(-1:0.5:5);
 axis([1 5 -6 2]);
 axis manual;
+set(gca, 'FontSize', 12, 'FontName', 'Arial');
