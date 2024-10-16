@@ -596,6 +596,11 @@ input file (metal unit, lammps)
 - N. Karlsen, Master thesis (2022).
   https://www.duo.uio.no/bitstream/handle/10852/98349/1/nicholas_karlsen_thesis-9_FINAL.pdf
   SiO2_vashishta (failed: Too many parts to rewrite. Input file is required.)
+
+- B. N. Doblack, Master thesis (2013).
+  https://escholarship.org/content/qt4p33q6zt/qt4p33q6zt_noSplash_0ae1f525544855eed91a2969e98ea177.pdf
+  melt-quench_SiO2_BKS.potential (need BKS.potential file and GPU environment)
+
 -------------------------------------------------------------------
 plot the temperature of each atom
 
