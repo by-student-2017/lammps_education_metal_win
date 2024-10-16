@@ -1,0 +1,61 @@
+#------------------------------------------------------------------------------------------
+# APPENDIX A – Sample input script file for a MD simulation using LAMMPS.
+# An example of the LAMMPS melt-quench procedure input file mq.in
+# 
+#------------------------------------------------------------------------------------------
+# LAMMPS 64-bit 22Dec2022-MSMPI
+#------------------------------------------------------------------------------------------
+
+# package gpu force/neigh 0 0 -1.0
+
+newton off
+units real
+atom_style full
+bond_style none
+angle_style none
+dihedral_style none
+boundary p p p
+lattice custom 3.58 &
+  origin  0.0 0.0 0.0 &
+  spacing 1.0 1.0 1.0 &
+  a1      0.0 1.0 1.0 &
+  a2      1.0 0.0 1.0 &
+  a3      1.0 1.0 0.0 &
+  basis   0.0 0.0 0.0 &
+  basis   0.25 0.25 0.25 &
+  basis   0.125 0.125 0.125 &
+  basis   0.125 0.125 0.625 &
+  basis   0.625 0.125 0.125 &
+  basis   0.125 0.625 0.125
+region myRegion block -4.0 4.0 -4.0 4.0 -4.0 4.0
+create_box myBox muRegion
+create_atoms 2 box basis 1 1 basis 2 1 basis 32 basis 4 2 basis 5 2 basis 6 2
+mass 1 28.0855
+mass 2 15.9994
+group Si type 1
+group O  type 2
+set group Si charge  2.4
+set group O  charge -1.2
+#pair_style table/gpu linear 1000
+pair_style table linear 1000
+pair_coeff 1 1 BKS.potential BKS_1_1
+pair_coeff 1 2 BKS.potential BKS_1_2
+pair_coeff 2 2 BKS.potential BKS_2_2
+#kspace_style pppm/gpu 1.0e-4
+kspace_style pppm 1.0e-4
+kspace_modify gewald 0.29
+thermo 1000
+thermo_style custom step press temp pe ke etotal vol
+timestep 0.5
+restart 50000 *.restart
+compute pe_atom all pe/atom
+compute ke_atom all ke/atom
+
+dump e_dump all custom 50000 e.out id c_pe_atom c_ke_atom
+
+echo log
+log themo.csv
+
+velocity all create 7000.0 284 dist gaussian
+include mq.segment
+#------------------------------------------------------------------------------------------
