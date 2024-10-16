@@ -56,6 +56,10 @@ input file (metal unit, lammps)
 - A. C. C. Dutra et al., Energy Adv., 2 (2023) 653-666.
   https://doi.org/10.1039/D3YA00075C
   Li4OCl2
+
+- S. Ariga et al., Phys. Chem. Chem. Phys., 2022,24, 2567-2581.
+  https://pubs.rsc.org/en/content/articlelanding/2022/cp/d1cp05393k
+  Li2S-P2S5 (real units type)
   
 - Z. Wang, J. Phys. Chem. C 124 (2020) 3851–3856.
   https://doi.org/10.1021/acs.jpcc.9b10706
@@ -412,9 +416,10 @@ input file (metal unit, lammps)
   https://digitalcommons.usu.edu/etd/7081 
   Thermal_Conductivity_Mg2Si
 
-- S. Ariga et al., Phys. Chem. Chem. Phys., 2022,24, 2567-2581.
-  https://pubs.rsc.org/en/content/articlelanding/2022/cp/d1cp05393k
-  Li2S-P2S5 (real units type)
+- S. Lowder, Bachelor thesis (2017).
+  https://dspace.mit.edu/handle/1721.1/112369
+  https://dspace.mit.edu/bitstream/handle/1721.1/112369/1011355070-MIT.pdf
+  DSC_Simulations_Al
 
 - O. Takahiro, Chiba Univ.
   https://amorphous.tf.chiba-u.jp/lecture.files/ms-workshop/molten.html
