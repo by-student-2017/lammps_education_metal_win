@@ -592,6 +592,10 @@ input file (metal unit, lammps)
 - R. A. Miller, Master thesis (2015).
   https://scholars.unh.edu/thesis/1087/
   TTPO_on_Au (need structure file, The topology file could not be created successfully on VMD (topotools).)
+
+- N. Karlsen, Master thesis (2022).
+  https://www.duo.uio.no/bitstream/handle/10852/98349/1/nicholas_karlsen_thesis-9_FINAL.pdf
+  SiO2_vashishta (failed: Too many parts to rewrite. Input file is required.)
 -------------------------------------------------------------------
 plot the temperature of each atom
 
