@@ -1,0 +1,90 @@
+#------------------------------------------------------------------------------------------
+# Appendix D: Li+ bombardment on NaCl scripts
+#
+# Karun Datadien 
+# Latest update: 18-6-2013
+#------------------------------------------------------------------------------------------
+# LAMMPS 64-bit 22Dec2022-MSMPI
+#------------------------------------------------------------------------------------------
+# NIST, Interatomic Potentials (Force Fields): https://www.ctcms.nist.gov/potentials/
+# lammps/bench/POTENTIALS: https://github.com/lammps/lammps/tree/develop/bench/POTENTIALS
+#------------------------------------------------------------------------------------------
+
+# ------------------------ INITIALIZATION ----------------------------
+units metal
+dimension 3
+boundary f f f
+atom_style hybrid atomic charge bond
+processors * * * # Use multiple cores
+
+# ----------------------- ATOM DEFINITION ----------------------------
+# Na atoms region
+lattice fcc 5.64 origin 0 0 0 # Na lattice
+region sample block 0 15 0 15 0 15 # x-begin x-eind y-begin y-eind z-begin z-eind
+
+# Li atoms region
+region beam block 6 9 6 9 16 17 # uses the same lattice as above
+
+# Simulation box size
+region boundary block -5 20 -5 20 -5 25
+
+#combine regions
+region whole union 3 sample beam boundary
+
+#create viewing box
+create_box 3 boundary
+
+lattice fcc 5.64 origin 0 0 0
+create_atoms 1 region sample
+lattice fcc 5.64 origin .5 0.5 0.5
+create_atoms 2 region sample
+
+create_atoms 3 random 1 111422 beam #region beam
+
+# Set wall
+fix wall all wall/region whole lj93 5 5 5
+
+# Misc.
+neighbor 0.3 bin
+neigh_modify delay 0
+
+# ------------------------ FORCE FIELDS ------------------------------
+pair_style eim
+pair_coeff * * Na Cl Li ffield.eim Na Cl Li 
+
+#Temperature
+group samplegroup region sample
+fix temp3 samplegroup nvt temp 1.0 1.0 5.0
+
+#Beam velocity
+group beamgroup region beam
+velocity beamgroup set 0 0 -95 # !!! In lattice constants: a/ps
+fix beam3 beamgroup nve
+
+# ------------------------- COMPUTING ---------------------------------
+# Compute the data we want in the output files 
+compute csym all centro/atom 6 # 6 nearest neighbours for two interpenetrating lattices
+compute peratom all pe/atom    # Define a computation that computes the per-atom 
+                               # potential energy for each atom in a group
+compute tempcompute samplegroup temp # Define a computation that calculates the temperature of a group of atoms.
+compute KineticEnergy all ke/atom 
+
+# ------------------------- DATA OUTPUT ---------------------------------
+# Create dumpfiles and other output. Specify timescale and total runtime.
+dump mydump all cfg 500 cfg/dump.IonGunEIM_*.cfg mass type xs ys zs id type &
+  c_peratom fx fy fz mass vz c_KineticEnergy #c_BondEnergy
+dump_modify mydump pad 3 element Na Cl Li
+
+#.001 = femtosecond
+timestep .00005 # 0.5 [fs]
+
+# Display thermo
+thermo_style custom step pe pxx pyy pzz temp press c_tempcompute
+thermo 100
+
+run 20000 #run x timesteps
+
+# -----SIMULATION DONE------
+print "Simulation complete"
+
+#------------------------------------------------------------------------------------------
