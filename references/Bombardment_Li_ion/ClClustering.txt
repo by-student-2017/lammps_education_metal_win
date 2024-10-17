@@ -2,7 +2,7 @@
 # Appendix E: Main simulation + clustering scripts
 #
 # H-center clustering in NaCl
-# Karun Datadien | last update: 11-7-2013
+# Karun Datadien, last update: 11-7-2013
 #------------------------------------------------------------------------------------------
 # LAMMPS 64-bit 22Dec2022-MSMPI
 #------------------------------------------------------------------------------------------
@@ -28,7 +28,7 @@ lattice fcc 5.57 origin 0 0 0
 create_atoms 1 region sample
 
 #Cl-
-lattice fcc 5.57 origin .5 0.5 0.5
+lattice fcc 5.57 origin 0.5 0.5 0.5
 create_atoms 2 region sample
 
 #Cl (neutral)
@@ -54,9 +54,9 @@ pair_style buck/coul/long 10.0 8.0
 pair_coeff 1 1 7895.4 0.1709 29.06 #Na+ Na+
 pair_coeff 2 2 1227.2 0.3214 29.06 #Cl- Cl-
 pair_coeff 1 2 2314.7 0.2903 0.00  #Na+ Cl-
-pair_coeff 3 3 -367.4337814 .5005465005 -275.0537438 #Cl Cl
-pair_coeff 2 3 1205 .3358 0 #Cl- Cl
-pair_coeff 1 3 1012.6 .2903 0 #Na+ Cl
+pair_coeff 3 3 -367.4337814 0.5005465005 -275.0537438 #Cl Cl
+pair_coeff 2 3 1205.0 0.3358 0.00 #Cl- Cl
+pair_coeff 1 3 1012.6 0.2903 0.00 #Na+ Cl
 
 kspace_style ewald 1.0E-3
 
@@ -66,19 +66,23 @@ velocity samplegroup create 300.0 43454 dist gaussian mom yes
 fix int samplegroup npt temp 300.0 300.0 .01 aniso 1.0 1.0 0.1
 
 # ------------------------- SETTINGS ---------------------------------
-compute peratom all pe/atom 
-compute Clustercount NeutralClgroup cluster/atom 4 
+timestep 0.005 # 5 [fs], 0.001 = femtosecond
+
+compute peratom all pe/atom
+compute Clustercount NeutralClgroup cluster/atom 4.0
 compute 1 all temp
+
+# Display thermo
+thermo 50
+thermo_style custom step pe pxx pyy pzz temp press
 
 ######################################
 # Dump cfg
-dump 1 all cfg 100 cfg/dump.NeutralClsFINALlowdensity_*.cfg mass type xs ys zs id type c_peratom fx fy fz c_Clustercount
-dump_modify 1 pad 3 element Na Cl Cl_Neutral 
-
-# Display thermo
-timestep .005 #.001 = femtosecond
-thermo_style custom step pe pxx pyy pzz temp press 
-thermo 50
+#dump 1 all cfg 100 cfg/dump.NeutralClsFINALlowdensity_*.cfg mass type xs ys zs id type c_peratom fx fy fz c_Clustercount
+#dump_modify 1 pad 3 element Na Cl Cl_Neutral 
+dump 1 all cfg 100 cfg/dump.NeutralClsFINALlowdensity_*.cfg mass type xs ys zs id type c_Clustercount
+dump_modify 1 element Na Cl Cln
+dump_modify 1 sort id
 
 run 40000
 
