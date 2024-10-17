@@ -192,6 +192,11 @@ input file (metal unit, lammps)
   https://www.researchgate.net/publication/345384762
   Grain_Boundary_CBN
 
+- S. A. Bringuie, Doctor thesis (2015).
+  http://hdl.handle.net/10150/560748
+  https://repository.arizona.edu/bitstream/handle/10150/560748/azu_etd_13780_sip1_m.pdf?sequence=1
+  Grain_Boundary_SiC
+
 - X. Ke, Doctor Thesis (2019).
   https://scholarworks.uvm.edu/graddis/995/
   Cu-Ag_MC (python code)
