@@ -1,0 +1,192 @@
+#------------------------------------------------------------------------------------------
+# Appendix C
+# LAMMPS input scripts
+# Listing C.1. LAMMPS Script for Shearing Bicrystal
+#------------------------------------------------------------------------------------------
+# LAMMPS 64-bit 22Dec2022-MSMPI
+#------------------------------------------------------------------------------------------
+# NIST, Interatomic Potentials (Force Fields): https://www.ctcms.nist.gov/potentials/
+#------------------------------------------------------------------------------------------
+
+clear
+echo both
+
+#LAMMPS input script for shearing Bicrystals
+#Author: Stefan Bringuier
+#Affiliation: University of Arizona
+# Department of Materials Science and Engineering
+#Command line input -v stgb. stgb = Structure File extension
+#Example: mpirun -np 4 lammps-daily -v stgb Sigma5-120 -in in.shear
+
+#variable stgb string "Sigma5-120"
+variable stgb string "Sigma5-tilt37_xz.lmp" # from structure directory (using atomsk)
+
+#---Run time variables ---
+variable vel    equal 0.01    # A/ps (for Y axis)
+variable temp   equal 300.0   # Set temperature
+variable press  equal 1.0     # Set pressure
+variable freq   equal 2500    # output frequency
+variable ne     equal 250     # Number of measurements
+variable nr     equal 10      # Time be tween measurements
+variable eqtime equal 100000  # Equilibration time
+variable rtime  equal 2000000 # Shear time
+
+#---Create file names, directories, and log-file ---
+variable displ string ${stgb}-T${temp}-Vel${vel}
+variable dir   string ${stgb}-T${temp}-Vel${vel}
+shell mkdir ${dir}
+#log ${dir}/log.Si-${stgb}-T${temp}-Vel${vel}
+
+#--Basic Settings ---
+units metal
+boundary p p p
+atom_style atomic
+
+#---Structure file & Potential ---
+read_data data.${stgb}
+
+variable elem string "Si C"
+
+#If Silicon Carbide
+mass 1 28.085  # Si
+mass 2 12.01   # C
+pair_style tersoff
+pair_coeff * * 1994_SiC.tersoff ${elem}
+
+#If Silicon
+#mass 1 28.085 # Si
+#pair_style meam/spline
+#pair_coeff * * Si_2.meam.spline Si
+
+# Delete atoms created with atomsk if they are too close.
+delete_atoms overlap 0.85 all all
+
+#---Set grain regions---
+#---Z-axis is always perpendicular to GB---
+variable midz equal (zlo+zhi)/2.0
+region topgrain block INF INF INF INF ${midz} INF units box
+group topgrain region topgrain
+
+#---Regions for shearing and bulk atoms---
+variable d2 equal 5.43 #*2
+variable be equal zlo+${d2}
+variable te equal zhi-${d2}
+
+region botend block INF INF INF INF INF   ${be} units box
+region topend block INF INF INF INF ${te} INF   units box
+region other  block INF INF INF INF ${be} ${te} units box
+region ends union 2 botend topend
+group botend region botend
+group topend region topend
+group ends region ends
+group other subtract all ends
+
+#---Approx.group for GB atoms---
+variable d1 equal 5.43 #*1.5
+variable r1 equal ${midz}-${d1}
+variable r2 equal ${midz}+${d1}
+region GBa block INF INF INF INF ${r1} ${r2} units box
+group GBa region GBa
+
+#---Computes---
+compute peratom all pe/atom
+compute dis all displace/atom
+compute centsym all centro/atom 4 #Diamond
+compute dtopend topend reduce ave c_dis[1] c_dis[2] c_dis[3] c_dis[4]
+compute cmtopgrain topgrain com #Center-of-mass topgrain
+variable magcmtopgrain equal &
+  'sqrt((c_cmtopgrain[1]^2)+(c_cmtopgrain[2]^2)+(c_cmtopgrain[3]^2))'
+
+#---Alt. Def. of Pressure---
+compute patom other stress/atom NULL
+compute preduce other reduce sum &
+  c_patom[1] c_patom[2] c_patom[3] &
+  c_patom[4] c_patom[5] c_patom[6]
+variable volother equal lx*ly*(${te}-${be})
+variable pressother equal &
+  -1*(c_preduce[1]+c_preduce[2]+c_preduce[3])/(3*${volother})
+variable pyzother equal -1*(c_preduce[6]/${volother})
+
+#---Equilibrate---
+reset_timestep 0
+timestep 0.001 # 1 [fs]
+thermo 5000
+thermo_style custom step pe ke temp press &
+  v_pressother v_pyzother vol v_volother lx ly lz density
+velocity other create ${temp} 6821398 mom yes rot yes sum yes
+velocity ends set 0.0 0.0 0.0 units box
+fix f1 all npt temp ${temp} ${temp} 1.0 iso ${press} ${press} 10.0 drag 10
+fix f2 ends setforce 0.0 0.0 0.0
+dump d1 all cfg ${freq} cfg/equil.*.cfg mass type xs ys zs id type vx vy vz fx fy fz
+dump_modify d1 element ${elem}
+run ${eqtime}
+unfix f1
+unfix f2
+undump d1
+
+reset_timestep 0
+timestep 0.001 # 1 [fs]
+
+#---Output variables---
+variable distop equal c_dtopend[2]
+variable tstep equal step
+variable p0 equal "v_distop"
+variable p2 equal "-pxx/10000"
+variable p3 equal "-pyy/10000"
+variable p4 equal "-pzz/10000"
+variable p5 equal "-pxy/10000"
+variable p6 equal "-pxz/10000"
+variable p7 equal "-pyz/10000"
+variable p8 equal "-1*v_pyzother/10000"
+
+#---Output files ---
+fix def3 all print ${freq} &
+  "${tstep} ${p0} ${p2} ${p3} ${p4} ${p5} ${p6} ${p7} ${p8}" file &
+  ${dir}/stress-displc-${dir} title " " screen no
+
+fix def4 topgrain print ${freq} &
+  "${tstep} ${p0} c_cmtopgrain[1] c_cmtopgrain[2] c_cmtopgrain[3] ${magcmtopgrain}" &
+  file ${dir}/topgrain-com-${dir} title " " screen no
+
+#---centrosymmetry parameter, Size of bins: 2%----
+#---Note need to post-process to get GB-location vs. time---
+variable cbin equal 1.6 #lz/floor(lz)
+#variable ne equal ${freq}/100
+#variable nr equal ${freq}/10
+
+# lammps old version
+#fix pos1 all ave/spatial &
+#  ${ne} ${nr} ${freq} z lower ${cbin} &
+#  c_centsym region other ave one &
+#  file ${dir}/centrosymm-spatial-${dir}.dat
+
+# Define a chunk for spatial binning
+compute myChunk all chunk/atom bin/1d z lower ${cbin} units box
+#
+# Use fix ave/chunk to average the centrosymmetry parameter
+fix pos1 all ave/chunk ${ne} ${nr} ${freq} myChunk c_centsym ave one file ${dir}/centrosymm-spatial-${dir}.dat
+
+#---No PBC when shearing ---
+change box all boundary p p s units box
+
+#---Velocities for deforming in Z-direction---
+velocity topend set 0.0 ${vel} 0.0 units box
+velocity other ramp vy 0.0 ${vel} z ${be} ${te} units box
+
+#---Run Deformation---
+thermo ${freq}
+thermo_style custom step v_distop temp press v_p2 v_p3 v_p4 v_p5 v_p6 v_p7
+fix f2 all nvt temp ${temp} ${temp} 2.0
+fix f3 ends setforce 0.0 0.0 0.0
+dump d1 all custom ${freq} ${dir}/dump.${stgb}_T${temp}_Vel${vel}.gz &
+  id type xs ys zs c_peratom c_centsym
+dump modify d1 sort id
+dump d2 all cfg ${freq} cfg/shearing.*.cfg mass type xs ys zs &
+  id type vx vy vz fx fy fz c_peratom c_centsym
+dump_modify d2 element ${elem}
+run ${rtime}
+
+#shell rm log.lammps
+
+print "---------- Ende ----------"
+#------------------------------------------------------------------------------------------
