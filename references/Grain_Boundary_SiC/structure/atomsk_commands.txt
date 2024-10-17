@@ -1,0 +1,63 @@
+#----------------------------------------------------------------------------------------------
+# Atomsk installation for Windows 11
+# atomsk: https://atomsk.univ-lille.fr/
+#   Download "atomsk_b0.13.1_Windows.zip", unpack it. Then, click "Atomsk_setup.exe"
+#----------------------------------------------------------------------------------------------
+# Atomsk installation for Ubuntu 22.04 LTS or WSL2
+# 1. wget https://atomsk.univ-lille.fr/code/atomsk_b0.13.1_amd64.deb
+# 2. sudo dpkg -i atomsk_b0.13.1_amd64.deb
+# 3. atomsk
+#----------------------------------------------------------------------------------------------
+# Atomsk commands
+(https://atomsk.univ-lille.fr/tutorial_grainboundaries.php)
+
+# atom_style atomic
+# rotation axis [uvw] = [001], tilt 36.87 deg (rotation.txt)
+#atomsk --polycrystal SiC_P1.cif rotation.txt data.Sigma5-tilt37.xsf; atomsk -remove-doubles 0.35 data.Sigma5-tilt37.xsf vesta; atomsk data.Sigma5-tilt37.vesta lmp
+#atomsk --polycrystal SiC_P1.cif rotation.txt data.Sigma5-tilt37.xsf; atomsk -remove-doubles 0.35 data.Sigma5-tilt37.xsf exyz; atomsk data.Sigma5-tilt37.xyz lmp
+atomsk --polycrystal SiC_P1.cif rotation.txt data.Sigma5-tilt37.xsf; atomsk -remove-doubles 0.35 data.Sigma5-tilt37.xsf cfg; atomsk data.Sigma5-tilt37.cfg lmp
+
+# atom_style charge (charges.txt)
+# rotation axis [uvw] = [001], tilt 36.87 deg (rotation.txt)
+#atomsk --polycrystal SiC_P1.cif rotation.txt data.Sigma5-tilt37.xsf; atomsk -remove-doubles 0.35 data.Sigma5-tilt37.xsf vesta; atomsk data.Sigma5-tilt37.vesta -properties charges.txt lmp
+#atomsk --polycrystal SiC_P1.cif rotation.txt data.Sigma5-tilt37.xsf; atomsk -remove-doubles 0.35 data.Sigma5-tilt37.xsf exyz; atomsk data.Sigma5-tilt37.xyz -properties charges.txt lmp
+atomsk --polycrystal SiC_P1.cif rotation.txt data.Sigma5-tilt37.xsf; atomsk -remove-doubles 0.35 data.Sigma5-tilt37.xsf cfg; atomsk data.Sigma5-tilt37.cfg -properties charges.txt lmp
+#----------------------------------------------------------------------------------------------
+# How to rotate 90 degrees around the y axis and make it look like the x and z axes are aligned.
+
+atomsk data.Sigma5-tilt37.cfg -rotate y 90 -orthogonal-cell data.Sigma5-tilt37_xz.cfg
+atomsk data.Sigma5-tilt37_xz.cfg data.Sigma5-tilt37_xz.lmp lmp
+
+#----------------------------------------------------------------------------------------------
+5.3.2 Simulation Details
+
+In this study the generated GBs have a rotation axis of [001] and a median plane of (110). 
+The GB misorientation angles range from 4.24-36.9 degree and contains 23,040-46,720 atoms with 
+dimensions 145.702-207.48 x 145.702-207.48 x 21.72 Angstrom^3 and satisfy periodic boundary conditions 
+in all 3 dimensions.
+#----------------------------------------------------------------------------------------------
+rotation.txt
+#-----------------------------------------
+box 145.702 145.702 21.72
+node 0.25*box 0.5*box 0.5*box 0  0 -18.435
+node 0.75*box 0.5*box 0.5*box 0  0  18.435
+#-----------------------------------------
+(145.702 x 145.702 x 21.72 Angstrom^3)
+(rotate -18.435 degree at uvw = 001 axis and x = 0.25*box)
+(rotate  18.435 degree at uvw = 001 axis and x = 0.75*box)
+#-----------------------------------------
+#----------------------------------------------------------------------------------------------
+Now, we turn our attention to the shear response of the two high angle GBs which have the lowest 
+Sigma values for [001] symmetric tilt bicrystals, namely Simga13 (22.62 degree) and Sigma5(36.87 degree). 
+Such GBs are known to exhibit interesting properties and in general have a higher rate of 
+occurrence in polycrystalline materials [92, 93]. 
+
+[92] Randle, V. and Brown, A. Development of grain misorientation texture, in
+terms of coincident site lattice structures, as a function of thermomechanical
+treatments. Philosophical Magazine A, 59(5):1075-1089, May 1989. ISSN 0141-
+8610. doi:10.1080/01418618908209838.
+
+[93] Palumbo, G., Lehockey, E. M., and Lin, P. Applications for grain boundary
+engineered materials. JOM, 50(2):40-43, February 1998. ISSN 1047-4838, 1543-
+1851. doi:10.1007/s11837-998-0248-z.
+#----------------------------------------------------------------------------------------------
