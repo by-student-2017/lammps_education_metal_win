@@ -153,13 +153,21 @@ fix def4 topgrain print ${freq} &
 variable cbin equal 1.6 #lz/floor(lz)
 #variable ne equal ${freq}/100
 #variable nr equal ${freq}/10
-fix pos1 all ave/spatial &
-  ${ne} ${nr} ${freq} z lower ${cbin} &
-  c_centsym region other ave one &
-  file ${dir}/centrosymm-spatial-${dir}.dat
+
+# lammps old version
+#fix pos1 all ave/spatial &
+#  ${ne} ${nr} ${freq} z lower ${cbin} &
+#  c_centsym region other ave one &
+#  file ${dir}/centrosymm-spatial-${dir}.dat
+
+# Define a chunk for spatial binning
+compute myChunk all chunk/atom bin/1d z lower ${cbin} units box
+#
+# Use fix ave/chunk to average the centrosymmetry parameter
+fix pos1 all ave/chunk ${ne} ${nr} ${freq} myChunk c_centsym ave one file ${dir}/centrosymm-spatial-${dir}.dat
 
 #---No PBC when shearing ---
-change box all boundary p p s units box
+change_box all boundary p p s units box
 
 #---Velocities for deforming in Z-direction---
 velocity topend set 0.0 ${vel} 0.0 units box
