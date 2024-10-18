@@ -421,6 +421,10 @@ input file (metal unit, lammps)
   https://digitalcommons.usu.edu/etd/7081 
   Thermal_Conductivity_Mg2Si
 
+- A. M. K. Fujii, Master thesis (2014).
+  https://escholarship.org/content/qt3km9505t/qt3km9505t_noSplash_48a5d5cd8b3244d58739b9080df60e16.pdf
+  Thermal_Conductivity_amorphous_carbon
+
 - S. Lowder, Bachelor thesis (2017).
   https://dspace.mit.edu/handle/1721.1/112369
   https://dspace.mit.edu/bitstream/handle/1721.1/112369/1011355070-MIT.pdf
