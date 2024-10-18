@@ -1,0 +1,87 @@
+#------------------------------------------------------------------------------------------
+# Appendices
+# C LAMMPS input script for generating porous amorphous carbon and 
+# computing the thermal conductivity using the Green-Kubo method
+#------------------------------------------------------------------------------------------
+# LAMMPS 64-bit 22Dec2022-MSMPI
+#------------------------------------------------------------------------------------------
+# NIST, Interatomic Potentials (Force Fields): https://www.ctcms.nist.gov/potentials/
+#------------------------------------------------------------------------------------------
+
+#####################################################
+# Initialization ####################################
+#####################################################
+
+read_restart endNVT.restart   # Open file created by the script generating
+                              # amorphous carbon
+
+# Variables #########################################
+
+variable T2 equal 300         # Kelvin
+variable  V equal vol         # Volume
+variable dt equal 0.0001      # Time step
+variable  p equal 10000       # correlation length
+variable  s equal 10          # sample interval
+variable  d equal $p*$s       # dump interval
+
+# Setup #############################################
+
+# Define spherical region by specifying the center coordinates and radius. Here, radius is for 30%
+lattice diamond 3.57 region pore1 sphere 3 3 3 2.613872345
+                              # porosity
+delete atoms region pore1     # Remove atoms within a spherical region
+
+# Interatomic potential #############################
+
+pair_style airebo 3.0         # Defines the pair style for the atomic potential
+                              # interactions to be AIREBO
+pair_coeff * * CH.airebo C    # Defines the interactions to be between carbon
+                              # atoms
+neighbor 2.0 bin              # The neighbor distance is given by the potential
+                              # cutoff + 2A
+neigh_modify delay 10 every 1 check yes # Rebuilds the neighbor every 10 time steps only
+                              # if an atom has moved at least half the
+                              # skin distance
+
+#####################################################
+# Equilibration ##################
+#####################################################
+
+timestep ${dt}
+reset_timestep 0              # Resets the time step counter to zero
+thermo 100000                 # Outputs thermodynamic data every 100000 time steps
+restart $d D0P3.*.restart     # Writes a restart file D0P3.*.restart every d time
+                              # steps where the * is filled in by time step at
+                              # which the file is written
+fix rescale all temp/rescale 1 ${T2} ${T2} 50 1 # Rescale temperature to 300 K if temperature is
+                              # outside 300 K by 50 K
+fix NVE all nve
+run 100000                    # Runs the integration in NVE for 100,000 time
+unfix rescale                 # Ends temperature rescaling
+unfix NVE                     # Ends NVE integration
+fix NVT2 all nvt temp ${T2} ${T2} 0.09 drag 0.4
+run 100000                    # Runs the integration in NVT for 100,000 time
+write_restart D0P3endNVT.restart # Writes a restart file D0P3endNVT.restart
+
+#####################################################
+# Green Kubo Method #################################
+#####################################################
+
+compute myKE all ke/atom      # Computes the kinetic energy per atom
+compute myPE all pe/atom      # Computes the potential energy per atom
+compute myStress all stress/atom virial # Computes the stresses per atom excluding
+                              # kinetic energy contributions
+compute flux all heat/flux myKE myPE myStress # Computes the heat flux vector
+variable Jx equal c_flux[1]/vol
+variable Jy equal c_flux[2]/vol
+variable Jz equal c_flux[3]/vol
+fix JJ all ave/correlate $s $p $d c_flux[1] & 
+  c_flux[2] c_flux[3] type auto file &
+  J0Jt_D0P3.dat ave running   # Calculates the heat current autocorrelation function
+thermo $d                     # Outputs thermodynamic data every 100,000 time
+                              # steps
+thermo_style custom step temp v_Jx v_Jy v_Jz # Defines the thermodynamic data to output
+run 45000000 # Runs the Green Kubo method for 45,000,000 time
+                              # steps
+write_restart D0P3end.restart # Writes a restart file D0P3end.restart
+#------------------------------------------------------------------------------------------

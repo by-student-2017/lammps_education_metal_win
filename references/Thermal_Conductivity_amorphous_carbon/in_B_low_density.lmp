@@ -1,0 +1,76 @@
+#------------------------------------------------------------------------------------------
+# Appendices
+# B LAMMPS input script for generating amorphous carbon with lower density
+# and computing the thermal conductivity using the Green-Kubo method
+#------------------------------------------------------------------------------------------
+# LAMMPS 64-bit 22Dec2022-MSMPI
+#------------------------------------------------------------------------------------------
+# NIST, Interatomic Potentials (Force Fields): https://www.ctcms.nist.gov/potentials/
+#------------------------------------------------------------------------------------------
+
+#####################################################
+# Initialization ####################################
+#####################################################
+
+read_restart endNVT.restart  # Open file created by the script generating
+                             # amorphous carbon
+
+# Variables #########################################
+
+variable T2 equal 300        # Kelvin
+variable  V equal vol        # Volume
+variable dt equal 0.0001     # Time step
+variable  p equal 10000      # correlation length
+variable  s equal 10         # sample interval
+variable  d equal $p*$s      # dump interval
+
+# Interatomic potential #############################
+
+pair_style airebo 3.0        # Defines the pair style for the atomic potential
+                             # interactions to be AIREBO
+pair_coeff * * CH.airebo C   # Defines the interactions to be between carbon
+                             # atoms
+neighbor 2.0 bin             # The neighbor distance is given by the potential
+                             # cutoff + 2A
+neigh_modify delay 10 every 1 check yes # Rebuilds the neighbor every 10 time steps only
+                             # if an atom has moved at least half the
+                             # skin distance
+change_box all x scale 1.3 y scale 1.3 & 
+  z scale 1.3 remap          # Scale atom coordinates by 1.3 times in all directions
+print $V                     # Print new volume
+
+#####################################################
+# Equilibration ##################
+#####################################################
+
+timestep ${dt}
+thermo 1000                  # Outputs thermodynamic data every 1000 time steps
+fix NVT all nvt temp ${T2} ${T2} 0.09 drag 0.4 # Integrates atomic positions using the NVT
+                             # ensemble for a temperature of 300 K
+run 500000                   # Runs the integration in NVT for 500,000 time
+write_restart D30endNVT.restart # Writes a restart file D30endNVT.restart
+restart $d D30.*.restart     # Writes a restart file D30.*.restart every d time
+                             # steps where the * is filled in by time step at
+                             # which the file is written
+
+#####################################################
+# Green Kubo Method #################################
+#####################################################
+
+compute myKE all ke/atom     # Computes the kinetic energy per atom
+compute myPE all pe/atom     # Computes the potential energy per atom
+compute myStress all stress/atom virial # Computes the stresses per atom excluding
+                             # kinetic energy contributions
+compute flux all heat/flux myKE myPE myStress # Computes the heat flux vector
+variable Jx equal c_flux[1]/vol
+variable Jy equal c_flux[2]/vol
+variable Jz equal c_flux[3]/vol
+fix JJ all ave/correlate $s $p $d c_flux[1] & 
+  c_flux[2] c_flux[3] type auto file &
+  J0Jt_D30.dat ave running   # Calculates the heat current autocorrelation function
+thermo $d                    # Outputs thermodynamic data every 100,000 time
+                             # steps
+thermo_style custom step temp v_Jx v_Jy v_Jz # Defines the thermodynamic data to output
+run 45000000                 # Runs the Green Kubo method for 45,000,000 time
+                             # steps
+write_restart D30end.restart # Writes a restart file D30end.restart#------------------------------------------------------------------------------------------
