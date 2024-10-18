@@ -426,6 +426,10 @@ input file (metal unit, lammps)
   https://dspace.mit.edu/bitstream/handle/1721.1/112369/1011355070-MIT.pdf
   DSC_Simulations_Al
 
+- B. Space, ResearchGate (2008).
+  https://www.researchgate.net/publication/228935329
+  quasicrystal_d-AlCoNi (Note: I made some changes. If there are any problems, it is my (By STUDENT) responsibility.)
+
 - O. Takahiro, Chiba Univ.
   https://amorphous.tf.chiba-u.jp/lecture.files/ms-workshop/molten.html
   Lecture
