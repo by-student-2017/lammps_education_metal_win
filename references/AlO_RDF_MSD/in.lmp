@@ -1,0 +1,123 @@
+#------------------------------------------------------------------------------------------
+# A.2 LAMMPS simulation code for enthalpy dynamics
+#------------------------------------------------------------------------------------------
+# LAMMPS 64-bit 22Dec2022-MSMPI
+#------------------------------------------------------------------------------------------
+# NIST, Interatomic Potentials (Force Fields): https://www.ctcms.nist.gov/potentials/
+#------------------------------------------------------------------------------------------
+clear
+echo both
+#-------------------- Initialization -----------------------------------------------------
+units metal
+#atom_style atomic # eam
+atom_style charge # comb3
+
+variable x equal 6
+variable y equal $x
+variable z equal $x
+
+variable Tbegin equal 1
+variable Tmax equal 3500
+variable Tliq equal 1200
+
+variable Pamb equal 1.013
+
+#variable N_restart equal 10000
+variable N_prod_steps equal 50000
+
+variable Tdamp equal 0.2
+variable Pdamp equal 0.10
+#variable Pdamp equal 0.3
+
+variable distri_root equal 87287
+
+#-------------------- Read structure file ------------------------------------------------
+variable lattice_size equal 4.05
+variable scale equal 1.05
+variable box_size equal ${lattice_size}*${scale}
+
+lattice fcc ${box_size}
+region box block 0 $x 0 $y 0 $z
+
+create_box 2 box
+create_atoms 1 box
+
+mass 1 26.981539 # Al
+mass 2 15.999    # O
+
+variable elem string "Al O"
+
+#-------------------- Force field --------------------------------------------------------
+#pair_style eam/alloy
+#pair_coeff * * AlO.eam.alloy Al O
+
+pair_style comb3 polar_off
+pair_coeff * * ffield.comb3.NiAlO ${elem}
+
+neighbor 1.5 bin
+neigh_modify delay 10
+
+#-------------------- Settings -----------------------------------------------------------
+timestep 0.001 # 1 [fs]
+
+velocity all create ${Tbegin} ${distri_root}
+
+thermo 10
+thermo_style custom step temp press vol pe ke etotal enthalpy
+
+variable n loop 28
+label loop
+
+dump d1 all cfg 100 cfg/nvt_${Tliq}K.*.cfg mass type xs ys zs id type vx vy vz fx fy fz
+dump_modify d1 element ${elem}
+
+#-------------------- Thermalisation -----------------------------------------------------
+reset_timestep 0
+
+fix 1 all nvt temp ${Tliq} ${Tliq} ${Tdamp}
+run 10000
+unfix 1
+
+fix 1 all nvt temp ${Tmax} ${Tmax} ${Tdamp}
+run 10000
+unfix 1
+
+fix 1 all nvt temp ${Tmax} ${Tliq} ${Tdamp}
+run 50000
+unfix 1
+
+fix 1 all nvt temp ${Tliq} ${Tliq} ${Tdamp}
+run 10000
+
+undump d1
+#-------------------- Production ---------------------------------------------------------
+reset_timestep 0
+
+#---------- output file settings -------------------
+dump vitesse all custom 20 cfg/dump_${Tliq}K.vit id type vx vy vz
+dump position all custom 20 cfg/dump_${Tliq}K.pos id type x y z
+
+dump d2 all cfg 100 cfg/pro_${Tliq}K.*.cfg mass type xs ys zs id type vx vy vz fx fy fz
+dump_modify d2 element ${elem}
+
+compute RDF all rdf 100
+fix RDF2 all ave/time 10 5000 50000 c_RDF[*] file cfg/RDF_${Tliq}K.dat mode vector
+
+compute MSD all msd
+fix MSD2 all ave/time 10 1 10 c_MSD[4] file cfg/MSD_${Tliq}K.dat
+
+#restart ${N_restart} restart.*
+run ${N_prod_steps}
+
+undump position
+undump vitesse
+undump d2
+unfix 1
+unfix RDF2
+unfix MSD2
+
+variable Tliq equal ${Tliq}-50
+
+next n
+jump SELF loop
+#------------------------------------------------------------------------------------------
