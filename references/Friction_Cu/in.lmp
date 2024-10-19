@@ -1,0 +1,198 @@
+#------------------------------------------------------------------------------------------
+# 3D Friction Simulation of Sliding Cu-Cu Asperities
+# Asperity Size, R = 75 A (for v = 100 m/s), theta = 0 deg, Thermostat On case
+# delta/R = 0.1, m = 0
+# Note: 50 =< R =< 100 Angstrom
+# Figure 4.1: Asperity-asperity sliding contact simulation model
+#------------------------------------------------------------------------------------------
+# LAMMPS 64-bit 22Dec2022-MSMPI
+#------------------------------------------------------------------------------------------
+# NIST, Interatomic Potentials (Force Fields): https://www.ctcms.nist.gov/potentials/
+#------------------------------------------------------------------------------------------
+clear
+echo both
+#-------------------- Environment Settings -----------------------------------------------
+
+variable Temp_asp_mobile equal 600.0 # [K] (in "Run (equilibriation)")
+variable Temp_thermostat equal 300.0 # [K] (Do not work for Thermostat Off case)
+
+variable     R equal 75  # [Angstrom] = [A]
+variable delta equal 7.5 # [Angstrom] = [A]
+
+#-------------------- Initialization -----------------------------------------------------
+units metal 
+dimension 3 
+boundary p s p 
+atom_style atomic 
+
+#-------------------- Read structure file ------------------------------------------------
+# Create geometry
+
+lattice fcc 3.615 # theta = 0 deg
+#lattice fcc 3.615 orient x 1 4 0 orient y -4 1 0 # theta = 14 deg
+#lattice fcc 3.615 orient x 1 3 0 orient y -3 1 0 # theta = 18 deg
+#lattice fcc 3.615 orient x 1 2 0 orient y -2 1 0 # theta = 27 deg
+#lattice fcc 3.615 orient x 2 3 0 orient y -3 2 0 # theta = 34 deg
+#lattice fcc 3.615 orient x 1 1 0 orient y -1 1 0 # theta = 45 deg
+
+variable dR  equal ${delta}/${R}
+variable  m  equal $(0.10 - v_dR)
+variable mR  equal ${m}*${R}
+
+# see "Figure 4.1: Asperity-asperity sliding contact simulation model"
+variable b     equal 5                              # b = Base [Angstrom], 1 [Angstrom] = 0.1 [nm]
+variable ylu   equal $(v_R + v_b - v_delta)         # R=50:Rd=50,   R=75:Rd=72.5,   R=100:Rd=95
+variable ylen  equal $(2.0*v_R + 2.0*v_b - v_delta) # R=50:Rdf=105, R=75:Rdf=152.5, R=100:Rdf=200
+
+# Regions
+
+#region box block -$(2.0*v_R) $(v_R*5) 0 ${ylen} -${R} ${R} units box # v = 10 m/s case, length of x = (-2R) + 5R = 7R
+region box block -$(2.0*v_R) $(v_R*6) 0 ${ylen} -${R} ${R} units box # v = 100 m/s case, length of x = (-2R) + 6R = 8R
+create_box 3 box 
+
+region lo-fixed block  ${R}     $(3*v_R) 0                     ${b}                  -${R} ${R} units box 
+region hi-fixed block -$(2*v_R) 0        $(v_ylen-v_b+v_mR)    $(v_ylen+v_mR)        -${R} ${R} units box 
+#------------------------------------------------------------------------------------------------------------------------------
+region above-lo block  INF      INF      INF                   ${b}                   INF  INF side out units box 
+region below-hi block  INF      INF      $(v_ylu+v_R/5*5+v_mR) INF                    INF  INF side out units box 
+#------------------------------------------------------------------------------------------------------------------------------
+# Note: The x-axis is +2R higher than in Figure 4.1. If it follows the diagram, it will look like this: "region  slab1   block  -${R} ${R} ..."
+region  slab1   block  ${R}     $(3*v_R) $(v_b+v_R/5*0)        $(v_b+v_R/5*1)        -${R} ${R} units box # Lower Asp. (Fixed)
+region  slab2   block  ${R}     $(3*v_R) $(v_b+v_R/5*1)        $(v_b+v_R/5*2)        -${R} ${R} units box # Lower Asp. (Fixed)
+region  slab3   block  ${R}     $(3*v_R) $(v_b+v_R/5*2)        $(v_b+v_R/5*3)        -${R} ${R} units box # Lower Asp. (Fixed)
+region  slab4   block  ${R}     $(3*v_R) $(v_b+v_R/5*3)        $(v_b+v_R/5*4)        -${R} ${R} units box # Lower Asp. (Fixed)
+region  slab5   block  ${R}     $(3*v_R) $(v_b+v_R/5*4)        $(v_b+v_R/5*5)        -${R} ${R} units box # Lower Asp. (Fixed)
+#------------------------------------------------------------------------------------------------------------------------------
+region  slab6   block -$(2*v_R) 0        $(v_ylu+v_R/5*0+v_mR) $(v_ylu+v_R/5*1+v_mR) -${R} ${R} units box # Upper Asp. (Move)
+region  slab7   block -$(2*v_R) 0        $(v_ylu+v_R/5*1+v_mR) $(v_ylu+v_R/5*2+v_mR) -${R} ${R} units box # Upper Asp. (Move)
+region  slab8   block -$(2*v_R) 0        $(v_ylu+v_R/5*2+v_mR) $(v_ylu+v_R/5*3+v_mR) -${R} ${R} units box # Upper Asp. (Move)
+region  slab9   block -$(2*v_R) 0        $(v_ylu+v_R/5*3+v_mR) $(v_ylu+v_R/5*4+v_mR) -${R} ${R} units box # Upper Asp. (Move)
+region  slab10  block -$(2*v_R) 0        $(v_ylu+v_R/5*4+v_mR) $(v_ylu+v_R/5*5+v_mR) -${R} ${R} units box # Upper Asp. (Move)
+#------------------------------------------------------------------------------------------------------------------------------
+region lo-asperity sphere  $(2*v_R) ${b}                  0 ${R} units box 
+#------------------------------------------------------------------------------------------------------------------------------
+region hi-asperity sphere -${R}     $(v_ylu+v_R/5*5+v_mR) 0 ${R} units box 
+
+region lo-half-sphere intersect 2 lo-asperity above-lo 
+region hi-half-sphere intersect 2 hi-asperity below-hi 
+region sensor1 intersect 2 lo-half-sphere slab1 
+region sensor2 intersect 2 lo-half-sphere slab2 
+region sensor3 intersect 2 lo-half-sphere slab3 
+region sensor4 intersect 2 lo-half-sphere slab4 
+region sensor5 intersect 2 lo-half-sphere slab5 
+region sensor6 intersect 2 hi-half-sphere slab6 
+region sensor7 intersect 2 hi-half-sphere slab7 
+region sensor8 intersect 2 hi-half-sphere slab8 
+region sensor9 intersect 2 hi-half-sphere slab9 
+region sensor10 intersect 2 hi-half-sphere slab10 
+
+# Create atoms 
+
+create_atoms 1 region lo-half-sphere 
+create_atoms 2 region hi-half-sphere 
+create_atoms 3 region lo-fixed 
+create_atoms 3 region hi-fixed 
+
+#mass * 63.546 # Cu
+mass 1*3 63.546 # Cu
+
+variable elem string "Cu Cu Cu"
+
+#-------------------- Force field --------------------------------------------------------
+# Potentials 
+#pair_style eam 
+#pair_coeff * * Cu_u3.eam
+
+pair_style eam/alloy
+pair_coeff * * Cu01.eam.alloy ${elem}
+
+neighbor 2.0 bin 
+neigh_modify delay 5
+
+#-------------------- Settings -----------------------------------------------------------
+# Groups 
+
+group lo-fixed region lo-fixed 
+group hi-fixed region hi-fixed 
+group lo-half-sphere region lo-half-sphere 
+group hi-half-sphere region hi-half-sphere 
+group sensor1 region sensor1 
+group sensor2 region sensor2 
+group sensor3 region sensor3 
+group sensor4 region sensor4 
+group sensor5 region sensor5 
+group sensor6 region sensor6 
+group sensor7 region sensor7 
+group sensor8 region sensor8 
+group sensor9 region sensor9 
+group sensor10 region sensor10 
+group boundary union lo-fixed hi-fixed 
+group mobile subtract all boundary 
+group driven union mobile lo-fixed 
+
+# Initial velocities 
+
+compute asp mobile temp/partial 0 1 1 
+velocity mobile create ${Temp_asp_mobile} 482748 temp asp 
+compute 1 sensor1 temp 
+compute 2 sensor2 temp 
+compute 3 sensor3 temp 
+compute 4 sensor4 temp 
+compute 5 sensor5 temp 
+compute 6 sensor6 temp/partial 0 1 1 
+compute 7 sensor7 temp/partial 0 1 1 
+compute 8 sensor8 temp/partial 0 1 1 
+compute 9 sensor9 temp/partial 0 1 1 
+compute 10 sensor10 temp/partial 0 1 1 
+compute lo_asp lo-half-sphere temp 
+compute hi_asp hi-half-sphere temp/partial 0 1 1 
+
+# Fixes 
+
+fix 1 driven nve 
+fix 2 lo-fixed setforce 0.0 0.0 0.0 
+fix 3 hi-fixed setforce 0.0 0.0 0.0 
+
+timestep 0.002 # 2 [fs]
+
+fix 4 sensor1  temp/rescale 100 ${Temp_thermostat} ${Temp_thermostat} $(50*dt) 1 # Thermostat On case
+fix 5 sensor10 temp/rescale 100 ${Temp_thermostat} ${Temp_thermostat} $(50*dt) 1 # Thermostat On case
+fix_modify 5 temp 10 # Thermostat On case
+
+#-------------------- Run the simulation -------------------------------------------------
+# Run (equilibriation)
+
+thermo 100 
+thermo_style custom step temp c_lo_asp c_1 c_2 c_3 c_4 c_5 c_6 c_7 c_8 c_9 c_10 &
+  c_hi_asp pe ke etotal vol f_2[1] f_2[2] f_2[3] f_3[1] f_3[2] f_3[3] 
+thermo_modify format 1 %07d format 2 %7.3f format 3 %7.3f format 4 %7.3f &
+  format  5  %7.3f format  6  %7.3f format 7 %7.3f format 8 %7.3f format 9 %7.3f &
+  format 10  %7.3f format 11  %7.3f format 12 %7.3f format 13 %7.3f format 14 %7.3f &
+  format 15 %10.3f format 16 %10.3f format 17 %10.3f format 18 %10.3f format 19 %011.6f &
+  format 20 %011.6f format 21 %011.6f format 22 %011.6f format 23 %011.6f format 24 %011.6f 
+
+dump d1 all cfg 1000 cfg/equil.*.cfg mass type xs ys zs id type vx vy vz fx fy fz
+dump_modify d1 element ${elem}
+
+run 5000 # Note: 600 K, related to "velocity mobile create 600 482748 temp asp"
+# run 10000 # Thermostat On case
+
+undump d1
+#-------------------- Run the simulation -------------------------------------------------
+reset_timestep 0
+
+#fix 6 hi-fixed move linear 0.1 0.0 0.0 units box # v = 10 m/s case
+
+variable VX equal (exp(step/30000)-exp(-step/30000))/(exp(step/30000)+exp(-step/30000)) # v = 100 m/s case
+fix 6 hi-fixed move variable NULL NULL NULL v_VX NULL NULL # v = 100 m/s case
+
+dump 1 all atom 3000 dump.cu${R}dR${dR}
+dump 2 all dcd 1000 dcd.cu${R}dR${dR} 
+dump 3 hi-fixed custom 3000 vel${R}dR${dR}.txt id vx vy vz 
+#
+dump d2 all cfg 1000 cfg/run_R${R}_dR${dR}_.*.cfg mass type xs ys zs id type vx vy vz fx fy fz
+dump_modify d2 element ${elem}
+
+run 246000 
+
+#------------------------------------------------------------------------------------------
