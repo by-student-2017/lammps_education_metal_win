@@ -434,6 +434,10 @@ input file (metal unit, lammps)
   https://www.researchgate.net/publication/228935329
   quasicrystal_d-AlCoNi (Note: I made some changes. If there are any problems, it is my (By STUDENT) responsibility.)
 
+- A. M. K. Fujii, Master thesis (2014).
+  https://www.diva-portal.org/smash/get/diva2:1466761/FULLTEXT01.pdf
+  AlO_RDF_MSD
+
 - O. Takahiro, Chiba Univ.
   https://amorphous.tf.chiba-u.jp/lecture.files/ms-workshop/molten.html
   Lecture
