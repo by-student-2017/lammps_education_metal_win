@@ -108,6 +108,10 @@ input file (metal unit, lammps)
   https://www.repo.uni-hannover.de/bitstream/handle/123456789/4482/GesamtRevisedFinal.pdf
   YSZ (Yttria stabilized zirconia)
 
+- B. N. Vadgama, Doctor thesis (2014).
+  https://etd.auburn.edu/bitstream/handle/10415/4015/Dissertation%20ETD.pdf
+  Friction_Cu
+
 - E. Lofquist, Master thesis (2021).
   https://lup.lub.lu.se/student-papers/search/publication/9060962
   shockwaves_InSb
