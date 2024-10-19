@@ -108,6 +108,10 @@ input file (metal unit, lammps)
   https://www.repo.uni-hannover.de/bitstream/handle/123456789/4482/GesamtRevisedFinal.pdf
   YSZ (Yttria stabilized zirconia)
 
+- X. Gaobo, Doctor thesis (2016).
+  https://theses.lib.polyu.edu.hk/bitstream/200/8409/1/b28372323.pdf
+  Orthogonal_cutting_Si
+
 - B. N. Vadgama, Doctor thesis (2014).
   https://etd.auburn.edu/bitstream/handle/10415/4015/Dissertation%20ETD.pdf
   Friction_Cu
