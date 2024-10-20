@@ -1,0 +1,155 @@
+#------------------------------------------------------------------------------------------
+# Appendix V Input script for Lammps
+# MD simulation of orthogonal cutting of silicon
+#
+# Figure 6.1 MD model of cutting SiC using a positive raked tool
+# Figure 6.6 MD model of cutting silicon using a positive raked tool
+#------------------------------------------------------------------------------------------
+# LAMMPS 64-bit 22Dec2022-MSMPI
+#------------------------------------------------------------------------------------------
+# NIST, Interatomic Potentials (Force Fields): https://www.ctcms.nist.gov/potentials/
+#------------------------------------------------------------------------------------------
+clear
+echo both
+#-------------------- Environment Settings -----------------------------------------------
+
+variable Temp equal 293.0 # Temperatrue [K]
+
+# ------------------------ INITIALIZATION ---------------------------- 
+units metal 
+dimension 3 
+boundary p p p # Length Height Thickness
+atom_style atomic
+
+# ----------------------- ATOM DEFINITION ---------------------------- 
+
+variable  scal equal  0.50 # related with all (simulation)
+variable xscal equal  0.50 # related with Length of the Workpiece
+variable yscal equal  0.25 # related with t and t0 in Height of the Workpiece
+variable zscal equal  1.00 # related with Thickness of the Workpiece
+variable cscal equal  1.00 # related with the cutter
+
+variable    dv equal    4*${scal}
+variable cutRx equal   35*${scal}*${xscal}*${cscal}
+variable cutRy equal   40*${scal}*${yscal}*${cscal}
+                                           # part of Workpiece, dv(newton), cutterRaw, dv(simulation_box)
+variable wpxlo equal -120*${scal}*${xscal} # Length (Fig. 6.6),   +4(-116),  0, -5(-125)
+variable wpxhi equal   -2*${scal}*${xscal} # Length (Fig. 6.6),     -1(-1), 35,  +22(20)
+variable wpylo equal  -72*${scal}*${yscal} # Height (Fig. 6.6, t), +4(-68),  0,  -3(-75)
+variable wpyhi equal   12*${scal}*${yscal} # Height (Fig. 6.6,t0),  +8(20), 40,  +68(80)
+variable wpzlo equal    0*${scal}*${zscal} # Thickness (Fig. 6.6),  -1(-1),  0,        0
+variable wpzhi equal    9*${scal}*${zscal} # Thickness (Fig. 6.6),  +1(10),  9,        9
+
+# Note: The lowest y position of cutter = 0.0 (is related with cutting line)
+
+#---------- diamond silicon ----------
+lattice diamond 5.43 
+region simulation_box block $(v_wpxlo-v_dv) $(v_cutRy/2) $(0+v_wpylo-v_dv) $(0+2*v_cutRy) ${wpzlo} ${wpzhi}
+create_box 2 simulation_box 
+region wp block ${wpxlo} ${wpxhi} ${wpylo} ${wpyhi} ${wpzlo} ${wpzhi} # This region is utilized during equilibration.
+create_atoms 1 region wp 
+
+# The actual area to which NVE is applied when calculating cuttings.
+#region newton    block $(v_wpxlo+v_dv) $(v_wpxhi-1) $(v_wpylo+v_dv) $(v_wpyhi+2*v_dv) $(v_wpzlo-1) $(v_wpzhi+1)
+region newton    block $(v_wpxlo+v_dv) ${wpxhi} $(0+v_wpylo+v_dv) $(0+v_wpyhi+2*v_dv) ${wpzlo} ${wpzhi} # The balancing structure has been modified to be fixed in an L shape (fixed on the left and bottom).
+
+# The shape of this area does not change, so C-C can be set to none.
+region cutterRaw block 0 ${cutRx}  0 ${cutRy}  ${wpzlo} ${wpzhi}
+region planeA plane 0 0 0  1.732 -1      0
+region planeB plane 0 0 0 -0.1736 0.9848 0
+region cutter intersect 3 cutterRaw planeA planeB
+
+#---------- diamond carbon ----------
+lattice diamond 3.567 
+create_atoms 2 region cutter 
+
+group newtonatoms region newton # The actual area (group) to which NVE is applied when calculating cuttings.
+group workpiece region wp       # This region (group) is utilized during equilibration.
+group tool region cutter        # The shape of this area (group) does not change, so C-C can be set to none.
+
+mass 1 28.085 # Si
+mass 2 12.01  # C
+
+variable elem string "Si C"
+
+# ------------------------ FORCE FIELDS ------------------------------ 
+#pair_style hybrid morse 8.0 meam 
+#pair_coeff * * meam library.meam Si92 C NULL Si92 C 
+#pair_coeff 2 2 none                      #  C-C
+#pair_coeff 1 2 morse 0.435 4.6487 1.9475 # Si-C
+
+# This method takes a long time to calculate.
+#pair_style meam
+#pair_coeff * * library.meam Fe Mn Si C parameter.meam Si C
+
+# By determining the necessary calculations, we replace it with a lighter potential while ensuring accuracy.
+pair_style hybrid morse 8.0 meam 
+pair_coeff * * meam library.meam Fe Mn Si C parameter.meam Si C
+pair_coeff 2 2 none                      #  C-C
+pair_coeff 1 2 morse 0.435 4.6487 1.9475 # Si-C
+
+# ------------------------- SETTINGS --------------------------------- 
+timestep 0.001 # 1 [fs]
+
+velocity workpiece create ${Temp} 482748 
+
+thermo 1000 
+thermo_style one # one or multi
+
+# ------------------------ EQUILIBRATION -----------------------------
+
+#dump 3 all xyz 2000 sirelax*.xyz 
+dump d1 all cfg 1000 cfg/equil_*.cfg mass type xs ys zs id type vx vy vz fx fy fz
+dump_modify d1 element ${elem}
+
+#--------------------------------
+# Energy equilibration (NVE)
+
+fix 1 workpiece nve 
+fix 2 workpiece temp/rescale 20 ${Temp} ${Temp} $(100*dt) 0.5 
+
+run 10000 
+
+unfix 1
+unfix 2
+
+#--------------------------------
+# Temperature equilibration (NVT) 
+
+fix 1 workpiece nvt temp ${Temp} ${Temp} $(100*dt)
+
+run 10000 
+
+unfix 1 
+
+#undump 3 
+undump d1
+
+# ------------------------ Cutting (NVE) ------------------------------
+reset_timestep 0 
+
+variable n equal step 
+
+compute peratom workpiece stress/atom NULL 
+compute volume workpiece voronoi/atom 
+
+#thermo 1000 
+#thermo_style one # one or multi
+
+#dump 4 all custom 1000 sicutting*.txt id type x y z c_peratom[1] c_peratom[2] &
+#  c_peratom[3] c_peratom[4] c_peratom[5] c_peratom[6] c_volume[1] 
+dump d2 all cfg 1000 cfg/cutting_*.cfg mass type xs ys zs id type vx vy vz fx fy fz
+dump_modify d2 element ${elem}
+
+fix 1 newtonatoms nve 
+fix cutting tool move linear -1 0 0 units box 
+
+run 125000 
+
+unfix 1 
+unfix cutting 
+undump d2
+
+# SIMULATION DONE 
+print "All done"
+#------------------------------------------------------------------------------------------
