@@ -15,15 +15,14 @@ echo both
 
 variable          Temp equal 293.0 # Temperatrue [K]
 
-variable cutting_speed equal  1e-3 # = 100 m/s (moving: right -> left side of x axis)
-# Note: 1e-3 Angstrom / dt = 1e-3 Angstrom / 0.001 ps = 100 m/s
+variable cutting_speed equal   100 # [m/s] (moving: right -> left side of x axis)
 # Note: Normal cutting speeds vary depending on the material and type of tool, but for example, 
 #   when cutting metals, it is about several tens of meters per minute (m/min). 
 #   When converted to speed per second, 1 m/min is about 0.0167 m/s, 
 #   so the general cutting speed is about several meters per second (m/s).
 
 # ------------------------ INITIALIZATION ---------------------------- 
-units metal 
+units metal # distance [A], time [ps], energy [eV], velocity [A/ps], force [eV/A], temperature [K], pressure [bars]
 dimension 3 
 boundary p p p # Length Height Thickness
 atom_style atomic
@@ -155,10 +154,9 @@ dump d2 all cfg 1000 cfg/cutting_*.cfg mass type xs ys zs id type vx vy vz fx fy
 dump_modify d2 element ${elem}
 
 fix 1 newtonatoms nve 
-fix cutting tool move linear -${cutting_speed} 0 0 units box 
+fix cutting tool move linear -$(v_cutting_speed/100) 0 0 units box 
 
-#run 125000
-run $(1245000*250) # 1/dt * scale * xscal = 1/1e-3 * 0.5 * 0.5 = 250
+run 125000
 
 unfix 1 
 unfix cutting 
