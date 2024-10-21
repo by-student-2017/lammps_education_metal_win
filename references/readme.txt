@@ -451,6 +451,10 @@ input file (metal unit, lammps)
   https://scholarworks.uark.edu/cgi/viewcontent.cgi?article=4027&context=etd
   Hemispherical_AlaSi
 
+- R U Mardiyah et al 2020 J. Phys.: Conf. Ser. 1491 012020.: 10.1088/1742-6596/1491/1/012020
+  https://iopscience.iop.org/article/10.1088/1742-6596/1491/1/012020/meta (Open access)
+  cohesive_energy_metal_LJ
+
 - O. Takahiro, Chiba Univ.
   https://amorphous.tf.chiba-u.jp/lecture.files/ms-workshop/molten.html
   Lecture
