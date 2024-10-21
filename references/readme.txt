@@ -490,7 +490,11 @@ input file (metal unit, lammps)
 - J. William, Thesis (2021).
   https://openscience.ub.uni-mainz.de/handle/20.500.12030/6656 
   C60 (girifalco.table) (failed)
-  
+
+- A. P. Thompson (2016).
+  https://www.osti.gov/servlets/purl/1733244
+  DPD_RDX (need potential files and structure files)
+   
 - S. Islam, Master Thesis (2017).
   https://bearworks.missouristate.edu/theses/3217/
   Li_Mobility
