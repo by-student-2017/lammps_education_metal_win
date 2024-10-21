@@ -1,0 +1,53 @@
+#------------------------------------------------------------------------------------------
+# Appendix A
+# LAMMPS input scripts for non-reactive DPD fluid example
+#------------------------------------------------------------------------------------------
+# LAMMPS 64-bit 22Dec2022-MSMPI
+#------------------------------------------------------------------------------------------
+# NIST, Interatomic Potentials (Force Fields): https://www.ctcms.nist.gov/potentials/
+#------------------------------------------------------------------------------------------
+clear
+echo both
+#------------------------------------------------------------------------------------------
+# LAMMPS input file for DPD fluid under isoenergetic
+# conditions using the Shardlow algorithm
+variable dtfac index 10 # dt in 0.1fs
+log log.dpde-shardlow.${dtfac}
+variable dt equal 1e-4*${dtfac}
+variable nsteps equal floor(1e5/${dtfac})
+variable nthermo equal round(1000.0/${dtfac})
+if "${nthermo} < 1" then &
+  "variable nthermo equal 1"
+
+boundary p p p
+units metal # ev, ps
+atom_style dpd
+
+read_data data.dpde.aidan
+
+comm_modify mode single vel yes
+mass 1 100.0
+
+pair_style dpd/fdt/energy 10.0 245455
+pair_coeff 1 1 0.075 0.022 3.2E-5 10.00
+
+neighbor 2.0 bin
+neigh_modify every 1 delay 0 check no once no
+
+timestep ${dt}
+
+compute dpdU all dpd
+
+variable totEnergy equal pe+ke+c_dpdU[1]+c_dpdU[2]
+
+thermo ${nthermo}
+thermo_style custom step time temp pe ke v_totEnergy &
+  c_dpdU[1] c_dpdU[2] c_dpdU[4]
+thermo_modify format float %15.10f
+
+fix 1 all shardlow
+fix 2 all nve
+fix 3 all eos/cv 0.0005
+
+run ${nsteps}
+#------------------------------------------------------------------------------------------
