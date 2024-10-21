@@ -1,0 +1,108 @@
+#------------------------------------------------------------------------------------------
+# LAMMPS 64-bit 22Dec2022-MSMPI
+#------------------------------------------------------------------------------------------
+clear
+#echo both
+# ---------- Initializing Simulation ---------------------------------
+clear 
+units metal 
+dimension 3 
+boundary p p p 
+atom_style atomic 
+atom_modify map array
+
+variable  stype string  "hcp" # fcc, bcc, or hcp
+variable  Eexper equal -4.85  # cohesive energy value from reference (experiment) (eV/atom)
+variable epsilon equal 0.5681 # epsilon [eV] of Lennerd-Jones
+variable   sigma equal 2.6841 # sigma [A] of Lennerd-Jones
+variable  mass_u equal  47.87 # dummy is OK.
+
+variable r0 equal 2^(1/6)*${sigma}
+
+if "${stype} == fcc" then &
+  "variable La equal 2*${r0}/sqrt(2)" &
+elif "${stype} == bcc" &
+  "variable La equal 4*${r0}/sqrt(3)" &
+elif "${stype} == hcp" &
+  "variable La equal 2*${r0}" &
+else &
+  "print 'Error: input structure type, ${stype}'"
+
+# ---------- Creating Atoms ---------------------
+lattice ${stype} ${La} # orient x 1 0 0 orient y 0 1 0 orient z 0 0 1 
+region box block 0 1 0 1 0 1 units lattice
+create_box 1 box
+create_atoms 1 box
+
+replicate 1 1 1
+
+mass 1 ${mass_u}
+
+# ---------- Defining the Interatomic Potential ---------------------
+pair_style lj/cut 12.8 # A cutoff of 3.0 doesn't work well.
+pair_coeff 1 1 ${epsilon} ${sigma}
+
+# I commented it out because it was no longer possible to calculate with Ni.
+#neighbor 2.0 bin 
+#neigh_modify delay 10 check yes
+
+# ---------- Defining Settings -----------------------------------------
+compute eng all pe/atom 
+compute eatoms all reduce sum c_eng # sum(pe/atom) -> pe [eV]
+
+# ---------- Runing Minimization -------------------------------------
+reset_timestep 0 
+
+fix 1 all box/relax iso 0.0 vmax 0.001
+
+thermo 10 
+thermo_style custom step pe c_eatoms lx lz press pxx pzz
+
+min_style cg 
+minimize 1e-25 1e-25 5000 10000 
+
+variable natoms equal "count(all)" # Number of atoms in unit cell
+variable   teng equal "c_eatoms"
+variable length equal "lx"
+variable   ecoh equal "v_teng/v_natoms" # pe/atoms [eV/atom]
+
+variable   disy equal "(v_ecoh - v_Eexper)/v_Eexper*100"
+
+print "The total energy (eV) = ${teng};"
+print "The number of atoms = ${natoms};"
+print "The lattice constant (Angstoms) = ${length};"
+print "The equilibrium interatomic distance, r0 = 2^(1/6)*sigma (Angstroms) = ${r0};"
+print "The cohesive energy (eV/atom) = ${ecoh};"
+print "The discrepance y (%) = ${disy};"
+print "Simulations completed!"
+#------------------------------------------------------------------------------------------
+# Esimul. = value of cohesive energy from simulation results (eV/atom)
+# Eexper. = cohesive energy value from reference (experiment) (eV/atom)
+# -------------------------Initial Value------------------------
+# Atom Crystal, Eexper., epsilon(eV), sigma(A), Esimul., Discrepanc y(%), Lattice period, rcut/a, Ref
+# Fe FCC -4.28 0.4007 2.3193  -3.43  -19.90
+# Pb FCC -2.03 0.1910 3.1888  -1.62  -20.20
+# Ni FCC -4.44 0.3729 2.2808  -3.19  -28.13 3.5238 0.85 [12]
+# Al FCC -3.39 0.5072 2.5736  -4.32   27.69 4.0496 0.85 [12]
+# Cu FCC -3.49 0.5203 2.2972  -4.45   27.57 3.6147 0.85 [12]
+# Mo BCC -6.82 1.1119 2.4892  -9.08   33.24 3.1468 1.3  [12]
+# Cr BCC -4.10 0.6732 2.2813  -5.51   34.38 2.8840 1.3  [12]
+# Va BCC -5.31 0.4983 2.4391  -4.07  -23.28
+# Nb BCC -7.57 0.7159 2.6819  -5.84  -22.80
+# Ta BCC -8.10 0.7332 2.6819  -5.98  -26.11
+# W  BCC -8.90 0.9719 2.5618  -7.93  -10.85
+# Br HCP -5.81 = Al   = Al     X.XX    X.XX
+# Ti HCP -4.85 0.5681 2.6841  -4.85   -0.08 (Note that the c/a ratio is an ideal ratio.)
+# Co HCP -4.39 0.5158 2.2840  -4.41    0.56 (Co has a structure close to the ideal c/a ratio.)
+# P  FCC -3.43 = N    = N      X.XX    X.XX
+# Se HCP -2.46 = S    = S      X.XX    X.XX
+# Si FCC -4.63 = Br   = Br     X.XX    X.XX
+# S  FCC -2.85 = Pb   = Pb     X.XX    X.XX
+# Mn BCC -2.92 = Fe   = Fe     X.XX    X.XX
+# Zr HCP -6.25 0.7385 2.9318  -6.28    0.481 (Note that the c/a ratio is an ideal ratio.)
+# V  BCC -5.34 0.8717 2.3913  -7.13   33.53 3.0231 1.3  [12]
+# Fe BCC -4.33 0.7064 2.2674  -5.78   33.59 2.8664 1.3  [12]
+# W  BCC -8.89 1.4514 2.5037 -11.85   33.33 3.1652 1.3  [12]
+# [12] https://link.springer.com/article/10.1134/S2075113315010062 (If we believe r0 in equation (1), then r0 is not the most stable distance according to the LJ relationship.)
+# Note: References [13] were not available.
+#------------------------------------------------------------------------------------------
