@@ -15,6 +15,7 @@
 #------------------------------------------------------------------------------------------
 clear
 echo both
+#-------------------- Initialization ------------------------------------------------------
 ########################################
 log CSN.log
 # 3d Al/a-Si Hemispherical Core-Shell Structure
@@ -24,6 +25,7 @@ boundary p m p
 atom_style atomic
 processors * 1 *
 
+#-------------------- Gometry settings ----------------------------------------------------
 variable gscale equal 0.25 # For all
 variable bscale equal 4.00 # For base
 
@@ -44,12 +46,15 @@ lattice fcc ${Lat}
 region box block 0 ${Sim} 0 ${Sim} 0 ${Sim} units box
 create_box 3 box
 
+#-------------------- Force field --------------------------------------------------------
 # Al-Si MEAM Parameters from Jelinek et al.
 pair_style meam 
 #pair_coeff * * meam.meamf AlS SiS MgS CuS FeS meam.alsimgcufe AlS AlS SiS
 pair_coeff * * Jelinek_2012_meamf AlS SiS MgS CuS FeS Jelinek_2012_meam.alsimgcufe AlS AlS SiS
-variable elem string "Alc Al Si" # Al-core, Al-base, amorphous-Si shell
 
+variable elem string "Alc Al Si" # Al-core (AlS), Al-base (AlS), amorphous-Si shell (SiS)
+
+#-------------------- Settings -----------------------------------------------------------
 # Define Regions for Al Core and Rigid Substrate
 region base block INF INF INF ${Base} INF INF units box
 region above-base block INF INF INF ${Base} INF INF side out units box
@@ -89,11 +94,16 @@ delete_atoms overlap 1.5 shell-structure shell-structure
 # Shift processor grid for increased efficiency
 balance 1.1 shift xz 5 1.0
 
+timestep 0.001 # 1 [fs] (default vaule)
+
+#-------------------- Run the simulation (Minimization) ----------------------------------
 # Screen and file output
 thermo 10
 thermo_style custom step ke pe etotal temp fmax fnorm
+
 compute csym all centro/atom fcc 
 compute pnrg all pe/atom
+
 dump cg all custom 1000 dump/CSN.min id type x y z c_csym c_pnrg
 dump d0 all cfg 1000 cfg/CSN.min_*.cfg mass type xs ys zs id type vx vy vz fx fy fz
 dump_modify d0 element ${elem}
@@ -105,6 +115,7 @@ fix 1 base setforce 0.0 0.0 0.0
 min_style cg
 min_modify line backtrack
 minimize 1.0e-6 1.0e-8 3000 100000
+
 undump cg
 undump d0
 
@@ -112,31 +123,39 @@ undump d0
 delete_atoms overlap 2.0 shell-structure core
 delete_atoms overlap 2.0 shell-structure base
 
+#-------------------- Run the simulation (Equilibration, NVT) ----------------------------
 # Equilibrate to Desired Temperature
+reset_timestep 0
+
 velocity all create $t 239427349 dist gaussian
 velocity base set 0.00 0.00 0.00 units box
+
 fix 2 all nvt temp $t $t 0.05
 
 # Output commands
 thermo 200
 thermo_style custom step ke pe etotal temp
 thermo_modify lost warn flush yes
+
 dump 1 all custom 2000 dump/CSN.eqil id type x y z c_csym c_pnrg
 dump d1 all cfg 1000 cfg/CSN.equil_*.cfg mass type xs ys zs id type vx vy vz fx fy fz
 dump_modify d1 element ${elem}
 
-
 # Run Equilibration
-reset_timestep 0
 run 30000
+
 undump 1
 undump d1
 
+#-------------------- Run the simulation (Indent) ----------------------------------------
 # Indent
+reset_timestep 0
+
 variable YMax equal bound(all,ymax)
 variable Iy0 equal (${YMax}+${IndentR})
 #variable YMax delete
 variable y equal ${Iy0}+1-${IRate}*step*dt
+
 fix 3 all indent 10 sphere $(v_Sim/2) v_y $(v_Sim/2) ${IndentR} units box
 
 compute strs core stress/atom NULL 
@@ -150,21 +169,29 @@ compute s23 core reduce sum c_strs[6]
 thermo 500
 thermo_style custom step temp pe v_y f_3[1] f_3[2] f_3[3] c_s11 c_s22 c_s33 c_s12 c_s13 c_s23
 thermo_modify lost warn flush yes
-reset_timestep 0
+
 dump 2 all custom 2000 dump/CSN.indent id type x y z c_csym c_pnrg c_strs[1] c_strs[2] c_strs[3] c_strs[4] c_strs[5] c_strs[6]
 dump d2 all cfg 1000 cfg/CSN.indent_*.cfg mass type xs ys zs id type vx vy vz fx fy fz
 dump_modify d2 element ${elem}
+
 run 162000
+
 undump 2
 undump d2
 
+#-------------------- Run the simulation (Retract Indenter) -------------------------------
 # Retract Indenter
+reset_timestep 0
+
 dump 3 all custom 2000 dump/CSN.retract id type x y z c_csym c_pnrg c_strs[1] c_strs[2] c_strs[3] c_strs[4] c_strs[5] c_strs[6]
 dump d3 all cfg 1000 cfg/CSN.retract_*.cfg mass type xs ys zs id type vx vy vz fx fy fz
 dump_modify d3 element ${elem}
+
 variable y0 equal $y
 variable y delete
 variable y equal ${y0}+${IRate}*elapsed*dt 
+
 run 162000
 
 ########################################
+#------------------------------------------------------------------------------------------
