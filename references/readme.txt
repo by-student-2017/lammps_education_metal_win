@@ -446,6 +446,11 @@ input file (metal unit, lammps)
   https://www.diva-portal.org/smash/get/diva2:1466761/FULLTEXT01.pdf
   AlO_RDF_MSD
 
+- R. A. Fleming, Doctor thesis (2017).
+  https://scholarworks.uark.edu/etd/2487/
+  https://scholarworks.uark.edu/cgi/viewcontent.cgi?article=4027&context=etd
+  Hemispherical_AlaSi
+
 - O. Takahiro, Chiba Univ.
   https://amorphous.tf.chiba-u.jp/lecture.files/ms-workshop/molten.html
   Lecture
