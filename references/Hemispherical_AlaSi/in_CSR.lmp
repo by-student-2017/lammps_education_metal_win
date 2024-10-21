@@ -1,0 +1,161 @@
+#------------------------------------------------------------------------------------------
+# APPENDIX I: EXAMPLE LAMMPS INPUT SCRIPTS
+# CSR Script:
+# The following LAMMPS script files were used to perform molecular dynamics 
+# nanoindentation simulations on CSNs, CSRs, and Al nanodots in this study. The various input 
+# parameters can be adjusted to simulate different structure geometries (e.g., core diameter, 
+# nanorod length, etc.), system temperatures, and indentation rates and depths. The MEAM 
+# potential files ‘meam.meamf’ and ‘meam.alsimgcufe’ were obtained from the NIST Interatomic 
+# Potential Repository (https://www.ctcms.nist.gov/potentials/). The simulations performed in this 
+# study were run primarily on the stable LAMMPS release dated June 28, 2014.
+#------------------------------------------------------------------------------------------
+# LAMMPS 64-bit 22Dec2022-MSMPI
+#------------------------------------------------------------------------------------------
+# NIST, Interatomic Potentials (Force Fields): https://www.ctcms.nist.gov/potentials/
+#------------------------------------------------------------------------------------------
+clear
+echo both
+########################################
+log CSR.log
+# 3d Al/a-Si Core-Shell Rod Structure
+
+units metal
+boundary p m p
+atom_style atomic
+processors * 1 *
+
+variable gscale equal 0.25 # For all
+variable bscale equal 4.00 # For base
+
+# Define Variables for Geometry and Simulation Parameters
+variable Lat equal 4.05 # Lattice parameter of the Base Material in Angstroms
+#
+variable Base    equal 10.0*${gscale}*${bscale} # Base Height in Angstroms
+variable Length  equal 100*${gscale}  # Length of Rod (minus caps) in Angstroms
+variable Radius  equal 100*${gscale}  # Radius of Rod Caps in Angstroms
+variable Thick   equal 100*${gscale}  # Shell Thickness in Angstroms
+variable MaxDim  equal 3*(${Radius}+${Thick})+${Length}
+variable Sim     equal floor((${MaxDim}/(${Lat}*${gscale})))*(${Lat}*${gscale}) # Size of Simulation Cell in Angstroms
+variable IndentR equal 1000*${gscale} # Radius of spherical Indenter in Angstroms
+variable IRate   equal 0.5*${gscale}  # Indent rate in Angstroms/1000 timesteps
+#
+variable t equal 300 # Desired Simulation Temperature [K]
+
+# Create Simulation Box with FCC Al Lattice
+lattice fcc ${Lat}
+region box block 0 ${Sim} 0 ${Sim} 0 ${Sim} units box
+create_box 3 box
+
+# Al-Si MEAM Parameters from Jelinek et al.
+pair_style meam 
+#pair_coeff * * meam.meamf AlS SiS MgS CuS FeS meam.alsimgcufe AlS AlS SiS
+pair_coeff * * Jelinek_2012_meamf AlS SiS MgS CuS FeS Jelinek_2012_meam.alsimgcufe AlS AlS SiS
+
+# Define Regions for Al Core and Rigid Substrate
+region base block INF INF INF ${Base} INF INF units box
+region above-base block INF INF INF ${Base} INF INF side out units box
+region core-cyl cylinder x ${Base} $(v_Sim/2) ${Radius} $(v_Sim/2-v_Length/2) $(v_Sim/2+v_Length/2) units box
+region core-shaft intersect 2 core-cyl above-base
+region LofCyl block INF $(v_Sim/2-v_Length/2) ${Base} INF INF INF units box
+region RofCyl block $(v_Sim/2+v_Length/2) INF ${Base} INF INF INF units box
+region LCap-sphere sphere $(v_Sim/2-v_Length/2) ${Base} $(v_Sim/2) ${Radius} units box
+region RCap-sphere sphere $(v_Sim/2+v_Length/2) ${Base} $(v_Sim/2) ${Radius} units box
+region LCap intersect 2 LofCyl LCap-sphere
+region RCap intersect 2 RofCyl RCap-sphere
+region core union 3 core-shaft LCap RCap
+
+# Create Atoms and Groups for Al Structure
+create_atoms 1 region core
+create_atoms 2 region base
+group core region core
+group base region base
+
+# Change Lattice to Si
+lattice diamond 5.43
+
+# Define Regions for Si Shell
+region shell block INF INF ${Base} $(v_Base+v_Thick) INF INF units box
+region core-void union 3 core-shaft LCap RCap side out
+region shell-skirt intersect 2 shell core-void
+region above-skirt block INF INF INF $(v_Base+v_Thick) INF INF side out units box
+region shell-cyl cylinder x ${Base} $(v_Sim/2) $(v_Radius+v_Thick) $(v_Sim/2-v_Length/2) $(v_Sim/2+v_Length/2) units box
+region LofCyl-shell block INF $(v_Sim/2-v_Length/2) $(v_Base+v_Thick) INF INF INF units box
+region RofCyl-shell block $(v_Sim/2+v_Length/2) INF $(v_Base+v_Thick) INF INF INF units box
+region LCap-shell-sphere sphere $(v_Sim/2-v_Length/2) ${Base} $(v_Sim/2) $(v_Radius+v_Thick) units box
+region RCap-shell-sphere sphere $(v_Sim/2+v_Length/2) ${Base} $(v_Sim/2) $(v_Radius+v_Thick) units box
+region LCap-shell intersect 2 LofCyl-shell LCap-shell-sphere
+region RCap-shell intersect 2 RofCyl-shell RCap-shell-sphere
+region shell-cylinder union 3 shell-cyl LCap-shell RCap-shell
+region shell-cap intersect 3 shell-cylinder above-skirt core-void
+region shell-structure union 2 shell-cap shell-skirt
+
+# Create Atoms and Group for Si Shell
+create_atoms 3 region shell-structure
+group shell-structure-cr region shell-structure # Creates a shell of crystalline Si
+variable NumAtoms equal count(shell-structure-cr) # Calculates the number of atoms in the crystalline shell
+create_atoms 3 random ${NumAtoms} 25 shell-structure
+group shell-structure region shell-structure
+delete_atoms group shell-structure-cr
+group shell-structure-cr delete
+
+# Delete atoms that are too close in the a-Si shell
+delete_atoms overlap 1.5 shell-structure shell-structure
+
+# Shift processor grid for increased efficiency
+balance 1.1 shift xz 5 1.0
+
+# Screen and file output
+thermo 10
+thermo_style custom step ke pe etotal temp fmax fnorm
+compute csym all centro/atom fcc 
+compute pnrg all pe/atom
+dump cg all custom 1000 dump/CSR.min id type x y z c_csym c_pnrg
+
+# Freeze the lower layer of the substrate
+fix 1 base setforce 0.0 0.0 0.0
+
+# Minimize total structure
+min_style cg
+min_modify line backtrack
+minimize 1.0e-6 1.0e-8 3000 100000
+undump cg
+
+# Delete atoms that are too close at core/shell interface
+delete_atoms overlap 2.0 shell-structure core
+#delete_atoms overlap 2.0 shell-structure base
+
+# Equilibrate to Desired Temperature
+velocity all create $t 239427349 dist gaussian
+velocity base set 0.00 0.00 0.00 units box
+fix 2 all nvt temp $t $t 0.05
+
+# Output commands
+thermo 200
+thermo_style custom step ke pe etotal temp
+thermo_modify lost warn flush yes
+dump 1 all custom 2000 dump/CSR.eqil id type x y z c_csym c_pnrg
+
+# Run Equilibration
+reset_timestep 0
+run 20000
+undump 1
+
+# Indent
+variable YMax equal bound(all,ymax)
+variable Iy0 equal (${YMax}+${IndentR})
+#variable YMax delete
+variable y equal ${Iy0}+1-${IRate}*step*dt
+fix 3 all indent 10 sphere $(v_Sim/2) v_y $(v_Sim/2) ${IndentR} units box
+thermo 500
+thermo_style custom step temp pe v_y f_3[1] f_3[2] f_3[3]
+thermo_modify lost warn flush yes
+reset_timestep 0
+dump 2 all custom 2000 dump/CSR.indent id type x y z c_csym c_pnrg
+run 162000
+
+# Retract Indenter
+variable y0 equal $y
+variable y delete
+variable y equal ${y0}+${IRate}*elapsed*dt 
+run 162000
+########################################
