@@ -17,6 +17,7 @@
 # EnCodeVentor: https://www.youtube.com/user/Jere5120/feed
 # LaBr3: https://www.osti.gov/servlets/purl/1241668 (slide)
 # SPIN: https://www.osti.gov/servlets/purl/1884091 (slide)
+# CO2’s Chemisorption and Diffusion in Mg-MOF-74 (DeepMD): https://doi.org/10.1021/acsnano.2c11102 (see "Supporting Information", nn2c11102_si_004.zip)
 -------------------------------------------------------------------
 input file (metal unit, lammps)
 
