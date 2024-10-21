@@ -48,12 +48,14 @@ create_box 3 box
 pair_style meam 
 #pair_coeff * * meam.meamf AlS SiS MgS CuS FeS meam.alsimgcufe AlS AlS SiS
 pair_coeff * * Jelinek_2012_meamf AlS SiS MgS CuS FeS Jelinek_2012_meam.alsimgcufe AlS AlS SiS
+variable elem string "Al Al Si"
 
 # Define Regions for Al Core and Rigid Substrate
 region base block INF INF INF ${Base} INF INF units box
 region above-base block INF INF INF ${Base} INF INF side out units box
 region core-sphere sphere $(v_Sim/2) ${Base} $(v_Sim/2) ${Radius} units box
 region core intersect 2 core-sphere above-base
+
 # Create Atoms and Groups for Al Structure
 create_atoms 1 region core
 create_atoms 2 region base
@@ -93,6 +95,8 @@ thermo_style custom step ke pe etotal temp fmax fnorm
 compute csym all centro/atom fcc 
 compute pnrg all pe/atom
 dump cg all custom 1000 dump/CSN.min id type x y z c_csym c_pnrg
+dump d0 all cfg 1000 cfg/CSN.min_*.cfg mass type xs ys zs id type vx vy vz fx fy fz
+dump_modify d0 element ${elem}
 
 # Freeze the lower layer of the substrate
 fix 1 base setforce 0.0 0.0 0.0
@@ -102,6 +106,7 @@ min_style cg
 min_modify line backtrack
 minimize 1.0e-6 1.0e-8 3000 100000
 undump cg
+undump d0
 
 # Delete atoms that are too close at core/shell interface
 delete_atoms overlap 2.0 shell-structure core
@@ -117,11 +122,15 @@ thermo 200
 thermo_style custom step ke pe etotal temp
 thermo_modify lost warn flush yes
 dump 1 all custom 2000 dump/CSN.eqil id type x y z c_csym c_pnrg
+dump d1 all cfg 1000 cfg/CSN.equil_*.cfg mass type xs ys zs id type vx vy vz fx fy fz
+dump_modify d1 element ${elem}
+
 
 # Run Equilibration
 reset_timestep 0
 run 30000
 undump 1
+undump d1
 
 # Indent
 variable YMax equal bound(all,ymax)
@@ -143,11 +152,16 @@ thermo_style custom step temp pe v_y f_3[1] f_3[2] f_3[3] c_s11 c_s22 c_s33 c_s1
 thermo_modify lost warn flush yes
 reset_timestep 0
 dump 2 all custom 2000 dump/CSN.indent id type x y z c_csym c_pnrg c_strs[1] c_strs[2] c_strs[3] c_strs[4] c_strs[5] c_strs[6]
+dump d2 all cfg 1000 cfg/CSN.indent_*.cfg mass type xs ys zs id type vx vy vz fx fy fz
+dump_modify d2 element ${elem}
 run 162000
 undump 2
+undump d2
 
 # Retract Indenter
 dump 3 all custom 2000 dump/CSN.retract id type x y z c_csym c_pnrg c_strs[1] c_strs[2] c_strs[3] c_strs[4] c_strs[5] c_strs[6]
+dump d3 all cfg 1000 cfg/CSN.retract_*.cfg mass type xs ys zs id type vx vy vz fx fy fz
+dump_modify d3 element ${elem}
 variable y0 equal $y
 variable y delete
 variable y equal ${y0}+${IRate}*elapsed*dt 

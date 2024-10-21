@@ -1,7 +1,7 @@
 set ncore=8
 set OMP_NUM_THREADS=1
 
-rem mkdir cfg
+mkdir cfg
 mkdir dump
 
 for %%1 in (in_CSN.lmp) do (

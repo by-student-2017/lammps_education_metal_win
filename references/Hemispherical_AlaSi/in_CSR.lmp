@@ -50,6 +50,7 @@ create_box 3 box
 pair_style meam 
 #pair_coeff * * meam.meamf AlS SiS MgS CuS FeS meam.alsimgcufe AlS AlS SiS
 pair_coeff * * Jelinek_2012_meamf AlS SiS MgS CuS FeS Jelinek_2012_meam.alsimgcufe AlS AlS SiS
+variable elem string "Al Al Si"
 
 # Define Regions for Al Core and Rigid Substrate
 region base block INF INF INF ${Base} INF INF units box
@@ -109,7 +110,10 @@ thermo 10
 thermo_style custom step ke pe etotal temp fmax fnorm
 compute csym all centro/atom fcc 
 compute pnrg all pe/atom
+
 dump cg all custom 1000 dump/CSR.min id type x y z c_csym c_pnrg
+dump d0 all cfg 1000 cfg/CSR.min_*.cfg mass type xs ys zs id type vx vy vz fx fy fz
+dump_modify d0 element ${elem}
 
 # Freeze the lower layer of the substrate
 fix 1 base setforce 0.0 0.0 0.0
@@ -119,6 +123,7 @@ min_style cg
 min_modify line backtrack
 minimize 1.0e-6 1.0e-8 3000 100000
 undump cg
+undump d0
 
 # Delete atoms that are too close at core/shell interface
 delete_atoms overlap 2.0 shell-structure core
@@ -134,11 +139,14 @@ thermo 200
 thermo_style custom step ke pe etotal temp
 thermo_modify lost warn flush yes
 dump 1 all custom 2000 dump/CSR.eqil id type x y z c_csym c_pnrg
+dump d1 all cfg 1000 cfg/CSR.equil_*.cfg mass type xs ys zs id type vx vy vz fx fy fz
+dump_modify d1 element ${elem}
 
 # Run Equilibration
 reset_timestep 0
 run 20000
 undump 1
+undump d1
 
 # Indent
 variable YMax equal bound(all,ymax)
@@ -151,6 +159,8 @@ thermo_style custom step temp pe v_y f_3[1] f_3[2] f_3[3]
 thermo_modify lost warn flush yes
 reset_timestep 0
 dump 2 all custom 2000 dump/CSR.indent id type x y z c_csym c_pnrg
+dump d2 all cfg 1000 cfg/CSR.indent_*.cfg mass type xs ys zs id type vx vy vz fx fy fz
+dump_modify d2 element ${elem}
 run 162000
 
 # Retract Indenter
