@@ -620,7 +620,7 @@ input file (metal unit, lammps)
   
 - K. C. Alexander, thesis (2011).
   https://dspace.mit.edu/handle/1721.1/108218
-  Grain_Boundary_generation (failed)
+  Grain_Boundary_Cu
   
 - R. Xie, Master thesis (2021).
   https://mds.marshall.edu/etd/1411/
