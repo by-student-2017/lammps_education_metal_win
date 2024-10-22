@@ -3,6 +3,13 @@
 # Ubuntu 22.04 LTS
 # sudo apt update
 # sudo apt -y install lammps
+# bash run.sh
+
+NCPUs=6
+
+export OMP_NUM_THREADS=1
+
+cp in.lmp Cu_repeat_distance_ppp_130.in
 
 INP_FILE=('Cu_repeat_distance_ppp_130.in')
 NEW_DIRECT=('Cu_Sigma5_130_ppp')
@@ -31,7 +38,7 @@ do
     do
       for yplanes in $(eval echo "{3..${MAXY}}")
       do
-        for xplanes in $(eval echo "{25..${MAXX}")
+        for xplanes in $(eval echo "{25..${MAXX}}")
         do
           sed -i "s/variable zplanes1 equal.*/variable zplanes1 equal ${zplanes1}/g" ${INP_FILE}
           sed -i "s/variable zplanes2 equal.*/variable zplanes2 equal ${zplanes2}/g" ${INP_FILE}
@@ -43,7 +50,7 @@ do
           rm -rf ${NEW_DIRECT[$i]}/
           rm log.lammps
           
-          mpirun -np 6 lmp -in ${INP_FILE[$i]}
+          mpirun -np ${NCPUs} lmp -in ${INP_FILE[$i]}
           
           cd ${NEW_DIRECT}
           gbenergy=$(echo $(echo dump.final_*.txt | grep -oE "[0-9]{4}"))
