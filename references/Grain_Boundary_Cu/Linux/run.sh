@@ -9,8 +9,6 @@ NCPUs=6
 
 export OMP_NUM_THREADS=1
 
-cp in.lmp Cu_repeat_distance_ppp_130.in
-
 INP_FILE=('Cu_repeat_distance_ppp_130.in')
 NEW_DIRECT=('Cu_Sigma5_130_ppp')
 #-------------
@@ -40,12 +38,13 @@ do
       do
         for xplanes in $(eval echo "{25..${MAXX}}")
         do
+          cp in.lmp ${INP_FILE}
           sed -i "s/variable zplanes1 equal.*/variable zplanes1 equal ${zplanes1}/g" ${INP_FILE}
           sed -i "s/variable zplanes2 equal.*/variable zplanes2 equal ${zplanes2}/g" ${INP_FILE}
           sed -i "s/variable xplanes equal.*/variable xplanes equal ${xplanes}/g" ${INP_FILE}
           sed -i "s/variable yplanes equal.*/variable yplanes equal ${yplanes}/g" ${INP_FILE}
-          sed -i "s/variable xmove equal.*/variable xmove equal ${xtrans}\*\$\{xinc\}/g" ${INP_FILE}
-          sed -i "s/variable ymove equal.*/variable ymove equal ${ytrans}\*\$\{yinc\}/g" ${INP_FILE}
+          sed -i "s/variable xmove equal.*/variable xmove equal ${xtrans}\*\${xinc}/g" ${INP_FILE}
+          sed -i "s/variable ymove equal.*/variable ymove equal ${ytrans}\*\${yinc}/g" ${INP_FILE}
           
           rm -rf ${NEW_DIRECT[$i]}/
           rm log.lammps
