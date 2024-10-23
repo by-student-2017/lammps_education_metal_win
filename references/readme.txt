@@ -93,7 +93,11 @@ input file (metal unit, lammps)
 - M. Li et al., Nanomaterials 9 (2019) 347.
   https://doi.org/10.3390/nano9030347 (Graphene, The temperature of each atom)
   uniaxial_tensile_test_Graphene_NEMD
-  
+
+- A. A. Khan, Master thesis (2022).
+  http://lib.buet.ac.bd:8080/xmlui/bitstream/handle/123456789/6464/Full%20Thesis.pdf?sequence=1
+  crumpled_graphene
+
 - Y. Gao et al., Membranes12 (2022) 886.
   https://doi.org/10.3390/membranes12090886
   membranes
