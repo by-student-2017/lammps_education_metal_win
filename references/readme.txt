@@ -417,7 +417,7 @@ input file (metal unit, lammps)
   
 - P. Malakar et al., ACS Appl. Nano Mater. 5 (2022) 16489-16499.
   https://doi.org/10.1021/acsanm.2c03564 (lammps input file)
-  Crack_test_version (It cannot be calculated unless it is a Lammps that supports the SW potential file of "MoS2".)
+  Crack_MoS2
 
 - T. Siby, Doctor thesis (2017).
   http://210.212.194.26/jspui/handle/123456789/14231 (do not get pdf)
