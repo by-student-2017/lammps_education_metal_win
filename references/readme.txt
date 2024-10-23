@@ -21,6 +21,7 @@
 # DLP_graphene: https://doi.org/10.1021/acs.jpcc.1c01411 (see Supporting Information)
 # NEP-data: https://gitlab.com/brucefan1983/nep-data
 # supporting-info: https://github.com/hityingph/supporting-info
+# DLP graphene: https://doi.org/10.1021/acs.jpcc.1c01411 (see Supporting Information)
 -------------------------------------------------------------------
 input file (metal unit, lammps)
 
