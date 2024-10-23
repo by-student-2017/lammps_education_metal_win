@@ -1,0 +1,71 @@
+###############################################################################
+# MD simulation for PBE H with NN potential
+###############################################################################
+
+###############################################################################
+# VARIABLES
+###############################################################################
+clear
+variable dt              equal  0.0005                                                   # timestep (ps)
+variable intThermo       equal  1                                                       # screen output interval (timesteps)
+variable numSteps        equal  1000000                                                    # total number of simulation timesteps (timesteps)
+variable runnerCutoff    equal  5.2917722                                            # largest symmetry function cutoff (Angstrom)
+variable nameStartCfg    string "data.liquid"                				# name of the starting configuration file
+variable runnerDir       string "."	                        # directory containing RuNNer files
+# set initial velocity distribution
+variable initTemp        equal  2000                                                   # initial temperature (K)
+variable velSeed         equal  4201                                                 # seed for random number generator
+# NVT integrator
+variable temperature       equal  2000                                                   # starting temperature for thermostat (K)
+variable tDamp           equal  0.02                                                    # thermostat damping factor (ps)
+# dump thermodynamic properties (temperature, pressure, potential energy, kinetic energy, integrator quantity)
+variable intTD           equal  10                                                      # thermodynamics dump file interval (timesteps)
+###############################################################################
+# SETUP
+###############################################################################
+units metal                                                                             # define unit system (metal = Angstrom, eV, ps, g/mol)
+boundary p p p                                                                          # set periodic boundary conditions
+atom_style atomic                                                                       # set atomic style for particles
+read_data ${nameStartCfg}                                                               # read start configuration
+
+mass 1 1.0
+
+pair_style nnp dir ${runnerDir} showew no showewsum 10000 resetew yes maxew 200000000 cflength 1.8897261328 cfenergy 0.0367493254
+
+pair_coeff * * ${runnerCutoff}                                                          # set up pair style coefficients
+
+neigh_modify every 1 delay 0 check yes
+
+timestep ${dt}                                                                          # set timestep
+velocity all create ${initTemp} ${velSeed}                                              # create initial velocities
+
+thermo ${intThermo}                                                                     # set screen output
+thermo_style custom step time temp pe etotal press
+thermo_modify format 4 %20.15g
+
+###############################################################################
+# SIMULATION
+###############################################################################
+# --------------------- production  ---------------------
+
+fix 2 all nve 
+fix 3 all temp/csvr ${temperature} ${temperature} ${tDamp} 53196
+
+# -----------------------------  collect trajectory -------------------------------
+compute      myKE all ke/atom
+compute      myPE all pe/atom
+
+dump 1 all custom 10 H.lammpstrj id type x y z c_myPE c_myKE vx vy vz # dump configuration into a trajectory file
+dump_modify 1 sort id
+
+# ------------------------------- run -----------------------------
+run          ${numSteps}
+
+###############################################################################
+# CLEAN UP
+###############################################################################
+undump 1
+unfix 2
+unfix 3
+###############################################################################
+write_data final.data

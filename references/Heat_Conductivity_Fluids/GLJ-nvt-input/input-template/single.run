@@ -1,0 +1,23 @@
+#!/bin/bash -l
+#
+#SBATCH --job-name=df
+#SBATCH --time=24:00:00
+#SBATCH --nodes=1
+#SBATCH --ntasks-per-node=12
+#SBATCH --cpus-per-task=1
+#SBATCH --partition=normal
+#SBATCH --constraint=gpu
+
+
+#========================================
+# load modules and run simulation
+module load daint-gpu
+
+export CRAY_CUDA_MPS=1
+export OMP_NUM_THREADS=$SLURM_CPUS_PER_TASK
+ulimit -s unlimited
+
+srun -n $SLURM_NTASKS  lmp_df < in.df &> lmplog &
+
+wait
+

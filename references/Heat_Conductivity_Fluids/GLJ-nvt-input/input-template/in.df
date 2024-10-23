@@ -1,0 +1,144 @@
+units            lj 
+atom_style       atomic 
+boundary         p p p 
+
+read_data data.liquid
+
+# --------------------- set system density ---------------------
+
+variable     setndens equal DENSITY    # total number of atoms/vol
+variable     setboxlength equal (count(all)/${setndens})^(1./3.)
+change_box all x final 0.0 ${setboxlength} y final 0.0 ${setboxlength} z final 0.0 ${setboxlength} remap units box
+
+# --------------------- for defining the potential ---------------------
+variable          sigma  equal   1.0
+variable          epsilon equal 1.0
+variable          nexp   equal 1.0
+variable          rc equal 2.0*${sigma}
+
+pair_style        df ${rc}
+pair_coeff        1 1 ${epsilon} ${nexp}  ${rc}
+
+neighbor         1.0 bin
+neigh_modify     every 1 delay 0 check yes
+
+
+# --------------------- simulation/thermostat details ---------------------
+variable         dt equal 0.0025
+timestep         ${dt}
+
+variable       temperature equal TEMPERATURE
+
+variable      timeequil equal  500000
+variable      timerun equal   2000000
+
+variable      tdamp equal 0.1 # damping time for thermostat
+
+# --------------------- output style ---------------------
+
+thermo           100
+thermo_style     custom step temp pe ke enthalpy lx vol press #pxx pyy pzz pxy pyz pxz
+
+# ------------------- equalibration -------------------------
+
+velocity       all create ${temperature} 22RANDOM45 dist gaussian mom yes rot yes
+
+fix          1 all nvt temp ${temperature} ${temperature} ${tdamp}
+run          ${timeequil}
+reset_timestep 0
+unfix 1
+
+write_data data.liquid
+write_restart restart.liquid
+
+# --------------------- production  --------------------- 
+
+fix 2 all nve
+fix 3 all temp/csvr ${temperature} ${temperature} ${tdamp} 53RANDOM96
+
+#  --------------------- compute msd --------------------- 
+compute myMSD all msd com yes
+
+variable t equal time
+variable msdx equal c_myMSD[1]
+variable msdy equal c_myMSD[2]
+variable msdz equal c_myMSD[3]
+variable msdd equal c_myMSD[4]
+
+fix printmsd all print 2000 "$t ${msdx} ${msdy} ${msdz} ${msdd}" file msd.dat screen no
+
+#  --------------------- compute stress --------------------- 
+
+variable    tpstress equal 2000     # correlation length
+variable    tsstress equal 5       # sample interval
+variable    tdstress equal ${tpstress}*${tsstress}   # dump interval
+
+variable     pxy equal pxy
+variable     pxz equal pxz
+variable     pyz equal pyz
+variable     pxx equal pxx
+variable     pyy equal pyy
+variable     pzz equal pzz
+variable     press equal press
+
+fix printstress all print ${tsstress} "${t} ${pxx} ${pyy} ${pzz} ${pxy} ${pxz} ${pyz} ${press}" file stress.dat screen no
+
+fix          SS all ave/correlate ${tsstress} ${tpstress} ${tdstress} &
+             v_pxy v_pxz v_pyz v_press type auto file S0St.dat ave running
+variable     sscale equal 1/${temperature}*vol*${tsstress}*${dt}
+variable     eta1 equal trap(f_SS[3])*${sscale}
+variable     eta2 equal trap(f_SS[4])*${sscale}
+variable     eta3 equal trap(f_SS[5])*${sscale}
+variable     zeta equal trap(f_SS[6])*${sscale}
+fix printvv all print ${tdstress} "${t} ${eta1} ${eta2} ${eta3} ${zeta}" file viscosity.dat
+
+
+
+#  ---------------------  compute thermal conductivity  --------------------- 
+
+variable    tpflux equal 250     # correlation length
+variable    tsflux equal 20     # sample interval
+variable    tdflux equal ${tpflux}*${tsflux}   # dump interval
+
+compute      myKE all ke/atom
+compute      myPE all pe/atom
+compute      myStress all stress/atom NULL virial
+compute      flux all heat/flux myKE myPE myStress
+variable     Jx equal c_flux[1] # extensive flux
+variable     Jy equal c_flux[2] # extensive flux
+variable     Jz equal c_flux[3] # extensive flux
+fix printflux all print ${tsflux} "${t} ${Jx} ${Jy} ${Jz}" file heatflux.dat screen no
+
+fix          JJ all ave/correlate ${tsflux} ${tpflux} ${tdflux} &
+             c_flux[1] c_flux[2] c_flux[3] type auto file J0Jt.dat ave running
+variable     jscale equal 1/${temperature}/${temperature}/vol*${tsflux}*${dt}
+variable     k11 equal trap(f_JJ[3])*${jscale}
+variable     k22 equal trap(f_JJ[4])*${jscale}
+variable     k33 equal trap(f_JJ[5])*${jscale}
+fix printkk all print ${tdflux} "${t} ${k11} ${k22} ${k33}" file kk.dat
+
+# -----------------------------  collect trajectory -------------------------------
+
+dump 1 all custom 20 df.lammpstrj id type x y z c_myPE c_myKE vx vy vz # dump configuration into a trajectory file
+dump_modify 1 sort id
+
+# ------------------------------- run -----------------------------
+run          ${timerun}
+
+# ------------------------- collect results ----------------------
+
+variable     ndens equal count(all)/vol
+
+variable     k equal (v_k11+v_k22+v_k33)/3.0
+print        "average conductivity: $k @ temperature ${temperature}, natom density ${ndens}"
+
+variable     eta equal (v_eta1+v_eta2+v_eta3)/3.0
+print        "average shear viscosity: ${eta} @ ${temperature}, natom density ${ndens}"
+
+print        "average bulk viscosity: ${zeta} @ ${temperature}, natom density ${ndens}"
+
+
+
+# --------------------- clean up  ---------------------
+unfix 2
+unfix 3

@@ -1,0 +1,46 @@
+units          real   # units of energy kcal/mol, distance angstrom and time if femtosecond
+atom_style     full   # do not change
+boundary       p p p  # periodic boundary conditions in x y z 
+
+variable temper equal 800
+variable dt equal 5
+
+pair_style     sw     # type of interaction potential  
+
+read_data  liquid-mW-T-800.data # would restart the simulation from the restart file of a previous one
+
+newton         on               # do not change
+pair_coeff     *  *  mW.sw Si   # reading the parameters of the potential 
+
+neighbor       2.0 bin          # neighbor list skin width
+neigh_modify   every 1 delay 0 check yes # frequency to update neighor list
+
+timestep       ${dt}     # time step for the integration of the equations of motion, in femtoseconds 
+
+thermo_style   custom step temp pe etotal enthalpy press pxx pyy pzz
+#thermo_modify  flush yes  # flush the buffer and write the output in real time
+thermo         10  # how often (in steps) will write the properties of thermo_style to the output
+
+velocity        all create ${temper} 2148459 rot yes mom yes dist gaussian # assign initial velocities to the particles
+
+
+fix             1 all nve
+fix             2 all temp/csvr ${temper} ${temper} 100.0 54324
+
+# equilibrate
+run             25000
+reset_timestep  0
+
+# -----------------------------  collect trajectory -------------------------------
+
+dump 1 all custom 50 mW.lammpstrj id type x y z # dump configuration into a trajectory file
+dump_modify 1 sort id
+
+run             10000000      # runs this number of steps of simulation
+
+
+unfix           2
+unfix          1        # undo the dump of the trajectory
+undump         1
+
+write_restart   restart.end  # write a binary restart file at the end of the simulation

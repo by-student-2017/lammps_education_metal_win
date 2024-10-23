@@ -1,0 +1,1 @@
+for a in T-*/; do cd $a; sbatch ../autocorr.run energy-real 1000; sbatch ../autocorr.run energy-imag 1000; sbatch ../autocorr.run density-real 1000;  sbatch ../autocorr.run density-imag 1000;  sbatch ../autocorr.run jx-real 1000;  sbatch ../autocorr.run jy-real 1000;  sbatch ../autocorr.run jx-imag 1000;  sbatch ../autocorr.run jy-imag 1000; cd ..; done
