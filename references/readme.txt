@@ -464,6 +464,10 @@ input file (metal unit, lammps)
   https://iopscience.iop.org/article/10.1088/1742-6596/1491/1/012020/meta (Open access)
   cohesive_energy_metal_LJ
 
+- B. N. Katz et al., Phys. Rev. Lett. 129 (2022) 096102.: https://doi.org/10.1103/PhysRevLett.129.096102
+  https://doi.org/10.1103/PhysRevLett.129.096102
+  Shape_Entropy
+
 - O. Takahiro, Chiba Univ.
   https://amorphous.tf.chiba-u.jp/lecture.files/ms-workshop/molten.html
   Lecture
