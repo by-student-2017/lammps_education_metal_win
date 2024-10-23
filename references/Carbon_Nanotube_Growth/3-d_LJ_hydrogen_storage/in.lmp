@@ -1,0 +1,76 @@
+#------------------------------------------------------------------------------------------
+# APPENDIX A
+# Typical LAMMPS input file to compute hydrogen storage: 
+#------------------------------------------------------------------------------------------
+# LAMMPS 64-bit 22Dec2022-MSMPI
+#------------------------------------------------------------------------------------------
+
+# 3-d LJ hydrogen storage
+
+dimension 3 
+boundary p p p 
+
+atom_style full 
+neighbor 0.5 bin 
+neigh_modify delay 3 
+
+read_data INPUT_LMP_570.dat 
+
+#kspace_style ewald 1.0e-2 
+bond_style harmonic 
+bond_coeff 1 1201.1 0.254 
+
+# LJ potentials 
+
+pair_style lj/cut/coul/cut 3.0 
+pair_coeff 1 1 1.0   1.0
+pair_coeff 2 2 0.737 1.166
+pair_coeff 1 2 0.858 1.083
+#pair_coeff 3 3 0.0   0.0
+#pair_coeff 1 3 0.0   0.0
+#pair_coeff 2 3 0.0   0.0
+pair_coeff 3 3 0.0493 0.7787
+pair_coeff 1 3 0.2220 0.88935
+pair_coeff 2 3 0.1906 0.97235
+
+# Define groups 
+
+group hyd type 1 # H
+group cnt type 2 # C of CNT
+group  li type 3 # Li?
+
+# Initial velocities 
+
+temperature mobile hyd full 
+
+velocity hyd create 0.26316 482748 temp mobile 
+
+fix 1 all nve 
+fix 2 hyd temp/rescale 100 0.26316 0.26316 0.02 1.0 
+fix_modify 2 temp mobile 
+
+# Static nanotube and metal 
+
+velocity cnt set 0.0 0.0 0.0 units box 
+fix 3 cnt setforce 0.0 0.0 0.0 
+fix 4 cnt aveforce 0.0 0.0 0.0 
+
+velocity li set 0.0 0.0 0.0 units box 
+fix 5 li setforce 0.0 0.0 0.0 
+fix 6 li aveforce 0.0 0.0 0.0 
+
+# Run 
+
+timestep 0.0003 # 0.3 [fs]
+
+thermo 10000 
+thermo_style custom step atoms temp pe ke eng evdwl 
+thermo_modify temp mobile 
+thermo_modify lost ignore 
+
+dump 1 all custom 100000 dump.position.* type mol x y z 
+dump 2 all xyz 100000 dump.xyz.* 
+
+run 1000000
+
+#------------------------------------------------------------------------------------------

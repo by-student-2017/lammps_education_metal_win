@@ -1,0 +1,237 @@
+#------------------------------------------------------------------------------------------
+# APPENDIX A
+# Typical LAMMPS input file for nanoscale thermal transport:
+#------------------------------------------------------------------------------------------
+# LAMMPS 64-bit 22Dec2022-MSMPI
+#------------------------------------------------------------------------------------------
+
+# 2-d LJ flow simulation
+
+dimension 3 
+boundary p p p 
+units metal 
+
+atom_style atomic 
+
+# create geometry 
+
+lattice fcc 6.692 
+region box block 0 30 0 30 0 580 units box 
+create_box 2 box 
+
+mass 1 39.94 # Ar
+mass 2 55.85 # Fe
+
+# potentials 
+
+pair_style hybrid eam/fs lj/cut 10.0 
+#pair_coeff * * eam/fs Fe_mm.eam.fs NULL Fe 
+pair_coeff * * eam/fs Fe_2.eam.fs NULL Fe 
+pair_coeff 1 1 lj/cut 0.0103 3.4 # Ar-Ar
+pair_coeff 1 2 lj/cut 0.0516 3.7 # Ar-Fe
+
+# define groups 
+
+region 81 block INF INF INF INF 150 154 units box 
+create_atoms 1 region 81 units box 
+group liquid1 region 81 
+
+region 82 block INF INF INF INF 154 158 units box 
+create_atoms 1 region 82 units box 
+group liquid2 region 82 
+
+region 83 block INF INF INF INF 158 162 units box 
+create_atoms 1 region 83 units box 
+group liquid3 region 83 
+
+region 84 block INF INF INF INF 162 166 units box 
+create_atoms 1 region 84 units box 
+group liquid4 region 84 
+
+region 85 block INF INF INF INF 166 170 units box
+create_atoms 1 region 85 units box 
+group liquid5 region 85 
+
+region 86 block INF INF INF INF 170 210 units box 
+create_atoms 1 region 86 units box 
+group liquid6 region 86 
+
+region 87 block INF INF INF INF 210 250 units box 
+create_atoms 1 region 87 units box 
+group liquid7 region 87 
+
+region 88 block INF INF INF INF 250 290 units box 
+create_atoms 1 region 88 units box 
+group liquid8 region 88 
+
+region 89 block INF INF INF INF 290 330 units box 
+create_atoms 1 region 89 units box 
+group liquid9 region 89 
+
+region 90 block INF INF INF INF 330 370 units box 
+create_atoms 1 region 90 units box 
+group liquid10 region 90 
+
+region 91 block INF INF INF INF 370 410 units box 
+create_atoms 1 region 91 units box 
+group liquid11 region 91 
+
+region 92 block INF INF INF INF 410 414 units box 
+create_atoms 1 region 92 units box 
+group liquid12 region 92 
+
+region 93 block INF INF INF INF 414 418 units box 
+create_atoms 1 region 93 units box 
+group liquid13 region 93 
+
+region 94 block INF INF INF INF 418 422 units box 
+create_atoms 1 region 94 units box 
+group liquid14 region 94 
+
+region 95 block INF INF INF INF 422 426 units box 
+create_atoms 1 region 95 units box 
+group liquid15 region 95
+
+region 96 block INF INF INF INF 426 430 units box 
+create_atoms 1 region 96 units box 
+group liquid16 region 96
+
+region 97 block INF INF INF INF INF 140 units box 
+create_atoms 1 region 97 units box 
+group liquid17 region 97 
+
+region 98 block INF INF INF INF 440 580 units box 
+create_atoms 1 region 98 units box 
+group liquid18 region 98 
+
+lattice bcc 2.87 
+
+region 1 block INF INF INF INF 140 150 units box 
+create_atoms 2 region 1 units box 
+group lower region 1 
+
+region 2 block INF INF INF INF 430 440 units box 
+create_atoms 2 region 2 units box 
+group upper region 2 
+
+group boundary union lower upper 
+group flowsides union liquid17 liquid18 
+
+group flow subtract all boundary 
+group flow2 subtract flow flowsides 
+
+### compute temperatures 
+
+compute temp_1 flow temp/region 81 
+compute temp_2 flow temp/region 82 
+compute temp_3 flow temp/region 83 
+compute temp_4 flow temp/region 84 
+compute temp_5 flow temp/region 85 
+compute temp_6 flow temp/region 86 
+compute temp_7 flow temp/region 87 
+compute temp_8 flow temp/region 88 
+compute temp_9 flow temp/region 89 
+compute temp_10 flow temp/region 90 
+compute temp_11 flow temp/region 91 
+compute temp_12 flow temp/region 92 
+compute temp_13 flow temp/region 93 
+compute temp_14 flow temp/region 94 
+compute temp_15 flow temp/region 95 
+compute temp_16 flow temp/region 96 
+compute temp_lower lower temp 
+compute temp_upper upper temp 
+compute temp_flow flow temp
+
+compute energy1 lower group/group flow 
+compute energy2 upper group/group flow 
+compute energy1a lower group/group flow2 
+compute energy2a upper group/group flow2 
+
+# initial velocities 
+
+velocity flow create 100.0 581275 units box 
+
+fix 111 all nve 
+
+fix 1 liquid1 temp/rescale 10 100.0 100.0 0.001 1.0 
+fix 2 liquid2 temp/rescale 10 100.0 100.0 0.001 1.0 
+fix 3 liquid3 temp/rescale 10 100.0 100.0 0.001 1.0 
+fix 4 liquid4 temp/rescale 10 100.0 100.0 0.001 1.0 
+fix 5 liquid5 temp/rescale 10 100.0 100.0 0.001 1.0 
+fix 6 liquid6 temp/rescale 10 100.0 100.0 0.001 1.0 
+fix 7 liquid7 temp/rescale 10 100.0 100.0 0.001 1.0 
+fix 8 liquid8 temp/rescale 10 100.0 100.0 0.001 1.0 
+fix 9 liquid9 temp/rescale 10 100.0 100.0 0.001 1.0 
+fix 10 liquid10 temp/rescale 10 100.0 100.0 0.001 1.0 
+fix 11 liquid11 temp/rescale 10 100.0 100.0 0.001 1.0 
+fix 12 liquid12 temp/rescale 10 100.0 100.0 0.001 1.0 
+fix 13 liquid13 temp/rescale 10 100.0 100.0 0.001 1.0 
+fix 14 liquid14 temp/rescale 10 100.0 100.0 0.001 1.0 
+fix 15 liquid15 temp/rescale 10 100.0 100.0 0.001 1.0 
+fix 16 liquid16 temp/rescale 10 100.0 100.0 0.001 1.0 
+fix 17 liquid17 temp/rescale 10 100.0 100.0 0.001 1.0 
+fix 18 liquid18 temp/rescale 10 100.0 100.0 0.001 1.0 
+
+velocity lower create 100.0 281375 units box 
+velocity upper create 100.0 281375 units box 
+fix 221 lower temp/rescale 100 100.0 100.0 0.001 1.0 
+fix 222 upper temp/rescale 100 100.0 100.0 0.001 1.0 
+
+fix 20 lower momentum 10 linear 1 1 1 
+fix 21 upper momentum 10 linear 1 1 1 
+fix 22 flow momentum 10 linear 1 1 1 
+
+fix 91 flow ave/time 10 10000 100000 c_temp_1 c_temp_2 c_temp_3 &
+  c_temp_4 c_temp_5 c_temp_6 c_temp_7 c_temp_8 file heat_fluid1.out 
+fix 92 flow ave/time 10 10000 100000 c_temp_9 c_temp_10 c_temp_11 &
+  c_temp_12 c_temp_13 c_temp_14 c_temp_15 c_temp_16 file heat_fluid2.out 
+fix 94 upper ave/time 5 10000 100005 c_temp_upper file heat_upper.out
+fix 95 lower ave/time 5 10000 100005 c_temp_lower file heat_lower.out 
+fix 96 all ave/time 100 1000 100000 c_energy1 c_energy1a c_energy1[1] &
+  c_energy1[2] c_energy1[3] c_energy2a c_energy2 file force1.out
+
+# Run 
+
+timestep 0.001 # 1 [fs]
+
+thermo 1000 
+thermo_style custom step atoms temp pe ke etotal evdwl f_221 &
+  c_energy1 c_energy1[1] c_energy1[2] c_energy1[3] c_energy2 
+thermo_modify lost ignore temp temp_flow 
+
+dump 1 all custom 100000 dump.kapitza.* type tag x y z vx vy vz 
+
+run 300000 
+
+unfix 1 
+unfix 2 
+unfix 3 
+unfix 4 
+unfix 5 
+unfix 6 
+unfix 7 
+unfix 8 
+unfix 9 
+unfix 10 
+unfix 11 
+unfix 12 
+unfix 13 
+unfix 14 
+unfix 15 
+unfix 16 
+unfix 17 
+unfix 18 
+
+restart 1000000 therm.restart 
+
+run 700000 
+
+unfix 221 
+unfix 222 
+
+fix 221 lower temp/rescale 100 125 125 0.001 1.0 
+fix 222 upper temp/rescale 100 125 125 0.001 1.0 
+
+run 7000000
+
+#------------------------------------------------------------------------------------------
