@@ -73,6 +73,11 @@ input file (metal unit, lammps)
   ------------------------------------------------
   http://idr.mnit.ac.in/bitstream/123456789/776/1/2015PDE5197-Komal%20Rathi.pdf
 
+- S. Banerjee, Doctor thesis (2008).
+  https://vtechworks.lib.vt.edu/server/api/core/bitstreams/aeeda057-de05-4e7b-ad73-c9a3f7f506de/content
+  http://hdl.handle.net/10919/28252
+  Carbon_Nanotube_Growth (need complete structure data file)
+
 - A. Maulana et al., AIP Conf. Proc. 2314, 020008 (2020).
   https://doi.org/10.1063/5.0034046
   uniaxial_tensile_test_Fe-Ni
