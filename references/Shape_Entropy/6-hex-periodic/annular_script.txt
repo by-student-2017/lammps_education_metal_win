@@ -1,0 +1,92 @@
+units     	metal
+boundary	p p m 						
+timestep	0.001
+atom_style	atomic
+neighbor	2.0 nsq
+neigh_modify	delay 0 check yes one 1000000 page 10000000
+
+
+compute csym all centro/atom fcc
+compute eng all pe/atom 
+compute eatoms all reduce sum c_eng 
+					
+box tilt large
+read_data       6hex_periodic_pent.txt group pent
+read_data	6hex_periodic_main.txt add merge group nonpent
+
+		#airebo potential
+pair_style      airebo 4.0
+pair_coeff	* * CH.airebo C C H H
+
+
+		#determining what is in the readout
+thermo_style    custom step temp pe etotal
+thermo		1000
+
+
+dump            8 all custom 1000 periodicout.xyz_* id type x y z c_csym c_eng fx fy fz
+dump_modify     8 element C C H H
+
+run 1
+
+compute maxz all reduce max z
+compute minz all reduce min z
+thermo_style    custom step temp pe etotal c_maxz c_minz
+
+group 3 type 3
+delete_atoms group 3 compress yes
+replicate 25 25 1
+change_box all x delta -100 100 y delta -100 100 units box
+change_box all boundary m m m
+run 0
+
+region rect0 block $(xcm(all,x)-50) $(xcm(all,x)+50) $(xcm(all,y)-50) $(xcm(all,y)+50) INF INF
+region rect1 block $(xcm(all,x)-50) $(xcm(all,x)+50) $(xcm(all,y)-50) $(xcm(all,y)+50) INF INF side out
+region rect2 block $(xcm(all,x)-150) $(xcm(all,x)+150) $(xcm(all,y)-150) $(xcm(all,y)+150) INF INF
+region rect2a block $(xcm(all,x)-150) $(xcm(all,x)+150) $(xcm(all,y)-150) $(xcm(all,y)+150) INF INF side out
+region rect3a block $(xcm(all,x)-250) $(xcm(all,x)+250) $(xcm(all,y)-250) $(xcm(all,y)+250) INF INF
+region rect3 block $(xcm(all,x)-250) $(xcm(all,x)+250) $(xcm(all,y)-250) $(xcm(all,y)+250) INF INF side out
+region rect4 block $(xcm(all,x)-350) $(xcm(all,x)+350) $(xcm(all,y)-350) $(xcm(all,y)+350) INF INF
+region rect4a block $(xcm(all,x)-350) $(xcm(all,x)+350) $(xcm(all,y)-350) $(xcm(all,y)+350) INF INF side out
+region rect5a block $(xcm(all,x)-450) $(xcm(all,x)+450) $(xcm(all,y)-450) $(xcm(all,y)+450) INF INF
+region rect5 block $(xcm(all,x)-450) $(xcm(all,x)+450) $(xcm(all,y)-450) $(xcm(all,y)+450) INF INF side out
+region rect6 block $(xcm(all,x)-550) $(xcm(all,x)+550) $(xcm(all,y)-550) $(xcm(all,y)+550) INF INF
+region square1 intersect 2 rect2 rect1
+region square2 intersect 2 rect4 rect3
+region square3 intersect 2 rect6 rect5
+region square2a intersect 2 rect2a rect3a
+region square3a intersect 2 rect4a rect5a
+region press union 3 square1 square2 square3
+region pressup union 2 square2a rect0
+group press region press
+group pressup region pressup
+
+fix pushdown press addforce 0 0 -0.02
+fix pushup pressup addforce 0 0 0.02
+fix wall all wall/lj126 zlo -60 0.1 1 4
+fix wall2 all wall/lj126 zhi -30 0.1 1 4
+run 0
+velocity all create 100.0 8375603
+fix 1 all nvt temp 300.0 300.0 1 tloop 100
+run 20000
+unfix pushdown
+unfix pushup
+unfix 1
+unfix wall
+unfix wall2
+velocity all set 0 0 0
+minimize 1e-25 1e-25 10000 10000
+write_restart restart.rstrt
+
+velocity all create 300.0 8375603
+fix 1 all nvt temp 300.0 300.0 1 tloop 100
+label loop2
+variable loop2 loop 260
+run 10000
+write_restart restart.rstrt
+next loop2
+jump SELF loop2
+quit
+
+
+

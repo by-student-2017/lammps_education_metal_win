@@ -1,0 +1,66 @@
+units     	metal
+boundary	p p m 						
+timestep	0.001
+atom_style	atomic
+neighbor	2.0 nsq
+neigh_modify	delay 0 check yes one 1000000 page 10000000
+
+
+compute csym all centro/atom fcc
+compute eng all pe/atom 
+compute eatoms all reduce sum c_eng 
+					
+box tilt large
+read_data       6hex_periodic_pent.txt group pent
+read_data	6hex_periodic_main.txt add merge group nonpent
+
+		#airebo potential
+pair_style      airebo 4.0
+pair_coeff	* * CH.airebo C C H H
+
+
+		#determining what is in the readout
+thermo_style    custom step temp pe etotal
+thermo		1000
+
+
+dump            8 all custom 1000 periodicout.xyz_* id type x y z c_csym c_eng fx fy fz
+dump_modify     8 element C C H H
+
+run 1
+
+compute maxz all reduce max z
+compute minz all reduce min z
+thermo_style    custom step temp pe etotal c_maxz c_minz
+
+group 3 type 3
+delete_atoms group 3 compress yes
+replicate 30 30 1
+change_box all x delta -100 100 y delta -100 100 units box
+change_box all boundary m m m
+run 0
+
+region xgroup block $(xcm(all,x)-100) $(xcm(all,x)+100) INF INF INF INF
+region ygroup block INF INF $(xcm(all,y)-100) $(xcm(all,y)+100) INF INF
+region both union 2 xgroup ygroup
+group grab region both
+
+fix pushdown grab addforce 0 0 -0.02
+fix wall all wall/lj126 zlo -60 0.1 1 4
+run 0
+velocity all create 100.0 8375603
+fix 1 all nvt temp 300.0 300.0 1 tloop 100
+run 20000
+unfix pushdown
+unfix 1
+unfix wall
+velocity all set 0 0 0
+minimize 1e-25 1e-25 10000 10000
+
+velocity all create 300.0 8375603
+fix 1 all nvt temp 300.0 300.0 1 tloop 100
+run 2000000
+quit
+
+
+

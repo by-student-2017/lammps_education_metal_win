@@ -1,0 +1,259 @@
+#Generate output with:
+#		grep "\. *.* per" log.lammps > OUTPUT
+
+#Use potential file 'CH.airebo'
+
+units     	metal
+boundary	p p p
+timestep	0.001
+atom_style	molecular
+atom_modify	map hash
+atom_modify sort 1000 2.0
+neighbor	2.0 nsq
+neigh_modify	delay 0 check yes one 1000000 page 10000000
+
+
+compute csym all centro/atom fcc
+compute eng all pe/atom
+compute eatoms all reduce sum c_eng
+
+box tilt large
+read_data    	6hex_free_pent.txt group pent
+
+		#airebo potential
+pair_style      hybrid airebo 4.0 lj/cut 10.0 zero 10.0
+pair_coeff	* * airebo CH.airebo C C H NULL
+pair_coeff	*3 4 lj/cut 0.002843732471143 3.4
+pair_coeff	4 4 zero
+
+
+
+		#determining what is in the readout
+thermo		1000
+
+#dump            good all custom 100000000 mdffout.xyz_* id type x y z c_csym c_eng
+#dump_modify     good element C C H X
+
+dump            1 all custom 1 smallshapes_periodic.current id type mol x y z c_eng vx vy vz
+dump_modify     1 element C C H X append no
+
+read_data 6hex_free_main.txt add merge
+run 1
+
+create_atoms 4 single 0 0 0
+group del type 4
+delete_atoms group del compress yes
+group del delete
+
+region grab block -15 0 20 35 INF INF
+variable n loop 200
+label outlp
+variable outlp loop 2
+
+variable lp1 loop 2
+label lp1
+variable ${n} atom grmask(pent,grab)
+group ${n} variable ${n}
+set group ${n} mol $(v_n+1)
+variable ${n} delete
+group ${n} delete
+next n
+displace_atoms all move -43.7857 0 0
+next lp1
+jump SELF lp1
+variable lp1 delete
+
+displace_atoms all move $(-(52.8728-34.4478)) $(-(44.0202-27.3919)) 0
+
+variable lp2 loop 2
+label lp2
+variable ${n} atom grmask(pent,grab)
+group ${n} variable ${n}
+set group ${n} mol $(v_n+1)
+variable ${n} delete
+group ${n} delete
+next n
+displace_atoms all move -43.7857 0 0
+next lp2
+jump SELF lp2
+variable lp2 delete
+
+displace_atoms all move $(-(75.2406-52.8728)) $(-(50.9436-44.0202)) 0
+
+variable lp3 loop 2
+label lp3
+variable ${n} atom grmask(pent,grab)
+group ${n} variable ${n}
+set group ${n} mol $(v_n+1)
+variable ${n} delete
+group ${n} delete
+next n
+displace_atoms all move -43.7857 0 0
+next lp3
+jump SELF lp3
+variable lp3 delete
+
+displace_atoms all move $((75.2406-56.3407)) $(-(65.3114-50.9436)) 0
+next outlp
+jump SELF outlp
+variable n delete
+
+write_restart restart.rstrt
+dump_modify 1 every 10000000000
+
+variable 1 loop 2
+variable 2 loop 2
+variable 3 loop 2
+variable 4 loop 2
+variable 5 loop 2
+variable 6 loop 2
+variable 7 loop 2
+variable 8 loop 2
+variable 9 loop 2
+variable 10 loop 2
+variable 11 loop 2
+variable 12 loop 2
+variable count loop 10000
+
+jump SELF START
+
+label 1
+label 2
+label 3
+label 4
+label 5
+label 6
+label 7
+label 8
+label 9
+label 10
+label 11
+label 12
+
+label START
+jump SELF pushcycle
+label return
+next count
+
+next 12
+jump SELF 12
+variable 12 delete
+variable 12 loop 2
+next 11
+jump SELF 11
+variable 11 delete
+variable 11 loop 2
+next 10
+jump SELF 10
+variable 10 delete
+variable 10 loop 2
+next 9
+jump SELF 9
+variable 9 delete
+variable 9 loop 2
+next 8
+jump SELF 8
+variable 8 delete
+variable 8 loop 2
+next 7
+jump SELF 7
+variable 7 delete
+variable 7 loop 2
+next 6
+jump SELF 6
+variable 6 delete
+variable 6 loop 2
+next 5
+jump SELF 5
+variable 5 delete
+variable 5 loop 2
+next 4
+jump SELF 4
+variable 4 delete
+variable 4 loop 2
+next 3
+jump SELF 3
+variable 3 delete
+variable 3 loop 2
+next 2
+jump SELF 2
+variable 2 delete
+variable 2 loop 2
+next 1
+jump SELF 1
+variable 1 delete
+variable 1 loop 2
+quit
+
+
+label pushcycle
+variable n loop 12
+label fixloop
+variable c${n} atom mol==(${n}+1)
+variable f${n} atom 1.7*(3-2*v_${n})*(v_c${n})
+fix push${n} all addforce 0 0 v_f${n}
+next n
+jump SELF fixloop
+variable n delete
+run 1
+fix hold all addforce 0 0 $(-fcm(all,z)/count(all))
+fix 1 all nve/limit 0.1
+run 500
+
+unfix 1
+unfix hold
+variable n loop 12
+label unfixloop
+unfix push${n}
+variable f${n} delete
+variable c${n} delete
+next n
+jump SELF unfixloop
+variable n delete
+velocity all set 0 0 0
+velocity all create 300.0 8375603
+fix 1 all nvt temp 300.0 300.0 1 tloop 100
+run 1000
+minimize 1e-25 1e-25 50000 50000
+minimize 1e-25 1e-25 50000 50000
+minimize 1e-25 1e-25 50000 50000
+minimize 1e-25 1e-25 50000 50000
+minimize 1e-25 1e-25 50000 50000
+minimize 1e-25 1e-25 50000 50000
+label loop
+variable a loop 100
+fix relax all box/relax x 0.0 y 0.0 xy 0.0
+minimize 1e-25 1e-25 50000 50000
+unfix relax
+minimize 1e-25 1e-25 50000 50000
+next a
+jump SELF loop
+minimize 1e-25 1e-25 50000 50000
+minimize 1e-25 1e-25 50000 50000
+minimize 1e-25 1e-25 50000 50000
+minimize 1e-25 1e-25 50000 50000
+minimize 1e-25 1e-25 50000 50000
+
+
+dump            2 all custom 1 smallshapes_periodic.xyz_${count} id type mol x y z c_eng vx vy vz
+dump_modify     2 element C C H X
+unfix 1
+run 1
+undump 2
+print "$(v_1-1) $(v_2-1) $(v_3-1) $(v_4-1) $(v_5-1) $(v_6-1) $(v_7-1) $(v_8-1) $(v_9-1) $(v_10-1) $(v_11-1) $(v_12-1)      $(pe)      periodic energy"
+#write_restart restart.rstrt
+
+label RESTART
+clear
+box tilt large
+read_restart restart.rstrt
+pair_style      hybrid airebo 4.0 lj/cut 10.0 zero 10.0
+pair_coeff	* * airebo CH.airebo C C H NULL
+pair_coeff	*3 4 lj/cut 0.002843732471143 3.4
+pair_coeff	4 4 zero
+compute csym all centro/atom fcc
+compute eng all pe/atom
+compute eatoms all reduce sum c_eng
+dump            1 all custom 10000000000 smallshapes_periodic.current id mol type x y z c_csym c_eng vx vy vz
+dump_modify     1 element C C H X append no
+jump SELF return
