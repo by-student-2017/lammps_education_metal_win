@@ -208,6 +208,10 @@ input file (metal unit, lammps)
   https://repository.arizona.edu/bitstream/handle/10150/560748/azu_etd_13780_sip1_m.pdf?sequence=1
   Grain_Boundary_SiC
 
+- K. C. Alexander, thesis (2011).
+  https://dspace.mit.edu/handle/1721.1/108218
+  Grain_Boundary_Cu
+
 - X. Ke, Doctor Thesis (2019).
   https://scholarworks.uvm.edu/graddis/995/
   Cu-Ag_MC (python code)
@@ -494,6 +498,9 @@ input file (metal unit, lammps)
 - https://dr.ntu.edu.sg/handle/10356/175396
   Fe-Co
 -------------------------------------------------------------------
+- CDC-nanoporous-carbon-ABOP(data file): https://zenodo.org/records/11396617
+- HCNT (xyz data): https://doi.org/10.1021/ja404330q
+-------------------------------------------------------------------
 - J. William, Thesis (2021).
   https://openscience.ub.uni-mainz.de/handle/20.500.12030/6656 
   C60 (girifalco.table) (failed)
@@ -617,10 +624,6 @@ input file (metal unit, lammps)
 - A. Saltos, Doctor Thesis (2020).
   https://mospace.umsystem.edu/xmlui/handle/10355/83797
   Greens_Function_Method (need Ugamma101010.pos) (MCNP and OpenMC code)
-  
-- K. C. Alexander, thesis (2011).
-  https://dspace.mit.edu/handle/1721.1/108218
-  Grain_Boundary_Cu
   
 - R. Xie, Master thesis (2021).
   https://mds.marshall.edu/etd/1411/
