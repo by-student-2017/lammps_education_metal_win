@@ -95,7 +95,7 @@ input file (metal unit, lammps)
   uniaxial_tensile_test_Graphene_NEMD
 
 - A. A. Khan, Master thesis (2022).
-  http://lib.buet.ac.bd:8080/xmlui/bitstream/handle/123456789/6464/Full%20Thesis.pdf?sequence=1
+  http://lib.buet.ac.bd:8080/xmlui/bitstream/handle/123456789/6464/Full%20Thesis.pdf
   crumpled_graphene
 
 - Y. Gao et al., Membranes12 (2022) 886.
