@@ -1,7 +1,7 @@
 # DATE: 2024-10-24 UNITS: metal CONTRIBUTOR: By STUDENT, CITATION: S. A. Chowdhury et al., JEMT, 144 (2022) 011006-1.: DOI: 10.1115/1.4051306
 
 # SW parameter for MoTe2
-# Only directly bonded interactions are included with non-bonded interactions set to zero. Mo–Mo–Mo and Te–Te–Te terms only have two-body contributions. 
+# Only directly bonded interactions are included with non-bonded interactions set to zero. Mo-Mo-Mo and Te-Te-Te terms only have two-body contributions. 
 # It is to be noted that for the SW potential, quantities such as equilibrium angle theta0 are taken directly from DFT calculations and 
 # cutoff distances are set to about 1.3−1.4 times the equilibrium bond lengths. For the LJ potential, the distance parameter simga is derived from
 # the equilibrium interlayer atomic distance and the energy parameter is fitted to the out-of-plane elastic constant and phonon frequencies of bulk MoTe2.
