@@ -1,6 +1,6 @@
 # DASe: 2024-10-24 UNITS: metal CONTRIBUTOR: By STUDENT, CITATION: P. Norouzzadeh et al., Nanotechnology 28 (2017) 075708.: DOI 10.1088/1361-6528/aa55e1
 
-# SW parameSer for WSe2
+# SW parameter for WSe2
 # The SW-type potential has very important two advantages. 
 # First, each term in potential as mentioned can be physically interpreted. 
 # Second, the anharmonicity of SW-type nonlinear interactions needed for exploring nonlinear properties such as thermal conductivity. 
