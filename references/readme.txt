@@ -482,6 +482,10 @@ input file (metal unit, lammps)
   https://doi.org/10.1103/PhysRevLett.125.130602
   Heat_Conductivity_Fluids
 
+- M. G. Muraleedharan et al., AIP Advances 7, 125022 (2017).: https://doi.org/10.1063/1.5003158
+  https://pubs.aip.org/aip/adv/article/7/12/125022/992205
+  Al_Vashishta-56
+
 - O. Takahiro, Chiba Univ.
   https://amorphous.tf.chiba-u.jp/lecture.files/ms-workshop/molten.html
   Lecture
