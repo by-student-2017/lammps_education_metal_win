@@ -677,3 +677,63 @@ plot the temperature of each atom
 2. Color coding -> Input property: f_ave_tempatom
 3. (click) Adjust range
 -------------------------------------------------------------------
+
+
+#---------------------------------------------------------------------
+# Backup URL (Unsorted)
+TC-QCL: https://digitalcommons.usu.edu/etd/3089
+TC-RNEMD: https://etd.ohiolink.edu/acprod/odb_etd/ws/send_file/send?accession=case1455101197&disposition=inline
+GBC: https://www.researchgate.net/profile/David-Spiteri-2/publication/301552031_Understanding_phonon_scattering_and_predicting_thermal_conductivity_from_molecular_dynamics_simulation/links/5722038d08aef9c00b7c43d2/Understanding-phonon-scattering-and-predicting-thermal-conductivity-from-molecular-dynamics-simulation.pdf
+SAC: https://www.duo.uio.no/bitstream/handle/10852/58676/thesis.pdf
+SSi:  https://escholarship.org/uc/item/5sg3c7dp
+NAM: https://pure.manchester.ac.uk/ws/portalfiles/portal/146395110/FULL_TEXT.PDF
+DEM: https://www.osti.gov/servlets/purl/1656962
+SCV: https://escholarship.org/content/qt5sg3c7dp/qt5sg3c7dp.pdf
+DG:  https://scholarcommons.scu.edu/mech_mstr/24
+NPFe: file:///C:/Users/manab/Downloads/Masters_Thesis__Marit_Olaisen_v2.pdf
+NPTa: https://trepo.tuni.fi/bitstream/handle/10024/145080/VoimanenEerik.pdf?sequence=2
+Ta:  https://escholarship.org/uc/item/79j2w03v
+CdTeZnSeHgS (SW): https://scholarworks.utep.edu/open_etd/3381 
+WCH (tersoff):  https://docs.lib.purdue.edu/open_access_dissertations/29
+HEA: https://scholarworks.utrgv.edu/etd/859
+FeCo: https://dr.ntu.edu.sg/bitstream/10356/175396/2/MarioHernandez_Thesis_PhD_Final.pdf
+FeCH: https://scholarsjunction.msstate.edu/td/5702 
+  MEAM file: https://arxiv.org/pdf/2109.01712
+NbC: https://huskiecommons.lib.niu.edu/cgi/viewcontent.cgi?article=8531&context=allgraduate-thesesdissertations
+AlN (zbl): https://scholarsmine.mst.edu/masters_theses/8166
+Al: https://scholarsjunction.msstate.edu/td/279 
+Al: https://publications.polymtl.ca/10794/
+AlCr: https://publications.polymtl.ca/10541/
+Ag: https://repositories.lib.utexas.edu/server/api/core/bitstreams/aa0530be-4659-4c18-926d-5ffd1d4bed53/content
+AgCu: https://scholarworks.uvm.edu/graddis/995 
+Cu: https://dspace.mit.edu/bitstream/handle/1721.1/112482/1011413174-MIT.pdf?sequence=1&isAllowed=y
+Ni:  http://scholarcommons.scu.edu/mech_mstr/9
+NiCu: https://scholars.unh.edu/dissertation/2468 
+Ti: https://www.osti.gov/servlets/purl/1872068
+Zr: https://qspace.library.queensu.ca/server/api/core/bitstreams/b42b5726-f1a0-47b4-bd83-3b45996aa99c/content
+TTPO: https://scholars.unh.edu/thesis/1087
+BC: https://bearworks.missouristate.edu/cgi/viewcontent.cgi?article=4487&context=theses
+Tip: https://media.proquest.com/media/hms/PFT/2/PD63O?_s=aMwtaWMrQNpEUYSDIxx3fAVjqE8%3D
+C: https://www.diva-portal.org/smash/get/diva2:1037517/FULLTEXT01.pdf
+C: https://oaktrust.library.tamu.edu/server/api/core/bitstreams/e111844d-ba35-4752-83f9-ca8d053d6f9a/content
+C: https://summit.sfu.ca/_flysystem/fedora/sfu_migrate/16590/etd9598_NMallikaArachchige.pdf
+epoxy: https://d1wqtxts1xzle7.cloudfront.net/78091875/MSC_20Dissertation_201436870-libre.pdf?1641367980=&response-content-disposition=inline%3B+filename%3DCharacterization_of_graphene_epoxy_nanoc.pdf&Expires=1730023337&Signature=Bn4v75rnkodB68d--GumwCuntIy7IqRTfv1LiIEsisa20at-bE2Jtizegj70yWRkXGUfESJqSPNbOFNA6LAubvkl96OxGPU8TP0duih2apYf5KXyeByVcL6-PIIGoNwCriWP9vM2k9tPqUPWl5cQi7PxtpQPykqIbs98KzqjRTse4PyTtqPcJOmiX0DrCTbKHQ3D1iznyvXeSZNVypIvxhHa2a0Bga4SBXYJ0ptQDy-h1rt4pR39J2luhxHEXt7sz93yn8TWB2QNmEVh~OWc98B-RpUI5CUFfDcYBTjAvREBY1g2QuhNduJR5VRlhWIGT~2d83zBxCQ6KSAtm40YjA__&Key-Pair-Id=APKAJLOHF5GGSLRBV4ZA
+bitumen (LJ): https://doi.org/10.1016/j.matdes.2024.112831
+HMA (LJ): https://doi.org/10.1063/1.5129942
+NEMD (LJ): https://pewi.org/cv/files/msc.pdf
+Ca: https://vtechworks.lib.vt.edu/server/api/core/bitstreams/47c372d7-9944-422b-8f7e-73db3c485857/content
+QC: https://citeseerx.ist.psu.edu/document?repid=rep1&type=pdf&doi=d309054b1aa8adf177f8e2fcc507fa852b68a228
+HO (ReaxFF): https://repository.library.northeastern.edu/files/neu:cj82pr03d/fulltext.pdf
+NiCHO (ReaxFF): https://dc.suffolk.edu/undergrad/13 
+Ar (ReaxFF): https://bearworks.missouristate.edu/theses/3416
+Ar (ReaxFF): https://bearworks.missouristate.edu/theses/3669 
+ASE: https://digitalcommons.latech.edu/cgi/viewcontent.cgi?article=1000&context=theses
+ASE: https://www.duo.uio.no/bitstream/handle/10852/70387/master.pdf?sequence=1
+GRO2LAM: https://link.springer.com/content/pdf/10.1007/s00894-019-4011-x.pdf
+DeepMD: https://bearworks.missouristate.edu/theses/3835
+Ovito python script: https://doi.org/10.1063/1.5085750
+Ovito python script: https://scholarworks.utep.edu/cgi/viewcontent.cgi?article=2384&context=open_etd
+nanocrystal_builder.py: https://www.researchgate.net/profile/Mark-Tschopp/publication/322147436_Voronoi-Based_Nanocrystalline_Generation_Algorithm_for_Atomistic_Simulations/links/5a480832458515f6b0569fc0/Voronoi-Based-Nanocrystalline-Generation-Algorithm-for-Atomistic-Simulations.pdf
+CeO2: https://uhra.herts.ac.uk/bitstream/handle/2299/15336/08174625%20Loya,%20Adil%20-%20Final%20PhD%20Submission.pdf?sequence%253D1
+dump: https://scholarsarchive.byu.edu/cgi/viewcontent.cgi?article=7423&context=etd
+#---------------------------------------------------------------------
