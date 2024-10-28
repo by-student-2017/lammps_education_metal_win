@@ -1,0 +1,78 @@
+# 3D Silicon crack simulation using Stillinger-Weber 
+
+variable name string ex_crack_Si_long
+
+dimension  3
+boundary s s p
+units metal
+
+atom_style atomic
+
+neighbor 0.3 bin
+neigh_modify delay 5
+
+# create geometry
+
+lattice  diamond 5.43
+region  box block 0 35 0 35 -15 15 units lattice
+create_box 5 box
+create_atoms 1 box
+
+mass  1 1.0
+mass  2 1.0
+mass  3 1.0
+mass  4 1.0
+mass  5 1.0
+
+pair_style sw
+pair_coeff * * Si.sw Si Si Si Si Si
+
+# define groups
+
+fix  1 all nve
+run 0
+
+variable topbound equal yhi-2
+variable botbound equal ylo+2
+
+region     1 block INF INF INF ${botbound} INF INF units box
+group  lower region 1
+region  2 block INF INF ${topbound} INF INF INF units box
+group  upper region 2
+group  boundary union lower upper
+group  mobile subtract all boundary
+
+variable quarter equal xhi/6
+variable half equal xhi/2
+
+region  leftupper block INF ${quarter} ${half} INF INF INF units box
+region  leftlower block INF ${quarter} INF ${half} INF INF units box
+group  leftupper region leftupper
+group  leftlower region leftlower
+
+set  group leftupper type 2
+set  group leftlower type 3
+set  group lower type 4
+set  group upper type 5
+
+# initial velocities
+compute    new mobile temp
+velocity mobile create 5 887723 temp new
+velocity upper set 0.0 0.25 0.0
+compute stress all stress/atom NULL
+
+# fixes
+fix  2 boundary setforce NULL 0.0 NULL 
+
+dump 1 all custom 50 dump.${name}.* id type x y z vx vy vz c_stress[1] c_stress[2] c_stress[3]
+
+# run
+
+timestep 0.001
+
+thermo  200
+thermo_modify temp new
+
+neigh_modify exclude type 2 3
+
+run  20000

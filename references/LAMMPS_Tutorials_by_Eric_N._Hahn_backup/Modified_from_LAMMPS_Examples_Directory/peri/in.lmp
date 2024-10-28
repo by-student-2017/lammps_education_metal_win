@@ -1,0 +1,48 @@
+# 3D Peridynamic simulation with virtual projectile traveling in -z
+# modified slightly from in.peri to break asymetry and visualize stress 
+
+units si
+dimension 3
+boundary s s s
+atom_style peri
+atom_modify map array
+neighbor 0.0010 bin
+
+# Create target
+lattice sc 0.0005
+region target cylinder z 0.0 0.0 0.100 -0.0020 0.0 units box
+create_box 1 target
+create_atoms 1 region target
+
+pair_style peri/pmb
+pair_coeff * * 1.6863e22 0.00125 0.0005 0.25    # <type1> <type2> <c> <horizon> <s00> <alpha>
+
+set group all density 2200
+set group all volume 1.25e-10   # volume = lattice constant^3
+
+velocity all create 1 12345
+
+thermo 25
+
+fix F1 all nve
+
+displace_atoms all random 0.00075 0.00075 0.00075 12345
+
+reset_timestep 0
+
+# Virtual spherical indenter to break target
+variable z0 equal 0.00510
+variable vz equal -100
+variable z equal "v_z0 + step*dt*v_vz"
+
+fix F2 all indent 1e17 sphere 0 0 v_z 0.0050 units box
+
+# Compute damage and stress for each particle
+compute C1 all damage/atom
+compute stress all stress/atom NULL 
+
+timestep 1e-7
+
+dump D1 all custom 5 dump.periT1_d125_r100_t002_v100.* id type x y z c_C1 c_stress[1] c_stress[2] c_stress[3] 
+
+run 2500
