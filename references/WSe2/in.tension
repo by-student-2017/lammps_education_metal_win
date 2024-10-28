@@ -1,0 +1,94 @@
+# LAMMPS 64-bit 22Dec2022-MSMPI
+# 
+# References
+# [1] https://arxiv.org/abs/1704.03147
+# [2] The input files: http://jiangjinwu.org/sw 
+# [3] https://matsci.org/t/save-redundancy-in-the-input-file/29096
+
+# deform by tension
+#1 general
+units           metal
+dimension       3
+atom_style      atomic
+neighbor        0.3 bin
+
+#2 structure
+boundary        p p p
+read_data       lammps.dat
+mass            1  78.96
+mass            2 183.85
+mass            3  78.96
+mass            4  78.96
+mass            5 183.85
+mass            6  78.96
+mass            7  78.96
+mass            8 183.85
+mass            9  78.96
+mass            10  78.96
+mass            11 183.85
+mass            12  78.96
+
+replicate 5 5 1
+
+#3 variables
+variable        temperature equal    1.0
+variable        pressure equal 0.0
+variable        tstep equal 0.001
+variable        strainmax equal 0.5
+variable        srate equal 1.e8/1.e12
+variable        tmp equal bound(all,xmax)-bound(all,xmin)
+variable        lenx equal ${tmp}
+variable        vtension equal sqrt(${srate}*${srate})*${lenx}
+variable        nstep equal ${strainmax}*${lenx}/${vtension}/${tstep}
+
+#4 potentials
+pair_style      sw
+pair_coeff      * * h-wse2.sw      Se1 W1  Se2 Se3 W2  Se4 Se5 W3  Se6 Se7 W4  Se8
+
+#5 optimize at 0 K
+dump            1 all custom 50000 dump/dump.minimization id type x y z
+fix             1 all box/relax x 0.0 y 0.0
+min_style       cg
+minimize        0.0 1.0e-8 1000000 1000000
+undump          1
+unfix           1
+
+#6 optimize at T
+compute         peratom all pe/atom
+reset_timestep  0
+timestep        ${tstep}
+velocity        all create ${temperature} 12346 mom yes rot yes
+fix             1 all npt temp ${temperature} ${temperature} 20 iso ${pressure} ${pressure} 20
+dump            1 all custom 50000 dump/dump.optimize id type x y z c_peratom fx fy fz
+thermo          1000
+thermo_style    custom step lx ly lz press pxx pyy pzz pe temp
+neigh_modify    once yes
+run             10000
+undump          1
+
+variable        tmp equal lx
+variable        lx0 equal ${tmp}
+
+#7 tension by deform
+reset_timestep  0
+unfix           1
+fix             1 all npt temp ${temperature} ${temperature} 20 y ${pressure} ${pressure} 20
+fix             2 all deform 1 x erate ${srate} units box remap x
+
+variable        strain equal "(lx-v_lx0)/v_lx0"
+variable        p1 equal v_strain
+# pressure unit, 1bar=10^5Pa=10^{-4}GPa
+# for 2D materials, 1GPa=h*0.1N/m, with thickness h in the unit of angstrom
+variable        p2 equal "-(0.0001*pxx)*(lz*0.1)"
+variable        p3 equal "0.0001*pyy"
+variable        p4 equal "0.0001*pzz"
+fix             def1 all print 300 "${p1} ${p2} ${p3} ${p4}" file strain.dat screen no
+
+dump            1 all custom 50000 dump/dump.tensile id type x y z c_peratom fx fy fz
+
+#8 run md
+thermo          1000
+thermo_style    custom step temp v_p1 v_p2 v_p3 v_p4 ke pe press
+run             ${nstep}
+
+print           "# Job done, Sir! See you."
