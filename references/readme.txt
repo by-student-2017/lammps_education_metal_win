@@ -1,4 +1,5 @@
 -------------------------------------------------------------------
+# Custom Lammps Script: https://www.ericnhahn.com/tutorials/lammps-tutorials/creating-polycrystalline-structure-via-sintering
 # LAMMPS Tube: https://lammpstube.com/category/lammps-tutorials/
 # Cold_Rolling: https://github.com/khaledb9/Cold_Rolling/tree/main
 # HandsOn_MD1: https://github.com/Gracen6/HandsOn_MD1
