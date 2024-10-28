@@ -682,6 +682,7 @@ plot the temperature of each atom
 
 #---------------------------------------------------------------------
 # Backup URL (Unsorted)
+TAPSim-MD: https://etd.ohiolink.edu/acprod/odb_etd/ws/send_file/send?accession=osu1525763934302517&disposition=inline
 TC-QCL: https://digitalcommons.usu.edu/etd/3089
 TC-RNEMD: https://etd.ohiolink.edu/acprod/odb_etd/ws/send_file/send?accession=case1455101197&disposition=inline
 GBC: https://www.researchgate.net/profile/David-Spiteri-2/publication/301552031_Understanding_phonon_scattering_and_predicting_thermal_conductivity_from_molecular_dynamics_simulation/links/5722038d08aef9c00b7c43d2/Understanding-phonon-scattering-and-predicting-thermal-conductivity-from-molecular-dynamics-simulation.pdf
@@ -691,7 +692,8 @@ NAM: https://pure.manchester.ac.uk/ws/portalfiles/portal/146395110/FULL_TEXT.PDF
 DEM: https://www.osti.gov/servlets/purl/1656962
 SCV: https://escholarship.org/content/qt5sg3c7dp/qt5sg3c7dp.pdf
 DG:  https://scholarcommons.scu.edu/mech_mstr/24
-NPFe: file:///C:/Users/manab/Downloads/Masters_Thesis__Marit_Olaisen_v2.pdf
+DMD: https://etd.ohiolink.edu/acprod/odb_etd/ws/send_file/send?accession=osu1321282489&disposition=inline
+NPFe: https://www.bing.com/ck/a?!&&p=6c02823dab68865532924157e695dffdb69fa9084f837ee6675341d5a0dacfb8JmltdHM9MTcyOTk4NzIwMA&ptn=3&ver=2&hsh=4&fclid=33a141eb-211f-6041-026b-55fd206561c3&psq=Masters_Thesis__Marit_Olaisen_v2.pdf&u=a1aHR0cHM6Ly9udG51b3Blbi5udG51Lm5vL250bnUteG1sdWkvYml0c3RyZWFtL2hhbmRsZS8xMTI1MC8yMzUwMjk0L01hc3RlcnNfVGhlc2lzX19NYXJpdF9PbGFpc2VuX3YyLnBkZj9zZXF1ZW5jZT05&ntb=1
 NPTa: https://trepo.tuni.fi/bitstream/handle/10024/145080/VoimanenEerik.pdf?sequence=2
 Ta:  https://escholarship.org/uc/item/79j2w03v
 CdTeZnSeHgS (SW): https://scholarworks.utep.edu/open_etd/3381 
@@ -704,6 +706,7 @@ NbC: https://huskiecommons.lib.niu.edu/cgi/viewcontent.cgi?article=8531&context=
 AlN (zbl): https://scholarsmine.mst.edu/masters_theses/8166
 Al: https://scholarsjunction.msstate.edu/td/279 
 Al: https://publications.polymtl.ca/10794/
+Al: https://scholarcommons.scu.edu/cgi/viewcontent.cgi?article=1049&context=mech_mstr
 AlCr: https://publications.polymtl.ca/10541/
 Ag: https://repositories.lib.utexas.edu/server/api/core/bitstreams/aa0530be-4659-4c18-926d-5ffd1d4bed53/content
 AgCu: https://scholarworks.uvm.edu/graddis/995 
@@ -719,15 +722,23 @@ C: https://www.diva-portal.org/smash/get/diva2:1037517/FULLTEXT01.pdf
 C: https://oaktrust.library.tamu.edu/server/api/core/bitstreams/e111844d-ba35-4752-83f9-ca8d053d6f9a/content
 C: https://summit.sfu.ca/_flysystem/fedora/sfu_migrate/16590/etd9598_NMallikaArachchige.pdf
 epoxy: https://d1wqtxts1xzle7.cloudfront.net/78091875/MSC_20Dissertation_201436870-libre.pdf?1641367980=&response-content-disposition=inline%3B+filename%3DCharacterization_of_graphene_epoxy_nanoc.pdf&Expires=1730023337&Signature=Bn4v75rnkodB68d--GumwCuntIy7IqRTfv1LiIEsisa20at-bE2Jtizegj70yWRkXGUfESJqSPNbOFNA6LAubvkl96OxGPU8TP0duih2apYf5KXyeByVcL6-PIIGoNwCriWP9vM2k9tPqUPWl5cQi7PxtpQPykqIbs98KzqjRTse4PyTtqPcJOmiX0DrCTbKHQ3D1iznyvXeSZNVypIvxhHa2a0Bga4SBXYJ0ptQDy-h1rt4pR39J2luhxHEXt7sz93yn8TWB2QNmEVh~OWc98B-RpUI5CUFfDcYBTjAvREBY1g2QuhNduJR5VRlhWIGT~2d83zBxCQ6KSAtm40YjA__&Key-Pair-Id=APKAJLOHF5GGSLRBV4ZA
+#---------------------------------------------------------------------
+DeepMD: https://doi.org/10.1016/j.carbon.2024.119498
 bitumen (LJ): https://doi.org/10.1016/j.matdes.2024.112831
 HMA (LJ): https://doi.org/10.1063/1.5129942
 NEMD (LJ): https://pewi.org/cv/files/msc.pdf
+DNA (LJ): https://ir.vanderbilt.edu/bitstream/handle/1803/14842/cp_dissertation.pdf?sequence=1&isAllowed=y
+NS (LJ): https://www.researchgate.net/profile/Sankhadeep-Bose-2/publication/342515066_Molecular_Dynamics_Modelling_of_Thermostatic_Properties_of_Nanoparticles/links/5ef9785145851550507b07d3/Molecular-Dynamics-Modelling-of-Thermostatic-Properties-of-Nanoparticles.pdf
+LJ: https://theses.hal.science/tel-03649130/file/Demydiuk_Fedir_2021_ED182.pdf
+LJ: https://www.researchgate.net/figure/Lennard-Jones-potential-parameters_tbl1_354318730
+charmm2lammps (LJ): http://ethesis.nitrkl.ac.in/6144/1/212MM2338-5.pdf
 Ca: https://vtechworks.lib.vt.edu/server/api/core/bitstreams/47c372d7-9944-422b-8f7e-73db3c485857/content
 QC: https://citeseerx.ist.psu.edu/document?repid=rep1&type=pdf&doi=d309054b1aa8adf177f8e2fcc507fa852b68a228
 HO (ReaxFF): https://repository.library.northeastern.edu/files/neu:cj82pr03d/fulltext.pdf
 NiCHO (ReaxFF): https://dc.suffolk.edu/undergrad/13 
 Ar (ReaxFF): https://bearworks.missouristate.edu/theses/3416
 Ar (ReaxFF): https://bearworks.missouristate.edu/theses/3669 
+SiO (ReaxFF): https://www.researchgate.net/profile/Rajni-Chahal-2/publication/369245297_MECHANICS_OF_NANOSCALE_FIBER_NETWORKS_AND_THEIR_COMPOSITES_A_THREE-DIMENSIONAL_MULTISCALE_STOCHASTIC_MODELLING_STUDY/links/6411c8e392cfd54f84015903/MECHANICS-OF-NANOSCALE-FIBER-NETWORKS-AND-THEIR-COMPOSITES-A-THREE-DIMENSIONAL-MULTISCALE-STOCHASTIC-MODELLING-STUDY.pdf
 ASE: https://digitalcommons.latech.edu/cgi/viewcontent.cgi?article=1000&context=theses
 ASE: https://www.duo.uio.no/bitstream/handle/10852/70387/master.pdf?sequence=1
 GRO2LAM: https://link.springer.com/content/pdf/10.1007/s00894-019-4011-x.pdf
@@ -737,4 +748,15 @@ Ovito python script: https://scholarworks.utep.edu/cgi/viewcontent.cgi?article=2
 nanocrystal_builder.py: https://www.researchgate.net/profile/Mark-Tschopp/publication/322147436_Voronoi-Based_Nanocrystalline_Generation_Algorithm_for_Atomistic_Simulations/links/5a480832458515f6b0569fc0/Voronoi-Based-Nanocrystalline-Generation-Algorithm-for-Atomistic-Simulations.pdf
 CeO2: https://uhra.herts.ac.uk/bitstream/handle/2299/15336/08174625%20Loya,%20Adil%20-%20Final%20PhD%20Submission.pdf?sequence%253D1
 dump: https://scholarsarchive.byu.edu/cgi/viewcontent.cgi?article=7423&context=etd
+CP2k: https://www.academia.edu/download/106104072/1040028.pdf
+CP2k: https://jollywatt.github.io/assets/pdf/2019.Crystal-Band-Structures-CP2K.pdf
+CP2k: https://github.com/MarsalekGroup/aml
+CP2k: https://www.pure.ed.ac.uk/ws/portalfiles/portal/19653859/wp140.pdf
+PdCNT (CP2k): https://doi.org/10.1063/1.5040048
+QE: https://doi.org/10.1021/acs.jctc.2c00742
+python: https://doi.org/10.1063/1.5109116
+python: https://scholarsarchive.byu.edu/cgi/viewcontent.cgi?article=8348&context=etd
+COF (cif): https://doi.org/10.1016/j.jcis.2024.03.077
+tersoff: https://link.springer.com/article/10.1007/s11051-014-2351-0
+xyz: https://doi.org/10.1016/j.fuel.2024.132064
 #---------------------------------------------------------------------
