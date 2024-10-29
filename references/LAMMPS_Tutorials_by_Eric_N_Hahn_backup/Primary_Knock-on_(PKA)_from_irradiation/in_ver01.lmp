@@ -18,16 +18,17 @@
 # NIST: https://www.ctcms.nist.gov/potentials/
 #-----------------------------------------------------------------------------------------
 
+variable gscale equal 0.5
+
 clear 
 units metal
 boundary p p p
 atom_style atomic
 
 lattice fcc 5.55
-variable cubelength equal 25
+variable cubelength equal 25*${gscale}
 region box block -${cubelength} ${cubelength} -${cubelength} ${cubelength} -${cubelength} ${cubelength} units lattice
-
-create_box  1 box
+create_box 1 box
 create_atoms 1 region box
 
 region PKA block -0.1 0.1 -0.1 0.1 -0.1 0.1 
@@ -36,11 +37,6 @@ group PKA region PKA
 pair_style eam/alloy
 pair_coeff * * Au_GLJ10_3.eam.alloy Au
 
-# initial temperature 5 K
-velocity all create 5 12345
-
-fix npt all npt temp 5 5 0.1 iso 0 0 1
-
 minimize 1e-5 1e-5 100 100
 
 thermo 10
@@ -48,18 +44,23 @@ thermo_style custom step time temp press pe ke etotal lx ly lz
 
 timestep 0.0005 # 0.5 [fs]
 
+# initial temperature 5 K
+velocity all create 5 12345
+
+fix npt all npt temp 5 5 0.1 iso 0 0 1
+
 run 200
 
 unfix npt
 
-reset_timestep  0
+reset_timestep 0
 
 velocity PKA set 0 33 -1333 units box
 
 compute 3 all pe/atom
 
 dump eve all custom 1 dump/dump.PKA.* id type x y z vx vy vz c_3 
-dump d1 all cfg 5 cfg/dump.PKA_Au_${keV}keV_${angle}_v14.*.cfg mass type xs ys zs id type vx vy vz c_3 
+dump d1 all cfg 1 cfg/dump.PKA.*.cfg mass type xs ys zs id type vx vy vz c_3 
 dump_modify d1 element Au
 
 fix impactdt all dt/reset 1 0.5e-5 0.0005 0.05 units box

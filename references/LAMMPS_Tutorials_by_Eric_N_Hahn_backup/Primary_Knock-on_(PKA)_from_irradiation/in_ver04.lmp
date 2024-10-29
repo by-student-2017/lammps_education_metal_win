@@ -20,28 +20,30 @@
 # NIST: https://www.ctcms.nist.gov/potentials/
 #-----------------------------------------------------------------------------------------
 
+variable gscale equal 0.5
+
 clear 
 units metal
 boundary p p s
 atom_style atomic
 
 lattice fcc 5.55
-variable xlength equal 20
-variable ylength equal 20
-variable zlength equal 30
+variable xlength equal 20*${gscale}
+variable ylength equal 20*${gscale}
+variable zlength equal 30*${gscale}
 
 region   box block -${xlength} ${xlength} -${ylength} ${ylength} -${zlength} 5 units lattice
 region atoms block -${xlength} ${xlength} -${ylength} ${ylength} -${zlength} 0 units lattice
-create_box 1 box
+create_box 2 box
 create_atoms 1 region atoms
 
 pair_style eam/alloy
-pair_coeff * * Au_GLJ10_3.eam.alloy Au
+pair_coeff * * Au_GLJ10_3.eam.alloy Au Aui
 
 # initial temperature 50 K
 velocity all create 50 12345 dist gaussian
 
-create_atoms 1 single -0 0 15 units box
+create_atoms 2 single -0 0 15 units box
 
 region PKA block INF INF INF INF 14.9 15.1 units box
 group PKA region PKA
@@ -80,7 +82,7 @@ compute 4 all ke/atom
 
 dump eve all custom 5 ./dump/dump.PKA_Au_${keV}keV_${angle}_v14.* id type mass x y z vx vy vz c_3 c_4 
 dump d1 all cfg 5 cfg/dump.PKA_Au_${keV}keV_${angle}_v14.*.cfg mass type xs ys zs id type vx vy vz c_3 c_4 
-dump_modify d1 element Au
+dump_modify d1 element Au Aui
 
 # https://docs.lammps.org/fix_dt_reset.html# It can be useful when running an impact simulation where one or more high-energy atoms collide with a solid, causing a damage cascade. 
 
