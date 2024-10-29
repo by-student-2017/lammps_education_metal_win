@@ -4,21 +4,27 @@
 ### Example Creation of a HEA ###
 ### Version 0.1.1 ###
 #-----------------------------------------------------------------------------------------
+### Small changes by STUDENT
+#-----------------------------------------------------------------------------------------
+# LAMMPS 64-bit 22Dec2022-MSMPI
+#-----------------------------------------------------------------------------------------
+# NIST: https://www.ctcms.nist.gov/potentials/
+#-----------------------------------------------------------------------------------------
 
 variable name string HEA_Fe.Cr.Ni.Co0.Al0.ic_300K
 
 # Initialization
-units   metal
+units metal
 boundary p p p
 atom_style atomic
 
 variable lattice equal 3.478
-variable cross   equal 30
-variable ncross  equal "v_cross*-1"
-variable length equal 75 
+variable   cross equal 30
+variable  ncross equal "v_cross*-1"
+variable  length equal 75 
 
 lattice fcc ${lattice}  orient x 1 0 0 orient y 0 1 0 orient z 0 0 1
-region sim_box block ${ncross} ${cross} ${ncross} ${cross} 0 ${length} units lattice
+region  sim_box block ${ncross} ${cross} ${ncross} ${cross} 0 ${length} units lattice
 create_box 5  sim_box
 region atom_box block ${ncross} ${cross} ${ncross} ${cross} 0 ${length} units lattice
 create_atoms 1 region atom_box
@@ -34,8 +40,8 @@ pair_style hybrid eam/alloy eam/alloy eam/fs morse 6 morse 6 morse 6
 pair_coeff * * eam/alloy 1 Mishin_updated-Ni-Al-Co-2013.eam.alloy NULL NULL Ni Co Al
 pair_coeff * * eam/alloy 2 FeNiCr.eam.alloy.txt Fe Cr Ni NULL NULL
 pair_coeff * * eam/fs Al-Fe.eam.fs Fe NULL NULL NULL Al
-pair_coeff 1 4 morse 1 0.498475897 1.2206 2.893511154
-pair_coeff 2 4 morse 2 0.512606496 1.3124 2.837523232
+pair_coeff 1 4 morse 1 0.498475897 1.2206  2.893511154
+pair_coeff 2 4 morse 2 0.512606496 1.3124  2.837523232
 pair_coeff 2 5 morse 3 0.345413404 1.36835 2.986030331
 
 group Fe type 1
@@ -44,30 +50,30 @@ group Ni type 3
 group Co type 4
 group Al type 5
 
+thermo 100
 thermo_style custom step temp ke pe etotal press pxx pyy pzz pxy pxz pyz ly lx lz vol
 thermo_modify lost warn norm yes
-thermo   100
 
+# structure minimization, O K
 min_style cg 
 minimize 1e-10 1e-10 5000 5000
 
+# initial temperature 600 K
 velocity all create 600 123456 dist gaussian
 
+# NVE, 300 K
 fix nve all nve
 fix trs all temp/rescale 300 300 300 0.5 0.5
-
 run 2500
-
 unfix nve
 unfix trs
 
+# NPT, 300 K
 fix npt all npt iso 0 0 0.1 temp 300 300 0.1
-
 run 5000
-
 unfix npt
 
 write_data data.${name}
 
-print "Job's done"
+print "Jobs done"
 #-----------------------------------------------------------------------------------------
