@@ -1,7 +1,7 @@
 set ncore=4
 set OMP_NUM_THREADS=1
 
-rem mkdir cfg
+mkdir cfg
 rem mkdir dump
 
 for %%1 in (in.lmp) do (
