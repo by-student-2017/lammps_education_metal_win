@@ -1,3 +1,16 @@
+#-----------------------------------------------------------------------------------------
+### Created by Eric N. Hahn  ###
+### ericnhahn@gmail.com ###
+#-----------------------------------------------------------------------------------------
+### Small changes by STUDENT
+#-----------------------------------------------------------------------------------------
+# LAMMPS 64-bit 22Dec2022-MSMPI
+#-----------------------------------------------------------------------------------------
+# NIST: https://www.ctcms.nist.gov/potentials/
+#-----------------------------------------------------------------------------------------
+clear
+echo both
+#-----------------------------------------------------------------------------------------
 # 3D Silicon crack simulation using Stillinger-Weber 
 
 variable name string ex_crack_Si_long
@@ -18,11 +31,11 @@ region  box block 0 35 0 35 -15 15 units lattice
 create_box 5 box
 create_atoms 1 box
 
-mass  1 1.0
-mass  2 1.0
-mass  3 1.0
-mass  4 1.0
-mass  5 1.0
+mass  1 28.09 # Si
+mass  2 28.09 # Si
+mass  3 28.09 # Si
+mass  4 28.09 # Si
+mass  5 28.09 # Si
 
 pair_style sw
 pair_coeff * * Si.sw Si Si Si Si Si
@@ -35,7 +48,7 @@ run 0
 variable topbound equal yhi-2
 variable botbound equal ylo+2
 
-region     1 block INF INF INF ${botbound} INF INF units box
+region  1 block INF INF INF ${botbound} INF INF units box
 group  lower region 1
 region  2 block INF INF ${topbound} INF INF INF units box
 group  upper region 2
@@ -64,15 +77,20 @@ compute stress all stress/atom NULL
 # fixes
 fix  2 boundary setforce NULL 0.0 NULL 
 
-dump 1 all custom 50 dump.${name}.* id type x y z vx vy vz c_stress[1] c_stress[2] c_stress[3]
+dump 1 all custom 50 dump/dump.${name}.* id type x y z vx vy vz c_stress[1] c_stress[2] c_stress[3]
+dump d1 all cfg 50 cfg/dump.${name}.*.cfg mass type xs ys zs id type vx vy vz fx fy fz
+dump_modify d1 element Si Si Si Si Si
 
 # run
 
-timestep 0.001
+timestep 0.001 # 1 [fs]
 
-thermo  200
+thermo 200
 thermo_modify temp new
 
 neigh_modify exclude type 2 3
 
 run  20000
+
+print "---------- Ende ----------"
+#-----------------------------------------------------------------------------------------
