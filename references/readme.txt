@@ -682,6 +682,8 @@ plot the temperature of each atom
 
 #---------------------------------------------------------------------
 # Backup URL (Unsorted)
+NPSD: https://ujcontent.uj.ac.za/view/pdfCoverPage?instCode=27UOJ_INST&filePid=136016360007691&download=true
+Vp2B: https://escholarship.org/content/qt7564g5nd/qt7564g5nd_noSplash_44d43515acf08f39337f2cc99e5ec104.pdf
 TAPSim-MD: https://etd.ohiolink.edu/acprod/odb_etd/ws/send_file/send?accession=osu1525763934302517&disposition=inline
 TC-QCL: https://digitalcommons.usu.edu/etd/3089
 TC-RNEMD: https://etd.ohiolink.edu/acprod/odb_etd/ws/send_file/send?accession=case1455101197&disposition=inline
@@ -722,6 +724,8 @@ C: https://www.diva-portal.org/smash/get/diva2:1037517/FULLTEXT01.pdf
 C: https://oaktrust.library.tamu.edu/server/api/core/bitstreams/e111844d-ba35-4752-83f9-ca8d053d6f9a/content
 C: https://summit.sfu.ca/_flysystem/fedora/sfu_migrate/16590/etd9598_NMallikaArachchige.pdf
 epoxy: https://d1wqtxts1xzle7.cloudfront.net/78091875/MSC_20Dissertation_201436870-libre.pdf?1641367980=&response-content-disposition=inline%3B+filename%3DCharacterization_of_graphene_epoxy_nanoc.pdf&Expires=1730023337&Signature=Bn4v75rnkodB68d--GumwCuntIy7IqRTfv1LiIEsisa20at-bE2Jtizegj70yWRkXGUfESJqSPNbOFNA6LAubvkl96OxGPU8TP0duih2apYf5KXyeByVcL6-PIIGoNwCriWP9vM2k9tPqUPWl5cQi7PxtpQPykqIbs98KzqjRTse4PyTtqPcJOmiX0DrCTbKHQ3D1iznyvXeSZNVypIvxhHa2a0Bga4SBXYJ0ptQDy-h1rt4pR39J2luhxHEXt7sz93yn8TWB2QNmEVh~OWc98B-RpUI5CUFfDcYBTjAvREBY1g2QuhNduJR5VRlhWIGT~2d83zBxCQ6KSAtm40YjA__&Key-Pair-Id=APKAJLOHF5GGSLRBV4ZA
+BN: http://210.212.194.26/jspui/bitstream/123456789/14231/1/112027PH11F09.pdf
+atomsk: https://arxiv.org/pdf/2107.09213
 #---------------------------------------------------------------------
 DeepMD: https://doi.org/10.1016/j.carbon.2024.119498
 bitumen (LJ): https://doi.org/10.1016/j.matdes.2024.112831
@@ -731,11 +735,16 @@ DNA (LJ): https://ir.vanderbilt.edu/bitstream/handle/1803/14842/cp_dissertation.
 NS (LJ): https://www.researchgate.net/profile/Sankhadeep-Bose-2/publication/342515066_Molecular_Dynamics_Modelling_of_Thermostatic_Properties_of_Nanoparticles/links/5ef9785145851550507b07d3/Molecular-Dynamics-Modelling-of-Thermostatic-Properties-of-Nanoparticles.pdf
 LJ: https://theses.hal.science/tel-03649130/file/Demydiuk_Fedir_2021_ED182.pdf
 LJ: https://www.researchgate.net/figure/Lennard-Jones-potential-parameters_tbl1_354318730
+LJ: https://lup.lub.lu.se/luur/download?func=downloadFile&recordOId=9079628&fileOId=9079859
+LJ: https://shareok.org/bitstream/handle/11244/332399/2021_Bhattacharya_Soumya_Dissertation.pdf?sequence=1
 charmm2lammps (LJ): http://ethesis.nitrkl.ac.in/6144/1/212MM2338-5.pdf
+CVFF: https://www.researchgate.net/profile/Jurgen-Lange/publication/283943867_Molecular_Dynamic_Simulation_of_Oxaliplatin_Diffusion_in_Polylactic_acid-_co_-glycolic_acid_Part_A_Parameterization_and_Validation_of_the_Force-Field_CVFF/links/5a749f10a6fdcc53fe16c31f/Molecular-Dynamic-Simulation-of-Oxaliplatin-Diffusion-in-Polylactic-acid-co-glycolic-acid-Part-A-Parameterization-and-Validation-of-the-Force-Field-CVFF.pdf
 Ca: https://vtechworks.lib.vt.edu/server/api/core/bitstreams/47c372d7-9944-422b-8f7e-73db3c485857/content
 QC: https://citeseerx.ist.psu.edu/document?repid=rep1&type=pdf&doi=d309054b1aa8adf177f8e2fcc507fa852b68a228
 HO (ReaxFF): https://repository.library.northeastern.edu/files/neu:cj82pr03d/fulltext.pdf
 NiCHO (ReaxFF): https://dc.suffolk.edu/undergrad/13 
+NiC (ReaxFF): https://publications.aston.ac.uk/id/eprint/44530/6/Fikri_Ahmad_Atif_2021.pdf
+ZnO (ReaxFF): https://open.library.ubc.ca/media/download/pdf/24/1.0319080/4
 Ar (ReaxFF): https://bearworks.missouristate.edu/theses/3416
 Ar (ReaxFF): https://bearworks.missouristate.edu/theses/3669 
 SiO (ReaxFF): https://www.researchgate.net/profile/Rajni-Chahal-2/publication/369245297_MECHANICS_OF_NANOSCALE_FIBER_NETWORKS_AND_THEIR_COMPOSITES_A_THREE-DIMENSIONAL_MULTISCALE_STOCHASTIC_MODELLING_STUDY/links/6411c8e392cfd54f84015903/MECHANICS-OF-NANOSCALE-FIBER-NETWORKS-AND-THEIR-COMPOSITES-A-THREE-DIMENSIONAL-MULTISCALE-STOCHASTIC-MODELLING-STUDY.pdf
@@ -758,5 +767,15 @@ python: https://doi.org/10.1063/1.5109116
 python: https://scholarsarchive.byu.edu/cgi/viewcontent.cgi?article=8348&context=etd
 COF (cif): https://doi.org/10.1016/j.jcis.2024.03.077
 tersoff: https://link.springer.com/article/10.1007/s11051-014-2351-0
+tersoff: https://ecommons.cornell.edu/bitstream/handle/1813/67407/Herbol_cornellgrad_0058F_11274.pdf?sequence=1
+meam (CH): https://doi.org/10.1016/j.polymer.2019.02.060
 xyz: https://doi.org/10.1016/j.fuel.2024.132064
+#---------------------------------------------------------------------
+https://pubs.acs.org/doi/10.1021/ja404330q
+http://ethesis.nitrkl.ac.in/6144/1/212MM2338-5.pdf
+http://ethesis.nitrkl.ac.in/5400/1/211MM1199.pdf
+https://zenodo.org/records/10251760
+https://ttu-ir.tdl.org/server/api/core/bitstreams/7738845f-5518-4b4e-ae6f-b4ed485f6dca/content
+https://digital.library.ncat.edu/cgi/viewcontent.cgi?article=1146&context=dissertations
+https://dc.suffolk.edu/cgi/viewcontent.cgi?article=1012&context=undergrad
 #---------------------------------------------------------------------
