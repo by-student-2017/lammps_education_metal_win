@@ -11,12 +11,19 @@
 ### Simulating PKA ###
 ### Version 0.1 ###
 #-----------------------------------------------------------------------------------------
+### Small changes by STUDENT
+#-----------------------------------------------------------------------------------------
+# LAMMPS 64-bit 22Dec2022-MSMPI
+#-----------------------------------------------------------------------------------------
+# NIST: https://www.ctcms.nist.gov/potentials/
+#-----------------------------------------------------------------------------------------
 
 clear 
-units    metal
-boundary        p p p
-atom_style      atomic
-lattice   fcc 5.55
+units metal
+boundary p p p
+atom_style atomic
+
+lattice fcc 5.55
 variable cubelength equal 25
 region box block -${cubelength} ${cubelength} -${cubelength} ${cubelength} -${cubelength} ${cubelength} units lattice
 
@@ -27,35 +34,38 @@ region PKA block -0.1 0.1 -0.1 0.1 -0.1 0.1
 group PKA region PKA
 
 pair_style eam/alloy
-pair_coeff      * * Au_GLJ10_3.eam.alloy.txt Au
+pair_coeff * * Au_GLJ10_3.eam.alloy Au
 
-velocity  all create 5 12345
+# initial temperature 5 K
+velocity all create 5 12345
 
-fix          npt all npt temp 5 5 0.1 iso 0 0 1
+fix npt all npt temp 5 5 0.1 iso 0 0 1
 
 minimize 1e-5 1e-5 100 100
 
-thermo    10
-thermo_style    custom step time temp press pe ke etotal lx ly lz
+thermo 10
+thermo_style custom step time temp press pe ke etotal lx ly lz
 
-timestep   0.0005
+timestep 0.0005 # 0.5 [fs]
 
-run     200
+run 200
 
-unfix           npt
+unfix npt
 
 reset_timestep  0
 
-velocity        PKA set 0 33 -1333 units box
+velocity PKA set 0 33 -1333 units box
 
 compute 3 all pe/atom
 
-dump eve all custom 1 dump.PKA.* id type x y z vx vy vz c_3 
+dump eve all custom 1 dump/dump.PKA.* id type x y z vx vy vz c_3 
+dump d1 all cfg 5 cfg/dump.PKA_Au_${keV}keV_${angle}_v14.*.cfg mass type xs ys zs id type vx vy vz c_3 
+dump_modify d1 element Au
 
-fix             impactdt all dt/reset 1 0.5e-5 0.0005 0.05 units box
-fix             nve all nve
+fix impactdt all dt/reset 1 0.5e-5 0.0005 0.05 units box
+fix nve all nve
 
-run             20000
+run 20000
 
-print "Job's Done" 
+print "Jobs Done" 
 #-----------------------------------------------------------------------------------------
