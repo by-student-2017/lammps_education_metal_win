@@ -4,17 +4,21 @@
 ### Diamond impact of single graphene sheet ###
 ### Version 0.3 ###
 #-----------------------------------------------------------------------------------------
+### Small changes by STUDENT
+#-----------------------------------------------------------------------------------------
+# LAMMPS 64-bit 22Dec2022-MSMPI
+#-----------------------------------------------------------------------------------------
 
 # === Setup the simulation ===
 log log.Graphene_impact
 echo screen
-dimension  3
-units           metal
-atom_style      atomic
+dimension 3
+units metal
+atom_style atomic
 boundary p p p
 
 region box block  -210 210 -240 240 -5 200 units lattice
-create_box 1 box
+create_box 2 box
 
 lattice custom 2.4595 a1 1  0  0  a2 0 1.73203 0 &
  basis 0 0 0  &
@@ -24,30 +28,34 @@ lattice custom 2.4595 a1 1  0  0  a2 0 1.73203 0 &
 region graphene block  -210 210 -240 240 0 0.1 units lattice
 create_atoms 1 region graphene 
 
-mass * 12.011
+mass * 12.011 # C
 
 # === Define Interatomic Potential ===
 pair_style airebo/morse 3.0
-pair_coeff * * CH.airebo-m C
+pair_coeff * * CH.airebo-m C C
 
 compute 3 all pe/atom
-compute 4 all stress/atom NULL virial #note, ignores thermal contribution to stress
+compute 4 all stress/atom NULL virial # note, ignores thermal contribution to stress
 
-# === Run the simulation for equilibration ===
+# === Run the simulation for equilibration (NPT) ===
+
+timestep 0.001 # 1 [fs]
+
+# initial temperature 300 K
 velocity all create 300.0 12345 dist gaussian
+
+# equilibration, NPT, 298 K
 fix npt all npt temp 298 298 .5 x 0.0 0.0 .5 y 0.0 0.0 .5
 
 thermo  10
 thermo_style custom step pe ke etotal temp lx ly lz press atoms
+#thermo_style custom step temp ke pe press vol
 
-dump eve all custom 25 dump.graphene_impact.* id type x y z vx vy vz c_3 c_4[1] c_4[2] c_4[3]
-
-timestep 0.001
+dump eve all custom 25 dump/equil_npt.* id type x y z vx vy vz c_3 c_4[1] c_4[2] c_4[3]
+dump d1 all cfg 25 cfg/equil_npt.*.cfg mass type xs ys zs id type vx vy vz fx fy fz
+dump_modify d1 element C Ci
 
 fix bp all balance 250 1 shift z 10 1
-
-thermo_style custom step temp ke pe press vol
-
 run 50
 
 group graphene region graphene
@@ -60,25 +68,34 @@ group middle region middle
 group edge subtract graphene middle
 unfix npt
 
+# Creating a sphere for impact
 lattice diamond 3.567
 region mobile sphere 0 0 150 30 units box
-create_atoms 1 region mobile
+create_atoms 2 region mobile
 group impactor region mobile
 
 change_box all boundary p p s
 
-# === Run the simulation for impact ===
+undump eve
+undump d1
 
-reset_timestep 0
+# === Run the simulation for impact (NVE) ===
+#reset_timestep 0
+
+timestep 0.002 # 2 [fs]
+
+dump 2 all custom 25 dump/dump.graphene_impact.* id type x y z vx vy vz c_3 c_4[1] c_4[2] c_4[3]
+dump d2 all cfg 25 cfg/dump.graphene_impact.*.cfg mass type xs ys zs id type vx vy vz fx fy fz
+dump_modify d2 element C Ci
+
 velocity edge set NULL NULL 0 sum no units box
 fix sheet edge setforce NULL NULL 0.0
-velocity impactor set 0.0 0.0 -20.0 sum yes units box   #20 A/ps = 2 km/s
+
+velocity impactor set 0.0 0.0 -20.0 sum yes units box # 20 A/ps = 2 km/s
 
 fix nve all nve
 
-timestep 0.002
-
 run 20000
 
-print "Job's done" 
+print "Jobs done" 
 #-----------------------------------------------------------------------------------------
