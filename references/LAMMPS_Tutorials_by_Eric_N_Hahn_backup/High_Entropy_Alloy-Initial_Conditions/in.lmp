@@ -15,6 +15,8 @@ echo both
 #-----------------------------------------------------------------------------------------
 variable name string HEA_Fe.Cr.Ni.Co0.Al0.ic_300K
 
+variable Tini equal 273+1000 # 1273 K (initial temperature [K])
+
 # Initialization
 units metal
 boundary p p p
@@ -64,19 +66,21 @@ dump_modify d1 element Fe Cr Ni Co Al
 min_style cg 
 minimize 1e-10 1e-10 5000 5000
 
-# initial temperature 600 K
-velocity all create 600 123456 dist gaussian
+timestep 0.001 # 1 [fs]
 
-# NVE, 300 K
+# initial temperature 1273 K
+velocity all create ${Tini} 123456 dist gaussian
+
+# NVE, 1273 K -> 300 K
 fix nve all nve
-fix trs all temp/rescale 300 300 300 0.5 0.5
-run 2500
+fix trs all temp/rescale 300 ${Tini} 300 0.5 0.5
+run 25000
 unfix nve
 unfix trs
 
 # NPT, 300 K
 fix npt all npt iso 0 0 0.1 temp 300 300 0.1
-run 5000
+run 50000
 unfix npt
 
 write_data data.${name}
