@@ -5,20 +5,25 @@
 # !!!WORK IN PROGRESS!!!
 # This input script is still in its testing phase, may be incomplete, inaccurate, include redundant pieces of code, etc.
 #-----------------------------------------------------------------------------------------
+### Small changes by STUDENT
+#-----------------------------------------------------------------------------------------
+# LAMMPS 64-bit 22Dec2022-MSMPI
+#-----------------------------------------------------------------------------------------
+# NIST: https://www.ctcms.nist.gov/potentials/
+#-----------------------------------------------------------------------------------------
 
 variable name string sinterfccpoly_Cu_WIP
 
-units           metal
-boundary        p p p 
-atom_style  atomic
+units metal
+boundary p p p 
+atom_style atomic
 
-neighbor        2.0 bin
-neigh_modify    every 1 delay 2 check yes
+neighbor 2.0 bin # default vaule: 2.0
+neigh_modify every 1 delay 2 check yes
+
 
 ##############################################
-
 #       Setting up Grains/Crystallites       #
-
 ##############################################
 
 variable latparam equal 3.615   #if you care more about a fully dense crystal structure than studying sintering a smaller latparam than equilibirium can be used, for ex 3.3
@@ -60,7 +65,7 @@ region box block -${lsx} ${lsx} -${lsy} ${lsy} -${lsz} ${lsz} units lattice
 create_box     1 box
 
 pair_style eam/alloy
-pair_coeff * * Cu_mishin1.eam.alloy Cu
+pair_coeff * * Cu01.eam.alloy Cu
 
 ###   Grain size and filling parameters here   ###
 variable grainsize equal 40    #set approximate grain size
@@ -142,13 +147,11 @@ print "Done making initial grains"
 
 
 #######################################################
-
 #                    SINTERING PROCESS                #
-
 #######################################################
 
-#fix             3 all box/relax aniso 0.0 vmax 1.0e-4 nreset 100
-thermo          25
+#fix 3 all box/relax aniso 0.0 vmax 1.0e-4 nreset 100
+thermo 25
 thermo_style custom atoms step temp pe etotal pxx pyy pzz lx ly lz 
 minimize 0.0 1.0e-6 1000 1000   #initial minimize to eliminate any overlapping atoms if they exist for some reason
 #unfix   3
@@ -160,8 +163,8 @@ minimize        1e-15 1.0e-15 1000 10000  #make sure that creating periodic boun
 compute 3 all pe/atom
 compute 4 all stress/atom NULL ke pair
 
-dump ini all custom 1000 dump.eve_${name}.* id type x y z vx vy vz c_3 c_4[1] c_4[2] c_4[3]    #dump all atoms 
-dump sli all custom 500 dump.sli_${name}.* id type x y z vx vy vz c_3 c_4[1] c_4[2] c_4[3]     #and thin middle slice for viz
+dump ini all custom 1000 dump/dump.eve_${name}.* id type x y z vx vy vz c_3 c_4[1] c_4[2] c_4[3]    #dump all atoms 
+dump sli all custom 500 dump/dump.sli_${name}.* id type x y z vx vy vz c_3 c_4[1] c_4[2] c_4[3]     #and thin middle slice for viz
 dump_modify sli thresh y > -10
 dump_modify sli thresh y < 10
 
