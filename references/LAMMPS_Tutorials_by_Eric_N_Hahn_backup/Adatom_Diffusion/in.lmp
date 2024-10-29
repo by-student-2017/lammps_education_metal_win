@@ -4,7 +4,13 @@
 ### Simulating adatoms ###
 ### Version 0.1 ###
 #-----------------------------------------------------------------------------------------
-
+### Small changes by STUDENT
+#-----------------------------------------------------------------------------------------
+# LAMMPS 64-bit 22Dec2022-MSMPI
+#-----------------------------------------------------------------------------------------
+clear
+echo both
+#-----------------------------------------------------------------------------------------
 units metal 
 dimension 3 
 boundary p p s 
@@ -18,36 +24,38 @@ variable fixer2 equal "v_cubel+1.49"
 region  box block -${cubel} ${cubel} -${cubel} ${cubel} -${fixer1} 1 units lattice
 region cbox block -${cubel} ${cubel} -${cubel} ${cubel} -${fixer1} 0 units lattice
 
-create_box 1 box 
+create_box 2 box 
 create_atoms 1 region cbox
-create_atoms 1 single -0.5 0 0.5 units lattice
+create_atoms 2 single -0.5 0 0.5 units lattice
 
 region hold block INF INF INF INF -${fixer1} -${fixer2} units lattice
-region temp block INF INF INF INF -${fixer2} -${cubel} units lattice
+region temp block INF INF INF INF -${fixer2} -${cubel}  units lattice
 
 group hold region hold
 group temp region temp
 
 pair_style eam/alloy 
-pair_coeff * * Cu01.eam.alloy Cu
+pair_coeff * * Cu01.eam.alloy Cu Cu
+
+timestep 0.005 # 5 [fs]
 
 compute pe all pe/atom 
-
-timestep        0.005
-
-compute          new all temp
-
-velocity    temp create 600 12345
-
-fix heater temp temp/rescale 1 850 850 5 1
-
-fix nve all nve
-
-fix freeze hold setforce 0 0 0 
-
-dump eve all custom 5 dump.adatom.* id type xu yu zu vx vy vz c_pe
+compute new all temp
 
 thermo 50
+thermo_style one
+
+dump eve all custom 5 dump/dump.adatom.* id type xu yu zu vx vy vz c_pe
+dump        d1 all cfg 5 cfg/dump.adatom.*.cfg mass type xs ys zs id type vx vy vz fx fy fz c_pe
+dump_modify d1 element Cu Cua
+
+# initial temperature 600 K
+velocity temp create 600 12345
+
+# NVE, 850 K
+fix nve all nve
+fix heater temp temp/rescale 1 850 850 5 1
+fix freeze hold setforce 0 0 0 
 
 run 100000
 
