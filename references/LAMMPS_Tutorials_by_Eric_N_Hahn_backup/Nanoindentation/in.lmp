@@ -5,13 +5,20 @@
 # !!!WORK IN PROGRESS!!!
 # This input script is still in its testing phase, may be incomplete, inaccurate, include redundant pieces of code, etc.
 #-----------------------------------------------------------------------------------------
+### Small changes by STUDENT
+#-----------------------------------------------------------------------------------------
+# LAMMPS 64-bit 22Dec2022-MSMPI
+#-----------------------------------------------------------------------------------------
+clear
+echo both
+#-----------------------------------------------------------------------------------------
 
 # Collision of spherical penetrator on Silicon film
-units		metal
-dimension	3
-boundary	p p f
-atom_style	atomic
-neighbor	0.3 bin
+units       metal
+dimension   3
+boundary    p p f
+atom_style  atomic
+neighbor    0.3 bin
 neigh_modify every 1 delay 2 check yes
 
 #VARIABLES
@@ -33,13 +40,15 @@ variable xsize1 equal "sqrt(v_1x1^2 + v_1x2^2 + v_1x3^2)"
 variable ysize1 equal "sqrt(v_1y1^2 + v_1y2^2 + v_1y3^2)"
 variable zsize1 equal "sqrt(v_1z1^2 + v_1z2^2 + v_1z3^2)" 
 
+variable fscale equal 0.2
+
 #Target  and projectile size, etc, 
-variable    b	 	equal 65 #a bit more than half allowing for bottom layers
-variable    bulk 	equal "round(v_b/v_zsize1)" #a bit more than half allowing for bottom layers
-variable	t		equal 35
+variable    b	 	equal "65*v_fscale" # 65 (original) # a bit more than half allowing for bottom layers
+variable    bulk 	equal "round(v_b/v_zsize1)" # a bit more than half allowing for bottom layers
+variable	t		equal "35*v_fscale" # 35 (original)
 variable    top     equal "round(v_t/v_zsize1)"
-variable    xl 		equal 95
-variable	yl 		equal 95
+variable    xl 		equal "95*v_fscale" # 95 (original)
+variable	yl 		equal "95*v_fscale" # 95 (original)
 variable	xmin	equal 0
 variable	x2 		equal "round(v_xl/(2*v_xsize1))"
 variable	cx2		equal "v_x2+1"
@@ -48,8 +57,8 @@ variable	ymin	equal 0
 variable	yh 		equal "v_yl/2"
 variable	y2 		equal "round(v_yl/(2*v_ysize1))"
 variable	cy2		equal "v_y2+1"
-variable    radius 	equal 100
-variable 	offset 	equal 10
+variable    radius 	equal "100*v_fscale"
+variable 	offset 	equal "10*v_fscale"
 variable 	center  equal "v_radius+v_offset"
 variable 	vdown 	equal -0.20   # 10 A/ps -> 1 km/s; 1=100 m/s; 0.1 = 10 m/s  
 variable 	vup 	equal "v_vdown*-2"
@@ -57,28 +66,32 @@ variable	rundown equal 110000  # distance will equal vdown*ts*rundown
 variable	runhold	equal 5000 # real value
 variable	runtemp equal 20000
 variable    runup 	equal "v_rundown*0.50"
-variable 	ts 		equal 0.005
-variable	lowT    equal 300
-variable    highT 	equal 800 
-variable 	tS		equal 0.001 
+variable 	ts 		equal 0.005 # 5 [fs] (using this simulation)
+variable	lowT    equal 300 # [K]
+variable    highT 	equal 800 # [K]
+variable 	tS		equal 0.001 # 1 [fs] (using dump of temperature and pressure)
 variable 	tdamp 	equal "v_tS*100"
 variable 	pdamp 	equal "v_tS*1000"
 variable    tdump   equal 500
 
 variable fbulk equal "v_bulk-1"
 variable tbulk equal "v_bulk-2"
-variable  txmin equal "v_xmin+1"
-variable tx2 equal "v_x2-1"
-variable  tymin equal "v_ymin+1"
-variable ty2 equal "v_y2-1"
+variable txmin equal "v_xmin+1"
+variable   tx2 equal "v_x2-1"
+variable tymin equal "v_ymin+1"
+variable   ty2 equal "v_y2-1"
 
 # CREATE GEOMETRY
-lattice diamond ${alattice} orient x  ${1x1} ${1x2} ${1x3} orient y  ${1y1} ${1y2} ${1y3} orient z  ${1z1} ${1z2} ${1z3} spacing ${xsize1} ${ysize1} ${zsize1}
+lattice diamond ${alattice} &
+  orient x  ${1x1} ${1x2} ${1x3} &
+  orient y  ${1y1} ${1y2} ${1y3} &
+  orient z  ${1z1} ${1z2} ${1z3} &
+  spacing ${xsize1} ${ysize1} ${zsize1}
 #lattice diamond ${alattice} origin 0.0 0.0 0.0 orient x 1 0 0 orient y 0 1 0 orient z 0 0 1
 region box block -${x2} ${x2} -${y2} ${y2} -${bulk} ${top} units lattice
 create_box 1 box
 
-mass 1 28.08
+mass 1 28.08 # Si
 
 #Create Atoms
 region          target block -${cx2} ${cx2} -${cy2} ${cy2} -${bulk} 0.0 units lattice
@@ -96,11 +109,10 @@ pair_coeff * * Si.tersoff.mod Si
 #pair_coeff * * Si.sw Si
 
 # Regions
-region inner block -${tx2} ${tx2} -${ty2} ${ty2} -${tbulk} INF units lattice
-
+region  inner block -${tx2} ${tx2} -${ty2} ${ty2} -${tbulk}  INF      units lattice
 group inner region inner
-
-region bottom block -${x2} ${x2} -${y2} ${y2} -${bulk} -${fbulk} units lattice
+# --------
+region bottom block -${x2}  ${x2}   -${y2} ${y2}  -${bulk}  -${fbulk} units lattice
 group bottom region bottom
 
 region thermalize intersect 2 box inner side out
@@ -110,17 +122,17 @@ group thermalize region thermalize
 fix 1 all nvt temp ${highT} ${highT} 1.0 
 compute 1 target ke/atom
 compute 2 target pe/atom
-compute 3 target coord/atom 3.0
-compute 4 target stress/atom pair
+compute 3 target coord/atom cutoff 3.0
+compute 4 target stress/atom NULL pair
 compute new3d inner temp #needed?
 
 #THERMO
 thermo 5
 thermo_style custom step temp pe ke etotal press vol pxx pyy pzz pxy pxz pyz 
-thermo_modify temp new3d norm yes #check
+thermo_modify temp new3d norm yes # check
 
 # Minimization with CG
-#minimize        1e-6 1e-8 1000 10000 #Not edited
+#minimize 1e-6 1e-8 1000 10000 # Not edited
 
 #VELOCITIES
 velocity target create ${lowT} 234234 temp new3d
@@ -129,12 +141,15 @@ velocity target create ${lowT} 234234 temp new3d
 fix 2 inner temp/rescale 1 ${lowT} ${highT} 1.0 1.0 #edited
 fix 3 thermalize langevin ${highT} ${highT} 1.0 699483 #edited
 fix 4 bottom setforce 0.0 0.0 0.0 #ok
-velocity bottom set 0.0000 0.0000 0.0000 #ok
+velocity bottom set 0.0000 0.0000 0.0000 # ok
 
 # equilibration for 2000 steps
-dump viz all custom ${tdump} dump.NI100_10nm_eqilMOD_${highT}K.* x y z vx vy vz type id c_1 c_2 c_3 c_4[1] c_4[2] c_4[3] c_4[4] c_4[5] c_4[6]
+dump viz all custom ${tdump} dump/dump.NI100_10nm_eqilMOD_${highT}K.* x y z vx vy vz type id c_1 c_2 c_3 c_4[1] c_4[2] c_4[3] c_4[4] c_4[5] c_4[6]
+dump d1 all cfg ${tdump} cfg/dump.NI100_10nm_eqilMOD_${highT}K.*.cfg mass type xs ys zs id type vx vy vz fx fy fz
+dump_modify d1 element Si
 run  ${runtemp} #run 1000
 undump viz
+undump d1
 
 # BEGIN NANOINDENTATION 
 reset_timestep 0
@@ -148,24 +163,26 @@ variable z1 equal "vdisplace(v_center,v_vdown)"
 fix 5 all indent 10.0 sphere 0 0 v_z1 v_radius units box  
 
 # Dump defects
-#dump defects target custom ${tdump} dump.NI_def_SW_${highT}K.* x y z vx vy vz type id c_1 c_2 c_3 c_4[1] c_4[2] c_4[3]
+#dump defects target custom ${tdump} dump/dump.NI_def_SW_${highT}K.* x y z vx vy vz type id c_1 c_2 c_3 c_4[1] c_4[2] c_4[3]
 #dump_modify defects thresh c_3 != 4 #edited for non dc
 # dump for all atoms
-dump 1 all custom 250 dump.NI10nm_All100_MOD_${highT}K.* x y z vx vy vz type id c_1 c_2 c_3 c_4[1] c_4[2] c_4[3] c_4[4] c_4[5] c_4[6]
+dump 1 all custom 250 dump/dump.NI10nm_All100_MOD_${highT}K.* x y z vx vy vz type id c_1 c_2 c_3 c_4[1] c_4[2] c_4[3] c_4[4] c_4[5] c_4[6]
+dump d1 all cfg 250 cfg/dump.NI10nm_All100_MOD_${highT}K.*.cfg mass type xs ys zs id type vx vy vz
+dump_modify d1 element Si
 
 thermo 10
 thermo_style custom step temp pe ke etotal press vol pxx pyy pzz pxy pxz pyz f_5 f_5[1] f_5[2] f_5[3]
 thermo_modify temp new3d norm yes #check
 
-# === Gather and Print Indent Outputs and other useful plottables ===    #still need to add dumps for the displacement but for now can be calculated manually
+# === Gather and Print Indent Outputs and other useful plottables ===
+#still need to add dumps for the displacement but for now can be calculated manually
 run 0
-variable timer equal "step"   
+variable timer  equal "step"
 variable temper equal "temp"
-variable track equal "f_5"
-variable track1 equal "f_5[1]"   # X
-variable track2 equal "f_5[2]"   # Y
-variable track3 equal "f_5[3]"   # Z Indenter Force! 
-
+variable track  equal "f_5"
+variable track1 equal "f_5[1]" # X
+variable track2 equal "f_5[2]" # Y
+variable track3 equal "f_5[3]" # Z Indenter Force !
 print "${timer} ${temper} ${track} ${track1} ${track2} ${track3}" append NI_outputs.txt
 
 timestep ${ts}
@@ -173,13 +190,13 @@ run ${rundown}
 
 unfix 5
 variable newcen equal "v_center+v_vdown*v_ts*v_rundown"
-fix 5 all indent 10.0 sphere 0 0 v_newcen v_radius units box  
+fix 5 all indent 10.0 sphere 0 0 v_newcen v_radius units box
 run ${runhold}
 
 unfix 5
-variable z2 equal "vdisplace(v_newcen,v_vup)" 
-fix 5 all indent 10.0 sphere 0 0 v_z2 v_radius units box  
+variable z2 equal "vdisplace(v_newcen,v_vup)"
+fix 5 all indent 10.0 sphere 0 0 v_z2 v_radius units box
 run ${runup}
 
-print "Job's done!"
+print "Jobs done !"
 #-----------------------------------------------------------------------------------------
