@@ -13,25 +13,30 @@
 ### Update to simulate incident angles and simplify KeV calculation ###
 ### does not account for ion  charge, only kintetic energy ###
 #-----------------------------------------------------------------------------------------
+### Small changes by STUDENT
+#-----------------------------------------------------------------------------------------
+# LAMMPS 64-bit 22Dec2022-MSMPI
+#-----------------------------------------------------------------------------------------
 
 clear 
-units    metal
-boundary        p p s
-atom_style      atomic
+units metal
+boundary p p s
+atom_style atomic
 
-lattice   fcc 5.55
+lattice fcc 5.55
 variable xlength equal 20
 variable ylength equal 20
 variable zlength equal 30
 
-region box block -${xlength} ${xlength} -${ylength} ${ylength} -${zlength} 5 units lattice
+region   box block -${xlength} ${xlength} -${ylength} ${ylength} -${zlength} 5 units lattice
 region atoms block -${xlength} ${xlength} -${ylength} ${ylength} -${zlength} 0 units lattice
-create_box  1 box
+create_box 1 box
 create_atoms 1 region atoms
 
 pair_style eam/alloy
-pair_coeff      * * Au_GLJ10_3.eam.alloy.txt Au
+pair_coeff * * Au_GLJ10_3.eam.alloy Au
 
+# initial temperature 50 K
 velocity all create 50 12345 dist gaussian
 
 create_atoms 1 single -0 0 15 units box
@@ -44,7 +49,7 @@ fix          nve all nve
 thermo    10
 thermo_style    custom step time temp press pe ke etotal lx ly zlo zhi
 
-timestep   0.0005
+timestep   0.0005 # 0.5 [fs]
 
 reset_timestep  0
 
@@ -72,6 +77,8 @@ compute 3 all pe/atom
 compute 4 all ke/atom
 
 dump eve all custom 5 ./dump/dump.PKA_Au_${keV}keV_${angle}_v14.* id type mass x y z vx vy vz c_3 c_4 
+dump d1 all cfg 5 cfg/dump.PKA_Au_${keV}keV_${angle}_v14.*.cfg mass type xs ys zs id type vx vy vz c_3 c_4 
+dump_modify d1 element Au
 
 # https://docs.lammps.org/fix_dt_reset.html# It can be useful when running an impact simulation where one or more high-energy atoms collide with a solid, causing a damage cascade. 
 
@@ -79,5 +86,5 @@ fix             impactdt all dt/reset 1 0.5e-5 0.0005 0.05 units box
 
 run             5500
 
-print "Job's Done" 
+print "Jobs Done" 
 #-----------------------------------------------------------------------------------------
