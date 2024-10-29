@@ -11,6 +11,13 @@
 #-----------------------------------------------------------------------------------------
 ### in.BCP_run ###
 #-----------------------------------------------------------------------------------------
+### Small changes by STUDENT
+#-----------------------------------------------------------------------------------------
+# LAMMPS 64-bit 22Dec2022-MSMPI
+#-----------------------------------------------------------------------------------------
+clear
+echo both
+#-----------------------------------------------------------------------------------------
 
 # VARIABLES
 variable name string BCP_spin_run0p2
@@ -20,7 +27,7 @@ units		metal
 boundary	p p s  #used to be ppf with free volume 
 atom_style	molecular
 
-log 		log.${name}.txt
+#log		log.${name}.txt
 
 bond_style      harmonic   #these need to be defined before data is read
 angle_style     harmonic
@@ -79,44 +86,30 @@ fix grav free addforce 0 0 -5.0E-15
 thermo_style	custom step temp lx ly lz press vol
 thermo          1000
 
-timestep	0.174 #0.1 doesnt crash #1.74 ps used in paper
+timestep	0.174 # 0.1 doesnt crash # 1.74 ps used in paper
 
-dump           1 all custom 200 dump.${name}.* id mol type x y z c_pe
+dump 1 all custom 200 dump/dump.${name}.* id mol type x y z c_pe
+dump        d1 all cfg 5 cfg/dump.Cfoam_sythesis_999K.*.cfg mass type xs ys zs id type vx vy vz fx fy fz c_3
+dump_modify d1 element C1 C2 H # dummy
 
 #needed to reinitialize bonds without blowing the system size out due to new potential parameters
-
 fix nve free nve/limit 0.1
-
 fix		2 free langevin 300 300 250 12345
-
 run 1000
-
 unfix nve
 
-
 fix nve free nve
-
 run 19000
-
 write_data data.${name}_preT514
-
 unfix 2
-
 
 #now we are ready to start a long run at elevated temperature to evaluate BCP layer evolution
-
 fix		2 free langevin 300 514 250 12345
-
 run 1000000
-
 write_data data.${name}_T514
-
 unfix 2
 
-
 fix             2 free langevin 514 514 100 12345
-
 run 1000000
-
 write_data data.${name}_T514time_evol
 #-----------------------------------------------------------------------------------------
