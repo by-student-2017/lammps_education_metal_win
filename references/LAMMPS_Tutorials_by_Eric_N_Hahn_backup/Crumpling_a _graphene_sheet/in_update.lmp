@@ -4,20 +4,24 @@
 ### crumpling of a single graphene sheet ###
 ### Version 0.2 - 03/09/2022###
 #-----------------------------------------------------------------------------------------
+### Small changes by STUDENT
+#-----------------------------------------------------------------------------------------
+# LAMMPS 64-bit 22Dec2022-MSMPI
+#-----------------------------------------------------------------------------------------
 
 variable name string graphene_crumple_v2
-log log.${name}
+#log log.${name}
 
 #--------------Initialize Simulation--------------------------
-dimension	3
-units           metal
-atom_style      atomic
+units metal
+dimension 3
+boundary p p p
+atom_style atomic
 
 #--------------Create Atoms-----------------------------------
-boundary	p p p
-variable sixth equal "1/6"
+variable     sixth equal "1/6"
 variable twothirds equal "2/3"
-variable alattice equal "2.4595"
+variable  alattice equal "2.4595"
 variable a1lattice equal "1"
 variable a2lattice equal "1.73203"
 
@@ -30,13 +34,13 @@ variable boxside equal 50
 variable xside equal "round(v_boxside/v_a1lattice/v_alattice/2)"   #round ensures that we get complete unit cells
 variable yside equal "round(v_boxside/v_a2lattice/v_alattice/2)"
 
-region	box block  -${xside} ${xside} -${yside} ${yside} -3 3 units lattice
-region	graphene block  -${xside} ${xside} -${yside} ${yside} 0 0.1 units lattice
+region      box block  -${xside} ${xside} -${yside} ${yside} -3 3   units lattice
+region graphene block  -${xside} ${xside} -${yside} ${yside}  0 0.1 units lattice
 
-create_box	1 box
-create_atoms	1 region graphene 
+create_box 1 box
+create_atoms 1 region graphene 
 
-mass * 12.011
+mass * 12.011 # C
 
 #--------------Define Interatomic Potential-------------------
 pair_style airebo/morse 3.0
@@ -46,76 +50,59 @@ compute 3 all pe/atom
 compute 4 all stress/atom NULL pair
 
 #---------Run the simulation for thermal equilibration--------
+timestep 0.001 # 1 [fs]
+
+# initial temperature 178 K
 velocity all create 178 4928459 dist gaussian
 
-fix 1 all npt temp 298 298 .4 x 0.0 0.0 .5 y 0.0 0.0 .5
-
 thermo 10
-thermo_style custom step pe ke etotal temp lx ly lz press atoms
-
-dump 1 all custom 25 dump.${name}.* id x y z vx vy vz c_3 c_4[1] c_4[2] c_4[3]
-
-timestep 0.001
-
-fix bp all balance 250 1 shift z 10 1
-
+#thermo_style custom step pe ke etotal temp lx ly lz press atoms
 thermo_style custom step temp ke pe press pxx pyy vol
 
-variable runeq equal 1000
+dump 1 all custom 25 dump/dump.${name}.* id x y z vx vy vz c_3 c_4[1] c_4[2] c_4[3]
+dump 2 all cfg 25 cfg/dump.${name}.*.cfg mass type xs ys zs id type vx vy vz fx fy fz
+dump_modify 2 element C
 
+fix 1 all npt temp 298 298 .4 x 0.0 0.0 .5 y 0.0 0.0 .5
+fix bp all balance 250 1 shift z 10 1
+variable runeq equal 1000
 run ${runeq}
 
 group graphene region graphene
-
 variable ymn equal ylo+4
 variable ymx equal yhi-4
 variable xmn equal xlo+4
-variable xmx equal xhi-4
-
+variable xmx equal xhi-40
 region middle block ${xmn} ${xmx} ${ymn} ${ymx} -5 5 units box
 group middle region middle
 group edge subtract graphene middle
 
 #-------------Run the simulation for confinement -----------------
-
 unfix 1
-
 change_box all boundary s s s
-
 run 0
 
-variable r0 equal (ylo^2+xlo^2+zlo^2)^0.5
-
+variable r0    equal (ylo^2+xlo^2+zlo^2)^0.5
 variable r0fix equal ceil(${r0})  #rounding up here makes it so that the initial radius is larger than the furthest C atom 
                                   #and later helps gets us closer to a round number of steps 
-
 print "The starting radius of the compressing sphere is ~${r0fix} A"
 
 variable rate equal 1.25 #A/ps
-
 variable deltat equal "dt"
-
 variable radius equal "v_r0fix-(step-v_runeq)*dt*v_rate"
-
 variable finalrad equal 10
-
 variable numberofsteps equal round((${r0fix}-${finalrad})/(${deltat}*${rate}))
-
 print "running ${numberofsteps} steps to reach a final radius of ~${finalrad} A"
-
-fix constrain all indent 1 sphere 0 0 0 v_radius side in units box
-
-thermo_style custom step temp ke pe press pxx pyy vol v_radius f_constrain[1] f_constrain[2] 
 
 fix nve all nve
 
+fix constrain all indent 1 sphere 0 0 0 v_radius side in units box
+thermo_style custom step temp ke pe press pxx pyy vol v_radius f_constrain[1] f_constrain[2] 
 run ${numberofsteps}
-
 unfix constrain
 
 thermo_style custom step temp ke pe press pxx pyy vol v_radius
-
 run 2000   #sim for vis at final state
 
-print "Job's done" 
+print "Jobs done" 
 #-----------------------------------------------------------------------------------------
