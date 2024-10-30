@@ -6,7 +6,7 @@
 ## lammps (windows 11 (64 bit))
 
 ## Installation (Lammps)
-1. LAMMPS Windows Installer Repository (http://packages.lammps.org/windows.html)
+1. LAMMPS Windows Installer Repository (http://packages.lammps.org/windows.html) -> LAMMPS Binaries Repository: ./legacy/admin/64bit (https://rpm.lammps.org/windows/legacy/admin/64bit/index.html)
 2. LAMMPS-64bit-18Jun2019.exe (https://rpm.lammps.org/windows/legacy/admin/64bit/LAMMPS-64bit-22Dec2022-MSMPI-admin.exe)
 
 
