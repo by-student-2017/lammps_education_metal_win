@@ -3,6 +3,37 @@
 * HEA = High Entropy Alloy
 
 ------------------------------------------------------------------------------
+## lammps (windows 11 (64 bit))
+
+## Installation (Lammps)
+1. LAMMPS Windows Installer Repository (http://packages.lammps.org/windows.html)
+2. LAMMPS-64bit-18Jun2019.exe (https://rpm.lammps.org/windows/legacy/admin/64bit/LAMMPS-64bit-22Dec2022-MSMPI-admin.exe)
+
+
+## Microsoft MPI
+1. Microsoft MPI v10.1.2 (https://www.microsoft.com/en-us/download/details.aspx?id=100593)
+
+## Gnuplot, Ovito and Python3
+* Gnuplot (http://www.gnuplot.info/)
+  http://www.yamamo10.jp/yamamoto/comp/gnuplot/inst_win/index.php
+* Ovito (https://www.ovito.org/windows-downloads/)
+
+## Python3 (installation) on PowerShell
+1. python3
+2. python3 -m pip install numpy
+
+## Usage (MS-MPI version)
+1. click run_msmpi.bat
+2. cfg folder > click *.cfg
+------------------------------------------------------------------------------
+# plot the temperature of each atom
+
+- MSMPI_heat_map version file
+1. *.cfg -> Ovito -> (upper right) Add modification... 
+2. Color coding -> Input property: f_ave_tempatom
+3. (click) Adjust range
+
+------------------------------------------------------------------------------
 ## lammps (windows 10 (64 bit))
 
 
@@ -108,38 +139,6 @@ pair_coeff      * * ../potentials/eam/Fe-Ni-Cr_fcc.eam.fs Fe Ni Cr
 
 ## tutorial_13_Machine_Learning_potential_MSMPI
 - Calculation using potential by neural network. OpenKIM is available in the Linux version, so if you want to use more potential, please try the Linux version.
-
-------------------------------------------------------------------------------
-## lammps (windows 11 (64 bit))
-
-## Installation (Lammps)
-1. LAMMPS Windows Installer Repository (http://packages.lammps.org/windows.html) > Latest stable versions >admin > 64bit
-  (https://rpm.lammps.org/windows/admin/64bit/index.html)
-2. LAMMPS-64bit-18Jun2019.exe (LAMMPS-64bit-22Dec2022-MSMPI-admin.exe)
-
-
-## Microsoft MPI
-1. Microsoft MPI v10.1.2 (https://www.microsoft.com/en-us/download/details.aspx?id=100593)
-
-## Gnuplot, Ovito and Python3
-* Gnuplot (http://www.gnuplot.info/)
-  http://www.yamamo10.jp/yamamoto/comp/gnuplot/inst_win/index.php
-* Ovito (https://www.ovito.org/windows-downloads/)
-
-## Python3 (installation) on PowerShell
-1. python3
-2. python3 -m pip install numpy
-
-## Usage (MS-MPI version)
-1. click run_msmpi.bat
-2. cfg folder > click *.cfg
-------------------------------------------------------------------------------
-# plot the temperature of each atom
-
-- MSMPI_heat_map version file
-1. *.cfg -> Ovito -> (upper right) Add modification... 
-2. Color coding -> Input property: f_ave_tempatom
-3. (click) Adjust range
 
 ------------------------------------------------------------------------------
 # Help create grain boundaries
