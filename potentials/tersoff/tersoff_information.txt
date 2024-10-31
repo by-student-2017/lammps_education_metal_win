@@ -1,0 +1,1844 @@
+#-------------------------------------------------------------------------------
+# Tersoff potential
+# For the albe form (m=1), cp2k can only be applied when lambda3=0.0. In other cases, refitting is required. (Edit: 16/Aug/2024)
+#-------------------------------------------------------------------------------
+# Fe: https://iopscience.iop.org/article/10.1088/0953-8984/19/32/326220
+# Fe: https://pubs.acs.org/doi/full/10.1021/acs.jpcc.8b06394 (Supporting Information)
+# Fe-Cu: https://iopscience.iop.org/article/10.1088/0965-0393/20/4/045016/meta
+# x Fe-Pt(Compared to the referenced paper, Pt and Fe are reversed.): https://journals.aps.org/prb/abstract/10.1103/PhysRevB.76.155412
+# Cu-Si: https://www.sciencedirect.com/science/article/pii/S0169433212014602
+# Cu-I: https://iopscience.iop.org/article/10.1088/0953-8984/12/28/313/meta
+# Zr-S: https://doi.org/10.1063/5.0046823 (including lammmps format in supplementary material)
+# C-Ru: https://arxiv.org/abs/1403.2101
+# C-Co: https://pubs.rsc.org/en/content/articlehtml/2017/nr/c7nr06038f
+# a-C: https://journals.aps.org/prl/abstract/10.1103/PhysRevLett.61.2879
+# a-C:H: https://doi.org/10.1103/PhysRevB.44.12039
+# C-sp3: https://pubs.rsc.org/en/content/articlehtml/2021/cp/d1cp00399b
+# CN: https://journals.aps.org/prb/abstract/10.1103/PhysRevB.57.5724
+# (related paper: https://repozytorium.uw.edu.pl/server/api/core/bitstreams/217ad01c-c8f4-4ade-9c59-1aebac764516/content)
+# BN: https://doi.org/10.1016/S0921-4526(03)00299-0
+# BNC: https://www.ctcms.nist.gov/potentials/Download/2012--Kinaci-A-Haskins-J-B-Sevik-C-Cagin-T--B-N-C/1/BNC.tersoff
+# (related paper: https://www.rsc.org/suppdata/d3/dt/d3dt00678f/d3dt00678f1.pdf)
+# B-N-C: https://iopscience.iop.org/article/10.1143/JJAP.39.L48/meta
+# BN-nanosheet: https://iopscience.iop.org/article/10.1088/0957-4484/27/8/085706/meta
+# h-BN: https://doi.org/10.1103/PhysRevB.96.184108
+# c-BN: https://doi.org/10.1016/j.apsusc.2016.04.054
+# v-BN: https://link.springer.com/article/10.1007/s12540-011-0204-2
+# N-B-Al: https://doi.org/10.1016/j.physe.2022.115176
+# BN_AlN_GaN: https://journals.aps.org/prapplied/abstract/10.1103/PhysRevApplied.13.034027
+# GaN: https://doi.org/10.1016/S0375-9601(03)01039-9
+# (related paper: w-GaN: https://doi.org/10.1016/j.physleta.2005.12.044)
+# Al-N: https://doi.org/10.1002/pssa.201001086
+# III-V compound semiconductor (Ecoul): https://doi.org/10.1016/S0022-0248(99)00546-1
+# III-V semiconductors: https://doi.org/10.1103/PhysRevB.75.115202
+# III-V alloys InGaAs, InAlAs and GaAsSb: https://iopscience.iop.org/article/10.1088/0268-1242/28/8/085011/meta
+# III(Al, In)-N: https://doi.org/10.1002/pssb.200844122
+# Al-As: https://doi.org/10.1016/0168-583X(95)80144-B
+# In-Ga-As: https://doi.org/10.1016/0022-0248(95)80202-N
+# As-Ga: https://journals.aps.org/prb/abstract/10.1103/PhysRevB.66.035205
+# In-As: https://journals.aps.org/prb/abstract/10.1103/PhysRevB.65.115316
+# BP: https://doi.org/10.1016/S0378-4371(02)00780-X
+# RuO2 (fluorite structure): https://iopscience.iop.org/article/10.1088/0953-8984/13/16/301/meta
+# Si: https://doi.org/10.1103/PhysRevB.72.125206
+# Si: https://iopscience.iop.org/article/10.1088/1361-6528/abf26d/meta
+# Si: https://iopscience.iop.org/article/10.1088/1361-648X/ab5c5f/meta
+# SiC: https://doi.org/10.1063/1.4832043
+# Zn-O: https://openkim.org/files/MO_616776018688_002/Tersoff_ErhartJuslinGoy_2006_ZnO.params
+# Zn-O: https://iopscience.iop.org/article/10.1088/0953-8984/18/29/003
+#  Please keep in mind that the "shell-model potential by Lewis and Catlow" can also reproduce phonons quite well.
+# Si-O: https://www.researchgate.net/publication/229329783_Interatomic_potential_for_Si-O_systems_using_Tersoff_parameterization
+# Si-O: https://www.ctcms.nist.gov/potentials/Download/2007--Munetoh-S-Motooka-T-Moriguchi-K-Shintani-A--Si-O/1/2007_SiO.tersoff
+# Si-C: https://www.ctcms.nist.gov/potentials/Download/1990--Tersoff-J--Si-C/1/1990_SiC.tersoff
+# Si-N: https://papers.ssrn.com/sol3/papers.cfm?abstract_id=4549406
+# Si-N: https://journals.aps.org/prb/abstract/10.1103/PhysRevB.58.8323
+# Si,N,H: https://doi.org/10.1063/1.370977
+# SiONH: https://journals.aps.org/prb/abstract/10.1103/PhysRevB.73.155329
+# Ge-on-SiO2: https://doi.org/10.1016/j.susc.2012.12.013
+# AgSiC: 10.3969/j.issn.1000-5641.2017.04.010 , https://xblk.ecnu.edu.cn/EN/10.3969/j.issn.1000-5641.2017.04.010
+# M-Si (M=Na,Mg,K,Ca,Rb,Sr,Cs,Ba)(Ba-Ga): https://doi.org/10.1063/1.4955331
+# ortho-Mo2C: https://doi.org/10.1063/5.0150030
+#  GULP (Default): m = 3, omega_ik = 1
+# Si-Zr: https://pubs.rsc.org/en/content/articlehtml/2015/ra/c4ra16962j
+# (related paper: http://ir.meiho.edu.tw/handle/987654321/3036)
+#-------------------------------------------------------------------------------
+# Tersoff (m=1, Albe)
+# X-Y (X=Ag, Pd, Ru, I)(Y=Si,C): https://iopscience.iop.org/article/10.1088/1361-648X/ab5465/meta
+# Ru-C: https://theses.hal.science/tel-01229111/
+# Ti-C: https://www.cell.com/heliyon/fulltext/S2405-8440(24)01944-3
+# Mo-Er: https://iopscience.iop.org/article/10.1088/0965-0393/24/4/045018/meta
+#-------------------------------------------------------------------------------
+# Tersoff + ZBL
+# Fe: https://www.ctcms.nist.gov/potentials/Download/2020--Byggmastar-J-Granberg-F--Fe/1/Fe_Byggmastar.tersoff.zbl
+# Fe-C: https://www.ctcms.nist.gov/potentials/Download/2013--Henriksson-K-O-E-Bjorkas-C-Nordlund-K--Fe-C/1/FeC_Henriksson_2013.tersoff.zbl
+#  (related paper: https://pubs.acs.org/doi/full/10.1021/acs.langmuir.1c02145 )
+#  (related paper: https://ir.library.osaka-u.ac.jp/repo/ouka/all/88030/32658_Dissertation.pdf (Japanese))
+# Fe-C-H: https://onlinelibrary.wiley.com/doi/am-pdf/10.1002/jcc.26176
+# Fe-Cr (m=1,Albe): https://doi.org/10.1016/j.commatsci.2021.110840
+# Fe-Cr-C (m=1,Albe): https://iopscience.iop.org/article/10.1088/0953-8984/25/44/445401
+# Fe,Cr,C (m=1,Albe): https://www.mdpi.com/1996-1944/14/17/4925
+# Fe-O (m=1,Albe): https://www.ctcms.nist.gov/potentials/Download/2019--Byggmastar-J-Nagel-M-Albe-K-et-al--Fe-O/1/Fe-O.tersoff.zbl
+# Si-C-He, Si-C-H(m=1,Albe): https://www.sciencedirect.com/science/article/pii/S2352179118301303
+#  https://iopscience.iop.org/article/10.1088/1361-648X/ab0931/meta
+# SiOC: https://pubs.acs.org/doi/full/10.1021/jp5098074
+# SiONH: https://journals.aps.org/prb/abstract/10.1103/PhysRevB.73.155329
+# Si: https://doi.org/10.1016/j.molstruc.2013.12.013
+# Si-C: https://doi.org/10.1016/S0168-583X(02)01825-6
+# Si-C: https://iopscience.iop.org/article/10.1088/0953-8984/25/23/235402/meta
+# Si-C: https://pubs.aip.org/aip/jap/article/88/1/49/486841/Molecular-dynamics-simulations-of-energetic-C60
+# Si-Ga: https://iopscience.iop.org/article/10.1088/1742-6596/106/1/012013/meta
+# GaSiC: https://ieeexplore.ieee.org/abstract/document/6330521
+# Ga-C: https://doi.org/10.1016/j.nimb.2015.05.023
+# Ga-Sb (Ga-Sb for m=3): https://doi.org/10.1038/s41598-020-64971-9 (Supplementary Information)
+# Be-O(m=1,lambda3=0.0): https://www.ctcms.nist.gov/potentials/Download/2018--Byggmastar-J-Hodille-E-A-Ferro-Y-Nordlund-K--Be-O/1/Be-O.tersoff.zbl
+#   https://iopscience.iop.org/article/10.1088/1361-648X/aaafb3/meta
+# BeCH(m=1,Albe): https://iopscience.iop.org/article/10.1088/0953-8984/21/44/445002/meta
+#   analytical bond-order potentials (ABOP)
+#   Ga-N [9](m=1,Albe,(N-N and Ga-N:2mu=0.0): https://iopscience.iop.org/article/10.1088/0953-8984/15/32/324
+#   Ga-As [10](m=1,Albe,(Ga-As:2mu=0.0)): https://journals.aps.org/prb/abstract/10.1103/PhysRevB.66.035205
+#   Si-C [11] (m=1,2mu=0.0): https://journals.aps.org/prb/abstract/10.1103/PhysRevB.71.035211
+#   Zn-O (Not [11]) (m=1,2mu=0.0): https://iopscience.iop.org/article/10.1088/0953-8984/18/29/003
+#   Pt-C [8] (m=1,Albe,(Pt-C and C-C:2mu=0.0)) (Brenner+modified): https://journals.aps.org/prb/abstract/10.1103/PhysRevB.65.195124
+#   W-C-H [12] (m=1,Albe): https://pubs.aip.org/aip/jap/article/98/12/123520/916675/Analytical-interatomic-potential-for-modeling
+#   hydrocarbons [7] (m=1,Albe,H=h*-1): https://pubs.aip.org/aip/jap/article/98/12/123520/916675/Analytical-interatomic-potential-for-modeling
+#   metal Fe [13] (m=1,2mu=0.0): https://iopscience.iop.org/article/10.1088/0953-8984/19/32/326220
+# Be-W(m=1,Albe,(Be:2mu=0.0)): https://iopscience.iop.org/article/10.1088/0953-8984/22/35/352206/pdf
+# Graphene(m=3): https://pubs.acs.org/doi/full/10.1021/jp208049t
+# Al-N(m=3 or "m=1 and lambda3=0.0"): https://www.sciencedirect.com/science/article/pii/S0168583X2300469X
+#   https://ars.els-cdn.com/content/image/1-s2.0-S0168583X2300469X-mmc1.pdf
+# NO(m=1,Albe): https://doi.org/10.1063/1.470879
+#-------------------------------------------------------------------------------
+# Other potentials 1
+# Fortunately, all the coefficients related to vdW are zero.
+# Since "qi is the charge of atom i, and is optimized at every step to minimize UT," it is possible that highly accurate calculations can be performed using QEq.
+# Si: m = M = 3 (Tersoff), other elements: m = M = 1 (Albe)
+# Si-O-H: https://doi.org/10.1299/jsmea1993.39.3_313
+# Si-O-H: https://doi.org/10.1299/jmmp.4.599
+# Cu, Ti, W, Si, Ru: https://iopscience.iop.org/article/10.1149/2.014309jss/meta
+# Cu, Ti, W, Si, Ru: https://www.jstage.jst.go.jp/article/matertrans/51/4/51_MG200903/_article/-char/ja/
+#-------------------------------------------------------------------------------
+# Other potentials 2
+# Fe-Cr-C: https://doi.org/10.1063/1.4904447
+# Fe-Si (Elong=Ecoul+EvdW): https://arxiv.org/abs/1401.1310
+# Zr-O (Ecoul): https://arxiv.org/abs/2007.13947
+# C-Pt: https://openkim.org/files/MO_500121566391_002/Tersoff_AlbeNordlundAverback_2002_PtC.params
+# C-Cu: https://doi.org/10.1016/j.carbon.2014.06.024
+# SiCdTe: https://doi.org/10.1016/S0022-0248(98)00500-4
+# ZnTe: https://doi.org/10.1016/S1293-2558(03)00154-7
+# C-Al (Ito-Khor-Das Sarma): https://journals.aps.org/prb/abstract/10.1103/PhysRevB.59.10125
+# CH4/Ir: https://pubs.acs.org/doi/full/10.1021/acs.jpclett.0c00260
+# Si-As, Si-Ga, Si-In: https://journals.aps.org/prb/abstract/10.1103/PhysRevB.91.094108
+# III-V compound semiconductor (Ecoul): https://doi.org/10.1016/S0022-0248(99)00546-1
+# In-P: https://www.ctcms.nist.gov/potentials/Download/2022--Chrobak-D-Majtyka-Pilat-A-Ziolkowski-G-Chrobak-A--In-P/1/InP_Materials_2022_Chrobak_Majtyka.tersoff
+# armchair and zig-zag carbon sheets: https://doi.org/10.1016/j.physe.2021.114789
+# carbon nanotubes and graphene: https://doi.org/10.1103/PhysRevB.81.205441
+# Ti-Al-C, Ti-Si-C: https://journals.aps.org/prb/abstract/10.1103/PhysRevB.100.214114
+# M-BKS, O-X (X=Si,Ta,Hf,Ti): https://doi.org/10.1063/1.4825197
+# Ti-C-X(X=O,F) (m=1, Albe): https://journals.aps.org/prb/abstract/10.1103/PhysRevB.106.054105
+# InAs_quantum_dots (m=1,Albe): https://journals.aps.org/prb/abstract/10.1103/PhysRevB.77.235303 (Open Access)
+# IGZO (m=1,Albe): https://pubs.rsc.org/en/content/articlehtml/2023/tc/d3tc00753g
+# 2NNMEAM+QEq: https://journals.aps.org/prb/abstract/10.1103/PhysRevB.93.144110
+# Co, Fe, Ni: https://pubs.acs.org/doi/full/10.1021/acs.jpcc.7b12687
+# Brenner, C-H: https://journals.aps.org/prb/pdf/10.1103/PhysRevB.42.9458
+# Brenner, C: https://doi.org/10.1016/0009-2614(91)90308-V
+# Brenner, Ru: https://journals.aps.org/prb/abstract/10.1103/PhysRevB.92.165425
+# Brenner, W-C-H: https://pubs.aip.org/aip/jap/article/98/12/123520/916675
+# Brenner, Au: https://link.springer.com/article/10.1140/epjb/e2012-30429-y?utm_source=getftr&utm_medium=getftr&utm_campaign=getftr_pilot
+# Brenner, Ni-C: https://pubs.acs.org/doi/full/10.1021/jp212165g
+# Brenner, Si-C-F: https://doi.org/10.1063/1.371637
+# Brenner, Si-X (X=F,Cl): https://pubs.aip.org/aip/jcp/article/120/5/2405/534132/Improved-interatomic-potentials-for-silicon
+# REBO, H-Si-C: https://pubs.acs.org/doi/full/10.1021/jp3074688
+# AIREBO formula: https://iopscience.iop.org/article/10.1088/2053-1591/3/3/035011/meta
+# COMB: https://journals.aps.org/prb/abstract/10.1103/PhysRevB.81.125328
+# COMB3: https://pubs.acs.org/doi/full/10.1021/jp212083t
+# diposite: https://doi.org/10.1016/j.apsusc.2013.03.004
+# CNT/Au: https://www.sciencedirect.com/science/article/pii/S0921452607008277
+# Gupta (Ag, Au): https://link.springer.com/article/10.1140/epjb/e2013-40067-6
+# Gupta (Cu, Ag, Al, Ga): https://link.springer.com/article/10.1007/s13204-017-0556-0
+# Mo-Se: https://openkim.org/files/MO_152208847456_001/MoSe-i7.tersoff
+# Hf-B: https://www.ctcms.nist.gov/potentials/Download/2011--Daw-M-S-Lawson-J-W-Bauschlicher-C-W--Hf-B/1/HfB_DLB2011.lbtrsff
+# Zr-B: https://www.ctcms.nist.gov/potentials/Download/2011--Daw-M-S-Lawson-J-W-Bauschlicher-C-W--Zr-B/1/ZrB_pot2_DLB2011.lbtrsff
+# Zr-B (VASP): https://ntrs.nasa.gov/citations/20120011609
+# EAM (Sc, Cr, Nb): https://www.sciencedirect.com/science/article/pii/S0370157307003572
+# EAM (Cr, Fe, Nb): https://journals.aps.org/prb/abstract/10.1103/PhysRevB.43.6952
+# SW(Zn-Te): https://doi.org/10.1103/PhysRevB.72.014107
+# SW(Zn-Cd-Hg-S-Se-Te): https://journals.aps.org/prb/abstract/10.1103/PhysRevB.88.085309
+# SW(N,B,Si): https://journals.aps.org/prb/abstract/10.1103/PhysRevB.68.094110
+# Fe-Cr-N (Morse): https://www.sciencedirect.com/science/article/pii/S0925838819331615
+# Li-X (X=C,Si) (Morse): https://link.springer.com/article/10.1134/S1063783416090146
+# Li-X (X=Si,C,P,N)(Morse): https://www.mdpi.com/2079-3197/7/4/60 (Open Access)
+# Li-C (Morse): https://open.metu.edu.tr/handle/11511/17968
+# Al-X (X=Si,C) (Morse): https://link.springer.com/article/10.1007/s00339-018-1624-3
+# Graphite-SiO-H2O: https://www.sciencedirect.com/science/article/pii/S0008622322010053
+# Diamond-Al (Morse): https://link.springer.com/article/10.1007/s11249-021-01414-0
+# https://mavmatrix.uta.edu/chemistry_dissertations/210/
+# Lammps script (substrate-supported-graphene): https://dspace.mit.edu/handle/1721.1/109645
+# Lammps script (Ti-Al-N): https://bearworks.missouristate.edu/theses/3159/
+# Lammps script (Low-density_microporous_carbon): https://www.sciencedirect.com/science/article/pii/S0008622321006837
+# Lammps script (Nano-Diamond): https://digital.library.ncat.edu/theses/26/
+# Lammps script (NixCr_Ti3SiC2): https://www.proquest.com/openview/95d9950a23ab02ced3bfd2b782403241/
+# QCL: https://digitalcommons.usu.edu/cgi/viewcontent.cgi?article=1361&context=spacegrant
+#   Mechanical Behavior of NixCr Alloys with Ti3SiC2 Nanoparticle Inclusions Using Molecular Dynamics
+# mobility: http://mail.imt.si/izvodi/mit203/liu.pdf
+# Ge/O/H (ReaxFF): https://pubs.acs.org/doi/full/10.1021/acs.jpcc.8b08862
+# CHONi (ReaxFF): https://pubs.acs.org/doi/full/10.1021/jp711825a
+# NiCH: https://pubs.acs.org/doi/full/10.1021/jp9035056
+# NiCOH: https://pubs.acs.org/doi/full/10.1021/acs.jpcc.5b01275
+# FeCrOS (ReaxFF): https://doi.org/10.1021/acscatal.5b01766
+# C/H/O/Mn/F/Li/N/S/P: https://pubs.acs.org/doi/full/10.1021/acs.jpcc.3c07242
+# carbon: 10.34808/tq2020/24.4/a 
+# carbon (Tersoff Coarse-Grained Model): https://pubs.acs.org/doi/full/10.1021/acs.jctc.7b00051
+# carbon (Tersoff Coarse-Grained Model): https://pubs.rsc.org/en/content/articlehtml/2023/cp/d3cp02219f
+# graphite: https://pubs.aip.org/aip/jcp/article/109/23/10339/476752
+# C-Cu(tight binding approximation): https://link.springer.com/article/10.1134/S0021364020020083
+# Ge-Te: https://iopscience.iop.org/article/10.1088/1367-2630/15/12/123006/meta
+#-------------------------------------------------------------------------------
+
+#-------------------------------------------------------------------------------
+# mixed parameters
+Aij = sqrt(Ai*Aj) * kappa(i,j), Bij = sqrt(Bi*Bj) * chi(i,j)
+lambdaij = (lambdai + lambdaj)/2, muij = (mui + muj)/2
+Qij = sqrt(Qi*Qj), Q=R-D
+Sij = sqrt(Si*Sj), S=R+D
+
+The parameter chi(i,j) is used to weaken or strengthen the antipolar bonds.
+#-------------------------------------------------------------------------------
+# Fe: https://iopscience.iop.org/article/10.1088/0953-8984/19/32/326220
+
+Note: A = D0/(S-1) * exp(-beta*sqrt(2.0*S)*-r0) = D0/(S-1) * exp(lambda1*r0)
+Note: B = S*D0/(S-1) * exp(-beta*sqrt(2.0/S)*-r0) = S*D0/(S-1) * exp(lambda2*r0)
+Note: LAMBDA1 = beta*sqrt(2.0*S)
+Note: LAMBDA2 = beta*sqrt(2.0/S)
+Note: N = 1.0
+Note: BETA = gamma
+Note: LAMBDA3 = 2mu
+Note: (cos(theta)-cos(theta0))^2 in lammps or tersoff1989 (Tersoff_2 in lammps)
+Note: (cos(theta)+h) in https://iopscience.iop.org/article/10.1088/0953-8984/19/32/326220 -> H (CP2k) = h*-1
+
+Table 1. Final parameter set of the analytic bond-order potential for iron.
+
+Parameter Value
+D0 (eV) 1.5
+r0 (A) 2.29 
+beta (A^-1) 1.4
+S 2.0693109
+gamma 0.0115751
+c 1.2898716
+d 0.3413219
+h -0.26
+2mu (A^-1) 0.0
+R (A) 3.15 
+D (A) 0.2
+
+#-------------------------------------------------------------------------------
+# Fe-Cu: https://iopscience.iop.org/article/10.1088/0965-0393/20/4/045016/meta
+
+Note: LAMBDA1 = λ, LAMBDA2 = µ, LAMBDA3 = η, BETA = β
+
+Table 1. Parameters for the ABOP of Cu.
+
+A (eV) B (eV) λ (A^-1) µ (A^-1) β m n
+37188.422 66.846 4.870 1.011 0.007338 3 1
+
+η c d h R (A) S (A)
+0.991 6.649 0.2315 0.2254 3.65 4.00
+
+Fe3Cu and Cu3Fe with L12 structure
+kappa(ij) = 1.180855 and chi(ij) = 0.725140
+#-------------------------------------------------------------------------------
+# Cu-Si: https://www.sciencedirect.com/science/article/pii/S0169433212014602
+
+Note: LAMBDA1 = lambda, LAMBDA2 = mu, LAMBDA3 = 0.0, BETA = beta
+
+Parameter values for Tersoff potential.
+Si Cu
+A(eV) 1830.8 803.12
+B(eV) 471.18 43.25
+lambda(A^-1) 2.4799 2.83
+mu(A^-1) 1.7322 1.412
+beta 1.1000E-6 0
+n 0.78734 1
+c 1.0039E5 0
+d 16.217 1
+h -0.59825 0
+R(A) 2.85 3.075
+D(A) 0.15 0.255
+
+chi(Cu,Si) = 1.02239
+#-------------------------------------------------------------------------------
+# Cu-I: https://iopscience.iop.org/article/10.1088/0953-8984/12/28/313/meta
+
+Note: tersoff1988
+
+Table 1. The adjusted Tersoff parameters for CuI-III
+A (eV) 688.00
+B (eV) 61.50
+λ1 (A^−1) 2.3832
+λ2 (A^−1) 1.1916
+n 21.45
+h −0.3333
+β 0.3333
+c 69219.5
+d 0.15
+R (A) 3.17
+D (A) 0.15
+
+#-------------------------------------------------------------------------------
+# Zr-S: https://doi.org/10.1063/5.0046823 (including lammmps format in supplementary material)
+
+Note: LAMBDA1 = λ1, LAMBDA2 = λ2, LAMBDA3 = λ3, BETA = β
+
+TABLE I.
+Optimized Tersoff-type EIAP parameters obtained by using the PSO method for the ZrS3.
+
+S-S	Zr-S	S-Zr
+A (eV) 	6079.509429 	6791.038544 	6791.038544 
+B (eV) 	3469.937384 	2571.342251 	2571.342251 
+λ1 (A^-1) 	4.097976 	2.682439 	2.682439 
+λ2 (A^-1) 	5.406911 	2.262903 	2.262903 
+λ3 (A^-1) 	1 	3.220796 	2.360710 
+n 	1 	16.561661 	17.871640 
+β 	0 	3.025912e-6 	3.785443e-6 
+c 	1 	61 909.933731 	52 020.863988 
+d 	1 	11.669713 	18.592590 
+h 	1 	-0.227712 	-0.179199 
+R (A) 	2.40 	3.40 	3.40 
+D (A) 	0.10 	0.20 	0.20 
+
+Note that our parametrization does not include S-S interactions as these occur beyond the cutoff limits considered by our force field. 
+Nevertheless, we express most of the parameters to one or zero to mathematically express that the forces between sulfur atoms are null. 
+Nevertheless, if the definition of these parameters is needed, users can choose the other parameters arbitrarily by accepting the parameter as zero.
+
+S.1 File containing the parameters of the interatomic potential
+for its use in LAMMPS
+# these entries are in LAMMPS ”metal” units:
+# A,B = eV
+# lambda1,lambda2,lambda3 = 1/Angstroms
+# R,D = Angstroms
+# other quantities are unitless
+# format of a single entry (one or more lines):
+# element 1, element 2, element 3, m, gamma, lambda3, c, d, h, n, beta, lambda2, B, R, D, lambda1, A
+Zr Zr Zr 3 1 1.000000 1.000000 1.000000 1.000000 1.000000 0.000000 0.00000 0.00000 0.00 0.00 0.00000 0.00000
+S S S 3 1 1.000000 1.000000 1.000000 1.000000 1.000000 0.000000 5.406911 3469.937384 2.40 0.10 4.097976 6079.509429
+Zr S S 3 1 3.220796 61909.933731 11.669713 -0.227712 16.561661 0.000003025912 2.262903 2571.342251 3.40 0.20 2.682439 6791.038544
+Zr Zr S 3 1 3.220796 61909.933731 11.669713 -0.227712 16.561661 0.000000 0.00000 0.00000 3.40 0.20 0.00000 0.00000
+Zr S Zr 3 1 1.000000 1.000000 1.000000 1.000000 1.000000 0.000000 0.00000 0.00000 0.00 0.00 0.00000 0.00000
+S Zr Zr 3 1 2.360710 52020.863988 18.592590 -0.179199 17.871640 0.000003785443 2.262903 2571.342251 3.40 0.20 2.682439 6791.038544
+S S Zr 3 1 2.360710 52020.863988 18.592590 -0.179199 17.871640 0.000000 0.00000 0.00000 3.40 0.20 0.00000 0.00000
+S Zr S 3 1 1.000000 1.000000 1.000000 1.000000 1.000000 0.000000 0.00000 0.00000 2.40 0.10 0.00000 0.00000
+
+#-------------------------------------------------------------------------------
+# Zr-O (Ecoul): https://arxiv.org/abs/2007.13947
+
+Note: Vij = Tersoff potential + Qi*Qj/rij
+Note: LAMBDA1 = λ1, LAMBDA2 = λ2, LAMBDA3 = λ3, BETA = β
+
+TABLE II: Parameters for the Tersoff potential of zirconia.
+
+two-body
+A (eV) B (eV) λ1 (A^-1) λ2 (A^-1) R (A) S (A)
+2023.6003 17.3376 3.0500 1.5250 2.85 3.15
+
+three-body for Zr
+m λ3 (A^-1) β n c d h
+3 0 0.2403 5.0062 0.0 0.0 0.0
+
+three-body for O
+m λ3 (A^-1) β n c d h
+3 0 0.0601 2.2611 2.0204 0.1093 -0.4112
+#-------------------------------------------------------------------------------
+# C-Ru: https://arxiv.org/abs/1403.2101
+
+Note: A = D0/(S-1) * exp(-beta*sqrt(2.0*S)*-r0) = D0/(S-1) * exp(lambda1*r0)
+Note: B = S*D0/(S-1) * exp(-beta*sqrt(2.0/S)*-r0) = S*D0/(S-1) * exp(lambda2*r0)
+Note: LAMBDA1 = beta*sqrt(2.0*S)
+Note: LAMBDA2 = beta*sqrt(2.0/S)
+Note: LAMBDA1 = λ1, LAMBDA2 = λ2, LAMBDA3 = µ, BETA = β
+Note: N = n
+Note: BETA = gamma
+Note: LAMBDA3 = 2mu
+
+TABLE I: The fitted parameters used in the Tersoff expression fitted by the PONTIFIX code using a small training set
+of weakly bound alloys including only molecular dimer, NaCl (B1) and CsCl (B2) type unit cells. Three sets of parameters
+are given for the irregular hexagonal, trigonal and hexagonal domes.
+
+C-Ru (Tersoff, pw) irreg. dome trigonal hexagonal
+A (eV) 48.9256612 35.6806608 59.6418650
+B (eV) 7.34248258 10.0452586 18.8697839
+λ1 2.60152968 3.75198031 3.5582675
+λ2 0.76877847 0.53305183 0.56207129
+γ 0.04376490 0.10346188 0.13375989
+c 1.55708101 2.50168822 2.89790985
+d 0.33781624 0.22311075 0.19358384
+h -0.173648 -0.17 -0.17
+Rc (A) 3.0 2.6 2.6
+Dc (A) 0.2 0.3 0.6
+β (A^-1) 1.0 1.0 1.0
+n 1 1 1
+µ 0.0 0.0 0.0
+
+
+C-C [26]
+A (eV) 2019.8449
+B (eV) 175.426651
+λ1 4.18426232
+λ2 1.93090093
+γ 0.11233
+c 181.91
+d 6.28433
+h 0.5556 # <- The paper probably has the wrong sign. Correct -0.5556 (Compared with data for lammps at NIST.)
+Rc (A) 2.0
+Dc (A) 0.15
+β (A^-1) 1.0
+n 1
+µ 0.0
+
+pw: present work, The parameters have been fitted to a small
+data base which includes dimer, NaCl (B1) and CsCl (B2) type unit
+cells with fictitious bond distances (d ≈ 1.7 - 2.0, A). For fitting
+the PONTIFIX [27] code has been utilized. The C-C Abell-Tersoff
+potential is also given (Erhart-Albe parameterization [26] of the
+Albe-potential, parameters are converted into the form suitable for
+Tersoff formalism using Eqs. (10)-(14)).
+
+#-------------------------------------------------------------------------------
+# a-C: https://journals.aps.org/prl/abstract/10.1103/PhysRevLett.61.2879
+# https://openkim.org/files/MO_579868029681_002/Tersoff_1988_C.params
+
+Note: The energy is well matched for 0 to 6 coordinate systems.
+Note: The bond lengths are well matched for 3 to 6 coordinated atoms. 
+  They are underestimated at low coordinated atoms and overestimated at high coordinated atoms.
+
+Amorphous Carbon
+
+A = 1393.6 eV
+B = 346.74 eV
+lambda1 = 3.4879 A
+lambda2 = 2.2119 A
+beta =1.5724e-7
+n =0.72751
+c =38049
+d =4.3484
+h = -0.57058
+R =1.95 A
+D =0.15 A
+
+C C C 3 1 0.0 38049 4.3484 -0.57058 0.72751 1.5724e-7 2.2119 346.74 1.95 0.15 3.4879 1393.6
+
+#-------------------------------------------------------------------------------
+# a-C:H: https://doi.org/10.1103/PhysRevB.44.12039
+
+2 J. Tersoff, Phys. Rev. 8 39, 5566 (1989); for further background on this approach, see J. Tersoff, ibid 37, 6991 .(1988); also Phys. Rev. Lett. 56, 632 (1986).
+3 J. Tersoff, Phys. Rev. Lett. 64, 1757 (1990).
+4 The parameters introduced here were determined as follows.
+(The notation follows Ref. 2.) The parameters R and S for carbon, which were not needed in Ref. 3 (and which are in all
+cases somewhat arbitrary), are taken here to be 1.8 A and 2.1 A. To reduce the number of independent parameters needed
+to include H, we take omega = 1 and lambda = 2*mu. Since H ends up singly coordinated, we omit bond-angle forces on the H, 
+taking c = 0; d and h are then irrelevant. Similarly, for singly coordinated atoms n and beta play no role; we somewhat arbitrarily
+take n = 1 and beta = 4 so that H form bonds to no more than one atom at once, and R = 0.85 A, S = 1.0 A. The fitted values of
+the remaining parameters are A = 87.193 eV, B = 39.520 eV, lambda = 4.0042 A^-1 , mu = 2.0021 A^-1 , and chi = 0.889.
+
+This correlation is discussed for the specific case of a-C in Ref.
+1. For further discussion of this correlation, see, e.g., J.J. Gilman, 3. Appl. Phys. 46, 5110 (1975); A. P. Gerk, 3. Mater. Sci. 12, 735 (1977)
+
+#-------------------------------------------------------------------------------
+# C-sp3: https://pubs.rsc.org/en/content/articlehtml/2021/cp/d1cp00399b
+
+Table 1 Parameters for the new optimized Tersoff-sp3, the original Tersoff-1989 and Tersoff-2010 potential
+Tersoff-sp3	Tersoff-1989	Tersoff-2010
+H	-0.7482	-0.57058	-0.930
+B/eV	393.747	346.7	430.0
+Unaltered parameters
+A = 1393.6 eV, lambda1 = 3.4879 A^-1
+lambda2 = 2.2119 A^-1, lambda3 = 0.0000 A^-1
+n = 0.72751, c = 38049.0
+beta = 1.5724e-7, d = 4.3484
+R = 1.95 A, D = 0.15 A
+
+#-------------------------------------------------------------------------------
+# CN: https://journals.aps.org/prb/abstract/10.1103/PhysRevB.57.5724
+# carbon nitride [C3N4(bulk), C3N3(N vacancy), C24N32(amorphous)]
+
+# Note: The beta value referenced in this paper is an order of magnitude smaller. Kroll's paper was not available. 
+  The value is different from other papers that reference Kroll's paper, so the correct beta is unknown.
+
+TABLE I. Tersoff potential parameters used to generate the
+metastable high-temperature amorphous phase. The parameter notation follows that of Ref. 26.
+
+
+Parameter Carbon(Ref. 26) Nitrogen(Ref. 27)
+A (eV) 1393.6 8860.0
+B (eV) 346.7 197.09
+l (A^-1) 3.4879 5.5237
+m (A^-1) 2.2119 2.3704
+beta (10^-6) 1.5724 5.8175 <- Not 10^-6, but 10^-7 ???
+n 0.72751 8.2773
+c 38049 79126
+d 4.384 112
+h -0.57058 -0.99995
+#-------------------------------------------------------------------------------
+# CSiBN
+Note: Google books
+Mizutani Tadashi, Thermodynamics
+https://books.google.co.jp/books?hl=ja&lr=lang_ja%7Clang_en&id=1uqPDwAAQBAJ&oi=fnd&pg=PA293&dq=tersoff+Kroll+N-N&ots=HMlKt2flXs&sig=hMoYHqhTXNkPcsw4QrPAyAIcTfY&redir_esc=y#v=onepage&q=tersoff%20Kroll%20N-N&f=false
+
+Note: Tersoff1989 (Tersoff_2 in lammps)
+Note: LAMBDA3 = 0.0
+
+Table 1. Tersoff potential parameters for C-C in diamond, Si-Si in silicon, B-B in boron, and N-N in nitrogen.
+Parameters	Diamond	Silicon	Boron[a]	Nitrogen[b]
+A [eV]	1393.6	1830.8	277.02	11000
+B [eV]	346.7	471.2	83.49	219.45
+lambda [A^-1]	3.4879	2.4799	1.9922	5.7708
+mu [A^-1]	2.2119	1.7322	1.5859	2.5115
+beta [e-7]	1.5724	11.0	16.0	1056200
+n	0.72751	0.78734	3.9929	12.4498
+c	38049	100390	0.52629	79934
+d	4.384	16.217	0.001587	134.32
+h	-0.57058	-0.59825	0.5	-0.9973
+Q [A]	1.8	2.7	1.8	2.0
+S [A]	2.1	3.0	2.1	2.3
+chi	1	1	1	1
+omega_ijk	1	1	1	1
+
+[a] parameters proposed by Matsunaga et al. (2000)
+[b] parameters proposed by Kroll (1996)
+
+#-------------------------------------------------------------------------------
+# BN: https://doi.org/10.1016/S0921-4526(03)00299-0
+
+Table 1. Tersoff potential parameters used in this study
+
+B	N
+A (eV)	2.23010e2	6.36814e3
+B (eV)	1.71290e2	5.11760e2
+lambda (A^-1)	1.72790	5.43673
+mu (A^-1)	1.38190	2.70000
+β	1.6010e−6	5.2938e−3
+n	3.99290	1.33041
+c	5.2629e−1	2.0312e4
+d	1.5870e−3	2.55103e1
+h	0.5000	−5.6239e−1
+1.80	1.80
+2.10	2.10
+
+chi(B-N) = 0.707
+chi(N-N) = 0.0
+
+#-------------------------------------------------------------------------------
+# BNC: https://www.ctcms.nist.gov/potentials/Download/2012--Kinaci-A-Haskins-J-B-Sevik-C-Cagin-T--B-N-C/1/BNC.tersoff
+DOI:https://doi.org/10.1103/PhysRevB.86.115410
+
+Note: tersoff1989 (Tersoff_2 in lammps)
+Note: lambda3 = 0.0 or m = 3.0 (tersoff1988 (Tersoff_1 in lammps))
+
+TABLE IV.
+The parameters of the Tersoff potential optimized for C-BN interactions. 
+The atom 𝑋 represents the bond-modifying element where all parameters are exactly the same whether it is C, B, or N.
+
+Parameters	C B 𝑋	C C 𝑋	C N 𝑋	B C 𝑋	B N 𝑋	N B 𝑋	N C 𝑋
+𝐴 (eV)	1386.78	1393.6	1386.78	1386.78	1380.0	1380.0	1386.78
+𝐵′ (eV)	339.06891	430.0	387.575152	339.068910	340.0	340.0	387.575152
+𝜆𝐼 (A^-1)	3.5279	3.4879	3.5279	3.5279	3.568	3.568	3.5279
+𝜆𝐼⁢𝐼 (A^-1)	2.2054	2.2119	2.2054	2.2054	2.199	2.199	2.2054
+𝑛	0.72751	0.72751	0.72751	0.72751	0.72751	0.72751	0.72751
+𝛽 (10^-7)	1.5724	1.5724	1.5724	1.25724	1.25724	1.25724	1.25724
+𝑐	38049	38049	38049	25000	25000	25000	25000
+𝑑	4.3484	4.3484	4.3484	4.3484	4.3484	4.3484	4.3484
+ℎ	-0.93	-0.93	-0.93	-0.89	-0.89	-0.89	-0.89
+𝑅 (A)	1.85	1.80	1.85	1.85	1.90	1.90	1.85
+𝑆 (A)	2.05	2.10	2.05	2.05	2.00	2.00	2.05
+
+#-------------------------------------------------------------------------------
+# B-N-C: https://iopscience.iop.org/article/10.1143/JJAP.39.L48/meta
+
+Note: LAMBDA1 = lambda
+Note: LAMBDA2 = mu
+Note: BETA = beta
+
+Table 1. Tersoff interatomic potential parameters used in this study. 
+Parameters for C and N were taken from Tersoff and Kroll, respectively.
+
+Elements B N[13] C[12]
+A [eV] 2.7702e2 1.1e4 1.3936e3
+B [eV] 1.8349e2 2.1945e2 3.467e2
+lambda [A^-1] 1.9922 5.7708 3.4879
+mu [A^-1] 1.5856 2.5115 2.2119
+beta 1.6e-6 1.0562e-1 1.5724e-7
+n 3.9929 12.4498 0.72751
+c 5.2629e-1 7.9934e4 3.8049e4
+d 1.587e-3 1.3432e2 4.384
+h 0.5 -0.9973 -0.57058
+R [A] 1.8 2.0 1.8
+S [A] 2.1 2.3 2.1
+
+Interactions (i-j) B-N B-C C-N
+chi(i-j) 1.1593 1.0025 0.9685
+omega(i-j) 1.0 1.0 0.6381
+
+Note: BETA = beta*omega(i-j)
+
+#-------------------------------------------------------------------------------
+# BN-nanosheet: https://iopscience.iop.org/article/10.1088/0957-4484/27/8/085706/meta
+
+Note: tersoff1989 (Tersoff_2 in lammps)
+Note: m = 3.0 (tersoff1988 (Tersoff_1 in lammps))
+
+Table 2.  Four sets of interatomic potential parameters (IPPs) used in the present study.
+
+Parameter	Albe et al [27]	Sekkal et al [32]	Matsunaga et al [26] (χi-j = 1.1593)	Sevik et al [29]
+ 	B–N	B–N	B–B	N–N	B–N
+m	3.0	3.0	3	3	3
+γ	1.0	1.0	1	1	1
+λ3	1.9925	0.0	0	0	0
+c	1092.9287	38 049	0.526 29	79 934	25 000
+d	12.38	4.384	0.001 587	134.32	4.3484
+h	-0.5413	-0.570 58	0.5	-0.9973	-0.89
+n	0.364 533 67	0.727 51	3.9929	12.4498	0.727 51
+β	0.000 011 134	0.000 000 157 24	0.000 001 6	0.105 62	0.000 000 1257
+λ2	2.784 247 207	2.22	1.5856	2.5115	2.199
+B	3613.431 337	346.7	183.49	219.45	340
+R	2.0	1.95	1.95	2.15	1.95
+D	0.1	0.2	0.15	0.15	0.05
+λ1	2.998 355 817	3.468	1.9922	5.7708	3.568
+A	4460.833 973	1393.6	277.02	11 000	1380
+
+#-------------------------------------------------------------------------------
+# h-BN: https://doi.org/10.1103/PhysRevB.96.184108
+
+Note: A = D0/(S-1) * exp(-beta*sqrt(2.0*S)*-r0) = D0/(S-1) * exp(lambda1*r0)
+Note: B = S*D0/(S-1) * exp(-beta*sqrt(2.0/S)*-r0) = S*D0/(S-1) * exp(lambda2*r0)
+Note: LAMBDA1 = beta*sqrt(2.0*S)
+Note: LAMBDA2 = beta*sqrt(2.0/S)
+Note: N = 1.0
+Note: BETA = gamma
+Note: bij = 0.5*(bij + bji) + Fij for "bij * fA(rij)"
+Note: tersoff1988 (Tersoff_1 in lammps)
+Note: m = 3.0
+
+TABLE I.
+Tersoff potential parameters for BN systems. The parameters for BB were taken from Ref. [16], 
+except for 𝜆3. For NN, part the parameters were adopted from Refs. [7,16], 
+but 𝑛,𝛾,𝑐,𝑑, and ℎ where refitted in this work. The BN part was completely refitted in the present work.
+
+	BB	NN	BN
+𝐷0 (eV)	3.08	9.91	6.36
+𝑟0 (Å)	1.59	1.11	1.3253868267
+𝛽 (Å-1)	1.84	1.92787	1.9931611199
+𝑆	1.065264	1.0769	1.0952902519
+𝑛	1.142247	0.665	0.6576543657
+𝛾	0.01498959	0.019251	0.0027024851
+𝑐	26617.3	23.5	306.586555205
+𝑑	141.2	3.75	10.0
+ℎ	-0.13	-0.4	-0.7218
+𝜆3 (Å-1)	0	0	0
+𝑅 (Å)	2.0	2.0	2.0
+𝐷 (Å)	0.2	0.2	0.2
+
+#-------------------------------------------------------------------------------
+# c-BN: https://doi.org/10.1016/j.apsusc.2016.04.054
+
+Note: tersoff1988 (Tersoff_1 in lammps)
+Note: m = 3.0
+
+Table 1. Parameters used in Tersoff potentials for B-B, N-N and B-N [24], [25], [26]].
+
+Empty Cell	B-B	N-N	B-N
+m	3	3	3
+γ	1	1	1
+λ3	0	0	1.9925
+c	0.52629	17.7959	1092.9287
+d	0.001587	5.9484	12.38
+h	0.5	0	-0.5413
+n	3.9929061	0.6184432	0.364153367
+β	0.0000016	0.019251	0.000011134
+λ2	2.077498242	2.627272104	2.784247207
+B	1173.196962	2563.560342	3624
+R	2	2	2.3
+D	0.1	0.1	0.5
+λ1	2.237257857	2.829309329	2.998355817
+A	1404.475204	2978.95279	4483.25
+
+#-------------------------------------------------------------------------------
+# N-B-Al: https://doi.org/10.1016/j.physe.2022.115176
+  Appendix A. Supplementary data: Tersoff_Potential_Parameters
+#-------------------------------------------------------------------------------
+# BN_AlN_GaN: https://journals.aps.org/prapplied/abstract/10.1103/PhysRevApplied.13.034027
+
+Note: m=3 (tersoff1988 (Tersoff_1 in lammps))
+
+TABLE I. Optimized Tersoff-type empirical interatomic potential parameters obtained by using the PSO method for BN, AlN, and GaN.
+
+B-N N-B Al-N N-Al Ga-N N-Ga
+A (eV) 1205.446293 1205.446293 1258.567263 1258.567263 2249.391746 2249.391746
+B (eV) 436.750025 436.750025 453.228512 453.228512 764.751142 764.751142
+λ1 (A^-1) 2.965635 2.965635 2.434869 2.434869 2.652624 2.652624
+λ2 (A^-1) 2.060658 2.060658 1.717680 1.717680 1.963739 1.963739
+λ3 (A^-1) 1.165721 1.108293 1.186759 1.100709 1.453060 1.166408
+n 1.156834 0.939775 0.598233 1.220882 0.761872 1.070552
+β 0.741928e-6 1.335243e-6 2.133047e-6 2.496023e-6 2.143554e-6 2.642801e-6
+c 26320.215836 27483.938392 19110.741778 27568.039128 45996.528912 44736.208668
+d 5.255691 7.783163 10.882090 8.292436 13.083985 12.497037
+h -0.870210 -0.749741 -0.972662 -0.816226 -0.990019 -0.693793
+R (A) 2.20 2.20 2.55 2.55 2.65 2.65
+D (A) 0.10 0.10 0.15 0.15 0.15 0.15
+
+#-------------------------------------------------------------------------------
+# GaN: https://doi.org/10.1016/S0375-9601(03)01039-9
+
+Table 1. Tersoff potential parameters used in this study
+
+Ga Ga	Ga N	N N
+A (eV)	2.83982e3	3.73208e3	1.10000e4
+B (eV)	1.14786e2	2.34013e2	2.19450e2
+λ (A^-1)	3.2834	3.6987	5.7708
+μ (A^-1)	1.7154	1.9214	2.5115
+β	2.3586e−1	1.0900e−6	1.0562e−1
+n	3.47290	0.78734	12.4498
+c	7.6298e−2	7.2239	7.9934e4
+d	1.9796e1	1.0018e1	1.3432e2
+h	7.1459	−0.5180	−0.9973
+R (A)	2.8	2.4	2.0
+D (A)	3.0	2.6	2.3
+
+#-------------------------------------------------------------------------------
+# Al-N: https://doi.org/10.1002/pssa.201001086
+
+Note: A = D0/(S-1) * exp(-beta*sqrt(2.0*S)*-r0) = D0/(S-1) * exp(lambda1*r0)
+Note: B = S*D0/(S-1) * exp(-beta*sqrt(2.0/S)*-r0) = S*D0/(S-1) * exp(lambda2*r0)
+Note: LAMBDA1 = beta*sqrt(2.0*S)
+Note: LAMBDA2 = beta*sqrt(2.0/S)
+Note: N = 1.0
+Note: BETA = gamma
+
+tersoff1988 (Tersoff_1 in lammps): lambda3 = 0.0 or m = 3.0
+
+Note: In the formula of the paper, β appears together with ɤ. Looking at Al-Al[6], in this "Al-N" paper, β=1.0.
+
+Table 1 Lists our optimized Tersoff parameters for wurtzite AlNwith the new adjusted parameters illustrated in bold.
+
+          Al-Al[6,11] N-N[12] Al-N[5,6]
+D0 (eV)        1.5000 9.9100 3.3917
+S              2.7876 1.4922 1.7269
+beta (A^-1)    1.0949 2.0595 1.7289
+r0 (A)         2.4660 1.1100 1.8616
+R (A)          2.7000 2.2000 2.3400
+D (A)          0.1000 0.2000 0.1500
+n              6.0865 1.0000 0.7200
+lambda3 (A^-1) 1.5000 0.0000 0.0000
+m              3.0000 1.0000 3.0000
+gamma          0.3168 0.7661 0.0000011
+c              0.0748 0.1785 100390
+d             19.5691 0.2017 16.2170
+h             -0.6593 0.0452 -0.5980
+
+#-------------------------------------------------------------------------------
+# III-V compound semiconductor (Ecoul): https://doi.org/10.1016/S0022-0248(99)00546-1
+
+Note: LAMBDA1 = λ
+Note: LAMBDA2 = μ
+Note: LAMBDA3 = 0.0
+Note: BETA = β
+Note: tersoff1989 (Tersoff_2 in lammps)
+
+Table 1. Parameters used for the MD simulation of III-V compound semiconductors
+As-As	Ga-Ga	Ga-As	In-In	In-As	In-Ga	Al-Al	Al-As	Al-Ga
+A (eV)	4773.163	2839.821	13287.605	4403.956	2246.55	3296.817	746.698	6925.454	1221.284
+B (eV)	81.32	114.786	13.187	329.104	417.665	195.282	40.451	13.819	69.958
+λ	3.4841	3.2834	4.5989	2.9039	2.5303	3.0987	2.4647	4.2256	2.7506
+μ	1.7154	1.7154	0.2493	1.7978	1.6712	1.8299	0.9683	0.3215	1.288
+R	3.4	3.4	3.4	3.4	3.4	3.4	3.5	3.5	3.4496
+S	3.6	3.6	3.6	3.6	3.6	3.6	3.7	3.7	3.6497
+β	0.0074881	0.2358624	0.357192	2.10871	0.38712	0.70524	1.094932	0.8901798	1.094932
+n	0.6087913	3.4729041	6.31747	3.40223	6.3319	3.43739	6.086505	3.1224134	6.086505
+c	5.2731318	0.0762977	1.226302	0.084215	1.30678	0.080256	0.074836	85.207584	0.074836
+d	0.7510266	19.796474	0.790396	19.2626	91.4432	195.295	19.569127	12.816499	19.569127
+h	0.1529235	7.1459174	-0.518489	7.39228	-0.56983	7.2691	-0.659266	-0.5643909	-0.659266
+
+Table 2. Net charge density on each atom estimated from the Mulliken population analysis of band calculations
+Substrate	Net charge (e)
+Si	0
+Ge	0
+GaAs	0.087
+AlAs	0.223
+InAs	0.499
+
+#-------------------------------------------------------------------------------
+# III-V semiconductors: https://doi.org/10.1103/PhysRevB.75.115202
+
+Note: A = De/(S-1) * exp(-beta*sqrt(2.0*S)*-re) = De/(S-1) * exp(lambda1*re)
+Note: B = S*De/(S-1) * exp(-beta*sqrt(2.0/S)*-re) = S*De/(S-1) * exp(lambda2*re)
+Note: LAMBDA1 = beta*sqrt(2.0*S)
+Note: LAMBDA2 = beta*sqrt(2.0/S)
+Note: LAMBDA3 = lambda
+Note: BETA = gamma
+Note: m = 3 (tersoff1988 (Tersoff_1 in lammps): lambda3 = 0.0 or m = 3.0)
+
+TABLE II.
+Parameters for III-V zinc blende semiconductors.
+
+	Ga-As	In-As	Al-As	Ga-P	In-P	Al-P
+De	1.78044	1.76845	2.3347	2.20178	2.17758	6.02242
+S	6.96025	1.32755	1.54131	1.59411	1.5811	1.66971
+beta	1.5665	1.49877	1.44845	1.62365	1.52761	1.45727
+re	2.4324	2.56931	2.36843	2.28675	2.45854	1.97527
+D	3.5	3.7	3.7	3.1	3.3	3.3
+Dcut	0.1	0.1	0.1	0.1	0.1	0.1
+c	2.16345	2.10031	1.05025	1.26417	1.2179	1.0377
+d	0.750147	0.827636	0.850097	0.799535	0.831026	0.699934
+-h	0.448899	0.442115	0.458041	0.433247	0.461576	0.475714
+n	3.55586	2.35072	8.36992	5.42195	5.3449	0.643958
+gamma	0.257183	0.139688	0.359702	0.339811	0.338811	0.180382
+lambda	0.244341	0.140874	1.38402	1.81771	1.89106	3.09086
+
+
+	Ga-N	In-N	Al-N	Ga-Sb	In-Sb	Al-Sb
+De	2.39175	2.20268	3.96453	2.10427	1.89293	2.78722
+S	2.51918	1.69411	2.1498	1.43393	3.02624	2.67111
+beta	1.9793	1.89216	1.70088	1.4777	1.43782	1.73871
+re	1.93373	2.11896	1.80623	2.4991	2.72026	2.52233
+D	2.5	2.65	2.335	3.5	3.7	3.5
+Dcut	0.1	0.1	0.15	0.1	0.1	0.1
+c	2.59473	1.07074	2.33154	1.20875	5.32122	3.44865
+d	0.891376	0.725308	0.831225	0.839761	1.39907	1.20819
+-h	0.505871	0.533599	0.638531	0.427706	0.489527	0.210583
+n	6.15189	9.74096	2.66213	4.60221	1.8926	122.43
+gamma	0.24139	0.30813	0.19987	0.363018	0.304347	0.604408
+lambda	1.80993	1.59607	1.99072	0.968688	2.47677	0.955563
+
+#-------------------------------------------------------------------------------
+# III-V alloys InGaAs, InAlAs and GaAsSb: https://iopscience.iop.org/article/10.1088/0268-1242/28/8/085011/meta
+
+Note: A = De/(S-1) * exp(-β*sqrt(2.0*S)*-re) = De/(S-1) * exp(lambda1*re)
+Note: B = S*De/(S-1) * exp(-β*sqrt(2.0/S)*-re) = S*De/(S-1) * exp(lambda2*re)
+Note: LAMBDA1 = β*sqrt(2.0*S)
+Note: LAMBDA2 = β*sqrt(2.0/S)
+Note: LAMBDA3 = λ
+Note: BETA = γ
+Note: m = 3 (tersoff1988 (Tersoff_1 in lammps))
+
+Table 1. This table lists all input parameter sets for modeling 
+InxGa1-xAs, InxAl1-xAs and GaAs1-xSbx interactions, using the empirical Tersoff potential.
+
+Parameter	GaAs Powell [27]	AlAs Powell [26]	GaSb Powell [27]	 
+De	2.12673	2.3347	2.17013	 
+S	1.60228	1.54131	1.41256	 
+re	2.35218	2.36843	2.48549	 
+β	1.56295	1.44845	1.47705	 
+γ	0.363585	0.359702	0.36953	 
+n	5.43647	8.36992	4.61625	 
+c	1.20595	1.05025	1.17945	 
+d	0.800338	0.850097	0.842774	 
+h	-0.442817	-0.458041	-0.429907	 
+λ	1.83057	1.38402	1.8244
+BIGD 0.1 0.1 0.1
+GIBR 3.5 3.7 3.5
+
+
+Parameter	InAs Powell [27]	InAs Migliorato [22]	InAs Titantah [23]	InAs Adhikari [24]
+De	2.13123	2.1643	1.72905	5.17283
+S	1.47058	1.5	1.24646	1.82612
+re	2.49936	2.4908	2.57705	2.21381
+β	1.49807	1.45372	1.47571	1.3592
+γ	0.37962	0.3779	0.0053	0.31864
+n	7.03876	7.14147	0.83	0.756169
+c	1.00904	0.9989	0.8495	5.17242
+d	0.82355	0.82608	0.4	1.66597
+h	-0.46205	-0.5145	-0.254	-0.54133
+λ	1.4331	1.5	2.33	2.59756
+BIGD 0.1 0.1 ??? ???
+GIBR 3.7 3.7 ??? ???
+
+#--------------------------------------------------------
+[22] In-As: https://journals.aps.org/prb/abstract/10.1103/PhysRevB.65.115316
+#--------------------------------------------------------
+[23] https://doi.org/10.1063/1.2748338
+	A	B	lambda	mu	lambda3
+Ga-As 	2269.35 	357.02 	2.8005 	1.6632 	3.99 
+In-As 	2843.18 	1081.10 	2.330 	1.8693 	6.39 
+
+	gamma	n	c	d	h
+Ga-As 	0.3000 	0.81 	0.505 	0.505 	
+In-As 	0.0053 	0.83 	0.8495 	0.400 	
+#--------------------------------------------------------
+[24] https://doi.org/10.1016/j.commatsci.2008.01.005
+  I don't have money so I can't read it
+#--------------------------------------------------------
+Note: The A parameter is not included in the parameter fit of this author. It is arbitrarily set to 1.5 here. 
+[27] https://etheses.whiterose.ac.uk/15100/
+Table 4.2: The Tersoff parameters for diamond Silicon (Si)
+Parameter Tersoff (T3) Powell (PI) 
+De 2.666029 2.36291 
+S 1.431648 1.48565 
+beta 1.465552 1.46405 
+re 2.295161 2.34358 
+R 2.85 2.85 
+Rcut 0.15 0.15 
+c 100390 113031 
+d 16.217 14.248 
+h -0.59825 -0.423876 
+n 0.78734 0.938777 
+gamma 1.le-06 1.2467e-06 
+lambda 1.5 1.4606 
+
+[27] https://etheses.whiterose.ac.uk/15100/
+Table 4.5: The Tersoff parameters for diamond Carbon (C)
+Parameter Tersoff (T3) Powell 
+De 5.164533 5.03634 
+S  1.576879 2.18415 
+beta 1.964037 1.99468 
+re 1.447206 1.46388 
+R 1.95 1.95 
+Rcut 0.15 0.15 
+c 38049 40064 
+d 4.384 4.37865 
+h -0.57058 -0.545985 
+n 0.72751 0.619052 
+gamma 1.5724e-07 1.61144e-07 
+lambda 1.5 1.65768
+
+[27] https://etheses.whiterose.ac.uk/15100/
+Table 4.8: The Tersoff parameters for Germanium (Ge)
+Parameter Tersoff (T3) Powell 
+De 2.010567 2.06459 
+S 1.434329 1.35835 
+beta 1.443634 1.43283 
+re 2.431721 2.42024 
+R 2.95 2.95 
+Rcut 0.15 0.15 
+c 106430 113656 
+d 15.652 15.3874 
+h -0.43884 -0.483616 
+n 0.75627 0.834411 
+gamma 9.0166e-07 1.0068ge-06 
+lambda 1.5 0.933196 
+
+[27] https://etheses.whiterose.ac.uk/15100/
+Table 4.11: The Tersoff parameters for Gallium Arsenide (GaAs)
+Parameter Smith Sayed Powell 
+De 2.180 2.180 2.12673 
+S 1.5351119 1.641366 1.60228 
+beta 1.614 1.560903 1.56295 
+re 2.345 2.345 2.35218 
+R 3.5 3.5 3.5 
+Rcut 0.1 0.1 0.1 
+c 0.07837998 1.226302 1.20595 
+d 4.5049412 0.790396 0.800338 
+h -3.4109679 -0.518489 -0.442817 
+n 5.5039372 6.317410 5.43647 
+gamma 0.38090204 0.357192 0.363585 
+lambda 1.5 1.723 1.83057 
+
+[27] https://etheses.whiterose.ac.uk/15100/
+Table 4.14: The Tersoff parameters for Indium Arsenide (InAs)
+Parameter Ashu Nordlund Migliorato Powell 
+De 2.39804 5.17318 2.1643 2.13123 
+S 1.51406 1.826141 1.5 1.47058 
+beta 1.45409 1.359198 1.45372 1.49807 
+re 2.44121 2.21379 2.4908 2.49936 
+R 3.7 3.7 3.7 3.7 
+Rcut 0.1 0.1 0.1 0.1 
+c 0.9989 5.162421 0.9989 1.00904 
+d 0.82608 1.665967 0.82608 0.82355 
+h -0.5145 -0.5413316 -0.5145 -0.462045 
+n 7.141472 0.7561694 7.141472 7.03876 
+gamma 0.3779 0.3186402 0.3779 0.379623 
+lambda 1.5 1.5 1.5 1.4331 
+
+[27] https://etheses.whiterose.ac.uk/15100/
+Table 4.17: The Tersoff parameters for Gallium Phosphide (GaP)
+Parameter Powell 
+De 2.20178 
+S 1.59411 
+beta 1.62365 
+re 2.28675 
+R 3.1 
+Rcut 0.1 
+c 1.26417 
+d 0.799535 
+h -0.433247 
+n 5.42195 
+gamma 0.339811 
+lambda 1.81771 
+
+[27] https://etheses.whiterose.ac.uk/15100/
+Table 4.20: The Tersoff parameters for Indium Phosphide (InP)
+Parameter Powell 
+De 2.17758 
+S 1.5811 
+beta 1.52761 
+re 2.45854 
+R 3.3 
+Rcut 0.1 
+c 1.2179 
+d 0.831026 
+h -0.461576 
+n 5.3449 
+gamma 0.338811 
+lambda 1.89106 
+
+[27] https://etheses.whiterose.ac.uk/15100/
+Table 4.23: The Tersoff parameters for Gallium Antimonide  (GaSb)
+Parameter Powell 
+De 2.17013 
+S 1.41256 
+beta 1.47705 
+re 2.48549 
+R 3.5 
+Rcut 0.1 
+c 1.17945 
+d 0.842774 
+h -0.429907 
+n 4.61625 
+gamma 0.36953 
+lambda 1.8244
+
+[27] https://etheses.whiterose.ac.uk/15100/
+Table 4.26: The Tersoff parameters for Indium Antimonide (InSb)
+Parameter Powell 
+De 2.1872 
+S 1.40689 
+beta 1.43604 
+re 2.62026 
+R 3.7 
+Rcut 0.1 
+c 1.21528 
+d 0.90126 
+h -0.443878 
+n 4.49087 
+gamma 0.386354 
+lambda 1.75633 
+[27] https://etheses.whiterose.ac.uk/15100/
+Table 4.29: The Tersoff parameters for Boron Nitride (BN)
+Parameter Albe Sekkal Powell 
+De 6.36 4.750 3.40327 
+S 1.0796 1.56216 2.45545 
+beta 2.043057 1.96201 1.99278 
+re 1.33 1.47217 1.5658 
+R 2.0 1.95 1.95 
+Rcut 0.1 0.15 0.15 
+c 1092.9287 38049 6.55459 
+d 12.38 4.384 1.17872 
+h -0.5413 -0.57085 -0.396692 
+n 0.364153367 0.72751 8.7359 
+gamma 0.000011134 1.5724e-07 0.256813 
+lambda 1.9925 1.5 1.06665
+
+[27] https://etheses.whiterose.ac.uk/15100/
+Table 4.32: The Tersoff parameters for cubic Gallium Nitride (GaN)
+Parameter Moon Benkabou Powell 
+De 2.77484 3.078133 2.38972 
+S 1.925 1.518829 1.85196 
+beta 1.88503 1.93460 1.97764 
+re 1.92667 1.84401 1.93005 
+R 2.5 2.5 2.5 
+Rcutt 0.1 0.1 0.1 
+c 7.2239 38049 1.09984 
+d 10.018 4.384 0.666512 
+h -0.518 -0.57085 -0.488761 
+n 0.78734 0.72751 11.5642 
+gamma 1.0ge-06 1.572410e-06 0.295653 
+lambda 1.5 1.5 1.60024
+
+[27] https://etheses.whiterose.ac.uk/15100/
+Table 4.35: The Tersoff parameters for cubic Indium Nitride (InN)
+Parameoter Benkabou Powell 
+De 690.2616 2.20268 
+S 1.780896 1.69411 
+beta 1.748556 1.89216 
+re 0.398836 2.11896 
+R 2.65 2.65 
+Rcut 0.1 0.1 
+c 10039 1.07074 
+d 16.217 0.725308 
+h -0.598 -0.533599 
+n 0.72 9.74096 
+gamma 1.11e-06 0.30813 
+lambda 1.5 1.59607
+
+[27] https://etheses.whiterose.ac.uk/15100/
+Table 4.38: The Tersoff parameters for cubic Aluminium Nitride (AlN)
+Parameter Benkabou Goumri-Said Powell 
+De 3.340698 3.026364718 3.19655 
+S 1.726929 1.765299132 1.48636 
+beta 1.721859 1.878941653 1.70916 
+re 1.853366 1.878365524 1.86255 
+R 2.35 2.335 2.335 
+Rcut 0.1 0.15 0.1 
+c 10039 20312 20673.3 
+d 16.217 16.5103 16.1559 
+h -0.598 -0.58239 -0.659096 
+n 0.72 1.33041 1.55299 
+gamma 1.11e-06 1.1566e-04 0.000122132 
+lambda 1.5 1.5 1.45221
+
+[27] https://etheses.whiterose.ac.uk/15100/
+Table 5.34: The modified Tersoff parameters for diamond silicon (Si)
+Parameter Tersoff(T3) Powell(PI) Powell(P2) 
+De 2.666029 2.36291 2.31633 
+S 1.431648 1.48565 2.39078 
+beta 1.465552 1.46405 1.35209 
+re 2.295161 2.34358 2.32496 
+R 2.85 2.85 2.85 
+Rcut 0.15 0.15 0.15 
+c 100390 113031 83780.9 
+d 16.217 14.248 19.8881 
+h -0.59825 -0.423876 -0.356865 
+n 0.78734 0.938777 0.736002 
+gamma 1.1e-06 1.2467e-06 6.87108e-07 
+lambda 1.5 1.4606 1.5004 
+#--------------------------------------------------------
+
+#-------------------------------------------------------------------------------
+# III(Al, In)-N: https://doi.org/10.1002/pssb.200844122
+
+Note: A = D0/(S-1) * exp(-beta*sqrt(2.0*S)*-r0) = D0/(S-1) * exp(lambda1*r0)
+Note: B = S*D0/(S-1) * exp(-beta*sqrt(2.0/S)*-r0) = S*D0/(S-1) * exp(lambda2*r0) * x
+Note: LAMBDA1 = beta*sqrt(2.0*S)
+Note: LAMBDA2 = beta*sqrt(2.0/S)
+Note: LAMBDA3 = lambda = 0.0
+Note: BETA = γ
+
+Table 1 Tersoff potential parameters. The new adjusted parameters are illustrated in bold fonts.
+
+parameters N-N[14] In-In[18] Al-Al[30] Al-N[24] In-N[24]
+1 γ 0.7661 1.1587 0.3168 0.0000 0.0000
+2 S  1.4922 1.6153 2.7876 1.7269 1.7809
+3 beta (A^-1) 2.0595 1.5271 1.0949 1.7219 1.7486
+4 D0 (eV) 9.9100 8.6986 1.5000 3.3407 2.4929
+5 r0 (A)  1.1100 2.2229 2.4660 1.8616 2.1241
+6 D (A)   0.2000 0.1000 0.1000 0.1500 0.1500
+7 R (A)   2.2000 3.8315 3.5000 2.3400 2.6405
+8 c       0.1785 0.0842 0.0748 100390 100390
+9 d       0.2017 19.2626 19.5691 16.2170 16.2170
+10 h      0.0452 7.3923 -0.6593 -0.5980 -0.5980
+11 lambda (A^-1 ) 0.0000 0.0000 0.0000 0.0000 0.0000
+12 n      1.0000 3.4022 6.0865 0.7200 0.7200
+13 x      1.0000 1.1300 1.0000 1.0000 1.0000
+
+#-------------------------------------------------------------------------------
+# Al-Ga-As: https://doi.org/10.1016/0168-583X(95)80144-B
+
+Note: A = De/(S-1) * exp(-beta*sqrt(2.0*S)*-re) = De/(S-1) * exp(lambda1*re)
+Note: B = S*De/(S-1) * exp(-beta*sqrt(2.0/S)*-re) = S*De/(S-1) * exp(lambda2*re)
+Note: LAMBDA1 = beta*sqrt(2.0*S)
+Note: LAMBDA2 = beta*sqrt(2.0/S)
+Note: LAMBDA3 = lambda
+Note: m = 3 (tersoff1988 (Tersoff_1 in lammps))
+
+Table 1 
+Improved parameter set for GaAs, AlAs 
+P        Al      Ga-As      Al-As 
+c     0.074836  1.226302  1.449752 
+d    19.569127  0.790396  0.828713 
+h    -0.659266 -0.518489 -0.520946 
+n     6.086505  6.317410  4.047579 
+beta  1.094932  1.560903  1.479377 
+gamma 0.316846  0.357192  0.330946 
+De    1.500000  2.18      2.492976 
+re    2.466000  2.34      2.353425 
+S     2.787598  1.641366  1.802706 
+R     3.6       3.5       3.6 
+D     0.1       0.1       0.1
+
+
+Note: In the parameters of "[7] R. Smith Nucl. Instr. and Meth., B 67 (1992), p. 335", change only the lambda parameter.
+Table 2
+lambda value for Tersoff potentials
+i, j species lambda
+Al-Al 1.500 
+As-As 1.500 
+Al-As 1.500 
+Ga-Ga 1.491 
+As-As 1.729 
+Ga-As 1.723 
+Si-Si 1.732 
+
+#--------------------------------------------------------
+[7] R. Smith Nucl. Instr. and Meth., B 67 (1992), p. 335
+
+The cutoff distance for the.potential was chosen 
+with R=3.5 ,A and D=0.1 A. 
+
+Table 2 
+Potential patlameters for As-As, Ga-Ga and Ga-As/As-Ga 
+As-As Ga-Ga Ga-As/As-Ga 
+c 5.2731318 0.07629773 0.07837998 
+d 0.75102662 19.796474 4.5049412 
+h 0.15292354 7.1459174 -3.4109679 
+n 0.60879133 3.4729041 5.5039372 
+beta 1.43553337 1.36741067 1.6137669 
+gamma 0.00748809 0.23586237 0.38090204 
+De [eV] 3.964 1.40 2.18 
+re [A] 2.1026 2.465 2.345 
+S 1.37912649 1.68257787 1.53511190
+#--------------------------------------------------------
+Note: "[4] tersoff1989"
+#--------------------------------------------------------
+
+
+#-------------------------------------------------------------------------------
+# In-Ga-As: https://doi.org/10.1016/0022-0248(95)80202-N
+
+Note: LAMBDA1 = lambda
+Note: LAMBDA2 = mu
+Note: LAMBDA3 = 0.0
+Note: BETA = gamma
+Note: tersoff1989 (Tersoff_2 in lammps)
+
+Table 1 
+Parameters of the potentials used in the MD simulations 
+
+i-j            As-As[9] Ga-Ga[9]   In-In   Ga-As[12]  In-As   In-Ga 
+Aij [eV]        1571.86  993.88   2975.54  2579.46   2246.55 1214.917 
+Bij [eV]        546.431 136.123   360.61    317.21   417.665 177.22 
+lambdaij [A^-1] 2.38413  2.50842  2.6159   2.82805   2.53034 2.5621 
+muij [A^-1]     1.72872  1.49082  1.68117  1.72303   1.67123 1.58600 
+ci              5.27313  0.07297  0.084215 1.22630   1.30678 0.080256 
+di              0.75102 19.7964  19.2626   0.79040   91.4432 195.2950 
+h               0.15292  7.14591  7.39228 -0.51848  -0.56983 7.26910 
+nij             0.60879  3.47290  3.40223  6.31747   6.33190 3.43739 
+gammaij       0.0074881  0.23586  2.10871  0.35719   0.38712 0.70524 
+
+[9] R = 3.5 [A], D = 0.1 [A]
+[12] R = 3.5 [A], D = 0.1 [A]
+
+#-------------------------------------------------------------------------------
+# In-As: https://journals.aps.org/prb/abstract/10.1103/PhysRevB.65.115316
+
+Note: LAMBDA1 = lambda_ij
+Note: LAMBDA2 = mu_ij
+Note: LAMBDA3 = lambda
+Note: I don't know if the multiplier in equation (2) is an error in the paper.
+Note: m=3
+
+TABLE I. Parameters for InAs used in the model potential, Eqs. (1)-(3)
+In-As parameters
+A 2291.292969
+B 424.874512
+lambda_ij 2.517917
+mu_ij 1.678611
+c 0.9989
+d 0.82608
+h -0.5145
+n 7.141472
+beta 0.3779
+lambda 1.5
+R 3.6
+S 3.8
+
+#-------------------------------------------------------------------------------
+# BP: https://doi.org/10.1016/S0378-4371(02)00780-X
+
+Note: LAMBDA1 = lambda, LAMBDA2 = mu, LAMBDA3 = 0.0, BETA = beta
+
+Table 2
+Adjusted Terso parameters for BP in the zincblende structure
+
+A (eV) 2633.3
+B (eV) 325.11
+lambda 3.4207
+mu 1.898
+n 0.766
+h -0.6281
+beta 1.59365e-4
+c 1.0021e5
+d 16.7601
+R 2.5
+D 0.2
+
+#-------------------------------------------------------------------------------
+# RuO2 (fluorite structure): https://iopscience.iop.org/article/10.1088/0953-8984/13/16/301/meta
+
+Note: LAMBDA1 = λ, LAMBDA2 = µ, LAMBDA3 = 0.0, BETA = β
+
+Two structures are studied in this paper: the cubic fluorite (Fm-3m) and the cubic modified
+fluorite (Pa-3) structures. In cubic fluorite structure, Ru atoms occupy (0, 0, 0) positions, while
+O atoms occupy +/-(u, u, u) positions, where the internal parameter u = 0.25. In the modified
+fluorite structure, oxygen atoms deviate from their positions in fluorite, u = 0.344.
+
+Table 1. Adjusted Tersoff parameters for RuO2 in the fluorite structure.
+A (eV) 6865.8
+B (eV) 409.5
+λ (A^-1) 3.4390
+µ (A^-1) 1.7322
+n 0.78734
+h -0.59825
+β 1.100e-6
+c 1.0039e5
+d 16.217
+R (A) 2.5
+D (A) 0.15
+
+#-------------------------------------------------------------------------------
+# Si: https://doi.org/10.1103/PhysRevB.72.125206
+
+TABLE I. The modified and unmodified parameters of the Tersoff potential.
+
+Tersoff
+parameters Tersoff-4a Tersoff-ARK
+A [eV] 1.8308e3 1.8308e3
+B [eV] 4.7118e2 4.7118e2
+labmda [A^-1] 2.4799 2.4799
+mu[A^-1] 1.7322 1.7322
+beta 1.1e-6 1.15e-6
+n 0.78734 0.988
+c 1.0039e5 1.0039e5
+d 16.217 16.217
+h -0.59825 -0.74525
+R [A]2.7 2.7
+S [A] 3.0 3.0
+
+chi 1.0 1.0
+
+#-------------------------------------------------------------------------------
+# Si: https://iopscience.iop.org/article/10.1088/1361-6528/abf26d/meta
+#-------------------------------------------------------------------------------
+# Si: https://iopscience.iop.org/article/10.1088/1361-648X/ab5c5f/meta
+#-------------------------------------------------------------------------------
+# Zn-O: https://openkim.org/files/MO_616776018688_002/Tersoff_ErhartJuslinGoy_2006_ZnO.params
+# Zn-O: https://iopscience.iop.org/article/10.1088/0953-8984/18/29/003
+
+# e1 e2 e3 m   gamma lambda3  c       d       costheta0 n       beta      lambda2 B                  R                  D                   lambda1 A
+
+O O O 1 0.82595 0.0 0.035608 0.046496 -0.45056 1 1 2.7732859784544366 527.6505089731846 2.45 0.2 3.8448836805292306 1388.081581389159
+O O Zn 1 0.019335 0.0 0.014108 0.084028 -0.30545 0 0 0 0 2.60 0.20 0 0
+O Zn O 1 0.82595 0.0 0.035608 0.046496 -0.45056 0 0 0 0 2.45 0.2 0 0
+O Zn Zn 1 0.019335 0.0 0.014108 0.084028 -0.30545 1 1 2.513642455305317 6304.327815151947 2.60 0.20 2.628013187021709 7344.239422800065
+Zn O O 1 0.019335 0.0 0.014108 0.084028 -0.30545 1 1 2.513642455305317 6304.327815151947 2.60 0.20 2.628013187021709 7344.239422800065
+Zn O Zn 1 4.3909e-5 0.0 77.916 0.91344 -1.0 0 0 0 0 2.85 0.20 0 0
+Zn Zn O 1 0.019335 0.0 0.014108 0.084028 -0.30545 0 0 0 0 2.60 0.20 0 0
+Zn Zn Zn 1 4.3909e-5 0.0 77.916 0.91344 -1.0 1 1 1.7965160854189726 115.1593431985539 2.85 0.20 3.261395301469603 2258.730853636288
+
+#-------------------------------------------------------------------------------
+# Si-O: https://www.researchgate.net/publication/229329783_Interatomic_potential_for_Si-O_systems_using_Tersoff_parameterization
+
+Note: tersoff1989 (Tersoff_2 in lammps)
+Note: LAMBDA3 = 0.0
+Note: beta: The literature may be mislabeled.
+
+Table 1
+The optimized parameters for the Si-Si, Si-O and O-O interactions
+obtained from a simulated annealing
+
+Si O
+A (eV) 1.8308e3 1.88255e3
+B (eV) 4.7118e2 2.18787e2
+gamma (A^-1) 2.4799 4.17108
+mu (A^-1) 1.7322 2.35692
+beta 1.1000e-6 1.1632e-7
+n 7.8734e-1 1.04968
+c 1.0039e5 6.46921e4
+d 1.6217e1 4.11127
+h -5.9825e-1 -8.45922e-1
+R (A) 2.5 1.7
+S (A) 2.8 2.0
+
+b(i,j)*fa(i,j)
+b(i,j) = chi(Si-O) * (1 + beta(i)^n * zeta(i,j)^n)^(-1/(2n))
+chi(Si-O) = 1.17945
+
+#-------------------------------------------------------------------------------
+# Si-O: https://www.ctcms.nist.gov/potentials/Download/2007--Munetoh-S-Motooka-T-Moriguchi-K-Shintani-A--Si-O/1/2007_SiO.tersoff
+
+# e1 e2 e3 m   gamma lambda3  c       d       costheta0 n       beta      lambda2 B                  R                  D                   lambda1 A
+  Si Si Si 3.0 1.0   0.0      100390  16.217  -.59825   0.78734 1.1e-6    1.73222 471.18             2.65               0.15                2.4799  1830.8
+  O  O  O  3.0 1.0   0.0      64692.1 4.11127 -.845922  1.04968 1.1632e-7 2.35692 218.787            1.85               0.15                4.17108 1882.55
+  Si O  O  3.0 1.0   0.0      100390  16.217  -.59825   0.78734 1.1e-6    2.04456 378.6898939266548  2.2139923630243383 0.15243955021550804 3.32549 1856.4946916164345
+  Si Si O  3.0 1.0   0.0      100390  16.217  -.59825   0.0     0.0       0.0     0.0                2.2139923630243383 0.15243955021550804 0.0     0.0
+  Si O  Si 3.0 1.0   0.0      100390  16.217  -.59825   0.0     0.0       0.0     0.0                2.65               0.15                0.0     0.0
+  O  Si Si 3.0 1.0   0.0      64692.1 4.11127 -.845922  1.04968 1.1632e-7 2.04456 378.6898939266548  2.2139923630243383 0.15243955021550804 3.32549 1856.4946916164345
+  O  Si O  3.0 1.0   0.0      64692.1 4.11127 -.845922  0.0     0.0       0.0     0.0                1.85               0.15                0.0     0.0
+  O  O  Si 3.0 1.0   0.0      64692.1 4.11127 -.845922  0.0     0.0       0.0     0.0                2.2139923630243383 0.15243955021550804 0.0     0.0
+
+#-------------------------------------------------------------------------------
+# Si-C: https://www.ctcms.nist.gov/potentials/Download/1990--Tersoff-J--Si-C/1/1990_SiC.tersoff
+
+# e1 e2 e3 m   gamma lambda3  c      d       costheta0 n       beta      lambda2 B                  R                  D                   lambda1 A
+  C  C  C  3.0 1.0   0.0      19981  7.034  -0.33953   0.99054 4.1612e-6 2.3064  389.63             2.5                0.0                 3.4653  1544.8
+  Si Si Si 3.0 1.0   0.0      100390 16.217 -0.59825   0.78734 1.1e-6    1.7322  471.18             2.5                0.0                 2.4799  1830.8
+  C  Si Si 3.0 1.0   0.0      19981  7.034  -0.33953   0.99054 4.1612e-6 2.0193  427.269495609187   2.5                0.0                 2.9726  1681.731203254551
+  C  C  Si 3.0 1.0   0.0      19981  7.034  -0.33953   0.0     0.0       0.0     0.0                2.5                0.0                 0.0     0.0
+  C  Si C  3.0 1.0   0.0      19981  7.034  -0.33953   0.0     0.0       0.0     0.0                2.5                0.0                 0.0     0.0
+  Si C  C  3.0 1.0   0.0      100390 16.217 -0.59825   0.78734 1.1e-6    2.0193  427.269495609187   2.5                0.0                 2.9726  1681.731203254551
+  Si C  Si 3.0 1.0   0.0      100390 16.217 -0.59825   0.0     0.0       0.0     0.0                2.5                0.0                 0.0     0.0
+  Si Si C  3.0 1.0   0.0      100390 16.217 -0.59825   0.0     0.0       0.0     0.0                2.5                0.0                 0.0     0.0
+
+#-------------------------------------------------------------------------------
+# Si-N: https://journals.aps.org/prb/abstract/10.1103/PhysRevB.58.8323
+
+Note: tersoff1989 (Tersoff_2 in lammps)
+Note: LAMBDA3 = 0.0
+Note: beta: The literature may be mislabeled.
+
+TABLE I. Best set of the parameters that define the Si-Si Ref.
+[17], and the Si-N interactions obtained from a simulated annealing
+fit to the database described in the text
+
+N Si
+A [eV] 6.36814e3 1.8308e3
+B [eV] 5.11760e2 4.7118e2
+lambda (A^-1) 5.43673 2.4799
+mu (A^-1) 2.70000 1.7322
+beta 5.29380e-3 1.1000e-6
+n 1.33041 7.8734e-1
+c 2.03120e4 1.0039e5
+d 2.55103e1 1.6217e1
+h -5.62390e-1 -5.9825e-1
+R(A) 1.80 2.70
+S(A) 2.10 3.00
+
+chi(Si-N) 0.65
+chi(N-N) 0.0
+
+#-------------------------------------------------------------------------------
+# SiOC: https://pubs.acs.org/doi/full/10.1021/jp5098074
+
+Note: LAMBDA1 = λ
+Note: LAMBDA2 = μ
+Note: LAMBDA3 = 0.0 # The value of lambda3 is not specified. It is probably 0.0.
+Note: m = 3 (tersoff1988 (Tersoff_1 in lammps): lambda3 = 0.0 or m = 3.0) # Since lambda3 is cubed, m=3 is highly likely.
+
+Table 1. Tersoﬀ/ZBL Parameters for Carbon, Oxygen, and Silicon
+Tersoff parameter	C	O	Si
+A (eV)	1.3936e3	1.88255e3	1.8308e3
+B (eV)	3.467e2	2.18787e2	4.7118e2
+λ (A^-1)	3.4879	4.17108	2.4799
+μ (A^-1)	2.2119	2.35692	1.7322
+β	1.5724e-7	1.1632e-7	1.1e-6
+n	7.2751e-1	1.04968	7.8734e-1
+c	3.8049e4	6.46921e4	1.0039e5
+d	4.384	4.11127	1.6217e1
+h	-5.7058e-1	-8.45922e-1	-5.9825e-1
+R (A)	1.8	1.7	2.7
+S (A)	2.1	2.0	3.0
+Zi	6	8	14
+
+For the Fermilike function, A_F and r_c values are 14 A^-1 and 0.95 A, respectively. 
+The argon atom interaction with silica and carbon atoms is modeled with the ZBL potential.
+
+#-------------------------------------------------------------------------------
+# SiONH: https://journals.aps.org/prb/abstract/10.1103/PhysRevB.73.155329
+
+Note: Since it uses equation (11), it is likely that in order to use it, CP2k will need to be rewritten or 
+   the parameters will need to be refitted to tersoff1989, which is used in CP2k.
+   e_ijk(I,J,K) = exp[(mu_IJ*r_ij - mu_IK*r_ik)^mI]   (11)
+
+TABLE II.
+Comparison of parameters of the Original and ZRL potentials (see text). Values are in eV, A, and A^-1.
+Silicon	Oxygen	Nitrogen	Hydrogen
+Parameter	Original	ZRL	Original	ZRL	Original	ZRL	Original	ZRL
+𝐴𝐼	1830.8	1803.79	3331.0	3331.06	6368.14	6368.21	86.7120	86.9235
+𝐵𝐼	471.18	471.195	261.2	260.476	511.760	511.205	43.5310	42.9815
+𝜆𝐼	2.4799	2.62392	5.36	3.78336	5.43673	5.60181	3.7879	3.85393
+𝜇𝐼	1.7322	1.88891	2.68	3.34402	2.70000	3.16170	1.9800	1.97047
+𝑅𝐼	2.70	2.44809	2.70	2.26069	1.80	1.75256	0.80	0.77985
+𝑆𝐼	3.00	3.08354	3.00	3.31294	2.10	2.41523	1.00	0.88641
+𝛽𝐼	1.0999e-6	1.0999e-6	2	1.0027	5.2938e-3	4.4422e-3	4	4
+𝑛𝐼	0.78734	0.78766	1	3.98638	1.33041	2.42635	1	1.00921
+𝑚𝐼	3	3	1	1	1	1	1	1
+𝑐𝐼	1.0039e5	1.0039e5	0	0a	2.03120e4	2.2955e4	0	0
+𝑑𝐼	16.217	16.21701	1	1	25.5103	24.78674	1	1
+ℎ𝐼	-0.59826	-0.56239	0	-0.52909	-0.56239	-0.52909	1	1
+𝜒Si,𝐼	1	1	1	1	0.67	1	0.78	1
+𝜒O,𝐼	1	1	1	1	1	1	1	1
+𝜒N,𝐼	0.67	1	1	1	0	1	0.76	1
+𝜒H,𝐼	0.78	1	1	1	0.76	1	1	1
+
+
+TABLE III.
+Coefficients of mixed terms [Eq. (2)] of the ZRL potential expressed in terms of their deviation from 
+the combination rule in Eqs. (4) and (5). The values for the inverse decay lengths are given in A^-1.
+Parameter	Si-O	Si-N	Si-H	O-N	O-H	N-H
+𝐴𝐼⁢𝐽/(𝐴𝐼⁢𝐴𝐽)1/2	1.04752	0.58647	1.52966	1.26527	0.99853	0.83424
+𝐵𝐼⁢𝐽/(𝐵𝐼⁢𝐵𝐽)1/2	0.99978	1.10293	1.68173	1.00075	1.01274	0.97237
+𝜆𝐼⁢𝐽-(𝜆𝐼+𝜆𝐽)/2	0.74003	-0.73787	-0.15903	2.34383	1.03160	0.07480
+𝜇𝐼⁢𝐽-(𝜇𝐼+𝜇𝐽)/2	-0.30051	-0.19843	0.22168	3.50573	-0.22005	0.21563
+
+#-------------------------------------------------------------------------------
+# Ge-on-SiO2: https://doi.org/10.1016/j.susc.2012.12.013
+
+Note: tersoff1989 (Tersoff_2 in lammps)
+Note: LAMBDA3 = 0.0
+
+Table 1. Tersoff potential parameters for Si, Ge, and O used in the present study. 
+The two columns for Si represent the original parameters (T-Si) [26] and refitted values from ref. [27] (M-Si).
+
+T-Si	M-Si	Ge	O
+A (eV)	1.8308e3	1.8308e3	1.769e3	1.88255e3
+B (eV)	4.7118e2	4.7118e2	4.1923e2	2.18787e2
+λ (A^-1)	2.4799	2.4799	2.4451	4.17108
+μ (A^-1)	1.7322	1.7322	1.7047	2.35692
+β	1.1000e-6	1.1000e-6	9.0166e-7	1.1632e-7
+n	7.8734e-1	7.8734e-1	7.5627e-1	1.04968
+c	1.0039e5	1.0039e5	1.0643e5	6.46921e4
+d	1.6217e1	1.6217e1	1.5652e1	4.11127
+h	-5.9825e-1	-5.9825e-1	-4.3884e-1	-8.45922e-1
+R (A)	2.7	2.5	2.8	1.7
+S (A)	3.0	2.8	3.1	2.0
+
+chi(i-j) = chi(j-i)
+chi(Si-Ge) = 1.00061 [26]
+chi(Si-O) = 1.17945 [27], [33]
+chi(GS) = chi(Ge-O)/chi(Si-O) = about 0.8 => chi(Ge-0) = 0.8 * 1.17945 = 0.94356
+
+#-------------------------------------------------------------------------------
+# AgSiC: 10.3969/j.issn.1000-5641.2017.04.010 , https://xblk.ecnu.edu.cn/EN/10.3969/j.issn.1000-5641.2017.04.010
+
+Note: Tersoff1989 (Tersoff_2 in lammps)
+Note: LAMBDA1 = λ
+Note: LAMBDA2 = µ
+Note: LAMBDA3 = 0.0
+Note: BETA = β
+
+Tab. 4 Interatomic potential parameters of Si, C and Ag
+A/eV B/eV λ/A^-1 µ/A^-1 β n c d h S/A R/A
+Si-Si 1830.8 471.69 2.4672 1.7261 1.1e-6 0.78734 100390 16.217 -0.59825 3.0 2.7
+C-C 1393.6 351.93 3.4489 2.1832 1.6e-7 0.72751 38049 4.3484 -0.57058 2.1 1.8
+Si-C 1413.38 388.706 2.8069 1.9180 1.393e-5 3.36335 68706.3 12.9527 -0.59485 2.51 2.21
+Si-Ag 521.25 99913.56 50.6969 3.09771 1.0 1.0 64851.36 54.53 -0.37460 3.65 3.00
+C-Ag 99173.95 99480.55 4.3304 1.0683 1.0 1.0 22.64 0.089 -0.29248 3.0 2.0
+Ag-Ag 0 0 3.8081 1.0821 1.0 1.0 309.62 4.3471 -0.88572 3.1 2.7
+
+#-------------------------------------------------------------------------------
+# M-Si (M=Na,Mg,K,Ca,Rb,Sr,Cs,Ba)(Ba-Ga): https://doi.org/10.1063/1.4955331
+
+TABLE I.
+Tersoff potential parameters for the Si–Si, Ga–Ga, and Si–Ga interactions in Si clathrate.
+	Si	Ga	Si–Ga
+A 	1830.8 	785.069 203 	3167.614 191 
+B 	471.18 	138.357 095 	42.587 452 17 
+λ1 	2.479 9 	2.367 914 66 	3.346 702 242 
+λ2 	1.732 2 	1.471 868 45 	1.133 553 756 
+R1 	2.7 	3.0 	2.9 
+R2 	3.0 	3.3 	3.2 
+η 	0.787 34 	1 	… 
+η × δ 	−0.5 	−0.5 	… 
+p 	5.197 495a 	0 	… 
+ 	0b 	… 	… 
+q 	3 	… 	… 
+a 	0.000 001 099 9 	0 	… 
+c 	11 084.9595 	2 389 153.77 	… 
+d 	16.217 	67.043 801 6 	… 
+h 	−0.598 25 	−1 	… 
+
+
+TABLE II.
+Tersoff potential parameters for M-(Si, Ga) interactions in Si clathrate. R1 = R2 = 8.0.
+	Na–Si	Mg–Si	K–Si	Ca–Si
+A (eV) 	243.595 103 	594.493 459 	947.439 362 	688.238 764 
+B (eV) 	7.042 985 55 	10.796 723 8 	14.300 017 1 	16.687 643 4 
+λ1 (1/Å) 	2.454 623 48 	2.855 282 27 	2.672 586 81 	2.682 580 64 
+λ2 (1/Å) 	1.227 311 74 	1.427 641 13 	1.336 293 41 	1.341 290 32 
+
+ 	Rb–Si 	Sr–Si 	Cs–Si 	Ba–(Si, Ga) 
+A (eV) 	1524.944 57 	1416.294 93 	2067.831 77 	1897.202 65 
+B (eV) 	17.284 182 4 	23.524 645 9 	19.871 068 8 	29.517 578 6 
+λ1 (1/Å) 	2.749 261 28 	2.785 765 76 	2.780 748 59 	2.738 608 41 
+λ2 (1/Å) 	1.374 630 64 	1.392 882 88 	1.390 374 29 	1.369 304 20 
+
+#-------------------------------------------------------------------------------
+# ortho-Mo2C: https://doi.org/10.1063/5.0150030
+#  GULP (Default): m = 3, omega_ik = 1
+
+TABLE I. Optimized Tersoff-type EIAP parameters obtained for ortho-Mo2C.
+EIAP parameters	Mo (Mo-C and Mo-C-C)	C (C-Mo and C-Mo-Mo)
+n	0.8440	1.1230
+β	36.8372e−6	30.9220e−6
+A (eV)	7041.4714	7041.4714
+B (eV)	2694.0291	2694.0291
+λ1 (A^−1)	2.9433	2.9433
+λ2 (A^−1)	2.3171	2.3171
+λ3 (A^−1)	4.3978	2.1670
+c	53270.7978	112790.0428
+d	28.2031	28.4780
+h	-0.9166	-0.2410
+R (A)	2.75	2.75
+D (A)	0.15	0.15
+
+#-------------------------------------------------------------------------------
+# Si-Zr: https://pubs.rsc.org/en/content/articlehtml/2015/ra/c4ra16962j
+# (related paper: http://ir.meiho.edu.tw/handle/987654321/3036)
+
+Note: tersoff1989
+Note: LAMBDA3 = 0.0
+
+Table II. The parameters of the Tersoff potential for Si-Si, Si-Zr
+Type Si-Si Zr-Si
+A(eV) 7835.380 2251.660
+B(eV) 45.087 175.073
+λ 3.851 2.603
+μ 1.079 1.474
+β 0.429 0.468E-05
+n 21.161 39.960
+c 27340.700 4061.980
+d 119.344 3.252
+h -0.330 -0.062
+R(A) 2.783 3.216
+S(A) 2.986 3.562
+
+
+Table I. The parameters of the tight-binding potential for Zr-Zr
+Type A(eV) ζ(eV) p q r0(Å)
+Zr-Zr 0.179 2.201 9.300 2.099 3.174
+
+#-------------------------------------------------------------------------------
+# GaSiC: https://ieeexplore.ieee.org/abstract/document/6330521
+# Ga-C: https://doi.org/10.1016/j.nimb.2015.05.023 (mixing rules: chi(X,Y)=1.0)
+
+Note: LAMBDA3 = lambda3 = 0.0 (tersoff1988 (Tersoff_1 in lammps))
+
+TABLE I. TERSOFF.ZBL POTENTIAL FUNCTION PARAMETERS FOR PURE SI, GA AND C
+Parameters Ga Si C
+m 1 1 1
+gamma 1 1 1
+lambda3 0 0 0
+c 7.6298e-2 1.0039e5 1.9981e4
+d 1.9796e1 1.6217e1 7.0340
+cos(theta0) 7.1459e-1 -5.9825e-1 -0.33953
+N 3.47290 7.8734e-1 9.9e-1
+beta 2.3586e-1 1.1e-6 4.1612e-6
+lambda2 [A^-1] 1.7154 1.7322 2.3064
+B [eV] 1.14786e2 4.7118e2 3.8963e2
+R 2.8 2.7 1.8
+D 0.1 0.15 0.15
+lambda1 [A^-1] 3.2834 2.4799 3.4653
+A [eV] 2.83982e3 1.8308e3 1.5448e3
+Zi 31 14 6
+Zj 31 14 6
+
+#-------------------------------------------------------------------------------
+# Graphene(m=3): https://pubs.acs.org/doi/full/10.1021/jp208049t
+
+Table 1. Parameters of the Ion Bombardment Simulations
+parameter	value
+m	3	
+γ	1	
+λ3	0.0 A^-1	
+c	38049	
+d	4.3484	
+h	-0.57058	
+n	0.72751	
+β	1.5724e-7	
+λ2	2.2119 A^1	 
+B	346.7 eV
+R	1.95 A
+D	0.15 A
+λ1	3.4879 A^-1
+A	1393.6 eV
+Z	6
+r_C	0.95 A
+A_F	14
+
+#-------------------------------------------------------------------------------
+# Al-N(m=3 or "m=1 and lambda3=0.0"): https://www.sciencedirect.com/science/article/pii/S0168583X2300469X
+#   https://ars.els-cdn.com/content/image/1-s2.0-S0168583X2300469X-mmc1.pdf
+
+Note: unit of λ2 is mistake ?
+Note: Perhaps the Al-N and N-N are reversed in the supporting information of the paper.
+
+Table 2: Parameters used for Tersoff potential mode
+
+Al-Al Al-N N-N
+m 3.0 3.0 1.0
+γ 0.0 1.0 1.0
+λ3 (A^-1) 1.5 0.0 0.0
+c 0.0748 0.178493 100,390
+d 19.5691 0.20172 16.217
+cos(theta0) -0.6593 0.045238 -0.5980
+n 6.0865 1.0 0.72
+β 0.3168 0.766120 0.0000011
+λ2 (A^-1) 0.927415234 2.38426 1.860592549
+B (eV) 23.02954942 423.769 257.3159264
+R (A) 2.7 2.20 2.34
+D (A) 0.1 0.20 0.15
+λ1 (A^-1) 2.58526 3.557799 3.21305
+A (eV) 492.674645 1044.77 1847.752014
+Zi 13 13 7
+Zj 13 7 7
+rc 1.3 0.7 0.95
+dc 10.986 21.9722 4.882
+
+#-------------------------------------------------------------------------------
+# Be-O(m=1,lambda3=0.0): https://www.ctcms.nist.gov/potentials/Download/2018--Byggmastar-J-Hodille-E-A-Ferro-Y-Nordlund-K--Be-O/1/Be-O.tersoff.zbl
+#   https://iopscience.iop.org/article/10.1088/1361-648X/aaafb3/meta
+
+Note: A = D0/(S-1) * exp(-beta*sqrt(2.0*S)*-r0) = D0/(S-1) * exp(lambda1*r0)
+Note: B = S*D0/(S-1) * exp(-beta*sqrt(2.0/S)*-r0) = S*D0/(S-1) * exp(lambda2*r0)
+Note: LAMBDA1 = beta*sqrt(2.0*S)
+Note: LAMBDA2 = beta*sqrt(2.0/S)
+Note: N = 1.0
+Note: H = h*-1
+Note: m = 1 (Albe form)
+Note: LAMBDA3 = α = 0.0 (tersoff1988 (Tersoff_1 in lammps) is OK)
+
+Table 2. Parameters for the Be-O ABOP. The Be-Be and O-O 
+parameters are taken from earlier studies (Be-Be version II from 
+[28]), and the Be-O parameters are fitted in this study
+
+Be-Be [28] O-O [29] Be-O
+D0 1.03571 5.166 6.783
+r0 2.07880 1.2075 1.41
+β 1.3 2.3090 1.6525
+S 1.88982 1.3864 1.8754
+γ 8.19587e-7 0.82595 0.3940568
+c 89.3894 0.035608 1.4
+d 0.27443 0.046496 0.821
+h 0.7606934 0.45056 0.488
+R 2.535 2.1 2.5
+D 0.15 0.2 0.2
+α 0.0 0.0 0.0
+ω 1.0 1.0 1.0
+bf 15.0 12.0 15.0
+rf 0.8 0.5 0.8
+
+#-------------------------------------------------------------------------------
+# Fe-C: https://www.ctcms.nist.gov/potentials/Download/2013--Henriksson-K-O-E-Bjorkas-C-Nordlund-K--Fe-C/1/FeC_Henriksson_2013.tersoff.zbl
+# Fe-C: https://pubs.acs.org/doi/full/10.1021/acs.langmuir.1c02145
+
+Table 1. Parameters in the Tersoff/zbl Potential
+ 	m	γ	λ3 (1/Å)	c	d	n	β	λ2 (1/Å)	B (eV)	R (Å)	D (Å)	λ1 (1/Å)	A (eV)
+C-C	1	2.0813E-4	0	330	3.5	1	1	2.6888	1397.1	1.85	0.15	3.2803	2605.8
+Fe-Fe	1	1.15751E-2	0	1.2899	0.34132	1	1	1.3764	67.865	3.15	0.2	2.8481	953.95
+C-Fe	1	7.485571E-2	0	1.1167	0.94663	0	0	2.1534	357.34	2.6	0.2	3.0801	1035.5
+
+
+Table 2. Parameters in the Morse Potential
+	D0 (eV)	A (A-1)	r0 (Å)
+Ti-Ti (28)	0.65400	1.21180	3.34760
+Ti-C (29)	0.82930	1.48870	2.67230
+Ti-Fe (28)	0.81620	1.44800	2.91400
+
+#-------------------------------------------------------------------------------
+# Fe-Cr-C: https://doi.org/10.1063/1.4904447
+
+Note: The shape of the fc is different. I'll list it here for reference.
+
+Abell-Tersoff-type BOP
+
+Note: beta = a for Tersoff1988 in CP2k (Tersoff_1 in lammps)
+Note: lambda3 = p
+Note: the form of Albe et al. when beta = 1 (use gamma instead) and m = 1 in lammps manual.
+
+#-----------------------------------
+TABLE II.
+Potential parameter set I for EBOP1.
+
+Parameter	FeFe	FeCr	FeC	CrCr	CrC	CC
+A [eV] 	2493.12420 	65565604.9 	1356.88564 	13204.5363 	2481.20222 	2605.84157 
+B [eV] 	19.4858027 	9.96425290 	266.525550 	4.21613819 	321.737621 	1397.07296 
+lambda1 [1/A] 	3.56934007 	8.34705505 	3.31164335 	4.54403212 	3.47943606 	3.28030486 
+lambda2 [1/A] 	0.96322545 	0.52995783 	1.80087047 	0.51926096 	1.92122871 	2.68877448 
+R1 [A] 	2.70000000 	3.41000000 	2.45000000 	2.67000000 	2.82000000 	1.70000000 
+R2 [A] 	4.00000000 	3.79000000 	3.15000000 	3.75000000 	3.04000000 	2.00000000 
+
+Parameter 	FeFeFe 	FeFeCr 	FeFeC 	FeCrCr 	FeCrC 	FeCC 
+p [1/A] 	0.00000000 	2.11533697 	2.58996852 	1.39657533 	0.27280915 	1.73690551 
+a 	0.17636251 	0.34373890 	0.21865717 	1.05065921 	0.21346865 	0.22372825 
+
+Parameter 	CrFeFe 	CrFeCr 	CrFeC 	CrCrCr 	CrCrC 	CrCC 
+p [1/A] 	1.97203984 	2.12158848 	4.05607108 	0.00000000 	3.40190655 	1.47016213 
+a 	1.51585024 	0.32751581 	0.41364962 	0.10547146 	0.14883560 	0.20222823 
+
+Parameter 	CFeFe 	CFeCr 	CFeC 	CCrCr 	CCrC 	CCC 
+p [1/A] 	1.24328337 	0.94408543 	1.31524339 	0.00000113 	0.77698255 	0.00000000 
+a 	1.94912051 	0.81351925 	0.21969819 	0.58258009 	0.20852683 	0.00020813 
+c 	516.631230 	613.629240 	1134.43688 	667.144758 	0.00000000 	330.000000 
+d 	19.7763588 	17.1140666 	31.7598073 	22.1238197 	… 	3.50000000 
+h 	-0.12926865 	-0.20621532 	-0.11230184 	-0.14354177 	… 	-1.00000000 
+#-----------------------------------
+
+#-----------------------------------
+TABLE III.
+Potential parameter set II for EBOP2.
+
+Parameter	FeFe	FeCr	FeC	CrCr	CrC	CC
+A [eV] 	2493.12420 	65565604.9 	1383.77261 	13204.5363 	2305.40980 	2605.84157 
+B [eV] 	19.4858027 	9.96425290 	224.019837 	4.21613819 	392.685935 	1397.07296 
+lambda1 [1/A] 	3.56934007 	8.34705505 	3.38272321 	4.54403212 	3.38017063 	3.28030486 
+lambda2 [1/A] 	0.96322545 	0.52995783 	1.73013998 	0.51926096 	1.95410958 	2.68877448 
+R1 [A] 	2.70000000 	3.41000000 	2.40000000 	2.67000000 	2.79000000 	1.70000000 
+R2 [A] 	4.00000000 	3.79000000 	3.09000000 	3.75000000 	3.01000000 	2.00000000 
+
+Parameter 	FeFeFe 	FeFeCr 	FeFeC 	FeCrCr 	FeCrC 	FeCC 
+p [1/A] 	0.00000000 	2.11533697 	2.69366968 	1.39657533 	1.55062608 	1.58399520 
+a 	0.17636251 	0.34373890 	0.20276303 	1.05065921 	0.33276471 	0.21068614 
+
+Parameter 	CrFeFe 	CrFeCr 	CrFeC 	CrCrCr 	CrCrC 	CrCC 
+p [1/A] 	1.97203984 	2.12158848 	0.91234732 	0.00000000 	3.34802223 	1.53618867 
+a 	1.51585024 	0.32751581 	0.26504941 	0.10547146 	0.15348533 	0.18171605 
+
+Parameter 	CFeFe 	CFeCr 	CFeC 	CCrCr 	CCrC 	CCC 
+p [1/A] 	1.19107593 	0.77893906 	1.02295139 	0.00000102 	1.12179318 	0.00000000 
+a 	2.30133008 	0.97636141 	0.19439212 	0.96604860 	0.25943745 	0.00020813 
+c 	248.640955 	335.308947 	1077.84210 	436.882649 	0.00000000 	330.000000 
+d 	11.3948015 	12.5632431 	23.4441963 	21.2876623 	… 	3.50000000 
+h 	-0.23114796 	-0.06147392 	-0.01013638 	-0.53329684 	… 	-1.00000000 
+#-----------------------------------
+#-------------------------------------------------------------------------------
+# C-Cu: https://doi.org/10.1016/j.carbon.2014.06.024
+
+Note: not use CP2k, but Lammps
+
+Table 1 - The fitted Abell-Tersoff parameters for the graphene/Cu (111) interface.
+C-Cu
+A (eV) 977.7958178
+B (eV) 320.7794950
+k1 3.1308174
+k2 2.0455965
+c 0.0883168
+c 40.9755961
+d 0.9528753
+h 0.9050528
+Rc (A) 4.1978605
+Dc (A) 0.4794477
+b (A^-1) 1.0
+k3 1.5527866
+n,m 1
+The parameters have been fitted to small flat gr/Cu (111) systems.
+Notations are the same as used in Ref. [26] (supplementary material)
+and on the web page of lammps [37]. k3 is denoted as l and h ¼ cosH0
+in the supplementary material of Ref. [26]
+#-------------------------------------------------------------------------------
+# Pt-C [8] (m=1,Albe,(Pt-C and C-C:2mu=0.0)) (Brenner+modified): https://journals.aps.org/prb/abstract/10.1103/PhysRevB.65.195124
+
+TABLE V. Parameter set of the relevant interaction types. All
+parameters are pair type dependent.
+
+Pt-Pt Pt-C C-C
+gamma 8.542e-4 9.7e-3 2.0813e-4
+S 2.24297 1.1965 1.22
+beta (A^-1) 1.64249 1.836 2.1
+Do (eV) 3.683 5.3 6.0
+ro (A) 2.384 1.84 1.39
+c 34.00 1.23 330
+d 1.1 0.36 3.5
+2mu (A^-1) 2.67 0.0 0.0
+Rcut (A) 3.1 2.65 1.85
+D (A) 0.2 0.15 0.15
+
+In the course of this study several parameterizations were
+tested, mostly due to the uncertainties in the dimer parameters. With Do = 3.71 eV, ro = 2.34 A, beta = 1.65921 A^-1,
+gamma = 2.643e-4, S = 1.79493, c = 21.36, d50.589, 2mu = 2.69 A^-1, Rcut = 3.1 A, D = 0.2 A, improved elastic
+properties were found for platinum (c11 = 258.9 GPa, c12 = 253.4 GPa, and c44 = 81.0 GPa). The vacancy formation
+energy, however, is only 0.74 eV, and the melting point goes to about 1500 K, 
+while surface energies and interstitial formation energy (4.05 eV) are still in very good agreement
+with the reference data. Even the simplified version without angularity (c = 0, gamma = 0.20967, Rcut = 3.4 A, and D
+ = 0.2 A) delivers a reasonable description of most properties except for the surface properties and might be useful for
+the quantification of models that rely on bond counting.
+
+If simulations of amorphous structures are intended, a modified
+cutoff range should be used Ref. 68.
+
+
+Ref. 68
+TABLE II. Values of the low-end and high-end cutoff parameters, R and S
+(see Ref. 34), used for the C-C pair interaction in different potentials and as
+a result of the present investigations (last line).
+
+[Reference] R(A) S(A)
+Tersoff [20] 1.8 2.1
+Brenner:
+pure C potential [35] 1.9 2.3
+hydrocarbon potential (sets I, II) [21] 1.7 2.0
+hydrocarbon potential (set I), increased cutoffs [--] 1.95 2.25
+#-------------------------------------------------------------------------------
