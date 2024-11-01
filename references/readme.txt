@@ -1,4 +1,6 @@
 -------------------------------------------------------------------
+### Be careful !
+### It is often the case that the github and appendices mentioned in a paper disappear after a few years. If you are not careful, they may disappear. 
 # Custom Lammps Script: https://www.ericnhahn.com/tutorials/lammps-tutorials/creating-polycrystalline-structure-via-sintering
 # LAMMPS Tube: https://lammpstube.com/category/lammps-tutorials/
 # Cold_Rolling: https://github.com/khaledb9/Cold_Rolling/tree/main
@@ -25,6 +27,7 @@
 # DLP graphene: https://doi.org/10.1021/acs.jpcc.1c01411 (see Supporting Information)
 # crystal sturcutre data (cif): https://github.com/cryos/avogadro/blob/master/crystals/oxides/SiO2-Quartz-alpha.cif
 # Pops: https://github.com/rohskopf/pops (related paper: https://doi.org/10.1016/j.commatsci.2020.109884)
+# NC_BN: https://github.com/mehranvaezi/NC_BN
 -------------------------------------------------------------------
 input file (metal unit, lammps)
 
