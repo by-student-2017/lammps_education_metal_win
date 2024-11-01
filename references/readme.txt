@@ -188,6 +188,10 @@ input file (metal unit, lammps)
   https://docs.lib.purdue.edu/dissertations/AAI30503130/
   Bombardment_D
 
+- X. Yang et al., Doctor thesis (2013).
+  https://docs.lib.purdue.edu/open_access_dissertations/29
+  Bombardment_C_D
+
 - K. Datadien, (2013).
   https://essay.utwente.nl/63570/1/BscReport_KarunDatadien_s0208663_openbaar.pdf
   Bombardment_Li_ion
