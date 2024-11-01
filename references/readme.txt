@@ -24,6 +24,7 @@
 # supporting-info: https://github.com/hityingph/supporting-info
 # DLP graphene: https://doi.org/10.1021/acs.jpcc.1c01411 (see Supporting Information)
 # crystal sturcutre data (cif): https://github.com/cryos/avogadro/blob/master/crystals/oxides/SiO2-Quartz-alpha.cif
+# Pops: https://github.com/rohskopf/pops (related paper: https://doi.org/10.1016/j.commatsci.2020.109884)
 -------------------------------------------------------------------
 input file (metal unit, lammps)
 
