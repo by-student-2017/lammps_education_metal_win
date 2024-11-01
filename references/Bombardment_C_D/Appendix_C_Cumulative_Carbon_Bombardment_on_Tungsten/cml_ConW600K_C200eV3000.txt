@@ -1,0 +1,180 @@
+#------------------------------------------------------------------------------------------
+# Appendix C: An Example LAMMPS Input File for Cumulative Carbon Bombardment on Tungsten 
+#------------------------------------------------------------------------------------------
+# LAMMPS 64-bit 22Dec2022-MSMPI
+#------------------------------------------------------------------------------------------
+
+#**************************** 
+#   cumulative bombardment  * 
+#**************************** 
+
+log cml_W600kC200eV.log 
+
+clear 
+variable thisfile string cml_ConW600K_C200eV3000.txt 
+variable logfile  string result_cml_ConW600K_C200eV3000.log 
+variable dumptrjfile string cml_ConW600K_C200eV3000.*.lammpstrj.gz 
+variable dumpimagefile string cml_ConW600K_C200eV3000.*.jpg 
+
+# ---- Init ---- 
+units metal 
+dimension 3 
+boundary p p f  
+atom_style atomic 
+atom_modify map array 
+
+# ---- Geo variable ---- 
+variable max_x equal 8 
+variable max_y equal 8 
+variable min_z equal -25 
+variable max_z equal 25 
+variable fixed_W_topline equal -23 
+variable C_init_position equal 15 
+
+variable berendsen_xmin equal 1 
+variable berendsen_xmax equal ${max_x}-1 
+variable berendsen_ymin equal 1 
+variable berendsen_ymax equal ${max_y}-1 
+variable berendsen_zmin equal ${fixed_W_topline}+3.1 
+variable berendsen_zmax equal 1 
+
+# ---- steps ---- 
+variable Wtemp_rescall_step equal 2000 
+variable total_cycles equal 3000 
+variable cycle_steps equal  5000 #3.12*10e28 
+
+# ---- create W atoms ---- 
+lattice bcc 3.165 
+region rgn_everything block 0 ${max_x} 0 ${max_y} ${min_z} ${max_z} units lattice 
+create_box 3 rgn_everything 
+region rgn_w_lattice block 0 ${max_x} 0 ${max_y} ${min_z} 0 units lattice 
+create_atoms 1 region rgn_w_lattice
+
+# ---- mass ---- 
+variable mass_W equal 183.84 
+variable mass_C equal 12.0107 
+variable mass_D equal 2.01410178 
+mass 1 ${mass_W} 
+mass 2 ${mass_C} 
+mass 3 ${mass_D}
+
+# ---- C energy and W temp ---- 
+variable W_temp equal 600 #kelvin 
+variable C_energy equal 200 #ev 
+variable C_speed equal (-1)*sqrt(${C_energy}*1.602e-19*2.0/(${mass_C}*1.661e-27))*1.e10/1.e12 # A/ps 
+
+# ---- potential ---- 
+pair_style tersoff 
+pair_coeff * * WCH.tersoff W C H 
+neighbor 2.0 bin  
+neigh_modify delay 0 every 1 check yes 
+
+# ---- fix the bottom W ---- 
+region rgn_fixed_W   block 0 ${max_x} 0 ${max_y} ${min_z} ${fixed_W_topline} units lattice 
+group grp_fixed_W region rgn_fixed_W 
+fix zeroforce grp_fixed_W setforce 0 0 0 
+
+# ---- berendsen group, must define before the rescalling ---- 
+region rgn_1 block ${berendsen_xmin} ${berendsen_xmax} &  
+  ${berendsen_ymin} ${berendsen_ymax} &  
+  ${berendsen_zmin} ${berendsen_zmax} units lattice 
+group grp_1 region rgn_1 
+group grp_berendsen_W subtract all grp_1 grp_fixed_W 
+group grp_1 delete
+
+# ---- Init W temp ---- 
+group grp_mobile_W subtract all grp_fixed_W 
+velocity grp_mobile_W create ${W_temp} 12345 rot yes dist gaussian 
+
+# ---- Temp rescalling ---- 
+fix 1 all nve 
+fix 2 grp_mobile_W temp/rescale 100 ${W_temp} ${W_temp} 0.1 1.0 
+
+compute cmp_Wtemp grp_mobile_W temp
+
+timestep 0.01 
+thermo_style custom step temp pe c_cmp_Wtemp cpu tpcpu spcpu 
+thermo_modify lost warn  
+thermo 1000
+
+run ${Wtemp_rescall_step}
+
+unfix 2 
+fix 2 grp_berendsen_W temp/berendsen ${W_temp} ${W_temp} 0.01
+
+#----------------------------------------------------- 
+#******** BOMBARDMENT begins cumulative ************** 
+#----------------------------------------------------- 
+
+#---- C velocity ---- 
+variable C_azi_angle equal random(0,6.2831852,24642) 
+variable C_polar_angle equal random(0,20/180*3.1415926,22222) # in rad 
+
+variable rn equal 0.0 
+
+variable C_x equal random(0,${max_x},13531) 
+variable C_y equal random(0,${max_y},13531) 
+variable C_z equal ${C_init_position} 
+
+variable Cz_bottom equal ${C_init_position}-0.1 
+variable Cz_top equal ${C_init_position}+0.1 
+region rgn_C_born block 0 ${max_x} 0 ${max_y} ${Cz_bottom} ${Cz_top} units lattice
+
+reset_timestep 0 
+timestep 0.0005
+
+#---- SHOOTING THE CARBON ------ 
+group grp_all_C type 2 
+group grp_rgn_born region rgn_C_born 
+group grp_C_born intersect grp_rgn_born grp_all_C 
+
+#compute        cmp_Ctemp grp_C_born ke     # C kinetic energy 
+#compute_modify cmp_Ctemp    dynamic yes    # carbon temp 
+variable Cke equal ke(grp_C_born)   # kinetic energy 
+variable czz equal xcm(grp_all_C,z) # z coord of C 
+
+thermo_style custom step temp c_cmp_Wtemp v_Cke v_czz cpu tpcpu spcpu 
+thermo_modify lost warn  
+thermo 1000
+
+dump D-text all atom ${cycle_steps} ${dumptrjfile} 
+dump D-images all image ${cycle_steps} dump/${dumpimagefile} type type size 1024 1280 & 
+  zoom 2.0 box yes 0.005 axes yes 0.5 0.05 view 60 -30 
+dump_modify D-images adiam 1 2.0 adiam 2 2.0
+
+variable i loop ${total_cycles}  # cycle_loop   
+label cycle_loop  
+
+print "====>>>> Shooting $i -th C..." 
+create_atoms 2 single ${C_x} ${C_y} ${C_z}   
+group grp_all_C type 2
+
+# get random number -------- 
+variable rn equal ${C_azi_angle} 
+variable rnp equal ${C_polar_angle} 
+variable C_vx equal ${C_speed}*sin(${rnp})*cos(${rn}) 
+variable C_vy equal ${C_speed}*sin(${rnp})*sin(${rn})
+variable C_vz equal ${C_speed}*cos(${rnp}) 
+
+group grp_rgn_born delete 
+group grp_C_born   delete 
+
+group grp_rgn_born region rgn_C_born 
+group grp_C_born intersect grp_rgn_born grp_all_C
+
+velocity grp_C_born set ${C_vx} ${C_vy} ${C_vz} units box
+
+variable cx equal xcm(grp_C_born,x) 
+variable cy equal xcm(grp_C_born,y) 
+variable cz equal xcm(grp_C_born,z) 
+print "The $i -th C initial location is ${cx} ${cy} ${cz}"
+
+dump d1 all cfg 10 cfg/run_*.cfg mass type xs ys zs id type vx vy vz fx fy fz
+dump_modify d1 element W C H
+
+run ${cycle_steps}
+
+undump d1
+
+next i 
+jump ${thisfile} cycle_loop
