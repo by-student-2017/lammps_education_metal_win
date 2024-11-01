@@ -692,6 +692,7 @@ plot the temperature of each atom
 
 #---------------------------------------------------------------------
 # Backup URL (Unsorted)
+CeO: https://harvest.usask.ca/server/api/core/bitstreams/819b4739-6156-4ca5-83d8-82f8d26f8b9f/content
 NPSD: https://ujcontent.uj.ac.za/view/pdfCoverPage?instCode=27UOJ_INST&filePid=136016360007691&download=true
 Vp2B: https://escholarship.org/content/qt7564g5nd/qt7564g5nd_noSplash_44d43515acf08f39337f2cc99e5ec104.pdf
 TAPSim-MD: https://etd.ohiolink.edu/acprod/odb_etd/ws/send_file/send?accession=osu1525763934302517&disposition=inline
@@ -709,7 +710,6 @@ NPFe: https://www.bing.com/ck/a?!&&p=6c02823dab68865532924157e695dffdb69fa9084f8
 NPTa: https://trepo.tuni.fi/bitstream/handle/10024/145080/VoimanenEerik.pdf?sequence=2
 Ta:  https://escholarship.org/uc/item/79j2w03v
 CdTeZnSeHgS (SW): https://scholarworks.utep.edu/open_etd/3381 
-WCH (tersoff):  https://docs.lib.purdue.edu/open_access_dissertations/29
 HEA: https://scholarworks.utrgv.edu/etd/859
 FeCo: https://dr.ntu.edu.sg/bitstream/10356/175396/2/MarioHernandez_Thesis_PhD_Final.pdf
 FeCH: https://scholarsjunction.msstate.edu/td/5702 
@@ -733,9 +733,14 @@ Tip: https://media.proquest.com/media/hms/PFT/2/PD63O?_s=aMwtaWMrQNpEUYSDIxx3fAV
 C: https://www.diva-portal.org/smash/get/diva2:1037517/FULLTEXT01.pdf
 C: https://oaktrust.library.tamu.edu/server/api/core/bitstreams/e111844d-ba35-4752-83f9-ca8d053d6f9a/content
 C: https://summit.sfu.ca/_flysystem/fedora/sfu_migrate/16590/etd9598_NMallikaArachchige.pdf
+C (tensile): https://open.library.ubc.ca/media/download/pdf/24/1.0072708/1
+CNT: https://repository.rit.edu/cgi/viewcontent.cgi?article=12009&context=theses
+metal-CNT: https://huskiecommons.lib.niu.edu/cgi/viewcontent.cgi?article=7975&context=allgraduate-thesesdissertations
 epoxy: https://d1wqtxts1xzle7.cloudfront.net/78091875/MSC_20Dissertation_201436870-libre.pdf?1641367980=&response-content-disposition=inline%3B+filename%3DCharacterization_of_graphene_epoxy_nanoc.pdf&Expires=1730023337&Signature=Bn4v75rnkodB68d--GumwCuntIy7IqRTfv1LiIEsisa20at-bE2Jtizegj70yWRkXGUfESJqSPNbOFNA6LAubvkl96OxGPU8TP0duih2apYf5KXyeByVcL6-PIIGoNwCriWP9vM2k9tPqUPWl5cQi7PxtpQPykqIbs98KzqjRTse4PyTtqPcJOmiX0DrCTbKHQ3D1iznyvXeSZNVypIvxhHa2a0Bga4SBXYJ0ptQDy-h1rt4pR39J2luhxHEXt7sz93yn8TWB2QNmEVh~OWc98B-RpUI5CUFfDcYBTjAvREBY1g2QuhNduJR5VRlhWIGT~2d83zBxCQ6KSAtm40YjA__&Key-Pair-Id=APKAJLOHF5GGSLRBV4ZA
 BN: http://210.212.194.26/jspui/bitstream/123456789/14231/1/112027PH11F09.pdf
+h-BN: http://210.212.194.26/jspui/bitstream/123456789/14231/1/112027PH11F09.pdf
 atomsk: https://arxiv.org/pdf/2107.09213
+Gate: https://doi.org/10.1103/PhysRevE.104.064133
 #---------------------------------------------------------------------
 DeepMD: https://doi.org/10.1016/j.carbon.2024.119498
 bitumen (LJ): https://doi.org/10.1016/j.matdes.2024.112831
@@ -747,6 +752,12 @@ LJ: https://theses.hal.science/tel-03649130/file/Demydiuk_Fedir_2021_ED182.pdf
 LJ: https://www.researchgate.net/figure/Lennard-Jones-potential-parameters_tbl1_354318730
 LJ: https://lup.lub.lu.se/luur/download?func=downloadFile&recordOId=9079628&fileOId=9079859
 LJ: https://shareok.org/bitstream/handle/11244/332399/2021_Bhattacharya_Soumya_Dissertation.pdf?sequence=1
+LJ: https://library.ndsu.edu/ir/bitstream/handle/10365/28721/Guiding%20Self-Assembly%20of%20Functionalized%20Nanoparticles%20by%20Computational%20Modeling%20of%20Effective%20Interactions.pdf?sequence=1
+LJ: https://ir.vanderbilt.edu/bitstream/handle/1803/15546/PhD_Dissertation_BaigAlMuhit.pdf?sequence=1
+LJ: https://doi.org/10.1016/j.cemconres.2022.106712
+LJ: https://ecommons.cornell.edu/bitstreams/4ef01436-2ba5-4a88-a30d-37f8af0032ac/download
+LJ: https://oaktrust.library.tamu.edu/server/api/core/bitstreams/e111844d-ba35-4752-83f9-ca8d053d6f9a/content
+DPD: https://uhra.herts.ac.uk/bitstream/handle/2299/15336/08174625%20Loya,%20Adil%20-%20Final%20PhD%20Submission.pdf?sequence%253D1
 charmm2lammps (LJ): http://ethesis.nitrkl.ac.in/6144/1/212MM2338-5.pdf
 CVFF: https://www.researchgate.net/profile/Jurgen-Lange/publication/283943867_Molecular_Dynamic_Simulation_of_Oxaliplatin_Diffusion_in_Polylactic_acid-_co_-glycolic_acid_Part_A_Parameterization_and_Validation_of_the_Force-Field_CVFF/links/5a749f10a6fdcc53fe16c31f/Molecular-Dynamic-Simulation-of-Oxaliplatin-Diffusion-in-Polylactic-acid-co-glycolic-acid-Part-A-Parameterization-and-Validation-of-the-Force-Field-CVFF.pdf
 Ca: https://vtechworks.lib.vt.edu/server/api/core/bitstreams/47c372d7-9944-422b-8f7e-73db3c485857/content
@@ -758,6 +769,11 @@ ZnO (ReaxFF): https://open.library.ubc.ca/media/download/pdf/24/1.0319080/4
 Ar (ReaxFF): https://bearworks.missouristate.edu/theses/3416
 Ar (ReaxFF): https://bearworks.missouristate.edu/theses/3669 
 SiO (ReaxFF): https://www.researchgate.net/profile/Rajni-Chahal-2/publication/369245297_MECHANICS_OF_NANOSCALE_FIBER_NETWORKS_AND_THEIR_COMPOSITES_A_THREE-DIMENSIONAL_MULTISCALE_STOCHASTIC_MODELLING_STUDY/links/6411c8e392cfd54f84015903/MECHANICS-OF-NANOSCALE-FIBER-NETWORKS-AND-THEIR-COMPOSITES-A-THREE-DIMENSIONAL-MULTISCALE-STOCHASTIC-MODELLING-STUDY.pdf
+H (ReaxFF): https://ntnuopen.ntnu.no/ntnu-xmlui/bitstream/handle/11250/2390753/12537_FULLTEXT.pdf?sequence=1
+CHON (ReaxFF): https://doi.org/10.1016/j.carbon.2021.07.080
+CHO (ReaxFF): https://doi.org/10.1016/j.carbon.2022.02.018
+Reactive Molecular dynamics: https://repository.lib.ncsu.edu/server/api/core/bitstreams/03b4c7f0-f5d1-4e95-a579-12ebfb3193f1/content
+oxDNA: https://link.springer.com/content/pdf/10.1140/epje/i2018-11669-8.pdf
 ASE: https://digitalcommons.latech.edu/cgi/viewcontent.cgi?article=1000&context=theses
 ASE: https://www.duo.uio.no/bitstream/handle/10852/70387/master.pdf?sequence=1
 GRO2LAM: https://link.springer.com/content/pdf/10.1007/s00894-019-4011-x.pdf
@@ -775,11 +791,18 @@ PdCNT (CP2k): https://doi.org/10.1063/1.5040048
 QE: https://doi.org/10.1021/acs.jctc.2c00742
 python: https://doi.org/10.1063/1.5109116
 python: https://scholarsarchive.byu.edu/cgi/viewcontent.cgi?article=8348&context=etd
+python: https://doi.org/10.1016/j.cpc.2023.108961
 COF (cif): https://doi.org/10.1016/j.jcis.2024.03.077
 tersoff: https://link.springer.com/article/10.1007/s11051-014-2351-0
 tersoff: https://ecommons.cornell.edu/bitstream/handle/1813/67407/Herbol_cornellgrad_0058F_11274.pdf?sequence=1
+tersoff: https://arxiv.org/pdf/2106.07090
+comb (Fe-F): https://pubs.rsc.org/en/content/articlepdf/2019/cp/c9cp01927h
 meam (CH): https://doi.org/10.1016/j.polymer.2019.02.060
 xyz: https://doi.org/10.1016/j.fuel.2024.132064
+poscar: https://www.researchgate.net/profile/Fadi-Aldakheel/publication/356260165_Exploring_the_mechanical_properties_of_two-dimensional_carbon-nitride_polymer_nanocomposites_by_molecular_dynamics_simulations/links/6193b52f3068c54fa5f0e53c/Exploring-the-mechanical-properties-of-two-dimensional-carbon-nitride-polymer-nanocomposites-by-molecular-dynamics-simulations.pdf
+matlab: https://doi.org/10.1016/j.jcp.2018.01.015
+morse: https://doi.org/10.1063/5.0087382
+morse (Th-O): https://arxiv.org/pdf/2204.13685
 #---------------------------------------------------------------------
 https://pubs.acs.org/doi/10.1021/ja404330q
 http://ethesis.nitrkl.ac.in/6144/1/212MM2338-5.pdf
