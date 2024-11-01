@@ -29,6 +29,7 @@
 # crystal sturcutre data (cif): https://github.com/cryos/avogadro/blob/master/crystals/oxides/SiO2-Quartz-alpha.cif
 # Pops: https://github.com/rohskopf/pops (related paper: https://doi.org/10.1016/j.commatsci.2020.109884)
 # NC_BN: https://github.com/mehranvaezi/NC_BN
+# Carbon Potentials: http://www.carbonpotentials.org/
 -------------------------------------------------------------------
 input file (metal unit, lammps)
 
