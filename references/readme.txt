@@ -723,8 +723,10 @@ AlCr: https://publications.polymtl.ca/10541/
 Ag: https://repositories.lib.utexas.edu/server/api/core/bitstreams/aa0530be-4659-4c18-926d-5ffd1d4bed53/content
 AgCu: https://scholarworks.uvm.edu/graddis/995 
 Cu: https://dspace.mit.edu/bitstream/handle/1721.1/112482/1011413174-MIT.pdf?sequence=1&isAllowed=y
-Ni:  http://scholarcommons.scu.edu/mech_mstr/9
+Ni: http://scholarcommons.scu.edu/mech_mstr/9
+Ni: https://qmro.qmul.ac.uk/xmlui/bitstream/handle/123456789/427/SONGExperimental2010.pdf?sequence=1
 NiCu: https://scholars.unh.edu/dissertation/2468 
+PdCu: https://ujcontent.uj.ac.za/view/pdfCoverPage?instCode=27UOJ_INST&filePid=136016360007691&download=true
 Ti: https://www.osti.gov/servlets/purl/1872068
 Zr: https://qspace.library.queensu.ca/server/api/core/bitstreams/b42b5726-f1a0-47b4-bd83-3b45996aa99c/content
 TTPO: https://scholars.unh.edu/thesis/1087
@@ -735,12 +737,19 @@ C: https://oaktrust.library.tamu.edu/server/api/core/bitstreams/e111844d-ba35-47
 C: https://summit.sfu.ca/_flysystem/fedora/sfu_migrate/16590/etd9598_NMallikaArachchige.pdf
 C (tensile): https://open.library.ubc.ca/media/download/pdf/24/1.0072708/1
 CNT: https://repository.rit.edu/cgi/viewcontent.cgi?article=12009&context=theses
+CNT: https://etd.ohiolink.edu/acprod/odb_etd/ws/send_file/send?accession=case1455101197&disposition=inline
+CNT: https://irbe.library.vanderbilt.edu/server/api/core/bitstreams/17a57a75-5185-402b-8bf5-556f442f8651/content
 metal-CNT: https://huskiecommons.lib.niu.edu/cgi/viewcontent.cgi?article=7975&context=allgraduate-thesesdissertations
 epoxy: https://d1wqtxts1xzle7.cloudfront.net/78091875/MSC_20Dissertation_201436870-libre.pdf?1641367980=&response-content-disposition=inline%3B+filename%3DCharacterization_of_graphene_epoxy_nanoc.pdf&Expires=1730023337&Signature=Bn4v75rnkodB68d--GumwCuntIy7IqRTfv1LiIEsisa20at-bE2Jtizegj70yWRkXGUfESJqSPNbOFNA6LAubvkl96OxGPU8TP0duih2apYf5KXyeByVcL6-PIIGoNwCriWP9vM2k9tPqUPWl5cQi7PxtpQPykqIbs98KzqjRTse4PyTtqPcJOmiX0DrCTbKHQ3D1iznyvXeSZNVypIvxhHa2a0Bga4SBXYJ0ptQDy-h1rt4pR39J2luhxHEXt7sz93yn8TWB2QNmEVh~OWc98B-RpUI5CUFfDcYBTjAvREBY1g2QuhNduJR5VRlhWIGT~2d83zBxCQ6KSAtm40YjA__&Key-Pair-Id=APKAJLOHF5GGSLRBV4ZA
 BN: http://210.212.194.26/jspui/bitstream/123456789/14231/1/112027PH11F09.pdf
 h-BN: http://210.212.194.26/jspui/bitstream/123456789/14231/1/112027PH11F09.pdf
 atomsk: https://arxiv.org/pdf/2107.09213
 Gate: https://doi.org/10.1103/PhysRevE.104.064133
+ZnO: https://open.library.ubc.ca/media/download/pdf/24/1.0319080/4
+PdH: https://mds.marshall.edu/cgi/viewcontent.cgi?article=2095&context=etd
+APM(zip file): https://doi.org/10.1021/acs.jpcb.1c01966
+zip: https://doi.org/10.1016/j.cpc.2023.109062
+FMT: https://ntnuopen.ntnu.no/ntnu-xmlui/bitstream/handle/11250/2350291/13447_FULLTEXT.pdf?sequence=1
 #---------------------------------------------------------------------
 DeepMD: https://doi.org/10.1016/j.carbon.2024.119498
 bitumen (LJ): https://doi.org/10.1016/j.matdes.2024.112831
@@ -757,6 +766,12 @@ LJ: https://ir.vanderbilt.edu/bitstream/handle/1803/15546/PhD_Dissertation_BaigA
 LJ: https://doi.org/10.1016/j.cemconres.2022.106712
 LJ: https://ecommons.cornell.edu/bitstreams/4ef01436-2ba5-4a88-a30d-37f8af0032ac/download
 LJ: https://oaktrust.library.tamu.edu/server/api/core/bitstreams/e111844d-ba35-4752-83f9-ca8d053d6f9a/content
+LJ: https://ntnuopen.ntnu.no/ntnu-xmlui/bitstream/handle/11250/2562297/18861_FULLTEXT.pdf?sequence=1
+LJ: https://vtechworks.lib.vt.edu/server/api/core/bitstreams/5bf03ec1-7d1e-4c1e-934a-887f6d12ef41/content
+LJ: https://repository.mines.edu/bitstream/handle/11124/76842/Sullivan_mines_0052N_10066.pdf?sequence=1&isAllowed=y
+LJ: https://etda.libraries.psu.edu/files/final_submissions/10598
+LJ: https://era.ed.ac.uk/bitstream/handle/1842/35877/Carson2019.pdf?sequence=1
+LJ: https://shareok.org/bitstream/handle/11244/50751/Tow%20-%20Thesis%20-%202017.pdf?sequence=1
 DPD: https://uhra.herts.ac.uk/bitstream/handle/2299/15336/08174625%20Loya,%20Adil%20-%20Final%20PhD%20Submission.pdf?sequence%253D1
 charmm2lammps (LJ): http://ethesis.nitrkl.ac.in/6144/1/212MM2338-5.pdf
 CVFF: https://www.researchgate.net/profile/Jurgen-Lange/publication/283943867_Molecular_Dynamic_Simulation_of_Oxaliplatin_Diffusion_in_Polylactic_acid-_co_-glycolic_acid_Part_A_Parameterization_and_Validation_of_the_Force-Field_CVFF/links/5a749f10a6fdcc53fe16c31f/Molecular-Dynamic-Simulation-of-Oxaliplatin-Diffusion-in-Polylactic-acid-co-glycolic-acid-Part-A-Parameterization-and-Validation-of-the-Force-Field-CVFF.pdf
@@ -769,9 +784,15 @@ ZnO (ReaxFF): https://open.library.ubc.ca/media/download/pdf/24/1.0319080/4
 Ar (ReaxFF): https://bearworks.missouristate.edu/theses/3416
 Ar (ReaxFF): https://bearworks.missouristate.edu/theses/3669 
 SiO (ReaxFF): https://www.researchgate.net/profile/Rajni-Chahal-2/publication/369245297_MECHANICS_OF_NANOSCALE_FIBER_NETWORKS_AND_THEIR_COMPOSITES_A_THREE-DIMENSIONAL_MULTISCALE_STOCHASTIC_MODELLING_STUDY/links/6411c8e392cfd54f84015903/MECHANICS-OF-NANOSCALE-FIBER-NETWORKS-AND-THEIR-COMPOSITES-A-THREE-DIMENSIONAL-MULTISCALE-STOCHASTIC-MODELLING-STUDY.pdf
+SiCH (ReaxFF): https://www.proquest.com/openview/e18b64c082181cb152500117984293f5/1.pdf?pq-origsite=gscholar&cbl=18750&diss=y
 H (ReaxFF): https://ntnuopen.ntnu.no/ntnu-xmlui/bitstream/handle/11250/2390753/12537_FULLTEXT.pdf?sequence=1
+C (ReaxFF): https://ninercommons.charlotte.edu/islandora/object/etd:1542/datastream/PDF/download/citation.pdf
+GLUCOSEPANE (ReaxFF): https://www.politesi.polimi.it/bitstream/10589/88581/1/2013_12_Bernardi_Crippa.pdf
 CHON (ReaxFF): https://doi.org/10.1016/j.carbon.2021.07.080
+CHNO (ReaxFF): https://etda.libraries.psu.edu/files/final_submissions/16242
 CHO (ReaxFF): https://doi.org/10.1016/j.carbon.2022.02.018
+CHO (ReaxFF): https://scholarsjunction.msstate.edu/td/3189 
+CHONP: https://udspace.udel.edu/server/api/core/bitstreams/045abab1-bac0-404b-8f85-b5830b7e32af/content
 Reactive Molecular dynamics: https://repository.lib.ncsu.edu/server/api/core/bitstreams/03b4c7f0-f5d1-4e95-a579-12ebfb3193f1/content
 oxDNA: https://link.springer.com/content/pdf/10.1140/epje/i2018-11669-8.pdf
 ASE: https://digitalcommons.latech.edu/cgi/viewcontent.cgi?article=1000&context=theses
@@ -803,6 +824,10 @@ poscar: https://www.researchgate.net/profile/Fadi-Aldakheel/publication/35626016
 matlab: https://doi.org/10.1016/j.jcp.2018.01.015
 morse: https://doi.org/10.1063/5.0087382
 morse (Th-O): https://arxiv.org/pdf/2204.13685
+USPEX: https://www2.it.uu.se/edu/course/homepage/projektTDB/ht20/report03/Report_03_final.pdf
+CG: https://webthesis.biblio.polito.it/secure/13857/1/tesi.pdf
+Alpha-Quartz (tersoff): file:///C:/Users/manab/Downloads/Herbol_cornellgrad_0058F_11274.pdf
+CH (MEAM): https://doi.org/10.1016/j.polymer.2019.02.060
 #---------------------------------------------------------------------
 https://pubs.acs.org/doi/10.1021/ja404330q
 http://ethesis.nitrkl.ac.in/6144/1/212MM2338-5.pdf
