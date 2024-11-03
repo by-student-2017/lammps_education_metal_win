@@ -729,6 +729,7 @@ NiCu: https://scholars.unh.edu/dissertation/2468
 PdCu: https://ujcontent.uj.ac.za/view/pdfCoverPage?instCode=27UOJ_INST&filePid=136016360007691&download=true
 Ti: https://www.osti.gov/servlets/purl/1872068
 Zr: https://qspace.library.queensu.ca/server/api/core/bitstreams/b42b5726-f1a0-47b4-bd83-3b45996aa99c/content
+Au: https://webthesis.biblio.polito.it/secure/15380/1/tesi.pdf
 TTPO: https://scholars.unh.edu/thesis/1087
 BC: https://bearworks.missouristate.edu/cgi/viewcontent.cgi?article=4487&context=theses
 Tip: https://media.proquest.com/media/hms/PFT/2/PD63O?_s=aMwtaWMrQNpEUYSDIxx3fAVjqE8%3D
@@ -751,6 +752,7 @@ PdH: https://mds.marshall.edu/cgi/viewcontent.cgi?article=2095&context=etd
 APM(zip file): https://doi.org/10.1021/acs.jpcb.1c01966
 zip: https://doi.org/10.1016/j.cpc.2023.109062
 FMT: https://ntnuopen.ntnu.no/ntnu-xmlui/bitstream/handle/11250/2350291/13447_FULLTEXT.pdf?sequence=1
+SiC (meam): https://lup.lub.lu.se/luur/download?func=downloadFile&recordOId=8977878&fileOId=8977883
 #---------------------------------------------------------------------
 DeepMD: https://doi.org/10.1016/j.carbon.2024.119498
 bitumen (LJ): https://doi.org/10.1016/j.matdes.2024.112831
@@ -777,6 +779,8 @@ LJ: https://repository.library.carleton.ca/downloads/zg64tn08c
 LJ: https://etda.libraries.psu.edu/files/final_submissions/15360
 LJ: https://etda.libraries.psu.edu/files/final_submissions/2077
 LJ: https://digitalcommons.usu.edu/etd/4632 
+LJ: https://ntnuopen.ntnu.no/ntnu-xmlui/bitstream/handle/11250/2787937/no.ntnu:inspera:77798797:18446734.pdf?sequence=1
+LJ: https://core.ac.uk/download/pdf/29409791.pdf
 DPD: https://uhra.herts.ac.uk/bitstream/handle/2299/15336/08174625%20Loya,%20Adil%20-%20Final%20PhD%20Submission.pdf?sequence%253D1
 SI: https://qspace.library.queensu.ca/bitstreams/8de5d6c1-4296-41ac-99d7-bb8b99788164/download
 gran: https://nova.newcastle.edu.au/vital/access/services/Download/uon:34391/ATTACHMENT01
@@ -803,6 +807,7 @@ CHNO (ReaxFF): https://etda.libraries.psu.edu/files/final_submissions/16242
 CHO (ReaxFF): https://doi.org/10.1016/j.carbon.2022.02.018
 CHO (ReaxFF): https://scholarsjunction.msstate.edu/td/3189 
 Xe (ReaxFF): https://doi.org/10.1016/j.carbon.2018.11.063
+C (ReaxFF): https://ntnuopen.ntnu.no/ntnu-xmlui/handle/11250/2445481
 CHONP: https://udspace.udel.edu/server/api/core/bitstreams/045abab1-bac0-404b-8f85-b5830b7e32af/content
 Reactive Molecular dynamics: https://repository.lib.ncsu.edu/server/api/core/bitstreams/03b4c7f0-f5d1-4e95-a579-12ebfb3193f1/content
 oxDNA: https://link.springer.com/content/pdf/10.1140/epje/i2018-11669-8.pdf
@@ -841,6 +846,7 @@ USPEX: https://www2.it.uu.se/edu/course/homepage/projektTDB/ht20/report03/Report
 CG: https://webthesis.biblio.polito.it/secure/13857/1/tesi.pdf
 Alpha-Quartz (tersoff): file:///C:/Users/manab/Downloads/Herbol_cornellgrad_0058F_11274.pdf
 PdC, NiC (tersoff): https://www5-m.hp-ez.com/maintenance?_pid=275015&page=394
+SiC (tersoff): https://www.theseus.fi/bitstream/handle/10024/149985/Carey_Brent.pdf?sequence=1
 CH (MEAM): https://doi.org/10.1016/j.polymer.2019.02.060
 SrTiO3: https://purehost.bath.ac.uk/ws/portalfiles/portal/187927626/Thesis.pdf
 CFH (AIREBO): https://physik.uni-greifswald.de/storages/uni-greifswald/fakultaet/mnf/physik/ag_schneider/Arbeiten/mortenMSc.pdf
