@@ -736,6 +736,7 @@ C: https://www.diva-portal.org/smash/get/diva2:1037517/FULLTEXT01.pdf
 C: https://oaktrust.library.tamu.edu/server/api/core/bitstreams/e111844d-ba35-4752-83f9-ca8d053d6f9a/content
 C: https://summit.sfu.ca/_flysystem/fedora/sfu_migrate/16590/etd9598_NMallikaArachchige.pdf
 C (tensile): https://open.library.ubc.ca/media/download/pdf/24/1.0072708/1
+C: https://repository.lboro.ac.uk/articles/thesis/Damage_of_nuclear_graphite_and_structural_response_of_carbon_fibre_to_tension/22345081/1/files/39760825.pdf
 CNT: https://repository.rit.edu/cgi/viewcontent.cgi?article=12009&context=theses
 CNT: https://etd.ohiolink.edu/acprod/odb_etd/ws/send_file/send?accession=case1455101197&disposition=inline
 CNT: https://irbe.library.vanderbilt.edu/server/api/core/bitstreams/17a57a75-5185-402b-8bf5-556f442f8651/content
@@ -772,7 +773,16 @@ LJ: https://repository.mines.edu/bitstream/handle/11124/76842/Sullivan_mines_005
 LJ: https://etda.libraries.psu.edu/files/final_submissions/10598
 LJ: https://era.ed.ac.uk/bitstream/handle/1842/35877/Carson2019.pdf?sequence=1
 LJ: https://shareok.org/bitstream/handle/11244/50751/Tow%20-%20Thesis%20-%202017.pdf?sequence=1
+LJ: https://repository.library.carleton.ca/downloads/zg64tn08c
+LJ: https://etda.libraries.psu.edu/files/final_submissions/15360
+LJ: https://etda.libraries.psu.edu/files/final_submissions/2077
+LJ: https://digitalcommons.usu.edu/etd/4632 
 DPD: https://uhra.herts.ac.uk/bitstream/handle/2299/15336/08174625%20Loya,%20Adil%20-%20Final%20PhD%20Submission.pdf?sequence%253D1
+SI: https://qspace.library.queensu.ca/bitstreams/8de5d6c1-4296-41ac-99d7-bb8b99788164/download
+gran: https://nova.newcastle.edu.au/vital/access/services/Download/uon:34391/ATTACHMENT01
+gran: https://eprints.nottingham.ac.uk/69201/1/William%20Reynolds%20Thesis%2016.1_corrections.pdf
+gran: https://ir.canterbury.ac.nz/server/api/core/bitstreams/2a64fb98-3143-4d02-9fcb-d02227e80ef3/content
+gran: https://open.uct.ac.za/server/api/core/bitstreams/7bbd7d9c-6f80-45e9-8d7e-3e319713b314/content
 charmm2lammps (LJ): http://ethesis.nitrkl.ac.in/6144/1/212MM2338-5.pdf
 CVFF: https://www.researchgate.net/profile/Jurgen-Lange/publication/283943867_Molecular_Dynamic_Simulation_of_Oxaliplatin_Diffusion_in_Polylactic_acid-_co_-glycolic_acid_Part_A_Parameterization_and_Validation_of_the_Force-Field_CVFF/links/5a749f10a6fdcc53fe16c31f/Molecular-Dynamic-Simulation-of-Oxaliplatin-Diffusion-in-Polylactic-acid-co-glycolic-acid-Part-A-Parameterization-and-Validation-of-the-Force-Field-CVFF.pdf
 Ca: https://vtechworks.lib.vt.edu/server/api/core/bitstreams/47c372d7-9944-422b-8f7e-73db3c485857/content
@@ -792,6 +802,7 @@ CHON (ReaxFF): https://doi.org/10.1016/j.carbon.2021.07.080
 CHNO (ReaxFF): https://etda.libraries.psu.edu/files/final_submissions/16242
 CHO (ReaxFF): https://doi.org/10.1016/j.carbon.2022.02.018
 CHO (ReaxFF): https://scholarsjunction.msstate.edu/td/3189 
+Xe (ReaxFF): https://doi.org/10.1016/j.carbon.2018.11.063
 CHONP: https://udspace.udel.edu/server/api/core/bitstreams/045abab1-bac0-404b-8f85-b5830b7e32af/content
 Reactive Molecular dynamics: https://repository.lib.ncsu.edu/server/api/core/bitstreams/03b4c7f0-f5d1-4e95-a579-12ebfb3193f1/content
 oxDNA: https://link.springer.com/content/pdf/10.1140/epje/i2018-11669-8.pdf
@@ -822,12 +833,18 @@ meam (CH): https://doi.org/10.1016/j.polymer.2019.02.060
 xyz: https://doi.org/10.1016/j.fuel.2024.132064
 poscar: https://www.researchgate.net/profile/Fadi-Aldakheel/publication/356260165_Exploring_the_mechanical_properties_of_two-dimensional_carbon-nitride_polymer_nanocomposites_by_molecular_dynamics_simulations/links/6193b52f3068c54fa5f0e53c/Exploring-the-mechanical-properties-of-two-dimensional-carbon-nitride-polymer-nanocomposites-by-molecular-dynamics-simulations.pdf
 matlab: https://doi.org/10.1016/j.jcp.2018.01.015
+matlab: https://www.politesi.polimi.it/bitstream/10589/2021/1/2010_07_Nova.pdf
+matlab: https://aaltodoc.aalto.fi/server/api/core/bitstreams/505042a1-a900-4d42-98e1-6dfb6ad22309/content
 morse: https://doi.org/10.1063/5.0087382
 morse (Th-O): https://arxiv.org/pdf/2204.13685
 USPEX: https://www2.it.uu.se/edu/course/homepage/projektTDB/ht20/report03/Report_03_final.pdf
 CG: https://webthesis.biblio.polito.it/secure/13857/1/tesi.pdf
 Alpha-Quartz (tersoff): file:///C:/Users/manab/Downloads/Herbol_cornellgrad_0058F_11274.pdf
+PdC, NiC (tersoff): https://www5-m.hp-ez.com/maintenance?_pid=275015&page=394
 CH (MEAM): https://doi.org/10.1016/j.polymer.2019.02.060
+SrTiO3: https://purehost.bath.ac.uk/ws/portalfiles/portal/187927626/Thesis.pdf
+CFH (AIREBO): https://physik.uni-greifswald.de/storages/uni-greifswald/fakultaet/mnf/physik/ag_schneider/Arbeiten/mortenMSc.pdf
+kART: https://uvadoc.uva.es/bitstream/handle/10324/20512/TFM-G554.pdf?sequence=1&isAllowed=y
 #---------------------------------------------------------------------
 https://pubs.acs.org/doi/10.1021/ja404330q
 http://ethesis.nitrkl.ac.in/6144/1/212MM2338-5.pdf
