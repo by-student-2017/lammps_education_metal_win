@@ -719,6 +719,7 @@ AlN (zbl): https://scholarsmine.mst.edu/masters_theses/8166
 Al: https://scholarsjunction.msstate.edu/td/279 
 Al: https://publications.polymtl.ca/10794/
 Al: https://scholarcommons.scu.edu/cgi/viewcontent.cgi?article=1049&context=mech_mstr
+AlNi: https://www.osti.gov/servlets/purl/1902942
 AlCr: https://publications.polymtl.ca/10541/
 Ag: https://repositories.lib.utexas.edu/server/api/core/bitstreams/aa0530be-4659-4c18-926d-5ffd1d4bed53/content
 AgCu: https://scholarworks.uvm.edu/graddis/995 
@@ -740,6 +741,7 @@ C: https://oaktrust.library.tamu.edu/server/api/core/bitstreams/e111844d-ba35-47
 C: https://summit.sfu.ca/_flysystem/fedora/sfu_migrate/16590/etd9598_NMallikaArachchige.pdf
 C (tensile): https://open.library.ubc.ca/media/download/pdf/24/1.0072708/1
 C: https://repository.lboro.ac.uk/articles/thesis/Damage_of_nuclear_graphite_and_structural_response_of_carbon_fibre_to_tension/22345081/1/files/39760825.pdf
+C (Green-Kubo): https://escholarship.org/content/qt3km9505t/qt3km9505t_noSplash_48a5d5cd8b3244d58739b9080df60e16.pdf
 CNT: https://repository.rit.edu/cgi/viewcontent.cgi?article=12009&context=theses
 CNT: https://etd.ohiolink.edu/acprod/odb_etd/ws/send_file/send?accession=case1455101197&disposition=inline
 CNT: https://irbe.library.vanderbilt.edu/server/api/core/bitstreams/17a57a75-5185-402b-8bf5-556f442f8651/content
@@ -761,7 +763,10 @@ gpu: https://escholarship.org/content/qt4p33q6zt/qt4p33q6zt_noSplash_0ae1f525544
 boundary: https://scholarworks.utep.edu/cgi/viewcontent.cgi?article=2965&context=open_etd
 MoS(rebo): https://scholarworks.uark.edu/cgi/viewcontent.cgi?article=1481&context=etd
 deepmd: https://hammer.purdue.edu/articles/thesis/Machine_Learning_and_Molecular_Dynamics_Simulations_of_Thermal_Transport/15062682/1/files/28980288.pdf
+deepmd: https://dl.acm.org/doi/pdf/10.1145/3503221.3508425
 PGMC: https://ntrs.nasa.gov/api/citations/20220003134/downloads/NASA-TM-2022003134_coorected.pdf
+Si(sw): https://ro.uow.edu.au/cgi/viewcontent.cgi?article=4397&context=theses
+MW Heating: https://figshare.mq.edu.au/articles/thesis/Study_of_microwave_heating_in_semiconductors_using_molecular_dynamics_simulation/21540012/1/files/38178909.pdf
 #---------------------------------------------------------------------
 DeepMD: https://doi.org/10.1016/j.carbon.2024.119498
 bitumen (LJ): https://doi.org/10.1016/j.matdes.2024.112831
@@ -792,9 +797,19 @@ LJ: https://ntnuopen.ntnu.no/ntnu-xmlui/bitstream/handle/11250/2787937/no.ntnu:i
 LJ: https://core.ac.uk/download/pdf/29409791.pdf
 LJ: https://d1wqtxts1xzle7.cloudfront.net/78091875/MSC_20Dissertation_201436870-libre.pdf?1641367980=&response-content-disposition=inline%3B+filename%3DCharacterization_of_graphene_epoxy_nanoc.pdf&Expires=1730700873&Signature=CflYZNWf-voW3tRKyv37HdrdAZcZrITn8AVER4fybS5BpHnLzv6XfcPepdY4Sdwzs4KKRTfvzcXCgIvyWHbXpVxcXwm~wHBzqOBh2Py375~ZTz9Nnn8C~NYz2hQ3prIj7b3XFUASK~nVQ~lUC6~K1f2R3dBWI~Q7LDHir0Q6LJdgxNeO4-0QCbvwrGdtoib54WL8q6CsdLwsOCEvdO~UGXcfW5NWN8QZIcRPeXK~Y5uFmr0ZpiILUpGWSfmXQyZ2coRmybe9ESP~dAFi-7DhPrGrOCFiuRSqVv5iXPcgtZ6b0yC5JstM9Nvz-I8IDbIMY398GFY0xgMSr5-L2M3tpA__&Key-Pair-Id=APKAJLOHF5GGSLRBV4ZA
 LJ: https://oaktrust.library.tamu.edu/server/api/core/bitstreams/e111844d-ba35-4752-83f9-ca8d053d6f9a/content
+LJ: https://kb.osu.edu/bitstreams/b2c3bfbc-7e92-4fa8-b03b-7835e46e4e0b/download
+LJ: https://www.osti.gov/servlets/purl/1898282
+LJ: https://pure.tue.nl/ws/portalfiles/portal/172431062/MCE_afstudeerverslag_Roos_Beljon_0959426_.pdf
+LJ: https://escholarship.org/content/qt2qw846j7/qt2qw846j7.pdf
+LJ: https://www.proquest.com/openview/fb2a1d2a7d330ada4fb2a9657b96f8f2/1.pdf?pq-origsite=gscholar&cbl=18750&diss=y
+LJ: https://air.unimi.it/bitstream/2434/820780/2/phd_unimi_R11853.pdf
+CVFF: https://ecommons.cornell.edu/server/api/core/bitstreams/2c794d17-a73e-482b-9878-f4175e1fb9b2/content
 DPD: https://uhra.herts.ac.uk/bitstream/handle/2299/15336/08174625%20Loya,%20Adil%20-%20Final%20PhD%20Submission.pdf?sequence%253D1
+DPD: https://www.osti.gov/servlets/purl/1733244
 SI: https://qspace.library.queensu.ca/bitstreams/8de5d6c1-4296-41ac-99d7-bb8b99788164/download
 CG: https://ninercommons.charlotte.edu/islandora/object/etd:1542/datastream/PDF/download/citation.pdf
+CG: https://eprints.soton.ac.uk/486407/1/Final_thesis_submission_Examination_Miss_Catriona_Gibbon.pdf
+CGCMM: https://ars.els-cdn.com/content/image/1-s2.0-S037838122100162X-mmc2.pdf
 gran: https://nova.newcastle.edu.au/vital/access/services/Download/uon:34391/ATTACHMENT01
 gran: https://eprints.nottingham.ac.uk/69201/1/William%20Reynolds%20Thesis%2016.1_corrections.pdf
 gran: https://ir.canterbury.ac.nz/server/api/core/bitstreams/2a64fb98-3143-4d02-9fcb-d02227e80ef3/content
@@ -803,12 +818,14 @@ charmm2lammps (LJ): http://ethesis.nitrkl.ac.in/6144/1/212MM2338-5.pdf
 CVFF: https://www.researchgate.net/profile/Jurgen-Lange/publication/283943867_Molecular_Dynamic_Simulation_of_Oxaliplatin_Diffusion_in_Polylactic_acid-_co_-glycolic_acid_Part_A_Parameterization_and_Validation_of_the_Force-Field_CVFF/links/5a749f10a6fdcc53fe16c31f/Molecular-Dynamic-Simulation-of-Oxaliplatin-Diffusion-in-Polylactic-acid-co-glycolic-acid-Part-A-Parameterization-and-Validation-of-the-Force-Field-CVFF.pdf
 Ca: https://vtechworks.lib.vt.edu/server/api/core/bitstreams/47c372d7-9944-422b-8f7e-73db3c485857/content
 QC: https://citeseerx.ist.psu.edu/document?repid=rep1&type=pdf&doi=d309054b1aa8adf177f8e2fcc507fa852b68a228
+FeOH (ReaxFF): https://repository.library.northeastern.edu/files/neu:cj82pr03d/fulltext.pdf
 HO (ReaxFF): https://repository.library.northeastern.edu/files/neu:cj82pr03d/fulltext.pdf
 NiCHO (ReaxFF): https://dc.suffolk.edu/undergrad/13 
 NiC (ReaxFF): https://publications.aston.ac.uk/id/eprint/44530/6/Fikri_Ahmad_Atif_2021.pdf
 ZnO (ReaxFF): https://open.library.ubc.ca/media/download/pdf/24/1.0319080/4
 Ar (ReaxFF): https://bearworks.missouristate.edu/theses/3416
 Ar (ReaxFF): https://bearworks.missouristate.edu/theses/3669 
+SiO2 (ReaxFF): https://www.duo.uio.no/bitstream/handle/10852/45552/1/master-thesis.pdf
 SiO (ReaxFF): https://www.researchgate.net/profile/Rajni-Chahal-2/publication/369245297_MECHANICS_OF_NANOSCALE_FIBER_NETWORKS_AND_THEIR_COMPOSITES_A_THREE-DIMENSIONAL_MULTISCALE_STOCHASTIC_MODELLING_STUDY/links/6411c8e392cfd54f84015903/MECHANICS-OF-NANOSCALE-FIBER-NETWORKS-AND-THEIR-COMPOSITES-A-THREE-DIMENSIONAL-MULTISCALE-STOCHASTIC-MODELLING-STUDY.pdf
 SiCH (ReaxFF): https://www.proquest.com/openview/e18b64c082181cb152500117984293f5/1.pdf?pq-origsite=gscholar&cbl=18750&diss=y
 H (ReaxFF): https://ntnuopen.ntnu.no/ntnu-xmlui/bitstream/handle/11250/2390753/12537_FULLTEXT.pdf?sequence=1
@@ -818,10 +835,14 @@ CHON (ReaxFF): https://doi.org/10.1016/j.carbon.2021.07.080
 CHNO (ReaxFF): https://etda.libraries.psu.edu/files/final_submissions/16242
 CHO (ReaxFF): https://doi.org/10.1016/j.carbon.2022.02.018
 CHO (ReaxFF): https://scholarsjunction.msstate.edu/td/3189 
+CHOS (ReaxFF): https://macau.uni-kiel.de/servlets/MCRFileNodeServlet/dissertation_derivate_00007173/Diss_Mueller.pdf
 Xe (ReaxFF): https://doi.org/10.1016/j.carbon.2018.11.063
 C (ReaxFF): https://ntnuopen.ntnu.no/ntnu-xmlui/handle/11250/2445481
 C (ReaxFF): https://www.researchgate.net/profile/Sorayot-Chinkanjanarot/publication/304091140_DENSITY_OF_AMORPHOUS_CARBON_BY_USING_DENSITY_FUNCTIONAL_THEORY/links/5a144341aca27240e309cd3e/DENSITY-OF-AMORPHOUS-CARBON-BY-USING-DENSITY-FUNCTIONAL-THEORY.pdf
-CHONP: https://udspace.udel.edu/server/api/core/bitstreams/045abab1-bac0-404b-8f85-b5830b7e32af/content
+CHONP (ReaxFF): https://udspace.udel.edu/server/api/core/bitstreams/045abab1-bac0-404b-8f85-b5830b7e32af/content
+CHONSSi (ReaxFF): https://doi.org/10.1016/j.matdes.2023.112155
+BCH (PKA) (ReaxFF): https://bearworks.missouristate.edu/cgi/viewcontent.cgi?article=4709&context=theses
+BCH (PKA) (ReaxFF): https://bearworks.missouristate.edu/theses/3416 
 Reactive Molecular dynamics: https://repository.lib.ncsu.edu/server/api/core/bitstreams/03b4c7f0-f5d1-4e95-a579-12ebfb3193f1/content
 oxDNA: https://link.springer.com/content/pdf/10.1140/epje/i2018-11669-8.pdf
 ASE: https://digitalcommons.latech.edu/cgi/viewcontent.cgi?article=1000&context=theses
@@ -843,6 +864,7 @@ python: https://doi.org/10.1063/1.5109116
 python: https://scholarsarchive.byu.edu/cgi/viewcontent.cgi?article=8348&context=etd
 python: https://doi.org/10.1016/j.cpc.2023.108961
 python(FeNb): https://arxiv.org/pdf/1907.12254
+python: https://aaltodoc.aalto.fi/server/api/core/bitstreams/505042a1-a900-4d42-98e1-6dfb6ad22309/content
 COF (cif): https://doi.org/10.1016/j.jcis.2024.03.077
 tersoff: https://link.springer.com/article/10.1007/s11051-014-2351-0
 tersoff: https://ecommons.cornell.edu/bitstream/handle/1813/67407/Herbol_cornellgrad_0058F_11274.pdf?sequence=1
@@ -861,11 +883,18 @@ CG: https://webthesis.biblio.polito.it/secure/13857/1/tesi.pdf
 Alpha-Quartz (tersoff): file:///C:/Users/manab/Downloads/Herbol_cornellgrad_0058F_11274.pdf
 PdC, NiC (tersoff): https://www5-m.hp-ez.com/maintenance?_pid=275015&page=394
 SiC (tersoff): https://www.theseus.fi/bitstream/handle/10024/149985/Carey_Brent.pdf?sequence=1
+SiO2 (tersoff): https://academiccommons.columbia.edu/doi/10.7916/5qte-hh77/download
 CH (MEAM): https://doi.org/10.1016/j.polymer.2019.02.060
 SrTiO3: https://purehost.bath.ac.uk/ws/portalfiles/portal/187927626/Thesis.pdf
 CFH (AIREBO): https://physik.uni-greifswald.de/storages/uni-greifswald/fakultaet/mnf/physik/ag_schneider/Arbeiten/mortenMSc.pdf
 kART: https://uvadoc.uva.es/bitstream/handle/10324/20512/TFM-G554.pdf?sequence=1&isAllowed=y
 TiNAl: https://bearworks.missouristate.edu/cgi/viewcontent.cgi?article=4169&context=theses
+ZrYO(buck): https://doi.org/10.1016/j.commatsci.2023.112722
+NaCl (back): https://essay.utwente.nl/63570/1/BscReport_KarunDatadien_s0208663_openbaar.pdf
+ZnS (back): https://mds.marshall.edu/cgi/viewcontent.cgi?article=2417&context=etd
+SC17: https://github.com/ZachMarcus/SC17 , https://doi.org/10.1016/j.parco.2018.07.005
+promd.mdp: https://doi.org/10.1016/j.ymeth.2021.03.005
+hybrid: https://huskiecommons.lib.niu.edu/cgi/viewcontent.cgi?article=7975&context=allgraduate-thesesdissertations
 #---------------------------------------------------------------------
 https://pubs.acs.org/doi/10.1021/ja404330q
 http://ethesis.nitrkl.ac.in/6144/1/212MM2338-5.pdf
