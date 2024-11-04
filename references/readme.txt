@@ -726,6 +726,7 @@ Cu: https://dspace.mit.edu/bitstream/handle/1721.1/112482/1011413174-MIT.pdf?seq
 Ni: http://scholarcommons.scu.edu/mech_mstr/9
 Ni: https://qmro.qmul.ac.uk/xmlui/bitstream/handle/123456789/427/SONGExperimental2010.pdf?sequence=1
 NiCu: https://scholars.unh.edu/dissertation/2468 
+NiCr: https://www.researchgate.net/profile/Collins-Nana-Andoh/publication/325126856_Binary_Collision_and_Molecular_Dynamics_Simulation_of_Fe-Ni-Cr_Alloys_at_Supercritical_Water_Condition/links/5f6d445c458515b7cf4c4d16/Binary-Collision-and-Molecular-Dynamics-Simulation-of-Fe-Ni-Cr-Alloys-at-Supercritical-Water-Condition.pdf
 PdCu: https://ujcontent.uj.ac.za/view/pdfCoverPage?instCode=27UOJ_INST&filePid=136016360007691&download=true
 Ti: https://www.osti.gov/servlets/purl/1872068
 Zr: https://qspace.library.queensu.ca/server/api/core/bitstreams/b42b5726-f1a0-47b4-bd83-3b45996aa99c/content
@@ -733,6 +734,7 @@ Au: https://webthesis.biblio.polito.it/secure/15380/1/tesi.pdf
 TTPO: https://scholars.unh.edu/thesis/1087
 BC: https://bearworks.missouristate.edu/cgi/viewcontent.cgi?article=4487&context=theses
 Tip: https://media.proquest.com/media/hms/PFT/2/PD63O?_s=aMwtaWMrQNpEUYSDIxx3fAVjqE8%3D
+shock_Si:  https://escholarship.org/uc/item/5sg3c7dp
 C: https://www.diva-portal.org/smash/get/diva2:1037517/FULLTEXT01.pdf
 C: https://oaktrust.library.tamu.edu/server/api/core/bitstreams/e111844d-ba35-4752-83f9-ca8d053d6f9a/content
 C: https://summit.sfu.ca/_flysystem/fedora/sfu_migrate/16590/etd9598_NMallikaArachchige.pdf
@@ -741,9 +743,9 @@ C: https://repository.lboro.ac.uk/articles/thesis/Damage_of_nuclear_graphite_and
 CNT: https://repository.rit.edu/cgi/viewcontent.cgi?article=12009&context=theses
 CNT: https://etd.ohiolink.edu/acprod/odb_etd/ws/send_file/send?accession=case1455101197&disposition=inline
 CNT: https://irbe.library.vanderbilt.edu/server/api/core/bitstreams/17a57a75-5185-402b-8bf5-556f442f8651/content
+CNT: https://ir.library.oregonstate.edu/downloads/t722hc79t
 metal-CNT: https://huskiecommons.lib.niu.edu/cgi/viewcontent.cgi?article=7975&context=allgraduate-thesesdissertations
 epoxy: https://d1wqtxts1xzle7.cloudfront.net/78091875/MSC_20Dissertation_201436870-libre.pdf?1641367980=&response-content-disposition=inline%3B+filename%3DCharacterization_of_graphene_epoxy_nanoc.pdf&Expires=1730023337&Signature=Bn4v75rnkodB68d--GumwCuntIy7IqRTfv1LiIEsisa20at-bE2Jtizegj70yWRkXGUfESJqSPNbOFNA6LAubvkl96OxGPU8TP0duih2apYf5KXyeByVcL6-PIIGoNwCriWP9vM2k9tPqUPWl5cQi7PxtpQPykqIbs98KzqjRTse4PyTtqPcJOmiX0DrCTbKHQ3D1iznyvXeSZNVypIvxhHa2a0Bga4SBXYJ0ptQDy-h1rt4pR39J2luhxHEXt7sz93yn8TWB2QNmEVh~OWc98B-RpUI5CUFfDcYBTjAvREBY1g2QuhNduJR5VRlhWIGT~2d83zBxCQ6KSAtm40YjA__&Key-Pair-Id=APKAJLOHF5GGSLRBV4ZA
-BN: http://210.212.194.26/jspui/bitstream/123456789/14231/1/112027PH11F09.pdf
 h-BN: http://210.212.194.26/jspui/bitstream/123456789/14231/1/112027PH11F09.pdf
 atomsk: https://arxiv.org/pdf/2107.09213
 Gate: https://doi.org/10.1103/PhysRevE.104.064133
@@ -753,6 +755,13 @@ APM(zip file): https://doi.org/10.1021/acs.jpcb.1c01966
 zip: https://doi.org/10.1016/j.cpc.2023.109062
 FMT: https://ntnuopen.ntnu.no/ntnu-xmlui/bitstream/handle/11250/2350291/13447_FULLTEXT.pdf?sequence=1
 SiC (meam): https://lup.lub.lu.se/luur/download?func=downloadFile&recordOId=8977878&fileOId=8977883
+CdTeZnSeHgS: https://scholarworks.utep.edu/cgi/viewcontent.cgi?article=4380&context=open_etd
+InSb2: https://lup.lub.lu.se/luur/download?func=downloadFile&recordOId=9060962&fileOId=9062019
+gpu: https://escholarship.org/content/qt4p33q6zt/qt4p33q6zt_noSplash_0ae1f525544855eed91a2969e98ea177.pdf
+boundary: https://scholarworks.utep.edu/cgi/viewcontent.cgi?article=2965&context=open_etd
+MoS(rebo): https://scholarworks.uark.edu/cgi/viewcontent.cgi?article=1481&context=etd
+deepmd: https://hammer.purdue.edu/articles/thesis/Machine_Learning_and_Molecular_Dynamics_Simulations_of_Thermal_Transport/15062682/1/files/28980288.pdf
+PGMC: https://ntrs.nasa.gov/api/citations/20220003134/downloads/NASA-TM-2022003134_coorected.pdf
 #---------------------------------------------------------------------
 DeepMD: https://doi.org/10.1016/j.carbon.2024.119498
 bitumen (LJ): https://doi.org/10.1016/j.matdes.2024.112831
@@ -781,8 +790,11 @@ LJ: https://etda.libraries.psu.edu/files/final_submissions/2077
 LJ: https://digitalcommons.usu.edu/etd/4632 
 LJ: https://ntnuopen.ntnu.no/ntnu-xmlui/bitstream/handle/11250/2787937/no.ntnu:inspera:77798797:18446734.pdf?sequence=1
 LJ: https://core.ac.uk/download/pdf/29409791.pdf
+LJ: https://d1wqtxts1xzle7.cloudfront.net/78091875/MSC_20Dissertation_201436870-libre.pdf?1641367980=&response-content-disposition=inline%3B+filename%3DCharacterization_of_graphene_epoxy_nanoc.pdf&Expires=1730700873&Signature=CflYZNWf-voW3tRKyv37HdrdAZcZrITn8AVER4fybS5BpHnLzv6XfcPepdY4Sdwzs4KKRTfvzcXCgIvyWHbXpVxcXwm~wHBzqOBh2Py375~ZTz9Nnn8C~NYz2hQ3prIj7b3XFUASK~nVQ~lUC6~K1f2R3dBWI~Q7LDHir0Q6LJdgxNeO4-0QCbvwrGdtoib54WL8q6CsdLwsOCEvdO~UGXcfW5NWN8QZIcRPeXK~Y5uFmr0ZpiILUpGWSfmXQyZ2coRmybe9ESP~dAFi-7DhPrGrOCFiuRSqVv5iXPcgtZ6b0yC5JstM9Nvz-I8IDbIMY398GFY0xgMSr5-L2M3tpA__&Key-Pair-Id=APKAJLOHF5GGSLRBV4ZA
+LJ: https://oaktrust.library.tamu.edu/server/api/core/bitstreams/e111844d-ba35-4752-83f9-ca8d053d6f9a/content
 DPD: https://uhra.herts.ac.uk/bitstream/handle/2299/15336/08174625%20Loya,%20Adil%20-%20Final%20PhD%20Submission.pdf?sequence%253D1
 SI: https://qspace.library.queensu.ca/bitstreams/8de5d6c1-4296-41ac-99d7-bb8b99788164/download
+CG: https://ninercommons.charlotte.edu/islandora/object/etd:1542/datastream/PDF/download/citation.pdf
 gran: https://nova.newcastle.edu.au/vital/access/services/Download/uon:34391/ATTACHMENT01
 gran: https://eprints.nottingham.ac.uk/69201/1/William%20Reynolds%20Thesis%2016.1_corrections.pdf
 gran: https://ir.canterbury.ac.nz/server/api/core/bitstreams/2a64fb98-3143-4d02-9fcb-d02227e80ef3/content
@@ -808,6 +820,7 @@ CHO (ReaxFF): https://doi.org/10.1016/j.carbon.2022.02.018
 CHO (ReaxFF): https://scholarsjunction.msstate.edu/td/3189 
 Xe (ReaxFF): https://doi.org/10.1016/j.carbon.2018.11.063
 C (ReaxFF): https://ntnuopen.ntnu.no/ntnu-xmlui/handle/11250/2445481
+C (ReaxFF): https://www.researchgate.net/profile/Sorayot-Chinkanjanarot/publication/304091140_DENSITY_OF_AMORPHOUS_CARBON_BY_USING_DENSITY_FUNCTIONAL_THEORY/links/5a144341aca27240e309cd3e/DENSITY-OF-AMORPHOUS-CARBON-BY-USING-DENSITY-FUNCTIONAL-THEORY.pdf
 CHONP: https://udspace.udel.edu/server/api/core/bitstreams/045abab1-bac0-404b-8f85-b5830b7e32af/content
 Reactive Molecular dynamics: https://repository.lib.ncsu.edu/server/api/core/bitstreams/03b4c7f0-f5d1-4e95-a579-12ebfb3193f1/content
 oxDNA: https://link.springer.com/content/pdf/10.1140/epje/i2018-11669-8.pdf
@@ -829,6 +842,7 @@ QE: https://doi.org/10.1021/acs.jctc.2c00742
 python: https://doi.org/10.1063/1.5109116
 python: https://scholarsarchive.byu.edu/cgi/viewcontent.cgi?article=8348&context=etd
 python: https://doi.org/10.1016/j.cpc.2023.108961
+python(FeNb): https://arxiv.org/pdf/1907.12254
 COF (cif): https://doi.org/10.1016/j.jcis.2024.03.077
 tersoff: https://link.springer.com/article/10.1007/s11051-014-2351-0
 tersoff: https://ecommons.cornell.edu/bitstream/handle/1813/67407/Herbol_cornellgrad_0058F_11274.pdf?sequence=1
@@ -851,6 +865,7 @@ CH (MEAM): https://doi.org/10.1016/j.polymer.2019.02.060
 SrTiO3: https://purehost.bath.ac.uk/ws/portalfiles/portal/187927626/Thesis.pdf
 CFH (AIREBO): https://physik.uni-greifswald.de/storages/uni-greifswald/fakultaet/mnf/physik/ag_schneider/Arbeiten/mortenMSc.pdf
 kART: https://uvadoc.uva.es/bitstream/handle/10324/20512/TFM-G554.pdf?sequence=1&isAllowed=y
+TiNAl: https://bearworks.missouristate.edu/cgi/viewcontent.cgi?article=4169&context=theses
 #---------------------------------------------------------------------
 https://pubs.acs.org/doi/10.1021/ja404330q
 http://ethesis.nitrkl.ac.in/6144/1/212MM2338-5.pdf
