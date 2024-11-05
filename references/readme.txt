@@ -746,7 +746,6 @@ C: https://summit.sfu.ca/_flysystem/fedora/sfu_migrate/16590/etd9598_NMallikaAra
 C (tensile): https://open.library.ubc.ca/media/download/pdf/24/1.0072708/1
 C: https://repository.lboro.ac.uk/articles/thesis/Damage_of_nuclear_graphite_and_structural_response_of_carbon_fibre_to_tension/22345081/1/files/39760825.pdf
 C (Green-Kubo): https://escholarship.org/content/qt3km9505t/qt3km9505t_noSplash_48a5d5cd8b3244d58739b9080df60e16.pdf
-C (tensile): https://iopscience.iop.org/article/10.35848/1347-4065/ad66d7/pdf
 CNT: https://repository.rit.edu/cgi/viewcontent.cgi?article=12009&context=theses
 CNT: https://etd.ohiolink.edu/acprod/odb_etd/ws/send_file/send?accession=case1455101197&disposition=inline
 CNT: https://irbe.library.vanderbilt.edu/server/api/core/bitstreams/17a57a75-5185-402b-8bf5-556f442f8651/content
@@ -923,6 +922,7 @@ hybrid: https://huskiecommons.lib.niu.edu/cgi/viewcontent.cgi?article=7975&conte
 CuH (bop): https://link.springer.com/content/pdf/10.1007/s10853-015-8848-9.pdf
 CdTeSe (bop): https://pubs.acs.org/doi/pdf/10.1021/jp505915u
 CNT (xyz): https://doi.org/10.1016/j.carbon.2020.01.114
+gbook: https://books.google.co.jp/books?hl=en&lr=&id=Ky_3DwAAQBAJ&oi=fnd&pg=PP1&dq=lammps+%2B+appendix+%2B+airebo+%2B+parameters+%2B+Nitrogen&ots=r09CGb_Q6v&sig=ls1lk5-W8MQN-LuORAySLxJMXWA&redir_esc=y#v=onepage&q&f=false
 #---------------------------------------------------------------------
 https://pubs.acs.org/doi/10.1021/ja404330q
 http://ethesis.nitrkl.ac.in/6144/1/212MM2338-5.pdf
