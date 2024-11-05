@@ -742,6 +742,7 @@ C: https://summit.sfu.ca/_flysystem/fedora/sfu_migrate/16590/etd9598_NMallikaAra
 C (tensile): https://open.library.ubc.ca/media/download/pdf/24/1.0072708/1
 C: https://repository.lboro.ac.uk/articles/thesis/Damage_of_nuclear_graphite_and_structural_response_of_carbon_fibre_to_tension/22345081/1/files/39760825.pdf
 C (Green-Kubo): https://escholarship.org/content/qt3km9505t/qt3km9505t_noSplash_48a5d5cd8b3244d58739b9080df60e16.pdf
+C (tensile): https://iopscience.iop.org/article/10.35848/1347-4065/ad66d7/pdf
 CNT: https://repository.rit.edu/cgi/viewcontent.cgi?article=12009&context=theses
 CNT: https://etd.ohiolink.edu/acprod/odb_etd/ws/send_file/send?accession=case1455101197&disposition=inline
 CNT: https://irbe.library.vanderbilt.edu/server/api/core/bitstreams/17a57a75-5185-402b-8bf5-556f442f8651/content
@@ -875,22 +876,28 @@ tersoff: https://link.springer.com/article/10.1007/s11051-014-2351-0
 tersoff: https://ecommons.cornell.edu/bitstream/handle/1813/67407/Herbol_cornellgrad_0058F_11274.pdf?sequence=1
 tersoff: https://arxiv.org/pdf/2106.07090
 comb (Fe-F): https://pubs.rsc.org/en/content/articlepdf/2019/cp/c9cp01927h
-meam (CH): https://doi.org/10.1016/j.polymer.2019.02.060
+CH (meam): https://doi.org/10.1016/j.polymer.2019.02.060
+AuSi (meam): http://laurent.pizzagalli.free.fr/Pub/God16EML.pdf
 xyz: https://doi.org/10.1016/j.fuel.2024.132064
 poscar: https://www.researchgate.net/profile/Fadi-Aldakheel/publication/356260165_Exploring_the_mechanical_properties_of_two-dimensional_carbon-nitride_polymer_nanocomposites_by_molecular_dynamics_simulations/links/6193b52f3068c54fa5f0e53c/Exploring-the-mechanical-properties-of-two-dimensional-carbon-nitride-polymer-nanocomposites-by-molecular-dynamics-simulations.pdf
 matlab: https://doi.org/10.1016/j.jcp.2018.01.015
 matlab: https://www.politesi.polimi.it/bitstream/10589/2021/1/2010_07_Nova.pdf
 matlab: https://aaltodoc.aalto.fi/server/api/core/bitstreams/505042a1-a900-4d42-98e1-6dfb6ad22309/content
+matlab: https://doi.org/10.1016/j.carbon.2013.08.027
 morse: https://doi.org/10.1063/5.0087382
 morse (Th-O): https://arxiv.org/pdf/2204.13685
 morse: https://ir.vanderbilt.edu/bitstream/handle/1803/14842/cp_dissertation.pdf?sequence=1&isAllowed=y
+morse: https://link.springer.com/content/pdf/10.1007/s00339-022-06379-y.pdf
 USPEX: https://www2.it.uu.se/edu/course/homepage/projektTDB/ht20/report03/Report_03_final.pdf
 CG: https://webthesis.biblio.polito.it/secure/13857/1/tesi.pdf
 Alpha-Quartz (tersoff): file:///C:/Users/manab/Downloads/Herbol_cornellgrad_0058F_11274.pdf
 PdC, NiC (tersoff): https://ddd.uab.cat/pub/tesis/2018/hdl_10803_664041/fjm1de1.pdf
+TB: https://journals.aps.org/prb/abstract/10.1103/PhysRevB.48.22
 SiC (tersoff): https://www.theseus.fi/bitstream/handle/10024/149985/Carey_Brent.pdf?sequence=1
 SiO2 (tersoff): https://academiccommons.columbia.edu/doi/10.7916/5qte-hh77/download
 SiFCl (tersoff): https://pubs.aip.org/aip/jcp/article-pdf/120/5/2405/10858635/2405_1_online.pdf
+C (tersoff or REBO): http://www.heatenergist.org/upload/publication/20161126191044.pdf
+C (tersoff): https://www.mdpi.com/1996-1944/16/20/6714/pdf
 CH (MEAM): https://doi.org/10.1016/j.polymer.2019.02.060
 SrTiO3: https://purehost.bath.ac.uk/ws/portalfiles/portal/187927626/Thesis.pdf
 CFH (AIREBO): https://physik.uni-greifswald.de/storages/uni-greifswald/fakultaet/mnf/physik/ag_schneider/Arbeiten/mortenMSc.pdf
@@ -903,6 +910,7 @@ SC17: https://github.com/ZachMarcus/SC17 , https://doi.org/10.1016/j.parco.2018.
 promd.mdp: https://doi.org/10.1016/j.ymeth.2021.03.005
 hybrid: https://huskiecommons.lib.niu.edu/cgi/viewcontent.cgi?article=7975&context=allgraduate-thesesdissertations
 CuH (bop): https://link.springer.com/content/pdf/10.1007/s10853-015-8848-9.pdf
+CdTeSe (bop): https://pubs.acs.org/doi/pdf/10.1021/jp505915u
 #---------------------------------------------------------------------
 https://pubs.acs.org/doi/10.1021/ja404330q
 http://ethesis.nitrkl.ac.in/6144/1/212MM2338-5.pdf
