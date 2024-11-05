@@ -887,9 +887,10 @@ morse: https://ir.vanderbilt.edu/bitstream/handle/1803/14842/cp_dissertation.pdf
 USPEX: https://www2.it.uu.se/edu/course/homepage/projektTDB/ht20/report03/Report_03_final.pdf
 CG: https://webthesis.biblio.polito.it/secure/13857/1/tesi.pdf
 Alpha-Quartz (tersoff): file:///C:/Users/manab/Downloads/Herbol_cornellgrad_0058F_11274.pdf
-PdC, NiC (tersoff): https://www5-m.hp-ez.com/maintenance?_pid=275015&page=394
+PdC, NiC (tersoff): https://ddd.uab.cat/pub/tesis/2018/hdl_10803_664041/fjm1de1.pdf
 SiC (tersoff): https://www.theseus.fi/bitstream/handle/10024/149985/Carey_Brent.pdf?sequence=1
 SiO2 (tersoff): https://academiccommons.columbia.edu/doi/10.7916/5qte-hh77/download
+SiFCl (tersoff): https://pubs.aip.org/aip/jcp/article-pdf/120/5/2405/10858635/2405_1_online.pdf
 CH (MEAM): https://doi.org/10.1016/j.polymer.2019.02.060
 SrTiO3: https://purehost.bath.ac.uk/ws/portalfiles/portal/187927626/Thesis.pdf
 CFH (AIREBO): https://physik.uni-greifswald.de/storages/uni-greifswald/fakultaet/mnf/physik/ag_schneider/Arbeiten/mortenMSc.pdf
@@ -901,6 +902,7 @@ ZnS (back): https://mds.marshall.edu/cgi/viewcontent.cgi?article=2417&context=et
 SC17: https://github.com/ZachMarcus/SC17 , https://doi.org/10.1016/j.parco.2018.07.005
 promd.mdp: https://doi.org/10.1016/j.ymeth.2021.03.005
 hybrid: https://huskiecommons.lib.niu.edu/cgi/viewcontent.cgi?article=7975&context=allgraduate-thesesdissertations
+CuH (bop): https://link.springer.com/content/pdf/10.1007/s10853-015-8848-9.pdf
 #---------------------------------------------------------------------
 https://pubs.acs.org/doi/10.1021/ja404330q
 http://ethesis.nitrkl.ac.in/6144/1/212MM2338-5.pdf
