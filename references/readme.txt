@@ -504,7 +504,7 @@ input file (metal unit, lammps)
 
 - S. Abdullah, Doctor thesis (2021).
   https://scholarworks.utep.edu/open_etd/3381 
-  CdTeZnSeHgS
+  CdTeZnSeHgS (python script)
 
 - O. Takahiro, Chiba Univ.
   https://amorphous.tf.chiba-u.jp/lecture.files/ms-workshop/molten.html
