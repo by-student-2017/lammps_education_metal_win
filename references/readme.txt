@@ -803,6 +803,9 @@ LJ: https://pure.tue.nl/ws/portalfiles/portal/172431062/MCE_afstudeerverslag_Roo
 LJ: https://escholarship.org/content/qt2qw846j7/qt2qw846j7.pdf
 LJ: https://www.proquest.com/openview/fb2a1d2a7d330ada4fb2a9657b96f8f2/1.pdf?pq-origsite=gscholar&cbl=18750&diss=y
 LJ: https://air.unimi.it/bitstream/2434/820780/2/phd_unimi_R11853.pdf
+LJ: https://air.unimi.it/bitstream/2434/820780/2/phd_unimi_R11853.pdf
+LJ: https://citeseerx.ist.psu.edu/document?repid=rep1&type=pdf&doi=d309054b1aa8adf177f8e2fcc507fa852b68a228
+morse: https://dspace.mit.edu/bitstream/handle/1721.1/109645/986790855-MIT.pdf?sequence=1&isAllowed=y
 CVFF: https://ecommons.cornell.edu/server/api/core/bitstreams/2c794d17-a73e-482b-9878-f4175e1fb9b2/content
 DPD: https://uhra.herts.ac.uk/bitstream/handle/2299/15336/08174625%20Loya,%20Adil%20-%20Final%20PhD%20Submission.pdf?sequence%253D1
 DPD: https://www.osti.gov/servlets/purl/1733244
@@ -834,8 +837,9 @@ GLUCOSEPANE (ReaxFF): https://www.politesi.polimi.it/bitstream/10589/88581/1/201
 CHON (ReaxFF): https://doi.org/10.1016/j.carbon.2021.07.080
 CHNO (ReaxFF): https://etda.libraries.psu.edu/files/final_submissions/16242
 CHO (ReaxFF): https://doi.org/10.1016/j.carbon.2022.02.018
-CHO (ReaxFF): https://scholarsjunction.msstate.edu/td/3189 
+CHO (ReaxFF)(tensile): https://scholarsjunction.msstate.edu/td/3189 
 CHOS (ReaxFF): https://macau.uni-kiel.de/servlets/MCRFileNodeServlet/dissertation_derivate_00007173/Diss_Mueller.pdf
+graphyne (ReaxFF): https://ninercommons.charlotte.edu/islandora/object/etd:1542/datastream/PDF/download/citation.pdf
 Xe (ReaxFF): https://doi.org/10.1016/j.carbon.2018.11.063
 C (ReaxFF): https://ntnuopen.ntnu.no/ntnu-xmlui/handle/11250/2445481
 C (ReaxFF): https://www.researchgate.net/profile/Sorayot-Chinkanjanarot/publication/304091140_DENSITY_OF_AMORPHOUS_CARBON_BY_USING_DENSITY_FUNCTIONAL_THEORY/links/5a144341aca27240e309cd3e/DENSITY-OF-AMORPHOUS-CARBON-BY-USING-DENSITY-FUNCTIONAL-THEORY.pdf
@@ -843,6 +847,7 @@ CHONP (ReaxFF): https://udspace.udel.edu/server/api/core/bitstreams/045abab1-bac
 CHONSSi (ReaxFF): https://doi.org/10.1016/j.matdes.2023.112155
 BCH (PKA) (ReaxFF): https://bearworks.missouristate.edu/cgi/viewcontent.cgi?article=4709&context=theses
 BCH (PKA) (ReaxFF): https://bearworks.missouristate.edu/theses/3416 
+(ReaxFF, tensile): https://digitalcommons.mtu.edu/etdr/
 Reactive Molecular dynamics: https://repository.lib.ncsu.edu/server/api/core/bitstreams/03b4c7f0-f5d1-4e95-a579-12ebfb3193f1/content
 oxDNA: https://link.springer.com/content/pdf/10.1140/epje/i2018-11669-8.pdf
 ASE: https://digitalcommons.latech.edu/cgi/viewcontent.cgi?article=1000&context=theses
@@ -878,6 +883,7 @@ matlab: https://www.politesi.polimi.it/bitstream/10589/2021/1/2010_07_Nova.pdf
 matlab: https://aaltodoc.aalto.fi/server/api/core/bitstreams/505042a1-a900-4d42-98e1-6dfb6ad22309/content
 morse: https://doi.org/10.1063/5.0087382
 morse (Th-O): https://arxiv.org/pdf/2204.13685
+morse: https://ir.vanderbilt.edu/bitstream/handle/1803/14842/cp_dissertation.pdf?sequence=1&isAllowed=y
 USPEX: https://www2.it.uu.se/edu/course/homepage/projektTDB/ht20/report03/Report_03_final.pdf
 CG: https://webthesis.biblio.polito.it/secure/13857/1/tesi.pdf
 Alpha-Quartz (tersoff): file:///C:/Users/manab/Downloads/Herbol_cornellgrad_0058F_11274.pdf
