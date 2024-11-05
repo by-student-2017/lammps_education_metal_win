@@ -1,0 +1,89 @@
+#-----------------------------------------------------------------------------------------
+# Appendix A- Input file for Energy minimization, stress and energy calculation using LAMMPS code 
+#-----------------------------------------------------------------------------------------
+# LAMMPS 64-bit 22Dec2022-MSMPI
+#-----------------------------------------------------------------------------------------
+clear
+echo both
+
+variable    temp equal  1400 # Temperature [K]
+
+variable noutput equal   200 # Number of output (integer)
+variable    totn equal 20000 # Number of cycles (integer)
+
+variable  pot string "CdTeZnSeHgS0.sw"
+variable elem string "Cd Te"
+
+variable npx equal 1
+variable npz equal 1
+#processors      ${npx} 1 ${npz} 
+
+#variable  alatWZ equal  6.48 # Angstrom
+#-----------------------------------------------------------------------------------------
+units           metal 
+boundary        p fm p 
+
+atom_style      atomic 
+#lattice         diamond ${alatWZ}
+read_data       poly.lmp
+
+pair_style      sw 
+pair_coeff      * * ${pot} ${elem}
+
+#delete_atoms    overlap 1.5 all all
+
+neighbor        0.3 bin 
+neigh_modify    delay 0 
+
+timestep        0.004 # 4 [fs]
+
+region          fix      block INF INF -0.5  12 INF INF units box 
+region          isotherm block INF INF 11.5 218 INF INF units box 
+
+group           fix      region fix 
+group           isotherm region isotherm 
+group           free subtract all fix isotherm 
+group           mobile union isotherm free 
+group           total  union fix isotherm 
+
+velocity        isotherm create ${temp} 123 dist gaussian 
+velocity        fix set 0.0 0.0 0.0 
+
+fix             fix fix setforce 0.0 0.0 0.0 
+compute         total all stress/atom NULL
+compute         p1 all reduce sum c_total[1] 
+compute         p2 all reduce sum c_total[2] 
+compute         p3 all reduce sum c_total[3] 
+compute         pot all pe/atom 
+compute         kin all ke/atom  
+
+# Store final cell length for strain calculations 
+variable tmp equal "lx" 
+variable L0 equal ${tmp} # 40.64912642 
+print  "Initial Length, L0: ${L0}" 
+
+#fix   1 all ave/atom 1 ${totn} ${totn} c_total[*] 
+fix    1 all ave/atom 1 ${totn} ${totn} c_total[1] c_total[2] c_total[3] c_total[4] c_total[5] c_total[6] 
+
+thermo_style    custom step temp pe ke 
+thermo          ${noutput}
+
+#dump            dump all atom ${noutput} r.*.txt
+dump             dump all custom ${noutput} dump/r.*.txt id type x y z c_total[1] c_total[2] c_total[3] c_total[4] c_total[5] c_total[6] c_pot c_kin
+#dump_modify     dump format "%d %d %g %g %g %g %g %g" scale no flush yes 
+dump            d1 all cfg ${noutput} cfg/run.*.cfg mass type xs ys zs id type vx vy vz fx fy fz c_pot c_kin
+dump_modify     d1 element ${elem}
+
+fix             ywalls all wall/reflect ylo EDGE yhi EDGE
+
+fix             free free nve 
+fix             isotherm isotherm nvt temp ${temp} ${temp} 0.1 drag 0.0 
+run             ${totn}
+unfix           isotherm 
+
+fix             isotherm isotherm nvt temp ${temp} 50.0 0.1 drag 0.0 
+run             ${totn}
+
+minimize        1.0e-8 1.0e-10 1000000 10000000 
+min_style       quickmin
+#-----------------------------------------------------------------------------------------
