@@ -20,13 +20,15 @@ lattice diamond 5.43 #for silicon (diamond)
 region block block 0 20 0 20 0 20
 create_box 2 block
 create_atoms 1 region block
-set region block type/ratio 2 0.25 12345 #0.n%Carbon
+set region block type/ratio 2 0.25 12345 # 0.25% Carbon
 
 #.......................................POTENTIAL..................................
 mass 1 28.0855 # Si
 mass 2 12.011  # C
+
 pair_style tersoff
 pair_coeff * * 1989_SiC.tersoff Si C
+
 neighbor 2.0 bin
 neigh_modify delay 10 check yes
 
@@ -45,13 +47,16 @@ fix 1 all npt temp 300 300 1 iso 0 0 1 drag 1
 #Set thermo output
 thermo 10
 thermo_style custom step lx ly lz press pxx pyy pzz pe temp
+
 dump 1 all custom 100 dump/equilibration_aSi.lammpstrj id type x y z ix iy iz c_peratom c_csym
 dump d1 all cfg 1000 cfg/equilibration_aSi.*.cfg mass type xs ys zs id type vx vy vz fx fy fz c_peratom c_csym
 dump_modify d1 element Si C
+
 write_data data.relaxation_aSi
 
-#Run for at least 10 picoseconds (assuming 1 ps timestep) - 10000
+#Run for at least 10 picoseconds (assuming 1 fs timestep): 10000
 run 2000
+
 unfix 1
 undump 1
 undump d1
@@ -78,14 +83,19 @@ variable p2 equal "-pxx/10000"
 variable p3 equal "-pyy/10000"
 variable p4 equal "-pzz/10000"
 fix def1 all print 100 "${p1} ${p2} ${p3} ${p4}" file aSi.deformation.txt screen no
+
 thermo 10
 thermo_style custom step v_strain temp v_p2 v_p3 v_p4 ke pe press
+
 dump  1 all custom 100 dump/deformation_aSi.lammpstrj id type x y z ix iy iz c_peratom c_csym
 dump d1 all cfg 1000 cfg/rdeformation_aSi.*.cfg mass type xs ys zs id type vx vy vz fx fy fz c_peratom c_csym
 dump_modify d1 element Si C
-write_data data.deformation_SiC
 #dump 2 all custom 100 data.atoms_deformation_SiC id type x y z ix iy iz
+
+write_data data.deformation_SiC
+
 run 10000
+
 write_data data_deformation.lammps
 
 #Simulation Done
