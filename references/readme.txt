@@ -848,6 +848,7 @@ CHONP (ReaxFF): https://udspace.udel.edu/server/api/core/bitstreams/045abab1-bac
 CHONSSi (ReaxFF): https://doi.org/10.1016/j.matdes.2023.112155
 BCH (PKA) (ReaxFF): https://bearworks.missouristate.edu/cgi/viewcontent.cgi?article=4709&context=theses
 BCH (PKA) (ReaxFF): https://bearworks.missouristate.edu/theses/3416 
+CHOMnLiFPNiAl (ReaxFF): https://deepblue.lib.umich.edu/bitstream/handle/2027.42/133380/sahitya_1.pdf
 (ReaxFF, tensile): https://digitalcommons.mtu.edu/etdr/
 Reactive Molecular dynamics: https://repository.lib.ncsu.edu/server/api/core/bitstreams/03b4c7f0-f5d1-4e95-a579-12ebfb3193f1/content
 oxDNA: https://link.springer.com/content/pdf/10.1140/epje/i2018-11669-8.pdf
