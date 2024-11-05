@@ -839,6 +839,7 @@ CHON (ReaxFF): https://doi.org/10.1016/j.carbon.2021.07.080
 CHNO (ReaxFF): https://etda.libraries.psu.edu/files/final_submissions/16242
 CHO (ReaxFF): https://doi.org/10.1016/j.carbon.2022.02.018
 CHO (ReaxFF)(tensile): https://scholarsjunction.msstate.edu/td/3189 
+CHO (ReaxFF): https://doi.org/10.1016/j.carbon.2017.06.009
 CHOS (ReaxFF): https://macau.uni-kiel.de/servlets/MCRFileNodeServlet/dissertation_derivate_00007173/Diss_Mueller.pdf
 graphyne (ReaxFF): https://ninercommons.charlotte.edu/islandora/object/etd:1542/datastream/PDF/download/citation.pdf
 Xe (ReaxFF): https://doi.org/10.1016/j.carbon.2018.11.063
@@ -848,8 +849,10 @@ CHONP (ReaxFF): https://udspace.udel.edu/server/api/core/bitstreams/045abab1-bac
 CHONSSi (ReaxFF): https://doi.org/10.1016/j.matdes.2023.112155
 BCH (PKA) (ReaxFF): https://bearworks.missouristate.edu/cgi/viewcontent.cgi?article=4709&context=theses
 BCH (PKA) (ReaxFF): https://bearworks.missouristate.edu/theses/3416 
+CHOFe (ReaxFF): https://pure.manchester.ac.uk/ws/portalfiles/portal/66046237/FULL_TEXT.PDF
 CHOMnLiFPNiAl (ReaxFF): https://deepblue.lib.umich.edu/bitstream/handle/2027.42/133380/sahitya_1.pdf
 (ReaxFF, tensile): https://digitalcommons.mtu.edu/etdr/
+CHONSSiGe (ReaxFF): https://doi.org/10.1016/j.jmapro.2023.10.056
 Reactive Molecular dynamics: https://repository.lib.ncsu.edu/server/api/core/bitstreams/03b4c7f0-f5d1-4e95-a579-12ebfb3193f1/content
 oxDNA: https://link.springer.com/content/pdf/10.1140/epje/i2018-11669-8.pdf
 ASE: https://digitalcommons.latech.edu/cgi/viewcontent.cgi?article=1000&context=theses
@@ -877,6 +880,8 @@ tersoff: https://link.springer.com/article/10.1007/s11051-014-2351-0
 tersoff: https://ecommons.cornell.edu/bitstream/handle/1813/67407/Herbol_cornellgrad_0058F_11274.pdf?sequence=1
 tersoff: https://arxiv.org/pdf/2106.07090
 comb (Fe-F): https://pubs.rsc.org/en/content/articlepdf/2019/cp/c9cp01927h
+comb3 (ZnCuO): https://doi.org/10.1016/j.susc.2013.10.025
+comb3 (CHON): https://pdf.sciencedirectassets.com/271513/1-s2.0-S0927025617X00128/1-s2.0-S0927025617303804/am.pdf?X-Amz-Security-Token=IQoJb3JpZ2luX2VjEIn%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FwEaCXVzLWVhc3QtMSJGMEQCIDbmfEf%2BqkwXFENkIaEz8zgLebwSCjOrtxAJbtKNpHwbAiAawlY%2BCO5i6Zrqg2l6Hux%2FYK%2FkXHRG94mAcpdq7f8epiqyBQgSEAUaDDA1OTAwMzU0Njg2NSIMeKOkCSDbWDjJblM7Ko8Frxe0EWf3xi4nZQ11w1qlRTIodFUTtmUTg4iNu0bYbXDDanu5eS%2B0joNs5fjSnaGupuAXqrgJg4zy2Etn8o%2BSL4%2B1PCxWFHHGI43N4rQtSG0yvBoWg0n39O4hXgfFwCjRNchYVGNq7xtwJyZSMf15VvmWMZ4%2FJCd6cyzeeOk8vNzNvVMNWMWAkuaz9Px4piFd8Arzg%2Bq9%2B9LrcE9RRsh3X9oMHx2j3dJ75aYOGLg20PQlLkp3tbwr%2F0TQ27a5tCEIAmIReQkcCcsXk%2BJU4336qRC%2Ft5MkNpRIHIVI1w%2FeAi0qTlF66j%2BXpwlIPRyLp%2B9QyG7EtaerFfz3pqMhHkyPsBCLNbt9bDS7%2BI7n8bGw8Qf69%2BNT3SL8eNaYtEQRmT%2BFzOy5qqzemC3Exp8ElCCx8p53EL8UxFrDdLyTMMRewdzALcEAske%2FZ5vMl3f7IJTgHGU413ThNbRIahvfTI%2BpKNVwNsN8HnkHku%2FCvxCvXP36hfahzCdnvI3p9CdWIrgRXc%2BMIHFx9c%2B8gR0nSPcNgdXfF17ZjAxU2cqj8aE2bXby04MSRd8ryzKmyhdTf99Ef1VmAk12892P47Ttr6GPaZ5yt6fL8E88yOB8o0whjXr7R1dRKbIOy1p1W89TwJGl95XdtmRnqMg8EkgZmglPrUC13EJM70a8hUeHBQTWKuyp5WwNDDUJn61mWueqPuvYV4feEm5zfJm1Z8wHidIrS3qzcfe1fy3nk6sYtZQnlh5W2%2FxbrE9bC7bvTO7MD11eqYmjizSJmQRtMfBuP5UWpFfPXwrMdd%2BcON4kSeqT4UVIZkMB6DqlGALxuq8f1JvjZiS8rw6aJMz%2Bcluz8M3c1WXXb0ochyODYWFYAzUPljC1vae5BjqyAaYMP2YrGVvq82fyAyo651OivWQs1LEJDi0bKGhlaVGWsffp191EHJ4LOoGOjF6Y0WC8Tw3lkypVn79blGTUky2b566i7Sxrphcgc7oZ8lPufxBVoZPOOlbrxUpnhnMQemIfW%2BrFHOxMm7vsdiTGW5BJoPjbeWipcu5RlQ7FHQtk%2BGDM%2BBD%2FH8x%2BwcBOug%2BYPUF0j6i57ZrpPEQNTmAxSrMJNKuybwgku%2BOuYUvdYbW6n28%3D&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Date=20241105T095107Z&X-Amz-SignedHeaders=host&X-Amz-Expires=300&X-Amz-Credential=ASIAQ3PHCVTYTWJJX32L%2F20241105%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Signature=2c095a591e7c398fddcfd29c664cee49c9f0367709e162e17e7a417a5b2920de&hash=b945af8136af073e8743e633424f4447147152d46057a5d2f42c6e33d7816938&host=68042c943591013ac2b2430a89b270f6af2c76d8dfd086a07176afe7c76c2c61&pii=S0927025617303804&tid=pdf-9efdee74-ab3e-4307-b63b-c81159b80b06&sid=38e55f7c1584a0452198f57120dda1d5f941gxrqa&type=client
 CH (meam): https://doi.org/10.1016/j.polymer.2019.02.060
 AuSi (meam): http://laurent.pizzagalli.free.fr/Pub/God16EML.pdf
 xyz: https://doi.org/10.1016/j.fuel.2024.132064
@@ -899,6 +904,7 @@ SiO2 (tersoff): https://academiccommons.columbia.edu/doi/10.7916/5qte-hh77/downl
 SiFCl (tersoff): https://pubs.aip.org/aip/jcp/article-pdf/120/5/2405/10858635/2405_1_online.pdf
 C (tersoff or REBO): http://www.heatenergist.org/upload/publication/20161126191044.pdf
 C (tersoff): https://www.mdpi.com/1996-1944/16/20/6714/pdf
+BN (tersoff): https://iopscience.iop.org/article/10.1088/0022-3727/48/37/375502/pdf
 CH (MEAM): https://doi.org/10.1016/j.polymer.2019.02.060
 SrTiO3: https://purehost.bath.ac.uk/ws/portalfiles/portal/187927626/Thesis.pdf
 CFH (AIREBO): https://physik.uni-greifswald.de/storages/uni-greifswald/fakultaet/mnf/physik/ag_schneider/Arbeiten/mortenMSc.pdf
@@ -912,6 +918,7 @@ promd.mdp: https://doi.org/10.1016/j.ymeth.2021.03.005
 hybrid: https://huskiecommons.lib.niu.edu/cgi/viewcontent.cgi?article=7975&context=allgraduate-thesesdissertations
 CuH (bop): https://link.springer.com/content/pdf/10.1007/s10853-015-8848-9.pdf
 CdTeSe (bop): https://pubs.acs.org/doi/pdf/10.1021/jp505915u
+CNT (xyz): https://doi.org/10.1016/j.carbon.2020.01.114
 #---------------------------------------------------------------------
 https://pubs.acs.org/doi/10.1021/ja404330q
 http://ethesis.nitrkl.ac.in/6144/1/212MM2338-5.pdf
