@@ -86,6 +86,10 @@ input file (metal unit, lammps)
   http://hdl.handle.net/10919/28252
   Carbon_Nanotube_Growth (need complete structure data file)
 
+- C. E. Petilla et al., Jpn. J. Appl. Phys. 63 (2024) 08SP09.
+  doi: 10.35848/1347-4065/ad66d7
+  uniaxial_tensile_test_SiC
+
 - A. Maulana et al., AIP Conf. Proc. 2314, 020008 (2020).
   https://doi.org/10.1063/5.0034046
   uniaxial_tensile_test_Fe-Ni
