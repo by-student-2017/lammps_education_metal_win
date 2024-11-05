@@ -732,7 +732,6 @@ Ni: http://scholarcommons.scu.edu/mech_mstr/9
 Ni: https://qmro.qmul.ac.uk/xmlui/bitstream/handle/123456789/427/SONGExperimental2010.pdf?sequence=1
 NiCu: https://scholars.unh.edu/dissertation/2468 
 NiCr: https://www.researchgate.net/profile/Collins-Nana-Andoh/publication/325126856_Binary_Collision_and_Molecular_Dynamics_Simulation_of_Fe-Ni-Cr_Alloys_at_Supercritical_Water_Condition/links/5f6d445c458515b7cf4c4d16/Binary-Collision-and-Molecular-Dynamics-Simulation-of-Fe-Ni-Cr-Alloys-at-Supercritical-Water-Condition.pdf
-PdCu: https://ujcontent.uj.ac.za/view/pdfCoverPage?instCode=27UOJ_INST&filePid=136016360007691&download=true
 Ti: https://www.osti.gov/servlets/purl/1872068
 Zr: https://qspace.library.queensu.ca/server/api/core/bitstreams/b42b5726-f1a0-47b4-bd83-3b45996aa99c/content
 Au: https://webthesis.biblio.polito.it/secure/15380/1/tesi.pdf
