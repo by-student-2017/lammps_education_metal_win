@@ -502,6 +502,10 @@ input file (metal unit, lammps)
   https://pubs.aip.org/aip/adv/article/7/12/125022/992205
   Al_Vashishta-56
 
+- S. Abdullah, Doctor thesis (2021).
+  https://scholarworks.utep.edu/open_etd/3381 
+  CdTeZnSeHgS
+
 - O. Takahiro, Chiba Univ.
   https://amorphous.tf.chiba-u.jp/lecture.files/ms-workshop/molten.html
   Lecture
