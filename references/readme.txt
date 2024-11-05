@@ -717,7 +717,6 @@ DMD: https://etd.ohiolink.edu/acprod/odb_etd/ws/send_file/send?accession=osu1321
 NPFe: https://www.bing.com/ck/a?!&&p=6c02823dab68865532924157e695dffdb69fa9084f837ee6675341d5a0dacfb8JmltdHM9MTcyOTk4NzIwMA&ptn=3&ver=2&hsh=4&fclid=33a141eb-211f-6041-026b-55fd206561c3&psq=Masters_Thesis__Marit_Olaisen_v2.pdf&u=a1aHR0cHM6Ly9udG51b3Blbi5udG51Lm5vL250bnUteG1sdWkvYml0c3RyZWFtL2hhbmRsZS8xMTI1MC8yMzUwMjk0L01hc3RlcnNfVGhlc2lzX19NYXJpdF9PbGFpc2VuX3YyLnBkZj9zZXF1ZW5jZT05&ntb=1
 NPTa: https://trepo.tuni.fi/bitstream/handle/10024/145080/VoimanenEerik.pdf?sequence=2
 Ta:  https://escholarship.org/uc/item/79j2w03v
-CdTeZnSeHgS (SW): https://scholarworks.utep.edu/open_etd/3381 
 HEA: https://scholarworks.utrgv.edu/etd/859
 FeCo: https://dr.ntu.edu.sg/bitstream/10356/175396/2/MarioHernandez_Thesis_PhD_Final.pdf
 FeCH: https://scholarsjunction.msstate.edu/td/5702 
@@ -764,7 +763,6 @@ APM(zip file): https://doi.org/10.1021/acs.jpcb.1c01966
 zip: https://doi.org/10.1016/j.cpc.2023.109062
 FMT: https://ntnuopen.ntnu.no/ntnu-xmlui/bitstream/handle/11250/2350291/13447_FULLTEXT.pdf?sequence=1
 SiC (meam): https://lup.lub.lu.se/luur/download?func=downloadFile&recordOId=8977878&fileOId=8977883
-CdTeZnSeHgS: https://scholarworks.utep.edu/cgi/viewcontent.cgi?article=4380&context=open_etd
 InSb2: https://lup.lub.lu.se/luur/download?func=downloadFile&recordOId=9060962&fileOId=9062019
 gpu: https://escholarship.org/content/qt4p33q6zt/qt4p33q6zt_noSplash_0ae1f525544855eed91a2969e98ea177.pdf
 boundary: https://scholarworks.utep.edu/cgi/viewcontent.cgi?article=2965&context=open_etd
