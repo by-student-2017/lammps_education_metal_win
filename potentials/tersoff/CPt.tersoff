@@ -3,6 +3,15 @@
 
 # Tersoff parameter for C-Pt
 
+### When calculating graphene/Pt(111), we found that the graphene easily separated and did not return to 
+### its original position, so we introduced the dispersion force D2 (momb).
+### In lammps, it looks like this:
+# pair_style hybrid/overlay tersoff momb 12.0 1.0 20.0
+# pair_coeff * * tersoff CPt.tersoff Pt C
+# pair_coeff 1 1 momb 0.0 1.0 1.0 842.0014  1.7721  # Pt-Pt
+# pair_coeff 1 2 momb 0.0 1.0 1.0 123.57947 1.61205 # Pt-C
+# pair_coeff 2 2 momb 0.0 1.0 1.0  18.1376  1.452   # C-C
+
 # Values are in LAMMPS "metal" units.
 # eV: A, B
 # Angstrom: R, D
@@ -51,3 +60,15 @@ Pt  Pt  C   1  1.0000000  0.00000  0.000000     1.000000  0.00000     1.0000    
 # If simulations of amorphous structures are intended, a modified
 # cutoff range should be used Ref.[68].
 # [68] H. Ja Eger and K. Albe, J. Appl. Phys. 88, 1129 (2000).
+
+# Dispersion corrections (Grimme D2)
+# s6 = 1.0 (or 1.05), d = 20
+# C6(i,j) = sqrt(C6(i,i)*C6(j,j)), Rr(i,j) = (Rr(i,i)+Rr(j,j))/2
+#  C: C6 =  18.1376 [eV/A^6], Rr = 1.452  [A]
+# Ru: C6 = 255.6890 [eV/A^6], Rr = 1.639  [A]
+# Ir: C6 = 842.0014 [eV/A^6], Rr = 1.7721 [A]
+# Pt: C6 = 842.0014 [eV/A^6], Rr = 1.7721 [A]
+#
+# pair_style momb cutoff s6 d
+# pair_coeff 1 2 D0 alpha r0 C6 Rr
+# Rr is distance units, typically sum of atomic vdW radii
