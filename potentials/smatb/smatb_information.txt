@@ -1,0 +1,467 @@
+#-------------------------------------------------------------------------------
+# smatb (Second Moment Approximation to the Tight Binding) potential (TB-SMA) (Gupta)
+# This smatb potential is similar to the Finnis-Sinclair (FS) scheme.
+#-------------------------------------------------------------------------------
+# Precautions when using smatb !!!
+# The initial structure is very important. If the lattice constant is too large, 
+# for example in HCP Ti, it will easily change to a different structure.
+#-------------------------------------------------------------------------------
+# Relationship between TB-SMA and Tersoff.
+# https://journals.aps.org/prb/abstract/10.1103/PhysRevB.92.165425
+#
+# TB-SMA to Tersoff Conversion
+# S = p/q
+# beta = (1/r0) * sqrt(p*q/2)
+# D0 = 2*xi*(1-q/p)*[(A*p)/(xi*q)]^[q/(q-p)]
+# ro = {1+ln[(A*p)/(xi*q)]*[1/(p-q)]}*r0
+# gamma = 1, c = 0, d = 1, 2mu = 2*q/r0, cos(theta0) = -1.0, m = 1
+# The ro is not equal to r0. The ro is for Tersoff (Albe). The r0 is for TB-SMA.
+#
+# Note: r0(i,j) = r0(i,k) in "A B B"(= "A-B" pair) and "B A A"(= "B-A" pair) case. Therefore, 
+# any potential that is all A or B, and all but "A B B" and "B A A" are set to zero,
+# can be fitted to the Tersoff formula in lampps. And beta(i,j) = beta(j,i), too.
+#
+# m=n=beta(lammps)=1 
+# R,D,gamma,c,d ->same 
+# lambda1=beta*sqrt(2*S) = p/r0
+# lambda2=beta*sqrt(2/S) = q/r0
+# lambda3=alpha = 2mu = 2*q/r0
+# cos(theta0)=-h 
+# A=D0/(S-1)*exp(lambda1*r0) = A(TB-SMA)*exp(lambda1*r0) -> A(TB-SMA) = D0/(S-1)
+# B=S*D0/(S-1)*exp(lambda2*r0) = xi*exp(lambda2*r0) -> xi = S*D0/(S-1)
+#
+# mixing rules (Tersoff)
+# lambda(i,j) = (lambda(i) + lambda(j))/2
+# A(i,j) = (A(i) * A(j))^(1/2), B(i,j) = chi*(B(i) * B(j))^(1/2)
+# Q(i,j) = (R(i) * R(j))^(1/2), S(i,j) = (S(i) * S(j))^(1/2)
+# R = (S + Q)/2, D = (S - Q)/2
+# 
+# mixing rules (Tersoff -> TB-SMA)
+# A(i,j) = (A(i) * A(j))^(1/2)  (All parameters are for TB-SMA)
+# xi(i,j) = chi*(xi(i) * xi(j))^(1/2)
+# p(i,j) = [p(i) + p(j)]/2
+# q(i,j) = [q(i) + q(j)]/2
+# r0(i,j) = [p(i) + p(j)]/[p(i)/r0(i) + p(j)/r0(j)]
+# r0q(i,j) = [q(i) + q(j)]/[q(i)/r0(i) + q(j)/r0(j)]
+# chi = chi(tersoff)*exp(2*q(i,j)*r0q(i,j))/exp(2*q(i,j)*r0(i,j))
+#
+# lambda1(i,j) = [p(i)/r0(i) + p(j)/r0(j)]/2 = p(i,j)/r0(i,j)
+# lambda2(i,j) = [q(i)/r0(i) + q(j)/r0(j)]/2 = q(i,j)/r0(i,j)
+#   [xi^2 * exp(-2*q*(r/r0-1)]^(1/2) = xi*exp(-q*(r/r0-1)*[1+exp(-2*q*(r/r0-1)]^(-1/2)
+#   https://theses.hal.science/tel-01229111/file/TH2015ForsterGeorgDaniel.pdf
+# lambda3(i,j) = 2mu(i,j) = [2*q(i)/r0(i) + 2*q(j)/r0(j)]/2 = [q(i)*r0(j) + q(j)*r0(i)]/[r0(i)*r0(j)] = 2*q(i,j)/r0(i,j)
+#-------------------------------------------------------------------------------
+Fabrizio Cleri and Vittorio Rosato
+Phys. Rev. B 48, 22 – Published 1 July 1993
+https://journals.aps.org/prb/abstract/10.1103/PhysRevB.48.22
+
+TABLE I. Parameters ofTBpotentials for fcc transition metals and for the two simple metals Al and Pb.
+element	A(eV)	xi(eV)	p	q
+Ni	0.0376	1.07	16.999	1.189
+Cu	0.0855	1.224	10.96	2.278
+Rh	0.0629	1.66	18.45	1.867
+Pd	0.1746	1.718	10.867	3.742
+Ag	0.1028	1.178	10.928	3.139
+Ir	0.1156	2.289	16.98	2.691
+Pt	0.2975	2.695	10.612	4.004
+Au	0.2061	1.79	10.229	4.036
+Al	0.1221	1.316	8.612	2.516
+Pb	0.098	0.914	9.576	3.648
+
+The first-neighbor distance r0 = a0/sqrt(2)
+Element	a0
+Ni	3.523
+Cu	3.612
+Rh	3.803
+Pd	3.887
+Ag	4.085
+Ir	3.839
+Pt	3.924
+Au	4.079
+Al	4.050
+Pb	4.951
+
+#------------------------------------------------
+# Test: Even if FCC Rh is calculated by MD at 300 K, the composition remains stable. OK !
+# FCC (Lammps format)
+pair_style smatb # R0(A)   p       q     A(eV)   xi(eV)  Rcs(A)   Rc(A)
+pair_coeff 1 1  2.4911  16.9990  1.189  0.0376  1.070  3.52300  4.52300  #  Ni
+pair_coeff 1 1  2.5541  10.9600  2.278  0.0855  1.224  3.61200  4.61200  #  Cu
+pair_coeff 1 1  2.6891  18.4500  1.867  0.0629  1.660  3.80300  4.80300  #  Rh
+pair_coeff 1 1  2.7485  10.8670  3.742  0.1746  1.718  3.88700  4.88700  #  Pd
+pair_coeff 1 1  2.8885  10.9280  3.139  0.1028  1.178  4.08500  5.08500  #  Ag
+pair_coeff 1 1  2.7146  16.9800  2.691  0.1156  2.289  3.83900  4.83900  #  Ir
+pair_coeff 1 1  2.7747  10.6120  4.004  0.2975  2.695  3.92400  4.92400  #  Pt
+pair_coeff 1 1  2.8843  10.2290  4.036  0.2061  1.790  4.07900  5.07900  #  Au
+pair_coeff 1 1  2.8638   8.6120  2.516  0.1221  1.316  4.05000  5.05000  #  Al
+pair_coeff 1 1  3.5009   9.5760  3.648  0.0980  0.914  4.95100  5.95100  #  Pb
+#------------------------------------------------
+
+
+
+TABLE III. Parameters of TB potentials for hcp transition metals. 
+First lines contain potential parameters obtained with beta equal to the experimental value, 
+second lines (Ti, Zr, and Cd) with variable beta in the fitting.
+Metal	A(eV)	xi(eV)	p	q	beta
+Ti	0.1519	1.8112	8.62	2.39	1.5874
+Ti	0.0741	1.4163	11.418	1.643	1.6354	<-second lines
+Zr	0.1934	2.2792	8.25	2.249	1.5925
+Zr	0.0523	1.4489	13.94	1.071	1.6409	<-second lines
+Co	0.095	1.488	11.604	2.286	1.6232
+Cd	0.142	0.8117	10.612	5.206	1.8856
+Cd	0.0416	0.472	13.639	3.908	1.6511	<-second lines
+Zn	0.1477	0.89	9.689	4.602	1.8562
+Mg	0.029	0.4992	12.82	2.257	1.6235
+
+beta = c/a ratio.
+Element	a	1st distance (material project)
+Ti	2.492	2.87941
+Zr	3.232	3.19147
+Co	2.507	2.48024
+Cd	2.959	3.44129
+Zn	2.653	3.01309
+Mg	3.176	3.16078
+
+For all chp metals we treated, the stability is better ensured with cutoff values ranging between sqrt(11/3)*r0 and sqrt(5)*r0,
+that corresponds to including seven or eight shells or neighbors.
+sqrt(11/3) = 1.91485
+sqrt(5) = 2.236067977
+
+#------------------------------------------------
+# Test: Even if HCP Ti is calculated by MD at 300 K, the composition remains stable. OK !
+# HCP (Lammps format), Rcs = sqrt(5)*R0
+pair_style smatb # R0(A)    p      q    A(eV)   xi(eV)  Rcs(A)   Rc(A)
+pair_coeff 1 1  2.87941   8.620  2.390  0.1519  1.8112  6.43856  7.43856  #  Ti
+pair_coeff 1 1  2.87941  11.418  1.643  0.0741  1.4163  6.43856  7.43856  #  Ti (with variable beta in the fitting)
+pair_coeff 1 1  3.19147   8.250  2.249  0.1934  2.2792  7.13634  8.13634  #  Zr
+pair_coeff 1 1  3.19147  13.940  1.071  0.0523  1.4489  7.13634  8.13634  #  Zr (with variable beta in the fitting)
+pair_coeff 1 1  2.48024  11.604  2.286  0.0950  1.488   5.54599  6.54599  #  Co
+pair_coeff 1 1  3.44129  10.612  5.206  0.1420  0.8117  7.69496  8.69496  #  Cd
+pair_coeff 1 1  3.44129  13.639  3.908  0.0416  0.472   7.69496  8.69496  #  Cd (with variable beta in the fitting)
+pair_coeff 1 1  3.01309   9.689  4.602  0.1477  0.89    6.73747  7.73747  #  Zn
+pair_coeff 1 1  3.16078  12.820  2.257  0.0290  0.4992  7.06772  8.06772  #  Mg
+#------------------------------------------------
+
+
+TABLE V. TB potential parameters for the 1.12 alloys Cu3Au and Ni3A1.
+Alloy	A(eV)	xi(eV)	p	q
+Cu3Au	0.1539	1.5605	11.05	3.0475
+Ni3Al	0.0563	1.2349	14.997	1.2823
+
+Element	a0
+Cu3Au	3.615
+Ni3Al	3.567
+
+#The first-neighbor distance r0 = a0/sqrt(2)
+#------------------------------------------------
+# Cu3Au (L21, SG 225) (mp-2258: Cu3Au (cubic, Pm-3m, 221) is calculated by MD at 300 K, the composition remains stable. OK !)
+# L21 (Lammps format), Rcs = sqrt(2)*R0
+pair_style smatb # R0(A)    p      q     A(eV)   xi(eV)  Rcs(A)   Rc(A)
+pair_coeff 1 1  2.5541  10.9600  2.278   0.0855  1.224   3.61200  4.61200  #  Cu-Cu
+pair_coeff 1 2  2.5562  11.0500  3.0475  0.1539  1.5605  3.61500  4.61500  #  Cu-Au
+pair_coeff 2 2  2.8843  10.2290  4.036   0.2061  1.790   4.07900  5.07900  #  Au-Au
+#------------------------------------------------
+# Ni3Al (L21, SG 225) (mp-672232: AlNi3 (cubic, Fm-3m, 225) is calculated by MD at 300 K, the composition remains stable. OK !)
+# L21 (Lammps format), Rcs = sqrt(2)*R0
+pair_style smatb # R0(A)    p      q     A(eV)   xi(eV)  Rcs(A)   Rc(A)
+pair_coeff 1 1  2.8638   8.6120  2.516   0.1221  1.316   4.05000  5.05000  #  Al-Al
+pair_coeff 1 2  2.5223  14.9970  1.282   0.0563  1.2349  3.56700  4.56700  #  Al-Ni
+pair_coeff 2 2  2.4911  16.9990  1.189   0.0376  1.070   3.52300  4.52300  #  Ni-Ni
+#------------------------------------------------
+
+#-------------------------------------------------------------------------------
+M.A. Karolewski, "Tight-binding potentials for sputtering simulations with fcc and bcc metals"
+https://citeseerx.ist.psu.edu/document?repid=rep1&type=pdf&doi=17a1a56fc2e69f1dfeae728c831d5c80528bc7cc
+###
+Radiat. Eff. Defects. Solids 153 (2000-2001) 239–255
+https://doi.org/10.1080/10420150108211842
+
+G/xi (dimensionless): The larger values imply relatively greater long-range contributions to the potential. 
+
+phi(r) = xi^2 * exp(-2*q*(r/r0-1))
+U(r) = A * exp(-p*(r/r0-1))
+
+phi_AB(r) = [phi_AA(r) * phi_BB(r)]^(1/2)
+U_AB(r) = [U_AA(r) * U_BB(r)]^(1/2)
+In-depth investigations of bimetallic systems have not yet been carried out using the potentials discussed in this work, 
+but preliminary calculations indicate, for example, that alloy heats of solution and surface segregation for several pairs of
+fcc transition metals with similar atomic radii (Ni-Cu, Rh-Pd, Pd Ag) may be estimated with a typical error of 0.1 eV by this method. 
+
+
+Table I. Parameters of tight-binding potentials for fcc metals. 
+The potentials are cut off beyond the second neighbour distance (r > sqrt(2)*r0).
+Element	A(eV)	xi(eV)	p	q	r0(A)	G/xi	
+Al	0.1602	1.5074	7.5681	2.7456	2.8634	3.552
+Ca	0.0492	0.6842	11.2115	2.6841	3.9471	3.557
+Ni	0.0565	1.4005	14.0867	1.7937	2.4918	3.655
+Cu	0.0783	1.2355	11.1832	2.3197	2.556	3.589
+Sr	0.0257	0.5557	12.3406	1.8105	4.3027	3.652
+Rh	0.1086	1.9776	14.1315	2.5555	2.6901	3.567
+Pd	0.1223	1.5193	11.3225	3.0697	2.7511	3.532
+Ag	0.0812	1.1081	11.5597	2.8316	2.889	3.546
+Ir	0.2141	2.7082	12.8986	3.4541	2.7145	3.513
+Pt	0.2906	2.6715	10.1423	3.7878	2.7746	3.501
+Au	0.1935	1.7581	10.4342	3.9472	2.8838	3.497
+Pb	0.0851	0.8699	10.0667	3.3563	3.5003	3.517
+Th	0.1193	2.1987	31.3787	5.8771	3.5951	3.471
+
+
+Table II. Parameters of tight-binding potentials for bcc metals. 
+The potentials are cut off beyond the third neighbour distance (r > sqrt(8/3)*r0).
+Element	A(eV)	xi(eV)	p	q	r0(A)	G/xi	
+Li	0.0488	0.5729	6.3675	1.3969	3.0391	3.734
+Na	0.0353	0.4083	7.8536	1.7477	3.7158	3.579
+K	0.023	0.317	9.3093	1.6143	4.6073	3.633
+V	0.2572	2.3126	6.8543	2.1886	2.6223	3.435
+Cr	0.0407	1.1012	13.1852	0.8993	2.4981	4.048
+Fe	0.1184	1.5418	10.7613	2.0379	2.4824	3.479
+Rb	0.0292	0.3233	8.1532	1.9235	4.9363	3.516
+Nb	0.4546	3.6302	5.2702	2.0552	2.6033	3.474
+Mo	0.2043	2.5097	10.0154	2.0511	2.7253	3.475
+Cs	0.027	0.3036	8.412	1.9433	5.3174	3.509
+Ba	0.04	0.6167	10.1835	1.507	4.3466	3.68
+Ta	0.3281	3.3008	8.2764	2.2371	2.8601	3.422
+W	0.249	3.2055	10.3715	1.9916	2.741	3.493
+
+#------------------------------------------------
+# Test: Even if FCC Al is calculated by MD at 300 K, the composition remains stable. OK !
+# FCC (Lammps format)
+pair_style smatb # R0(A)   p       q     A(eV)   xi(eV)  Rcs(A)   Rc(A)
+pair_coeff 1 1  2.8634   7.5681  2.7456  0.1602  1.5074  4.04946  5.04946  #  Al
+pair_coeff 1 1  3.9471  11.2115  2.6841  0.0492  0.6842  5.58204  6.58204  #  Ca
+pair_coeff 1 1  2.4918  14.0867  1.7937  0.0565  1.4005  3.52394  4.52394  #  Ni
+pair_coeff 1 1  2.5560  11.1832  2.3197  0.0783  1.2355  3.61473  4.61473  #  Cu
+pair_coeff 1 1  4.3027  12.3406  1.8105  0.0257  0.5557  6.08494  7.08494  #  Sr
+pair_coeff 1 1  2.6901  14.1315  2.5555  0.1086  1.9776  3.80438  4.80438  #  Rh
+pair_coeff 1 1  2.7511  11.3225  3.0697  0.1223  1.5193  3.89064  4.89064  #  Pd
+pair_coeff 1 1  2.8890  11.5597  2.8316  0.0812  1.1081  4.08566  5.08566  #  Ag
+pair_coeff 1 1  2.7145  12.8986  3.4541  0.2141  2.7082  3.83888  4.83888  #  Ir
+pair_coeff 1 1  2.7746  10.1423  3.7878  0.2906  2.6715  3.92388  4.92388  #  Pt
+pair_coeff 1 1  2.8838  10.4342  3.9472  0.1935  1.7581  4.07831  5.07831  #  Au
+pair_coeff 1 1  3.5003  10.0667  3.3563  0.0851  0.8699  4.95017  5.95017  #  Pb
+pair_coeff 1 1  3.5951  31.3787  5.8771  0.1193  2.1987  5.08424  6.08424  #  Th
+#------------------------------------------------
+# BCC (Lammps format)
+pair_style smatb #R0(A)    p       q     A(eV)   xi(eV)  Rcs(A)   Rc(A)
+pair_coeff 1 1  3.0391   6.3675  1.3969  0.0488  0.5729  4.96283  5.96283  #  Li
+pair_coeff 1 1  3.7158   7.8536  1.7477  0.0353  0.4083  6.06788  7.06788  #  Na
+pair_coeff 1 1  4.6073   9.3093  1.6143  0.0230  0.3170  7.52369  8.52369  #  K
+pair_coeff 1 1  2.6223   6.8543  2.1886  0.2572  2.3126  4.28220  5.28220  #  V
+pair_coeff 1 1  2.4981  13.1852  0.8993  0.0407  1.1012  4.07938  5.07938  #  Cr
+pair_coeff 1 1  2.4824  10.7613  2.0379  0.1184  1.5418  4.05374  5.05374  #  Fe
+pair_coeff 1 1  4.9363   8.1532  1.9235  0.0292  0.3233  8.06094  9.06094  #  Rb
+pair_coeff 1 1  2.6033   5.2702  2.0552  0.4546  3.6302  4.25117  5.25117  #  Nb
+pair_coeff 1 1  2.7253  10.0154  2.0511  0.2043  2.5097  4.45040  5.45040  #  Mo
+pair_coeff 1 1  5.3174   8.4120  1.9433  0.0270  0.3036  8.68328  9.68328  #  Cs
+pair_coeff 1 1  4.3466  10.1835  1.5070  0.0400  0.6167  7.09797  8.09797  #  Ba
+pair_coeff 1 1  2.8601   8.2764  2.2371  0.3281  3.3008  4.67052  5.67052  #  Ta
+pair_coeff 1 1  2.7410  10.3715  1.9916  0.2490  3.2055  4.47603  5.47603  #  W
+#------------------------------------------------
+
+#-------------------------------------------------------------------------------
+Shin-Pon Ju et al., "Predicted atomic arrangement of Mg67Zn28Ca5 and Ca50Zn30Mg20 bulk metallic glasses by atomic simulation"
+Journal of Non-Crystalline Solids, Volume 388, 15 March 2014, Pages 23-31
+https://doi.org/10.1016/j.jnoncrysol.2014.01.005
+
+Table4 Parameters of the tight-binding potential for Mg-Mg, Zn-Zn, Ca-Ca, Mg-Zn, Ca-Mg, and Zn-Ca.
+Type	A	xi	p	q	r0
+Mg-Mg	0.0135	0.4641	14.5115	2.122	3.2053
+Zn-Zn	0.0953	0.6276	11.7371	4.3535	2.6499
+Ca-Ca	0.0058	0.4242	16.7684	1.8408	4.106
+Mg-Zn	0.0135	0.4921	19.637	2.9367	2.9237
+Ca-Mg	0.0437	0.6349	11.532	2.8799	3.5992
+Zn-Ca	0.0397	0.5317	13.6599	3.3259	3.2185
+
+Type	a0	c/a
+Mg(HCP)	3.21	1.62
+Zn(HCP)	2.66	1.86
+Ca(FCC)	5.58	1.00
+
+#------------------------------------------------
+# HCP, FCC, and alloy (Lammps format)
+# Test: Even if HCP Mg is calculated by MD at 300 K, the composition remains stable. OK !
+# The values ​​of Rcs and Rc are not specified so we assume them as follows:
+#   Rcs = sqrt(5)*R0 (HCP), Rcs = sqrt(2)*R0 (FCC), Rcs = sqrt(11/3)*R0 (Alloy), Rc = Rcs + 1.0
+pair_style smatb #R0(A)    p       q     A(eV)   xi(eV)  Rcs(A)    Rc(A)
+pair_coeff 1 1  3.2053  14.5115  2.1220  0.0135  0.4641  7.16727   8.16727  #  Mg-Mg (HCP)
+pair_coeff 1 1  2.6499  11.7371  4.3535  0.0953  0.6276  5.92536   6.92536  #  Zn-Zn (HCP)
+pair_coeff 1 1  4.1060  16.7684  1.8408  0.0058  0.4242  5.80676   6.80676  #  Ca-Ca (FCC)
+pair_coeff 1 1  2.9237  19.6370  2.9367  0.0135  0.4921  6.53759   7.53759  #  Mg-Zn (HCP)
+pair_coeff 1 1  3.5992  11.5320  2.8799  0.0437  0.6349  6.89194   7.89194  #  Ca-Mg (Alloy)
+pair_coeff 1 1  3.2185  13.6599  3.3259  0.0397  0.5317  6.16296   7.16296  #  Zn-Ca (Alloy)
+#------------------------------------------------
+
+#-------------------------------------------------------------------------------
+Xuan Chen et al., " The evolution mechanism of an FeMo alloy catalyst for growth of single-walled carbon nanotubes"
+Phys. Chem. Chem. Phys., 2022, 24, 25480
+
+Table1 The parameters of A, xi, p, q, and r in Gupta potential for Fe, Mo, and Mo-Fe.
+Type	A	xi	p	q	r	
+Fe	0.13315	1.6179	10.5	2.6	2.553
+Mo	0.2043	2.5097	10.0154	2.0511	2.7253
+Mo-Fe	0.16493	2.015	10.257	2.3255	2.6391
+
+#-------------------------------------------------------------------------------
+Xuan Chen et al., "Evolution Mechanism of Solid-Phase Catalysts During Catalytic Growth of Single-Walled Carbon Nanotubes"
+https://doi.org/10.1002/smll.202310543
+
+Table SI Parameters of the interaction between the different types of atom pairs considered in this work. 
+Gupta	A(eV)	xi(eV)	p	q	r(A)
+Mo	0.2043	2.5097	10.0154	2.0511	2.7253
+Mo-Co	0.13931	1.9324	10.8097	2.16855	2.61265
+Co	0.095	1.488	11.604	2.286	2.5
+
+#-------------------------------------------------------------------------------
+Ni-Sc: https://journals.jps.jp/doi/pdf/10.1143/JPSJ.75.084603
+
+Table I. Tight-binding potential parameters of Ni-Sc system constructed.
+A and xi are expressed in eV. The cut-off radius rcut-off is expressed in nm.
+
+        p      q        A    xi   rcut-off
+Ni-Ni 10.00   2.70   0.2193 2.813 0.30
+Sc-Sc 14.0280 1.3069 0.0406 1.191 0.50
+Ni-Sc 9.4956  0.4492 0.0289 1.397 0.45
+
+Sc: HCP, FCC, BCC
+B2 NiSc, D2d Ni5Sc
+
+#------------------------------------------------
+# No data: Rcs and Rc
+# HCP (Lammps format), Rcs = sqrt(5)*R0, Rc = Rcs + 1
+pair_style smatb #R0(A)    p      q      A(eV)  xi(eV)  Rcs(A)    Rc(A)
+pair_coeff 1 1   5.0     14.0280 1.3069 0.0406  1.191  11.18034  12.18034  # Sc-Sc
+pair_coeff 1 2   4.5     9.4956  0.4492 0.0289  1.397  10.06230  11.06230  # Sc-Ni
+pair_coeff 2 2   3.0     10.00   2.70   0.2193  2.813   6.70820   7.70820  # Ni-Ni
+#------------------------------------------------
+
+#-------------------------------------------------------------------------------
+Cu-Re: https://pubs.acs.org/doi/pdf/10.1021/jp052509s
+
+TABLE2: Tight-Binding Potential Parameters of the Cu-Re System Constructed in the Present Study
+         p      q      A      xi
+Cu-Cu 10.5654 2.4251 0.0881 1.3284
+Re-Re 16.7080 2.2823 0.1069 2.6918
+Cu-Re 11.3178 2.5865 0.1729 2.3297
+
+Type a c
+Cu(FCC) 3.61
+Re(HCP) 2.76 4.46
+Cu3Re(L12) 3.69
+CuRe3(L12) 3.81
+
+#------------------------------------------------
+# No data: R0, Rcs and Rc
+# HCP (Lammps format), Rcs = sqrt(5)*R0, Rc = Rcs + 1
+# r0_AB = (r0_AA + r0_BB)/2
+pair_style smatb #R0(A)     p       q    A(eV)   xi(eV)  Rcs(A)    Rc(A)
+pair_coeff 1 1  2.76299  16.7080  2.2823 0.1069  2.6918  6.17823   7.17823 # Re-Re
+pair_coeff 1 2  2.658545 11.3178  2.5865 0.1729  2.3297  5.94469   6.94469 # Re-Cu
+pair_coeff 2 2  2.5541   10.5654  2.4251 0.0881  1.3284  5.71114   6.71114 # Cu-Cu
+#------------------------------------------------
+
+#-------------------------------------------------------------------------------
+Cu-Hf: https://pubs.aip.org/aip/jap/article/108/6/063510/348709
+
+xi^2 = A2
+2.0*q = p2
+
+TABLEI. The parameters of the constructed potential Cu-Hf system.
+A1 and A1m are expressed in eV, A2 and A2m are expressed in eV^2,
+and rm1,rc1,rm2, rc2,and r0 are expressed in A.
+
+    Cu        Hf        Cu-Hf
+P1  9.625372  6.537854  6.895905
+A1  0.315491  1.261712  0.458326
+rm1 2.124148  1.779614  2.067990
+n1  4         4         4
+p1m 2.860823  1.850843  1.580351
+A1m 8.049825  19.260546 6.428795
+rc1 3.634148  4.522307  4.237990
+p2  4.903930  5.292708  4.068921
+A2  3.854734  14.860793 7.985849
+rm2 3.611361  3.213759  3.024899
+n2  5         5         5
+p2m 0.000602  0.000378  0.000481
+A2m 0.458708  19.743617 2.333929
+rc2 6.215324  6.250000  6.568872
+r0  2.553618  3.213759  2.883688
+
+Cu: FCC, BCC, HCP
+Hf: HCP, FCC, BCC
+Cu5Hf, Cu8Hf3, Cu10Hf7, CuHf2
+
+#-------------------------------------------------------------------------------
+
+#---------------------------------------------------------------------
+#TB-SMA
+Ni-Sc: https://journals.jps.jp/doi/pdf/10.1143/JPSJ.75.084603
+Ni-X (Ir, Ru, Pt): https://doi.org/10.1016/j.jallcom.2017.03.027
+Ni-Ru: https://journals.aps.org/prb/abstract/10.1103/PhysRevB.71.014107
+Ni-Ru: https://journals.aps.org/prb/pdf/10.1103/PhysRevB.71.014107
+Cu-Ru: https://journals.aps.org/prb/abstract/10.1103/PhysRevB.75.045431
+Cu-Ru: https://www.inderscienceonline.com/doi/abs/10.1504/IJNT.2009.02847
+Ag-Ru: https://pubs.acs.org/doi/pdf/10.1021/jp047897x
+Ag-Ru: https://pubs.acs.org/doi/10.1021/jp047897x
+C-Ru (Tersoff): https://journals.aps.org/prb/abstract/10.1103/PhysRevB.92.165425
+C-Ru, C-Ir (Tersoff): https://theses.hal.science/tel-01229111/file/TH2015ForsterGeorgDaniel.pdf
+Rh-Au, Ir-Pd: https://pubs.rsc.org/en/content/articlepdf/2022/nr/d2nr04364e
+Cu-Re: https://pubs.acs.org/doi/pdf/10.1021/jp052509s
+Cu-Hf: https://pubs.aip.org/aip/jap/article/108/6/063510/348709
+Cu-Fe, Cu-Co: https://doi.org/10.1016/j.susc.2010.09.020
+Cu-Fe, Cu-Co: https://doi.org/10.1063/1.2946719
+  xi_AB = (xi_AA + xi_BB)^(1/2), A_AB = (A_AA + A_BB)^(1/2), q_AB = (q_AA + q_BB)/2, p_AB = (p_AA + p_BB)/2, r0_AB = (r0_AA + r0_BB)/2
+Cu-Co: https://doi.org/10.1016/j.nimb.2012.12.011
+Cu-Pt: https://arxiv.org/pdf/1802.09965
+Cu-Pt: https://doi.org/10.1016/j.jallcom.2018.05.335
+Al-Pt: https://pubs.aip.org/aip/jcp/article/128/13/134708/977380
+  A_AB = (A_AA + A_BB)^(1/2), q_AB = (q_AA + q_BB)/2, p_AB = (p_AA + p_BB)/2, r0_AB = (r0_AA + r0_BB)/2
+  xi has been fitted to the heat of mixing of the AB alloy phase ( dH = 0.5*(E_AA + E_BB) - E_AB, units: [Total energy/atom]).
+Ti-Pt: https://pubs.aip.org/aip/jap/article/101/4/043502/283597
+  A_AB = (A_AA + A_BB)^(1/2), q_AB = (q_AA + q_BB)/2, p_AB = (p_AA + p_BB)/2, r0_AB = (r0_AA + r0_BB)/2
+Ti-Pt: https://doi.org/10.1016/j.nimb.2010.01.001
+Co-Si: https://citeseerx.ist.psu.edu/document?repid=rep1&type=pdf&doi=09aaacac258a9c39a374b96b872ca60429b47f3d
+Co-Cu: https://doi.org/10.1016/S0169-4332(02)00475-0
+Cu, Tl: https://www.researchgate.net/profile/Cheng-I-Weng/publication/235697360_Molecular_Dynamics_Simulation_of_Sputter_Trench-Filling_Morphology_in_Damascene_Proces/links/0deec52353f4463039000000/Molecular-Dynamics-Simulation-of-Sputter-Trench-Filling-Morphology-in-Damascene-Proces.pdf
+Li-Cs: http://dx.doi.org/10.19044/esj.2019.v15n15p487  
+Ag-Cu-Au: https://iopscience.iop.org/article/10.1088/0957-4484/18/47/475702/pdf
+Ag-Cu, Ag-Ni: https://iopscience.iop.org/article/10.1088/0953-8984/19/35/356217/pdf
+Cu,Ag,Au: https://journals.aps.org/prb/abstract/10.1103/PhysRevB.55.2150
+Co-Au, Ag-Au: https://link.springer.com/content/pdf/10.1140/epjb/e2012-30352-3.pdf
+Co-Au: https://journals.aps.org/prb/abstract/10.1103/PhysRevB.70.195434
+Pt-Ni: https://iopscience.iop.org/article/10.1088/0953-8984/25/35/355008/pdf
+Cu-Pt: https://doi.org/10.1016/j.susc.2019.121515
+Al-Pd: https://www.academia.edu/download/49326282/Molecular_dynamics_simulation_of_energet20161003-15854-17t632v.pdf
+Rh,Ir,Cu,Ag,Pd,Pt,Au: https://journals.aps.org/prb/pdf/10.1103/PhysRevB.65.045407
+Rh,Ir,Cu,Ag,Pd,Pt,Au: https://doi.org/10.1016/S0169-4332(01)00729-2
+Cu-Co: http://genphys.phys.msu.ru/rus/sci/nanogroup/posters/Dokukin_poster_IBCM2021.pdf
+Al-Mg-Ca: https://pubs.rsc.org/en/content/articlepdf/2015/ra/c5ra12956g
+Al-Mg-Zn: https://www.mdpi.com/1996-1944/15/6/2062/pdf
+Al-Ca-Cu: https://link.springer.com/content/pdf/10.1007/s10853-016-9919-2.pdf
+Ca-Mg-Cu: https://pubs.rsc.org/en/content/articlepdf/2017/ra/c7ra05650h
+Mg-Ca-Ag: https://pubs.aip.org/aip/adv/article/9/7/075025/22647
+Mg-Al-Cu: https://pubs.rsc.org/en/content/articlepdf/2016/ra/c6ra17942h
+Mg-Cu-Ni: https://pubs.rsc.org/en/content/articlepdf/2014/cp/c4cp02133a
+Ca-Mg-Ni: https://pubs.rsc.org/en/content/articlepdf/2017/cp/c7cp00466d
+Al-Ni-Y: https://www.nature.com/articles/srep16218.pdf
+Mg-Ni-Y: https://pubs.rsc.org/en/content/articlepdf/2015/ra/c5ra09313a
+Mg-Cu-Y: https://pubs.rsc.org/en/content/articlepdf/2015/cp/c5cp00556f
+Al-Cu-Y: https://pubs.acs.org/doi/full/10.1021/jp502167t
+Al-Cs: https://journals.aps.org/prb/abstract/10.1103/PhysRevB.67.094301
+Al-Ni-Ti: https://www.mdpi.com/2073-4352/12/8/1065/pdf
+Ni-Ti-Hf: https://doi.org/10.1016/j.jallcom.2007.02.041
+Cu-Ti-Hf: https://pubs.acs.org/doi/pdf/10.1021/jp100690r
+Cu-Zr-Hf: https://pubs.aip.org/aip/jap/article/112/10/103518/369300
+Cu-Hf-Al: https://pubs.aip.org/aip/apl/article/99/1/011911/237703 (Supplementary Material)
+Cu-Zr-Ni: https://pubs.acs.org/doi/pdf/10.1021/jp200082e
+Hf-Cu-Ni: https://www.sciencedirect.com/science/article/pii/S0925838812017409
+Important!!!: https://www.researchgate.net/profile/Gbenga-S-Agunbiade/publication/320066582_Atomistic_Simulations_of_Ta_Mo_W_and_their_Binary_Alloys_Using_Embedded_Atom_Method_and_Second_Moment_Approximation_of_Tight_Binding/links/59cbdc6e45851556e982f691/Atomistic-Simulations-of-Ta-Mo-W-and-their-Binary-Alloys-Using-Embedded-Atom-Method-and-Second-Moment-Approximation-of-Tight-Binding.pdf
+MgO: https://iopscience.iop.org/article/10.1088/2053-1591/aac0d6/pdf
+#---------------------------------------------------------------------
+# SMTB-Q
+Al2O3: https://www.researchgate.net/profile/Nicolas-Salles-2/publication/355929008_Molecular_dynamics_study_of_high-pressure_alumina_polymorphs_with_a_tight-binding_variable-charge_model/links/6185126f0be8ec17a973c240/Molecular-dynamics-study-of-high-pressure-alumina-polymorphs-with-a-tight-binding-variable-charge-model.pdf
+SrTiO3: https://doi.org/10.1016/j.susc.2013.05.015
+Cd2Ti2O7, Gd2Zr2O7: https://iopscience.iop.org/article/10.1088/0953-8984/26/5/055403/pdf
+Y2Ti2O7: https://journals.aps.org/prb/abstract/10.1103/PhysRevB.94.224109
+TiO: https://pubs.acs.org/doi/full/10.1021/acs.jpcc.5b01580
+ZrO2: https://iopscience.iop.org/article/10.1209/0295-5075/83/40001/pdf
+#---------------------------------------------------------------------
