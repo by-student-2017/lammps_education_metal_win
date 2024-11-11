@@ -722,6 +722,7 @@ FeCo: https://dr.ntu.edu.sg/bitstream/10356/175396/2/MarioHernandez_Thesis_PhD_F
 FeCH: https://scholarsjunction.msstate.edu/td/5702 
   MEAM file: https://arxiv.org/pdf/2109.01712
 NbC: https://huskiecommons.lib.niu.edu/cgi/viewcontent.cgi?article=8531&context=allgraduate-thesesdissertations
+ADL: https://ujcontent.uj.ac.za/esploro/fulltext/doctoral/Multiscale-numerical-analysis-of-the-sticking/9925409407691?repId=128399630007691&mId=138399620007691&institution=27UOJ_INST
 AlN (zbl): https://scholarsmine.mst.edu/masters_theses/8166
 Al: https://scholarsjunction.msstate.edu/td/279 
 Al: https://publications.polymtl.ca/10794/
@@ -810,6 +811,8 @@ LJ: https://www.proquest.com/openview/fb2a1d2a7d330ada4fb2a9657b96f8f2/1.pdf?pq-
 LJ: https://air.unimi.it/bitstream/2434/820780/2/phd_unimi_R11853.pdf
 LJ: https://air.unimi.it/bitstream/2434/820780/2/phd_unimi_R11853.pdf
 LJ: https://citeseerx.ist.psu.edu/document?repid=rep1&type=pdf&doi=d309054b1aa8adf177f8e2fcc507fa852b68a228
+LJ: https://irbe.library.vanderbilt.edu/server/api/core/bitstreams/f9f07fcb-becf-4589-a69a-e07e227214ce/content
+LJ: https://citeseerx.ist.psu.edu/document?repid=rep1&type=pdf&doi=b362dd5e239742b988ffd1aa8c0c5ea4eb15213a
 morse: https://dspace.mit.edu/bitstream/handle/1721.1/109645/986790855-MIT.pdf?sequence=1&isAllowed=y
 CVFF: https://ecommons.cornell.edu/server/api/core/bitstreams/2c794d17-a73e-482b-9878-f4175e1fb9b2/content
 DPD: https://uhra.herts.ac.uk/bitstream/handle/2299/15336/08174625%20Loya,%20Adil%20-%20Final%20PhD%20Submission.pdf?sequence%253D1
@@ -886,8 +889,10 @@ tersoff: https://arxiv.org/pdf/2106.07090
 comb (Fe-F): https://pubs.rsc.org/en/content/articlepdf/2019/cp/c9cp01927h
 comb3 (ZnCuO): https://doi.org/10.1016/j.susc.2013.10.025
 comb3 (CHON): https://pdf.sciencedirectassets.com/271513/1-s2.0-S0927025617X00128/1-s2.0-S0927025617303804/am.pdf?X-Amz-Security-Token=IQoJb3JpZ2luX2VjEIn%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FwEaCXVzLWVhc3QtMSJGMEQCIDbmfEf%2BqkwXFENkIaEz8zgLebwSCjOrtxAJbtKNpHwbAiAawlY%2BCO5i6Zrqg2l6Hux%2FYK%2FkXHRG94mAcpdq7f8epiqyBQgSEAUaDDA1OTAwMzU0Njg2NSIMeKOkCSDbWDjJblM7Ko8Frxe0EWf3xi4nZQ11w1qlRTIodFUTtmUTg4iNu0bYbXDDanu5eS%2B0joNs5fjSnaGupuAXqrgJg4zy2Etn8o%2BSL4%2B1PCxWFHHGI43N4rQtSG0yvBoWg0n39O4hXgfFwCjRNchYVGNq7xtwJyZSMf15VvmWMZ4%2FJCd6cyzeeOk8vNzNvVMNWMWAkuaz9Px4piFd8Arzg%2Bq9%2B9LrcE9RRsh3X9oMHx2j3dJ75aYOGLg20PQlLkp3tbwr%2F0TQ27a5tCEIAmIReQkcCcsXk%2BJU4336qRC%2Ft5MkNpRIHIVI1w%2FeAi0qTlF66j%2BXpwlIPRyLp%2B9QyG7EtaerFfz3pqMhHkyPsBCLNbt9bDS7%2BI7n8bGw8Qf69%2BNT3SL8eNaYtEQRmT%2BFzOy5qqzemC3Exp8ElCCx8p53EL8UxFrDdLyTMMRewdzALcEAske%2FZ5vMl3f7IJTgHGU413ThNbRIahvfTI%2BpKNVwNsN8HnkHku%2FCvxCvXP36hfahzCdnvI3p9CdWIrgRXc%2BMIHFx9c%2B8gR0nSPcNgdXfF17ZjAxU2cqj8aE2bXby04MSRd8ryzKmyhdTf99Ef1VmAk12892P47Ttr6GPaZ5yt6fL8E88yOB8o0whjXr7R1dRKbIOy1p1W89TwJGl95XdtmRnqMg8EkgZmglPrUC13EJM70a8hUeHBQTWKuyp5WwNDDUJn61mWueqPuvYV4feEm5zfJm1Z8wHidIrS3qzcfe1fy3nk6sYtZQnlh5W2%2FxbrE9bC7bvTO7MD11eqYmjizSJmQRtMfBuP5UWpFfPXwrMdd%2BcON4kSeqT4UVIZkMB6DqlGALxuq8f1JvjZiS8rw6aJMz%2Bcluz8M3c1WXXb0ochyODYWFYAzUPljC1vae5BjqyAaYMP2YrGVvq82fyAyo651OivWQs1LEJDi0bKGhlaVGWsffp191EHJ4LOoGOjF6Y0WC8Tw3lkypVn79blGTUky2b566i7Sxrphcgc7oZ8lPufxBVoZPOOlbrxUpnhnMQemIfW%2BrFHOxMm7vsdiTGW5BJoPjbeWipcu5RlQ7FHQtk%2BGDM%2BBD%2FH8x%2BwcBOug%2BYPUF0j6i57ZrpPEQNTmAxSrMJNKuybwgku%2BOuYUvdYbW6n28%3D&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Date=20241105T095107Z&X-Amz-SignedHeaders=host&X-Amz-Expires=300&X-Amz-Credential=ASIAQ3PHCVTYTWJJX32L%2F20241105%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Signature=2c095a591e7c398fddcfd29c664cee49c9f0367709e162e17e7a417a5b2920de&hash=b945af8136af073e8743e633424f4447147152d46057a5d2f42c6e33d7816938&host=68042c943591013ac2b2430a89b270f6af2c76d8dfd086a07176afe7c76c2c61&pii=S0927025617303804&tid=pdf-9efdee74-ab3e-4307-b63b-c81159b80b06&sid=38e55f7c1584a0452198f57120dda1d5f941gxrqa&type=client
+Ni-Nb (eam): https://iopscience.iop.org/article/10.1088/0953-8984/12/31/301/pdf
 CH (meam): https://doi.org/10.1016/j.polymer.2019.02.060
 AuSi (meam): http://laurent.pizzagalli.free.fr/Pub/God16EML.pdf
+Al-based alloys (meam): https://pubs.rsc.org/en/content/articlepdf/2022/cp/d2cp02746a
 xyz: https://doi.org/10.1016/j.fuel.2024.132064
 poscar: https://www.researchgate.net/profile/Fadi-Aldakheel/publication/356260165_Exploring_the_mechanical_properties_of_two-dimensional_carbon-nitride_polymer_nanocomposites_by_molecular_dynamics_simulations/links/6193b52f3068c54fa5f0e53c/Exploring-the-mechanical-properties-of-two-dimensional-carbon-nitride-polymer-nanocomposites-by-molecular-dynamics-simulations.pdf
 matlab: https://doi.org/10.1016/j.jcp.2018.01.015
@@ -924,6 +929,88 @@ CuH (bop): https://link.springer.com/content/pdf/10.1007/s10853-015-8848-9.pdf
 CdTeSe (bop): https://pubs.acs.org/doi/pdf/10.1021/jp505915u
 CNT (xyz): https://doi.org/10.1016/j.carbon.2020.01.114
 gbook: https://books.google.co.jp/books?hl=en&lr=&id=Ky_3DwAAQBAJ&oi=fnd&pg=PP1&dq=lammps+%2B+appendix+%2B+airebo+%2B+parameters+%2B+Nitrogen&ots=r09CGb_Q6v&sig=ls1lk5-W8MQN-LuORAySLxJMXWA&redir_esc=y#v=onepage&q&f=false
+PINN: https://infoscience.epfl.ch/server/api/core/bitstreams/6d83834c-b32a-4dd7-9101-f86b1a90a1c1/content
+Slater-Koster parameter: https://journals.aps.org/prb/abstract/10.1103/PhysRevB.39.6914
+#---------------------------------------------------------------------
+C-H (Brenner): https://journals.aps.org/prb/abstract/10.1103/PhysRevB.42.9458
+Pt-C (tersoff): https://journals.aps.org/prb/abstract/10.1103/PhysRevB.65.195124
+Si-C: https://journals.aps.org/prb/abstract/10.1103/PhysRevB.71.035211
+Zn-O: https://iopscience.iop.org/article/10.1088/0953-8984/18/29/003
+Fe-C: https://journals.aps.org/prb/abstract/10.1103/PhysRevB.79.144107
+Be-C-W-H: https://iopscience.iop.org/article/10.1088/0953-8984/22/35/352206
+#---------------------------------------------------------------------
+#TB-SMA
+Ni-Sc: https://journals.jps.jp/doi/pdf/10.1143/JPSJ.75.084603
+Ni-X (Ir, Ru, Pt): https://doi.org/10.1016/j.jallcom.2017.03.027
+Ni-Ru: https://journals.aps.org/prb/abstract/10.1103/PhysRevB.71.014107
+Ni-Ru: https://journals.aps.org/prb/pdf/10.1103/PhysRevB.71.014107
+Cu-Ru: https://journals.aps.org/prb/abstract/10.1103/PhysRevB.75.045431
+Cu-Ru: https://www.inderscienceonline.com/doi/abs/10.1504/IJNT.2009.02847
+Ag-Ru: https://pubs.acs.org/doi/pdf/10.1021/jp047897x
+Ag-Ru: https://pubs.acs.org/doi/10.1021/jp047897x
+C-Ru (Tersoff): https://journals.aps.org/prb/abstract/10.1103/PhysRevB.92.165425
+C-Ru, C-Ir (Tersoff): https://theses.hal.science/tel-01229111/file/TH2015ForsterGeorgDaniel.pdf
+Rh-Au, Ir-Pd: https://pubs.rsc.org/en/content/articlepdf/2022/nr/d2nr04364e
+Cu-Re: https://pubs.acs.org/doi/pdf/10.1021/jp052509s
+Cu-Hf: https://pubs.aip.org/aip/jap/article/108/6/063510/348709
+Cu-Fe, Cu-Co: https://doi.org/10.1016/j.susc.2010.09.020
+Cu-Fe, Cu-Co: https://doi.org/10.1063/1.2946719
+  xi_AB = (xi_AA + xi_BB)^(1/2), A_AB = (A_AA + A_BB)^(1/2), q_AB = (q_AA + q_BB)/2, p_AB = (p_AA + p_BB)/2, r0_AB = (r0_AA + r0_BB)/2
+Cu-Co: https://doi.org/10.1016/j.nimb.2012.12.011
+Cu-Pt: https://arxiv.org/pdf/1802.09965
+Cu-Pt: https://doi.org/10.1016/j.jallcom.2018.05.335
+Al-Pt: https://pubs.aip.org/aip/jcp/article/128/13/134708/977380
+  A_AB = (A_AA + A_BB)^(1/2), q_AB = (q_AA + q_BB)/2, p_AB = (p_AA + p_BB)/2, r0_AB = (r0_AA + r0_BB)/2
+  xi has been fitted to the heat of mixing of the AB alloy phase ( dH = 0.5*(E_AA + E_BB) - E_AB, units: [Total energy/atom]).
+Ti-Pt: https://pubs.aip.org/aip/jap/article/101/4/043502/283597
+  A_AB = (A_AA + A_BB)^(1/2), q_AB = (q_AA + q_BB)/2, p_AB = (p_AA + p_BB)/2, r0_AB = (r0_AA + r0_BB)/2
+Ti-Pt: https://doi.org/10.1016/j.nimb.2010.01.001
+Co-Si: https://citeseerx.ist.psu.edu/document?repid=rep1&type=pdf&doi=09aaacac258a9c39a374b96b872ca60429b47f3d
+Co-Cu: https://doi.org/10.1016/S0169-4332(02)00475-0
+Cu, Tl: https://www.researchgate.net/profile/Cheng-I-Weng/publication/235697360_Molecular_Dynamics_Simulation_of_Sputter_Trench-Filling_Morphology_in_Damascene_Proces/links/0deec52353f4463039000000/Molecular-Dynamics-Simulation-of-Sputter-Trench-Filling-Morphology-in-Damascene-Proces.pdf
+Li-Cs: http://dx.doi.org/10.19044/esj.2019.v15n15p487  
+Ag-Cu-Au: https://iopscience.iop.org/article/10.1088/0957-4484/18/47/475702/pdf
+Ag-Cu, Ag-Ni: https://iopscience.iop.org/article/10.1088/0953-8984/19/35/356217/pdf
+Cu,Ag,Au: https://journals.aps.org/prb/abstract/10.1103/PhysRevB.55.2150
+Co-Au, Ag-Au: https://link.springer.com/content/pdf/10.1140/epjb/e2012-30352-3.pdf
+Co-Au: https://journals.aps.org/prb/abstract/10.1103/PhysRevB.70.195434
+Pt-Ni: https://iopscience.iop.org/article/10.1088/0953-8984/25/35/355008/pdf
+Cu-Pt: https://doi.org/10.1016/j.susc.2019.121515
+Al-Pd: https://www.academia.edu/download/49326282/Molecular_dynamics_simulation_of_energet20161003-15854-17t632v.pdf
+Rh,Ir,Cu,Ag,Pd,Pt,Au: https://journals.aps.org/prb/pdf/10.1103/PhysRevB.65.045407
+Rh,Ir,Cu,Ag,Pd,Pt,Au: https://doi.org/10.1016/S0169-4332(01)00729-2
+Cu-Co: http://genphys.phys.msu.ru/rus/sci/nanogroup/posters/Dokukin_poster_IBCM2021.pdf
+Al-Mg-Ca: https://pubs.rsc.org/en/content/articlepdf/2015/ra/c5ra12956g
+Al-Mg-Zn: https://www.mdpi.com/1996-1944/15/6/2062/pdf
+Al-Ca-Cu: https://link.springer.com/content/pdf/10.1007/s10853-016-9919-2.pdf
+Ca-Mg-Cu: https://pubs.rsc.org/en/content/articlepdf/2017/ra/c7ra05650h
+Mg-Ca-Ag: https://pubs.aip.org/aip/adv/article/9/7/075025/22647
+Mg-Al-Cu: https://pubs.rsc.org/en/content/articlepdf/2016/ra/c6ra17942h
+Mg-Cu-Ni: https://pubs.rsc.org/en/content/articlepdf/2014/cp/c4cp02133a
+Ca-Mg-Ni: https://pubs.rsc.org/en/content/articlepdf/2017/cp/c7cp00466d
+Al-Ni-Y: https://www.nature.com/articles/srep16218.pdf
+Mg-Ni-Y: https://pubs.rsc.org/en/content/articlepdf/2015/ra/c5ra09313a
+Mg-Cu-Y: https://pubs.rsc.org/en/content/articlepdf/2015/cp/c5cp00556f
+Al-Cu-Y: https://pubs.acs.org/doi/full/10.1021/jp502167t
+Al-Cs: https://journals.aps.org/prb/abstract/10.1103/PhysRevB.67.094301
+Al-Ni-Ti: https://www.mdpi.com/2073-4352/12/8/1065/pdf
+Ni-Ti-Hf: https://doi.org/10.1016/j.jallcom.2007.02.041
+Cu-Ti-Hf: https://pubs.acs.org/doi/pdf/10.1021/jp100690r
+Cu-Zr-Hf: https://pubs.aip.org/aip/jap/article/112/10/103518/369300
+Cu-Hf-Al: https://pubs.aip.org/aip/apl/article/99/1/011911/237703 (Supplementary Material)
+Cu-Zr-Ni: https://pubs.acs.org/doi/pdf/10.1021/jp200082e
+Hf-Cu-Ni: https://www.sciencedirect.com/science/article/pii/S0925838812017409
+Important!!!: https://www.researchgate.net/profile/Gbenga-S-Agunbiade/publication/320066582_Atomistic_Simulations_of_Ta_Mo_W_and_their_Binary_Alloys_Using_Embedded_Atom_Method_and_Second_Moment_Approximation_of_Tight_Binding/links/59cbdc6e45851556e982f691/Atomistic-Simulations-of-Ta-Mo-W-and-their-Binary-Alloys-Using-Embedded-Atom-Method-and-Second-Moment-Approximation-of-Tight-Binding.pdf
+MgO: https://iopscience.iop.org/article/10.1088/2053-1591/aac0d6/pdf
+#---------------------------------------------------------------------
+# SMTB-Q
+Al2O3: https://www.researchgate.net/profile/Nicolas-Salles-2/publication/355929008_Molecular_dynamics_study_of_high-pressure_alumina_polymorphs_with_a_tight-binding_variable-charge_model/links/6185126f0be8ec17a973c240/Molecular-dynamics-study-of-high-pressure-alumina-polymorphs-with-a-tight-binding-variable-charge-model.pdf
+SrTiO3: https://doi.org/10.1016/j.susc.2013.05.015
+Cd2Ti2O7, Gd2Zr2O7: https://iopscience.iop.org/article/10.1088/0953-8984/26/5/055403/pdf
+Y2Ti2O7: https://journals.aps.org/prb/abstract/10.1103/PhysRevB.94.224109
+TiO: https://pubs.acs.org/doi/full/10.1021/acs.jpcc.5b01580
+ZrO2: https://iopscience.iop.org/article/10.1209/0295-5075/83/40001/pdf
+
 #---------------------------------------------------------------------
 https://pubs.acs.org/doi/10.1021/ja404330q
 http://ethesis.nitrkl.ac.in/6144/1/212MM2338-5.pdf
