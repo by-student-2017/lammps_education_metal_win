@@ -1,0 +1,436 @@
+#-------------------------------------------------------------------------------
+# Morse potential
+#
+# Features
+# The Morse potential is very suitable for calculating the vibrational structure of molecules. In particular, it can accurately model the strength of molecular bonds and vibrational energy levels. 
+#   This is because it takes into account anharmonicity, which is closer to the behavior of real molecules than the harmonic oscillator model.
+# Consideration of anharmonicity: The vibrations of real molecules are not perfectly harmonic, and the spacing between energy levels decreases with the vibrational quantum number. The Morse potential takes this anharmonicity into account.
+# The Morse potential is also useful in ionic bond systems. In ionic bonds, the electron density distribution tends to be spherically symmetric, and the Morse potential can capture these characteristics well. 
+#   In particular, it is useful for accurately predicting the energies of bond formation and dissociation.
+# Bond dissociation: The Morse potential explicitly includes states in which bonds are broken (dissociated), so it can accurately express the dissociation energy of molecules.
+# For these reasons, the Morse potential is widely used in the analysis of molecular vibrations and the study of bond breaking processes.
+#
+# Alkaline metals or alkaline earth metals
+# The electron density distribution of alkaline earth metals and alkali metals is close to spherical symmetry, so the directionality of the bonds has little effect on the physical properties.
+#   These metals mainly form ionic bonds and metallic bonds, and the strength and distance of the bonds are more important than the directionality of the bonds.
+# The electron density distribution of alkaline earth metals and alkali metals tends to be spherical symmetric, so the directionality of the bonds has a relatively small effect on the physical properties. 
+#   For this reason, in combination with these metals, the accuracy of the simulation is often maintained even if the angle dependency is ignored.
+#
+#-------------------------------------------------------------------------------
+# Gas: https://www.semanticscholar.org/paper/Parameters-of-the-Morse-Potential-from-Second-of-Matsumoto/7f2ead7c7a8a964f1c90a6c3640a85b87c608688
+# cubic metals: https://journals.aps.org/pr/abstract/10.1103/PhysRev.114.687
+# Cu-X (X=Si,W,Ti,Ru): https://www.researchgate.net/figure/Parameters-of-Morse-potential_tbl1_250156595
+# Cu-X (X=Si,W,Ti): https://doi.org/10.2320/matertrans.MRA2008477
+# Al2024: https://www.researchsquare.com/article/rs-2060256/v1
+# X-Y (X=C,Si) (Y=Ni,Cu): https://www.researchgate.net/figure/Morse-potential-parameters-describing-the-interaction-of-deposited-particles-with-metal_tbl2_370093299
+# Au-C: https://www.researchgate.net/figure/Parameters-used-in-the-Morse-potential-energy-function_tbl1_267644756
+# gammaFeMnCN: https://www.researchgate.net/figure/Parameters-of-Morse-potentials-for-the-considered-interactions_tbl2_361258301
+# AlCoCrCuFeNi: https://www.scientific.net/MSF.749.479
+# Zn-Cd: https://js.vnu.edu.vn/MaP/article/view/1836/1740
+# Ni-base (Al,Ti,V,Cr,Co,Ni,Nb,Mo,Hf,Ta,W, and Re): https://doi.org/10.2320/matertrans1989.38.761
+# NiFeCrBN: https://doi.org/10.1016/j.jallcom.2019.153331
+# NiFeCrBN: https://link.springer.com/article/10.1007/s11665-024-09989-0
+# cubic-metals (Al, Cu, Ag, Au, Na, and K): https://journals.aps.org/pr/abstract/10.1103/PhysRev.157.463
+# (related paper: https://iopscience.iop.org/article/10.1088/1742-6596/1436/1/012037/meta)
+# Au,Al,Cr,Fe: https://www.iaeng.org/IJAM/issues_v50/issue_2/IJAM_50_2_03.pdf
+# Au-Cu: https://iopscience.iop.org/article/10.1088/0305-4608/4/12/009/meta
+# Ar-Cu: https://journals.aps.org/prb/abstract/10.1103/PhysRevB.60.15107
+# Cu-Si: https://pubs.aip.org/aip/acp/article/1710/1/030039/884397/Effects-of-temperature-on-Cu-structure-deposited
+# Si-C: https://www.sciencedirect.com/science/article/pii/S0169433207008501
+# Si-C: https://www.sciencedirect.com/science/article/pii/S0169433212011506
+# Si-C: https://iopscience.iop.org/article/10.1088/0957-4484/11/3/307/meta
+# Si-C: https://pubs.aip.org/aip/adv/article/7/5/055104/125196
+# Si-C: https://pubs.rsc.org/en/content/articlehtml/2017/ra/c6ra25426h
+# Si-C: https://link.springer.com/article/10.1134/S003602441712007X
+# Si-C: https://iopscience.iop.org/article/10.1088/0022-3727/39/16/022/meta
+# Si-C: https://pubs.aip.org/aip/adv/article/2/4/042116/21787
+# Si-C: https://link.springer.com/article/10.1007/s10853-024-09661-x
+# Si-diamond: https://doi.org/10.1016/j.procir.2013.06.141
+# Si-O: https://pubs.aip.org/aip/acp/article/1728/1/020236/1007805/Study-of-interaction-in-silica-glass-via-model
+# Si-O: https://iopscience.iop.org/article/10.1088/0957-4484/13/5/316/meta
+# Si-Li: https://link.springer.com/article/10.1134/S1023193516100049
+# Si-Li: https://link.springer.com/article/10.1134/S1063783419020136
+# Li-Si-Ag: https://iopscience.iop.org/article/10.1149/2.0751809jes/meta
+# X-Y (X=Si,C) (Y=Ni,Cu,Si,C): https://www.mdpi.com/1996-1944/16/8/3115
+# C-X (X=Al,Si): https://www.sciencedirect.com/science/article/pii/S0169433210004733
+# C-X (X=Al,Ni,Ti,Cu): https://www.sciencedirect.com/science/article/pii/S0010465524001589
+# P-P, Si-P, N-N, C-N: https://iopscience.iop.org/article/10.1088/1742-6596/1435/1/012061/pdf (Open Access)
+# X-Y (X=P,Si,N,C,Li)(Y=P,N): https://link.springer.com/article/10.1134/S1990793120060044
+# Cu: https://pubs.acs.org/doi/full/10.1021/cg070584h
+# As-S: https://pubs.aip.org/aip/jap/article/109/3/034301/926551
+# As-Co: https://link.springer.com/article/10.1007/s11595-007-3415-0
+# Derivation of Morse Potential Function: https://doi.org/10.1080/00268976.2024.2360542
+# Combination Rules for Morse-Based van der Waals Force Fields: https://pubs.acs.org/doi/full/10.1021/acs.jpca.7b11252
+# Fe-Cr-N (Morse): https://www.sciencedirect.com/science/article/pii/S0925838819331615
+# Li-X (X=C,Si) (Morse): https://link.springer.com/article/10.1134/S1063783416090146
+# Li-X (X=Si,C,P,N)(Morse): https://www.mdpi.com/2079-3197/7/4/60 (Open Access)
+# Li-C (Morse): https://open.metu.edu.tr/handle/11511/17968
+# Al-X (X=Si,C) (Morse): https://link.springer.com/article/10.1007/s00339-018-1624-3
+# Graphite-SiO-H2O: https://www.sciencedirect.com/science/article/pii/S0008622322010053
+# Diamond-Al (Morse): https://link.springer.com/article/10.1007/s11249-021-01414-0
+# [lammps-users] How to add a numeric term to Morse potential function in LAMMPS: https://matsci.org/t/lammps-users-how-to-add-a-numeric-term-to-morse-potential-function-in-lammps/34933
+# Lichang Wang, "Molecular Dynamics: Studies of Synthetic and Biological Macromolecules"
+#-------------------------------------------------------------------------------
+# Other potential
+# LJ+Ecoul: https://doi.org/10.1063/1.3103886
+#-------------------------------------------------------------------------------
+
+
+#-------------------------------------------------------------------------------
+# Gas: https://www.semanticscholar.org/paper/Parameters-of-the-Morse-Potential-from-Second-of-Matsumoto/7f2ead7c7a8a964f1c90a6c3640a85b87c608688
+
+#-------------------------------------
+Morse potential
+System	D/k [K]	r0 [A]	alpha [A^-1]
+He	12.6	2.92	2.197
+Ne	51.3	3.09	2.036
+Ar	118.1	4.13	1.253
+Kr	149.0	4.49	1.105
+Xe	226.9	4.73	1.099
+H2	49.4	3.29	1.923
+D2	47.5	3.31	1.844
+O2	152.4	3.75	1.542
+CO	100.3	4.27	1.136
+NO	131.8	4.22	1.309
+CO2	196.7	5.18	1.020
+NO2	193.6	5.31	0.978
+CH4	149.1	4.50	1.166
+C2H4	206.7	5.26	1.004
+C6H6	927.7	4.46	1.400
+Ar-H2	64.9	3.73	1.389
+Xe-H2	89.7	3.90	1.395
+#-------------------------------------
+Ref: L-J(12,6) potential
+System	epsilon/k [K]	r0 [A]
+He	10.8	2.88
+Ne	35.6	3.09
+Ar	119	3.83
+Kr	166.7	4.13
+Xe	225	4.57
+H2	29.2	3.22
+D2	31.1	3.22
+N2	95.9	4.16
+O2	118	3.88
+CO	100.2	4.22
+NO	131	3.56
+CO2	189	5.03
+NO2	193.6	5.15
+CH4	148.2	4.28
+C2H4	199.2	5.07
+#-------------------------------------
+
+#-------------------------------------------------------------------------------
+# cubic metals: https://journals.aps.org/pr/abstract/10.1103/PhysRev.114.687
+# (related paper: https://iopscience.iop.org/article/10.1088/1742-6596/1436/1/012037/meta)
+
+TABLE I. Morse potential constani. s for the pairwise atomic interaction in cubic metals
+
+Metal	alpha [A^-1]	r0 [A]	D [eV]
+Pb	1.1836	3.733	0.2348
+Ag	1.369	3.115	0.3323
+Ni	1.4199	2.78	0.4205
+Cu	1.3588	2.866	0.3429
+Al	1.1646	3.253	0.2703
+Ca	0.80535	4.569	0.1623
+Sr	0.73776	4.988	0.1513
+Mo	1.5079	2.976	0.8032
+W	1.4116	3.032	0.9906
+Cr	1.5721	2.754	0.4414
+Fe	1.3885	2.845	0.4174
+Ba	0.65698	5.373	0.1416
+K	0.49767	6.369	0.05424
+Na	0.58993	5.336	0.06334
+Cs	0.41569	7.557	0.04485
+Rb	0.42981	7.207	0.04644
+#-------------------------------------------------------------------------------
+# Cu-X (X=Si,W,Ti,Ru): https://www.researchgate.net/figure/Parameters-of-Morse-potential_tbl1_250156595
+
+System	D [aJ]	alpha [A]	r0 [A]
+Cu-Si	1.21085	137.0	2.5
+Cu-W	0.93622	147	2.6
+Cu-Ti	0.69905	127	2.7
+Cu-Ru	1.74762	83.4	1.8
+#-------------------------------------------------------------------------------
+# Al2024: https://www.researchsquare.com/article/rs-2060256/v1
+
+Table 2 Morse potential parameters of the same element
+Element	D [ev]	alpha [A^-1]	r0 [A]
+W-W	0.024	2.677	2.98
+Al-Al	0.270	1.165	3.252
+Cu-Cu	0.343	1.359	2.866
+Mg-Mg	0.053	3.8905	2.043
+
+D: Binding energy [eV]
+alpha: Elastic modulus [A^-1]
+r: Equilibrium distance [A]
+
+D(A,B) = {D(A) * D(B)}^(1/2)
+alpha(A,B) = (1/2)*{alpha(A) + alpha(b)}
+sigma(A,B) = {sigma(A) * sigma(B)*^(1/2)
+r0(A,B) = sigma(A,B) + ln(2)/alpha
+
+Table 3 Morse potential parameters of differ0nt atoms
+Element	D [ev]	alpha [A^-1]	r0 [A]	sigma [A]
+C-Al	0.0944	1.71	2.4965	2.0912
+C-Cu	0.1063	1.8071	2.3386	1.955
+C-Mg	0.0418	2.1492	2.7380	2.4155
+W-Al	0.08	2.463	2.890	2.609
+W-Cu	0.091	2.560	2.728	2.4557
+W-Mg	0.22974	1.71825	2.7284	2.325
+
+#-------------------------------------------------------------------------------
+# X-Y (X=Si,C) (Y=Ni,Cu,Si,C): https://www.mdpi.com/1996-1944/16/8/3115
+
+Atom pair	alpha [A^-1]	r0 [A]	D0 [eV]
+Si-Ni	4.081	2.032	0.181
+Si-Cu	4.049	1.864	0.163
+C-Ni	1.987	2.664	1.009
+C-Cu	1.957	2.443	0.912
+Si-C	4.648	1.947	0.435
+C-C	2.555	2.552	2.423
+
+#-------------------------------------------------------------------------------
+# Au-C: https://www.researchgate.net/figure/Parameters-used-in-the-Morse-potential-energy-function_tbl1_267644756
+
+Atom pair	alpha [A^-1]	r0 [A]	D0 [eV]
+Au-Au	1.583	3.024	0.475
+C-C	2.555	2.522	2.423
+Au-C	2.011	2.762	1.073
+
+#-------------------------------------------------------------------------------
+# gammaFe-Mn-C-N: https://www.mdpi.com/2075-4701/12/6/982
+
+V(r) = D * beta * exp(-alpha*r)*(beta*exp(-alpha*r)-2)
+     = D * beta * {beta*exp(-2.0*alpha*r) - 2.0*exp(-alpha*r)}
+beta = exp(alpha*r0)
+
+Table 3. Parameters of Morse potentials for the considered interactions.
+Bond	alpha [A^-1]	beta	D [eV]
+Fe-Fe	1.285	35.878	0.433
+Fe-C	1.82	41	0.41
+C-C	1.97	50	0.65
+Mn-Mn	1.321	39.792	0.373
+Mn-Fe	1.306	38.030	0.413
+Mn-C	1.87	43	0.777
+Fe-N	1.788	34.046	0.579
+Mn-N	1.812	36.482	0.940
+C-N	2.140	58.323	0.230
+N-N	1.556	700	0.001
+
+#-------------------------------------------------------------------------------
+# AlCoCrCuFeNi: https://www.scientific.net/MSF.749.479
+
+Atom pair	alpha [A^-1]	r0 [A]	D0 [eV]
+Al-Al	0.995292	2.518697	0.960368
+Al-Co	1.314555	2.284181	1.714683
+Al-Cr	1.016057	2.467326	1.826467
+Al-Cu	1.207749	2.354682	1.537906
+Al-Fe	1.135279	2.327120	2.240749
+Al-Ni	1.195492	2.290697	1.716076
+Co-Co	2.828641	2.051120	0.867226
+Co-Cr	1.915035	1.959203	1.635324
+Co-Cu	1.801807	2.245115	1.306624
+Co-Fe	1.884369	2.043840	1.713975
+Co-Ni	1.625985	2.169203	1.604170
+Cr-Cr	1.750558	1.585078	4.535218
+Cr-Cu	1.195490	2.378922	1.957234
+Cr-Fe	2.232597	1.762274	3.146814
+Cr-Ni	1.312088	2.177614	1.821264
+Cu-Cu	1.475092	2.285317	1.368582
+Cu-Fe	1.462777	2.266919	1.886415
+Cu-Ni	1.471586	2.266504	1.475798
+Fe-Fe	2.058736	1.881890	2.022013
+Fe-Ni	2.159460	2.121357	1.213002
+Ni-Ni	1.674961	2.187638	1.478106
+#-------------------------------------------------------------------------------
+# Zn-Cd: https://js.vnu.edu.vn/MaP/article/view/1836/1740
+
+Bond	D0 [eV]	alpha [A^-1]	r0 [A]
+Zn-Zn	0.1685	1.7000	2.7650
+Cd-Cd	0.1653	1.9053	3.0550
+Zn-Cd	0.1669	1.8046	2.9100
+#-------------------------------------------------------------------------------
+# Ni-base (Al,Ti,V,Cr,Co,Ni,Nb,Mo,Hf,Ta,W, and Re): https://doi.org/10.2320/matertrans1989.38.761
+Molecular Dynamics Simulation of Composition Dependence of Cohesive Energy, Lattice Constants and Elastic Constants in Nickel-Based Superalloys
+
+V(r) = D0*[exp{-2*alpha*(r-r0)} - 2*exp{-alpha*(r-r0)}]
+
+r0(A,B) = {r0(A) + r0(B)}/2
+D0(A,B) = {D0(A) + D0(B)}/2
+alpha(A,B) = {alpha(A) + alpha(B)}/2
+
+Table 2 Obtained Morse potential parameters of metals
+Element	Structure	r0 [A]	D0 [eV]	alpha [A^-1]	rcut [A]
+Al	FCC	2.86	0.5650	1.066	4.05
+Ni	FCC	2.49	0.7400	1.416	3.52
+Ti	HCP	2.89	0.8083	1.071	3.83
+Co	HCP	2.50	0.7317	1.446	3.26
+Y	HCP	3.55	0.7283	0.8145	4.74
+Zr	HCP	3.17	1.042	0.8610	4.19
+Hf	HCP	3.13	1.073	0.9846	4.14
+Re	HCP	2.74	1.338	1.573	3.58
+V	BCC	2.73	0.794	1.237	3.93
+Cr	BCC	2.60	0.6302	1.492	3.74
+Fe	BCC	2.58	0.648	1.365	3.73
+Nb	BCC	2.99	1.137	1.099	4.29
+Mo	BCC	2.82	1.040	1.467	4.09
+Ta	BCC	2.98	1.225	1.154	4.29
+W	BCC	2.85	1.368	1.391	4.10
+
+#-------------------------------------------------------------------------------
+# NiFeCrBN: https://doi.org/10.1016/j.jallcom.2019.153331
+
+V(r) = 4*D*[exp{-2*alpha*(r-s)} - 2*exp{-alpha*(r-s)}]
+s = r0 - ln(2)/alpha
+
+Table 3
+Parameter of Morse potential between the same elements [29-31].
+D(eV) a(1/A) r0(A)
+Ni-Ni 0.4205 1.4199 2.780
+Fe-Fe 0.4174 1.3885 2.845
+Cr-Cr 0.4414 1.5721 2.754
+N-N 5.7100 2.900 1.270
+B-B 2.992 1.26 1.138
+
+D(A,B) = sqrt{D(A) * D(B)}
+alpha(A,B) = (1/2)*{alpha(A) + alpha(B)}
+s(A,B) = sqrt{s(A) * s(B)}
+r0(A,B) = s(A,B) + ln(2)/alpha
+
+Table 4
+Parameters of Morse potential between different kinds of elements.
+D(eV) a(1/A) r0(A)
+Ni-N 1.550 2.160 1.860
+Ni-B 1.122 1.34 2.131
+Fe-N 1.540 2.144 1.877
+Fe-B 1.1175 1.324 1.6339
+Cr-N 1.588 2.240 1.852
+Cr-B 1.149 1.416 1.6224
+
+#-------------------------------------------------------------------------------
+# cubic-metals (Al, Cu, Ag, Au, Na, and K): https://journals.aps.org/pr/abstract/10.1103/PhysRev.157.463
+
+Table 1. Parameters of the Morse potential and data used to evaluate these parameters
+Element	D0 [eV]	alpha [A^-1]	r0 [A]
+Al	0.2700	1.0341	3.4068
+Cu	0.3282	1.3123	2.8985
+Ag	0.3253	1.3535	3.1300
+Au	0.4753	1.5830	3.0242
+Na	0.0577	0.5504	5.3678
+K	0.0532	0.4766	6.4130
+
+#-------------------------------------------------------------------------------
+# Au,Al,Cr,Fe: https://www.iaeng.org/IJAM/issues_v50/issue_2/IJAM_50_2_03.pdf
+
+Element	D0 [eV]	r0 [A]	alpha [A^-1]
+Au-Au	0.12	3.011	1.735
+Al-Al	0.123	3.178	1.089
+Cr-Cr	0.462	3.116	1.116
+Fe-Fe	0.028	3.636	1.357
+
+#-------------------------------------------------------------------------------
+# Au-Cu: https://iopscience.iop.org/article/10.1088/0305-4608/4/12/009/meta
+
+Table 1. Parameters of the Morse potential for pure metals Au(A), Cu(B) and Au, Cu(A-B) interactions from
+1st neighbour consideration.
+Element	D0 [eV]	alpha [A^-1]	r0 [A]
+Au(A)	0.63272	1.6506	2.8709
+Cu(B)	0.58877	1.4311	2.5421
+Au,Cu(A-B) Combination rule	0.61035	2.5421	2.6956
+
+#-------------------------------------------------------------------------------
+# Ar-Cu: https://journals.aps.org/prb/abstract/10.1103/PhysRevB.60.15107
+
+Element	D0 [eV]	r0 [A]	alpha [A^-1]
+Ar	0.0118	3.82	1.56
+Cu	0.3593	2.813	1.3534
+#-------------------------------------------------------------------------------
+# Cu-Si: https://pubs.aip.org/aip/acp/article/1710/1/030039/884397/Effects-of-temperature-on-Cu-structure-deposited
+
+TABLE 3. Morse parameters for Cu-Si interaction
+Parameter	D0 [eV]	alpha [A^-1]	r0 [A]
+Cu-Si	0.900	1.110	3.150
+
+#-------------------------------------------------------------------------------
+# Si-C: https://www.sciencedirect.com/science/article/pii/S0169433207008501
+
+Element	D0 [eV]	alpha [A^-1]	r0 [A]
+C-Si	0.435	4.6487	1.9475
+
+#-------------------------------------------------------------------------------
+# Si-diamond: https://doi.org/10.1016/j.procir.2013.06.141
+
+Element	D0 [eV]	alpha [A^-1]	r0 [A]
+Si-diamond	0.435	4.6487	1.9475
+
+#-------------------------------------------------------------------------------
+# Si-O: https://pubs.aip.org/aip/acp/article/1728/1/020236/1007805/Study-of-interaction-in-silica-glass-via-model
+
+Table2. Morse Constants for Si and O
+
+Bonded-interaction
+Element	D0 [eV]	alpha [A^-1]	r0 [A]
+Si-O	24.43372	0.8496	
+O-O	2.60610	0.6192	
+Si-Si	5.26738	0.6524	
+
+Non-Bonded-interaction
+Element	D0 [eV]	alpha [A^-1]	r0 [A]
+Si-O	3.70567	0.8496	3.49
+O-O	3.70567	0.6192	3.154
+Si-Si	5.267383	0.6524	3.826
+#-------------------------------------------------------------------------------
+# Si-O: https://iopscience.iop.org/article/10.1088/0957-4484/13/5/316/meta
+
+Table 1. Parameters for the Morse potential.
+Element	alpha [A^-1]	D0 [eV]	r0[A]
+Si-O	1.865	4.67465	 1.631
+Si-C	4.6417	4.350288	 1.9475
+O-O	2.667	5.165533	1.210
+
+#-------------------------------------------------------------------------------
+# Si-P, C-N: https://iopscience.iop.org/article/10.1088/1742-6596/1435/1/012061/pdf (Open Access)
+
+Table 1. Morse potential perameters.
+Interaction	D0 [eV]	alpha [A^-1]	r0 [A]
+P-P	1.001	2.322	2.263
+Si-P	4.479	2.301	1.3
+N-N	2.775	2.233	1.342
+C-N	4.44	2.096	1.350
+
+#-------------------------------------------------------------------------------
+# C-X (X=Al,Si): https://www.sciencedirect.com/science/article/pii/S0169433210004733
+
+Element	D0 [eV]	alpha [A^-1]	r0 [A]
+Al-C	0.28	2.78	2.2
+Si-C	0.435	4.6487	1.9475
+
+#-------------------------------------------------------------------------------
+# Cu: https://pubs.acs.org/doi/full/10.1021/cg070584h
+
+Element	D0 [eV]	alpha[A^-1]	r0 [A]
+Cu	0.343	1.358	2.626
+
+#-------------------------------------------------------------------------------
+# As-S: https://pubs.aip.org/aip/jap/article/109/3/034301/926551
+
+Element	D0 [eV]	alpha[A^-1]	r0 [A]
+As-S	2.35	1.62724	2.239
+
+#-------------------------------------------------------------------------------
+# C. L. Kong, J. Chem. Phys. 59, 2464-2467 (1973): https://doi.org/10.1063/1.1680358
+# wikipedia: https://en.wikipedia.org/wiki/Combining_rules
+
+Note: e = epsilon, s = sigma
+
+TABLE 1. Combining rules for the potential parameters.
+
+L-J (12-6) potential: U(R) =4*e*[(s/R)^12 - (s/R)^6] 
+  e12 * (s12)^12 = (e11 * (s11)^12 / 2^13) * [ {(e22 * (s22)^12)/(e11 * (s11)^12)}^(1/13)]^13
+  e12 * (s12)^6  = (el1 * (s11)^6 * e22 * (s22)^6)^(1/2) 
+
+Morse potential: U(R) =4*e*(exp{2*C*[1-(R/s)]} - exp{C*[1-(R/s)]})
+  (e12*C12*exp(2*C12) / s12)^(s12/C12) = (e11 * C11 exp(2*C11) / sl1)^{s11/(2*C11)} * (e22*C22*exp(2*C22) / s22)^{s22/(2*C22)}
+  s12/C12 = (1/2)*[(s11/C11) + (s22/C22)] 
+  e12 * exp{s12*[{C11/(2*s11)} + {C22/(2*s22)}]} = {e11*exp(C11)*e22exp(C22)}^(1/2)
+#-------------------------------------------------------------------------------
