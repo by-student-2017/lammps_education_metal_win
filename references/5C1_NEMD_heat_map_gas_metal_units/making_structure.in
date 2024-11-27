@@ -1,0 +1,31 @@
+#------------------------------------------------------------------------------------------
+# LAMMPS 64-bit 22Dec2022-MSMPI
+clear
+#------------------------------------------------------------------------------------------
+units metal
+atom_style full
+read_data carbon_slit.data extra/bond/per/atom 1 extra/angle/per/atom 0 extra/special/per/atom 2
+region box block INF INF INF INF INF 83 units lattice
+
+#pair_style lj/cut/coul/cut 10.0
+pair_style lj/cut 10.0
+pair_coeff 1 1 $(0.00008617*52.84) $(10*0.343) # C
+pair_coeff 1 2 0.0    1.0
+pair_coeff 1 3 0.0    1.0
+pair_coeff 2 2 $(0.00008617*30.20) $(10*0.312) # O
+pair_coeff 2 3 0.0    1.0
+pair_coeff 3 3 $(0.00008617*22.14) $(10*0.257) # H
+
+bond_style harmonic
+bond_coeff 1 $(0.0434*570.0) 1.21 # O2 [kcal/mol]
+bond_coeff 2 $(0.0434*383.0) 0.74 # H2 [kcal/mol]
+#bond_coeff 3 $(0.0434*337.0) 1.10 # N2 [kcal/mol]
+
+molecule oxygen ./molecular_files/O2.txt
+create_atoms 0 random 200 34564 box mol oxygen 25367 overlap 2.0
+
+molecule hydrogen ./molecular_files/H2.txt
+create_atoms 0 random 100 34564 box mol hydrogen 25367 overlap 2.0
+
+write_data simulation.data
+#------------------------------------------------------------------------------------------

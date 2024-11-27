@@ -1,0 +1,103 @@
+#------------------------------------------------------------------------------------------
+# LAMMPS 64-bit 22Dec2022-MSMPI
+clear
+#------------------------------------------------------------------------------------------
+units metal
+boundary p p f
+atom_style full
+
+read_data simulation.data
+
+#pair_style lj/cut/coul/long 10.0
+pair_style hybrid lj/cut 10.0 airebo/morse 3.0
+
+pair_coeff 1 1 lj/cut 0.0 0.0 # C-C
+pair_coeff 1 2 lj/cut $((0.00455322*0.00260233)^(1/2)) $((3.43+3.12)/2) # C-O
+pair_coeff 1 3 lj/cut $((0.00455322*0.0019078 )^(1/2)) $((3.43+2.57)/2) # C-O
+pair_coeff 2 2 lj/cut $((0.00455322*0.00260233)^(1/2)) $((3.12+3.12)/2) # O-O
+pair_coeff 2 3 lj/cut $((0.00455322*0.0019078 )^(1/2)) $((3.12+2.57)/2) # O-H
+pair_coeff 3 3 lj/cut $((0.0019078 *0.0019078 )^(1/2)) $((2.57+2.57)/2) # H-H
+
+pair_coeff * * airebo/morse CH.airebo-m C NULL NULL
+
+bond_style harmonic
+bond_coeff 1 24.738  1.21 # O-O
+bond_coeff 2 16.6222 0.74 # H-H
+
+#kspace_style ewald 1.0e-4
+
+#settings
+neighbor 2.0 bin
+neigh_modify delay 2 check yes
+
+#group
+group gas type 2 3
+#group graphene type 1
+region ledge block INF INF INF  4 90 111 # min:85, max:116
+region redge block INF INF 25 INF 90 111 # min:85, max:116
+group graphene_ledge region ledge
+group graphene_redge region redge
+region vacuo block INF INF INF INF 116.0 INF 
+group o2 type 2
+group h2 type 3
+
+#fix 1 graphene  setforce 0.0 0.0 0.0
+fix fl graphene_ledge  setforce 0.0 0.0 0.0
+fix fr graphene_redge  setforce 0.0 0.0 0.0
+
+#structure optimization
+minimize 1.0e-4 1.0e-6 1000 10000
+
+compute  mobile gas  temp
+
+velocity gas create  298.0 45218
+
+fix 3 all nvt temp 298.0 298.0 100.0
+
+#variable
+variable o2 equal count(o2,vacuo)/2.0
+variable h2 equal count(h2,vacuo)/2.0
+variable st equal step/1000000
+
+#statistics
+fix number gas print 10000 "${st} ns  O2 H2 = ${o2} ${h2}" file number.tem
+
+#number density calculation
+compute dense gas chunk/atom bin/1d z lower 2 
+
+fix O2number o2 ave/chunk 100 10 100000 dense density/number ave one file O2_density.tem
+fix H2number h2 ave/chunk 100 10 100000 dense density/number ave one file H2_density.tem
+
+timestep  0.001 # 1 [fs]
+
+thermo   10000
+
+dump mydump all  xyz 10000 10ps.xyz
+dump_modify  mydump element C O H
+# ----- calculate temperature per particle (Additional: 4/Jul/2023) --------------------------------
+variable kB  equal 1.3806504e-23 # Boltzman constant [J/K]
+variable e2J equal 1.6021766e-19 # change [eV] to [J]
+compute ke all ke/atom           # The kinetic energy [kcal/mol] of each atom
+variable tempatom atom c_ke*${e2J}*(2/3)/${kB} # ke = (1/2)*m*v^2 = (3/2)*kB*T, T = ke*(2/3)/kB
+#
+# Reference
+# [1] M. Li et al., Nanomaterials 2019, 9(3), 347; https://doi.org/10.3390/nano9030347
+# URL: https://www.mdpi.com/2079-4991/9/3/347
+# Supplementary Materials: https://www.mdpi.com/2079-4991/9/3/347/s1.
+# ----- --------------------------------------------------------------------------------------------
+fix ave_tempatom all ave/atom 1 1000 1000 v_tempatom # Average calculation for temperature of each atom
+#------------------------------------------
+dump          d1 all cfg 1000 cfg/run.*.cfg mass type xs ys zs id q vx vy vx fx fy fz f_ave_tempatom
+dump_modify   d1 element C O H
+#------------------------------------------
+
+thermo_style custom step temp press etotal 
+
+echo both
+
+restart 5000000  *.restart
+
+fix xwalls all wall/reflect zlo EDGE zhi EDGE
+
+run 10000000
+#------------------------------------------------------------------------------------------
