@@ -109,7 +109,7 @@ for i in range(2):
       f.write("fix 1 all nve \n")
       f.write("fix 2 all temp/rescale 10 300.0 300.0 1.0 0.5 \n")
       f.write("#dump 1 all custom 10000 dump.equilibrate.*.cfg id type x y z \n")
-      f.write("dump 1 all custom 10000 dump.equilibrate.*.cfg mass type xs ys zs id type vx vy vz fx fy fz \n")
+      f.write("dump 1 all cfg 10000 dump.equilibrate.*.cfg mass type xs ys zs id type vx vy vz fx fy fz \n")
       if i==0:
         f.write("dump_modify 1 element Al Si Mg Cu Zn \n")
       else:
@@ -130,7 +130,7 @@ for i in range(2):
       f.write("shell mkdir quenching \n")
       f.write("shell cd quenching \n")
       f.write("#dump 1 all custom 5000 dump.quenching.*.cfg id type x y z \n")
-      f.write("dump 1 all custom 5000 dump.quenching.*.cfg mass type xs ys zs id type vx vy vz fx fy fz \n")
+      f.write("dump 1 all cfg 5000 dump.quenching.*.cfg mass type xs ys zs id type vx vy vz fx fy fz \n")
       if i==0:
         f.write("dump_modify 1 element Al Si Mg Cu Zn \n")
       else:
@@ -182,8 +182,8 @@ for i in range(2):
       f.write("variable fd equal ((v_p2-v_fm)*(v_p3-v_fm)*(v_p4-v_fm)-v_p11^2*(v_p4-v_fm)-v_p12^2*(v_p3-v_fm)-v_p13^2*(v_p2-v_fm)+2*v_p11*v_p12*v_p13) #### Deviatoric Von Mises stress \n")
       f.write("\n")
       f.write("#dump 1 all custom 100 dump.comp.*.cfg id type xs ys zs c_csym c_peratom fx fy fz \n")
-      f.write("dump 2 all custom 80000 dump.defo.*.cfg id type x y z c_csym c_2[1] c_2[2] c_2[3] c_2[4] c_2[5] c_2[6] \n")
-      f.write("dump 2 all custom 80000 dump.defo.*.cfg mass type xs ys zs id type vx vy vz fx fy fz \n")
+      f.write("dump 2 all custom 80000 dump.defo.* id type x y z c_csym c_2[1] c_2[2] c_2[3] c_2[4] c_2[5] c_2[6] \n")
+      f.write("dump 2 all cfg 80000 dump.defo.*.cfg mass type xs ys zs id type vx vy vz fx fy fz \n")
       if i==0:
         f.write("dump_modify 2 element Al Si Mg Cu Zn \n")
       else:
