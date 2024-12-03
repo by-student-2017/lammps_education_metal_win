@@ -1,3 +1,4 @@
+# Appendix F. Python code for automatic analyses
 import os;
 import shutil;
 for i in range(2):
