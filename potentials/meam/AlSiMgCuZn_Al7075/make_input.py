@@ -23,16 +23,16 @@ for i in range(2):
   for j in range(4):
     if j==0:
       srate="1E8"
-      runn="2000000"
+      runn="4000000"
     elif j==1:
       srate="5E7"
-      runn="4000000"
+      runn="8000000"
     elif j==2:
       srate="1E9"
-      runn="200000"
+      runn="400000"
     elif j==3:
       srate="5E8"
-      runn="400000"
+      runn="800000"
     if not os.path.isdir("./"+dirname+"/"+srate+"/"):
       os.mkdir("./"+dirname+"/"+srate+"/")
     for k in range(5):
@@ -144,7 +144,7 @@ for i in range(2):
       f.write("\n")
       f.write("# ---------- Deform --------- \n")
       f.write("reset_timestep 0 \n")
-      f.write("timestep 0.002 # 2 [fs] \n")
+      f.write("timestep 0.001 # 1 [fs] \n")
       f.write("variable ssrate equal "+srate+" \n")
       f.write("variable ssrate1 equal \"v_ssrate/1.0e12\" \n")
       f.write("fix 1 all deform 1 z erate ${ssrate1} units box \n")
@@ -171,7 +171,7 @@ for i in range(2):
       f.write("variable t equal \"v_fm/v_fv\" \n")
       f.write("variable fd equal ((v_p2-v_fm)*(v_p3-v_fm)*(v_p4-v_fm)-v_p11^2*(v_p4-v_fm)-v_p12^2*(v_p3-v_fm)-v_p13^2*(v_p2-v_fm)+2*v_p11*v_p12*v_p13) #### Deviatoric Von Mises stress \n")
       f.write("\n")
-      f.write("dump 2 all custom 40000 dump.defo.*.cfg id type x y z c_csym c_2[1] c_2[2] c_2[3] c_2[4] c_2[5] c_2[6] \n")
+      f.write("dump 2 all custom 80000 dump.defo.*.cfg id type x y z c_csym c_2[1] c_2[2] c_2[3] c_2[4] c_2[5] c_2[6] \n")
       f.write("#dump 1 all custom 100 dump.comp.*.cfg id type xs ys zs c_csym c_peratom fx fy fz \n")
       f.write("\n")
       f.write("fix fef_print all print 50 \"${p1} ${p2} ${p3} ${p4} ${p5} ${p6} ${p7} ${p8} ${p9} ${p10} ${p11} ${p12} ${p13} ${fm} ${fv} ${t} ${fd}\" file mg001.defo.txt screen no \n")
