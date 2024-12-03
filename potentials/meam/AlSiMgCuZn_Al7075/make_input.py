@@ -74,8 +74,8 @@ for i in range(2):
       if i==0:
         shutil.copy('library.meam', dirname+"/"+srate+"/"+str(l+1))
         shutil.copy('AlSiMgCuZn.meam', dirname+"/"+srate+"/"+str(l+1))
-        f.write("pair_coeff * * library.meam Al Si Mg Cu Zn NULL Al Si Mg Cu Zn \n")
-        f.write("#pair_coeff * * library.meam Al Si Mg Cu Zn AlSiMgCuZn.meam Al Si Mg Cu Zn \n")
+        f.write("#pair_coeff * * library.meam Al Si Mg Cu Zn NULL Al Si Mg Cu Zn \n")
+        f.write("pair_coeff * * library.meam Al Si Mg Cu Zn AlSiMgCuZn.meam Al Si Mg Cu Zn \n")
       else:
         #shutil.copy('Jelinek_2012_meam', dirname+"/"+srate+"/"+str(l+1))
         #shutil.copy('Jelinek_2012_meam.alsimgcufe', dirname+"/"+srate+"/"+str(l+1))
@@ -135,6 +135,7 @@ for i in range(2):
       f.write("undump 1 \n")
       f.write("shell cd .. \n")
       f.write("shell mkdir deform \n")
+      f.write("shell cd deform \n")
       f.write("# ---------- Storing Initial length --------- \n")
       f.write("variable tmp equal \"lz\" \n")
       f.write("variable L0 equal ${tmp} \n")
