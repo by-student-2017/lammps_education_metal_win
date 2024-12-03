@@ -108,7 +108,12 @@ for i in range(2):
       f.write("timestep 0.001 # 1 [fs] \n")
       f.write("fix 1 all nve \n")
       f.write("fix 2 all temp/rescale 10 300.0 300.0 1.0 0.5 \n")
-      f.write("dump 1 all custom 10000 dump.equilibrate.*.cfg id type x y z \n")
+      f.write("#dump 1 all custom 10000 dump.equilibrate.*.cfg id type x y z \n")
+      f.write("dump 1 all custom 10000 dump.equilibrate.*.cfg mass type xs ys zs id type vx vy vz fx fy fz \n")
+      if i==0:
+        f.write("dump_modify 1 element Al Si Mg Cu Zn \n")
+      else:
+        f.write("dump_modify 1 element Al Si Mg Cu Fe \n")
       f.write("\n")
       f.write("run 10000 \n")
       f.write("unfix 1 \n")
@@ -124,7 +129,12 @@ for i in range(2):
       f.write("# ---------- Quenching --------- \n")
       f.write("shell mkdir quenching \n")
       f.write("shell cd quenching \n")
-      f.write("dump 1 all custom 5000 dump.quenching.*.cfg id type x y z \n")
+      f.write("#dump 1 all custom 5000 dump.quenching.*.cfg id type x y z \n")
+      f.write("dump 1 all custom 5000 dump.quenching.*.cfg mass type xs ys zs id type vx vy vz fx fy fz \n")
+      if i==0:
+        f.write("dump_modify 1 element Al Si Mg Cu Zn \n")
+      else:
+        f.write("dump_modify 1 element Al Si Mg Cu Fe \n")
       f.write("fix 1 all npt temp 300 800 100.0 aniso 0.0 0.0 10 drag 0.3 \n")
       f.write("\n")
       f.write("run 1000 \n")
@@ -171,8 +181,13 @@ for i in range(2):
       f.write("variable t equal \"v_fm/v_fv\" \n")
       f.write("variable fd equal ((v_p2-v_fm)*(v_p3-v_fm)*(v_p4-v_fm)-v_p11^2*(v_p4-v_fm)-v_p12^2*(v_p3-v_fm)-v_p13^2*(v_p2-v_fm)+2*v_p11*v_p12*v_p13) #### Deviatoric Von Mises stress \n")
       f.write("\n")
-      f.write("dump 2 all custom 80000 dump.defo.*.cfg id type x y z c_csym c_2[1] c_2[2] c_2[3] c_2[4] c_2[5] c_2[6] \n")
       f.write("#dump 1 all custom 100 dump.comp.*.cfg id type xs ys zs c_csym c_peratom fx fy fz \n")
+      f.write("dump 2 all custom 80000 dump.defo.*.cfg id type x y z c_csym c_2[1] c_2[2] c_2[3] c_2[4] c_2[5] c_2[6] \n")
+      f.write("dump 2 all custom 80000 dump.defo.*.cfg mass type xs ys zs id type vx vy vz fx fy fz \n")
+      if i==0:
+        f.write("dump_modify 2 element Al Si Mg Cu Zn \n")
+      else:
+        f.write("dump_modify 2 element Al Si Mg Cu Fe \n")
       f.write("\n")
       f.write("fix fef_print all print 50 \"${p1} ${p2} ${p3} ${p4} ${p5} ${p6} ${p7} ${p8} ${p9} ${p10} ${p11} ${p12} ${p13} ${fm} ${fv} ${t} ${fd}\" file mg001.defo.txt screen no \n")
       f.write("run "+runn+" \n")
