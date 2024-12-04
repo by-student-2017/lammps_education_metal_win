@@ -183,11 +183,11 @@ for i in range(2):
       f.write("\n")
       f.write("#dump 1 all custom 100 dump.comp.*.cfg id type xs ys zs c_csym c_peratom fx fy fz \n")
       f.write("dump 2 all custom 80000 dump.defo.* id type x y z c_csym c_2[1] c_2[2] c_2[3] c_2[4] c_2[5] c_2[6] \n")
-      f.write("dump 2 all cfg 80000 dump.defo.*.cfg mass type xs ys zs id type vx vy vz fx fy fz \n")
+      f.write("dump 3 all cfg 80000 dump.defo.*.cfg mass type xs ys zs id type vx vy vz fx fy fz \n")
       if i==0:
-        f.write("dump_modify 2 element Al Si Mg Cu Zn \n")
+        f.write("dump_modify 3 element Al Si Mg Cu Zn \n")
       else:
-        f.write("dump_modify 2 element Al Si Mg Cu Fe \n")
+        f.write("dump_modify 3 element Al Si Mg Cu Fe \n")
       f.write("\n")
       f.write("fix fef_print all print 50 \"${p1} ${p2} ${p3} ${p4} ${p5} ${p6} ${p7} ${p8} ${p9} ${p10} ${p11} ${p12} ${p13} ${fm} ${fv} ${t} ${fd}\" file mg001.defo.txt screen no \n")
       f.write("run "+runn+" \n")
