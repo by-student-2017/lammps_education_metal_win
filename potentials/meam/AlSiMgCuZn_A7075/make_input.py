@@ -189,7 +189,8 @@ for i in range(2):
       else:
         f.write("dump_modify 3 element Al Si Mg Cu Fe \n")
       f.write("\n")
-      f.write("fix fef_print all print 50 \"${p1} ${p2} ${p3} ${p4} ${p5} ${p6} ${p7} ${p8} ${p9} ${p10} ${p11} ${p12} ${p13} ${fm} ${fv} ${t} ${fd}\" file mg001.defo.txt screen no \n")
+      f.write("#fix fef_print all print 50 \"${p1} ${p2} ${p3} ${p4} ${p5} ${p6} ${p7} ${p8} ${p9} ${p10} ${p11} ${p12} ${p13} ${fm} ${fv} ${t} ${fd}\" file mg001.defo.txt screen no \n")
+      f.write("fix fef_print all print 20000 \"${p1} ${p2} ${p3} ${p4} ${p5} ${p6} ${p7} ${p8} ${p9} ${p10} ${p11} ${p12} ${p13} ${fm} ${fv} ${t} ${fd}\" file mg001.defo.txt screen no \n")
       f.write("run "+runn+" \n")
       f.write("\n")
       
