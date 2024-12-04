@@ -83,7 +83,7 @@ for i in range(2):
       else:
         #shutil.copy('Jelinek_2012_meam', dirname+"/"+srate+"/"+str(l+1))
         #shutil.copy('Jelinek_2012_meam.alsimgcufe', dirname+"/"+srate+"/"+str(l+1))
-        f.write("pair_coeff * * Jelinek_2012_meam AlS SiS MgS CuS FeS Jelinek_2012_meam.alsimgcufe Al Si Mg Cu Fe \n")
+        f.write("pair_coeff * * Jelinek_2012_meam AlS SiS MgS CuS FeS Jelinek_2012_meam.alsimgcufe AlS SiS MgS CuS FeS \n")
       f.write("\n")
       f.write("# ---------- SETTINGS --------- \n")
       f.write("\n")
