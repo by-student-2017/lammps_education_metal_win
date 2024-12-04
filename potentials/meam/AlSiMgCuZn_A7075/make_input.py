@@ -6,6 +6,7 @@ import shutil;
 for i in range(2):
   if i==0:
     dirname="7075-zn"
+    #ntotal="27397"
     nsi="134"
     nmg="1127"
     ncu="297"
@@ -13,6 +14,7 @@ for i in range(2):
     nzn="914"
   else:
     dirname="7075"
+    #ntotal="27397"
     nsi="134"
     nmg="1127"
     ncu="297"
@@ -53,9 +55,11 @@ for i in range(2):
       f.write("\n")
       f.write("# ---------- ATOM FEFINITION --------- \n")
       f.write("lattice fcc 4.05 \n")
-      f.write("region whole block 20 80 20 80 0 20 units lattice \n")
+      f.write("#region whole block 20 80 20 80 0 20 units lattice \n")
+      f.write("region whole block -20 40 -20 40 0 20 units lattice \n")
       f.write("create_box 5 whole \n")
-      f.write("region LLF block 40 60 40 60 INF INF units lattice \n")
+      f.write("#region LLF block 40 60 40 60 INF INF units lattice \n")
+      f.write("region LLF block 0 20 0 20 INF INF units lattice \n")
       f.write("lattice fcc 4.05  orient x 1 0 0 orient y 0 1 0 orient z 0 0 1 \n")
       f.write("create_atoms 1 region LLF \n")
       f.write("lattice hcp 5.431 orient x 1 0 0 orient y 0 1 0 orient z 0 0 1 \n")
