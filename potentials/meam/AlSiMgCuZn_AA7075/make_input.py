@@ -4,22 +4,23 @@ import os;
 import shutil;
 
 for i in range(2):
+  scale = 2
   if i==0:
     dirname="7075-zn"
-    #ntotal="27397"
-    nsi="134"
-    nmg="1127"
-    ncu="297"
-    nfe="84"
-    nzn="914"
+    ##ntotal="27397"
+    #nsi="134"
+    #nmg="1127"
+    #ncu="297"
+    #nfe="84"
+    #nzn="914"
   else:
     dirname="7075"
-    #ntotal="27397"
-    nsi="134"
-    nmg="1127"
-    ncu="297"
-    nfe="84"
-    nzn="0"
+    ##ntotal="27397"
+    #nsi="134"
+    #nmg="1127"
+    #ncu="297"
+    #nfe="84"
+    #nzn="0"
   if not os.path.isdir("./"+dirname+"/"):
     os.mkdir("./"+dirname+"/")
   for j in range(4):
@@ -52,24 +53,31 @@ for i in range(2):
       f.write("\n")
       f.write("atom_style atomic \n")
       f.write("\n")
-      f.write("\n")
+      f.write("variable scale equal "+str(scale)+" # integer \n")
       f.write("# ---------- ATOM FEFINITION --------- \n")
       f.write("lattice fcc 4.05 \n")
-      f.write("#region whole block 20 80 20 80 0 20 units lattice \n")
-      f.write("region whole block -20 40 -20 40 0 20 units lattice \n")
+      #f.write("region whole block 20 80 20 80 0 20 units lattice \n")
+      f.write("region whole block $(v_scale*-5) $(v_scale*5*2) $(v_scale*-5) $(v_scale*5*2) 0 $(v_scale*5) units lattice \n")
       f.write("create_box 5 whole \n")
-      f.write("#region LLF block 40 60 40 60 INF INF units lattice \n")
-      f.write("region LLF block 0 20 0 20 INF INF units lattice \n")
+      #f.write("region LLF block 40 60 40 60 INF INF units lattice \n")
+      f.write("region LLF block 0 $(v_scale*5) 0 $(v_scale*5) INF INF units lattice \n")
       f.write("lattice fcc 4.05  orient x 1 0 0 orient y 0 1 0 orient z 0 0 1 \n")
       f.write("create_atoms 1 region LLF \n")
       f.write("lattice hcp 5.431 orient x 1 0 0 orient y 0 1 0 orient z 0 0 1 \n")
-      f.write("create_atoms 2 random "+nsi+" "+str(l+1)+" LLF \n")
+      #f.write("create_atoms 2 random "+nsi+" "+str(l+1)+" LLF \n")
+      f.write("create_atoms 2 random $(v_scale*2) "+str(l+1)+" LLF \n")
       f.write("lattice fcc 3.194 orient x 1 0 0 orient y 0 1 0 orient z 0 0 1 \n")
-      f.write("create_atoms 3 random "+nmg+" "+str(l+2)+" LLF \n")
+      #f.write("create_atoms 3 random "+nmg+" "+str(l+2)+" LLF \n")
+      f.write("create_atoms 3 random $(v_scale*17) "+str(l+2)+" LLF \n")
       f.write("lattice fcc 3.62  orient x 1 0 0 orient y 0 1 0 orient z 0 0 1 \n")
-      f.write("create_atoms 4 random "+ncu+" "+str(l+3)+" LLF \n")
+      #f.write("create_atoms 4 random "+ncu+" "+str(l+3)+" LLF \n")
+      f.write("create_atoms 4 random $(v_scale*1) "+str(l+3)+" LLF \n")
       f.write("lattice hcp 2.665 orient x 1 0 0 orient y 0 1 0 orient z 0 0 1 \n")
-      f.write("create_atoms 5 random "+nzn+" "+str(l+4)+" LLF \n")
+      #f.write("create_atoms 5 random "+nzn+" "+str(l+4)+" LLF \n")
+      if i==0:
+        f.write("create_atoms 5 random $(v_scale*14) "+str(l+4)+" LLF \n")
+      else:
+        f.write("create_atoms 5 random $(v_scale*0) "+str(l+4)+" LLF \n")
       f.write("group sub region LLF \n")
       f.write("\n")
       f.write("\n")
