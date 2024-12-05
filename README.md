@@ -482,5 +482,4 @@ pair_coeff      * * ../potentials/eam/Fe-Ni-Cr_fcc.eam.fs Fe Ni Cr
 
 ## Acknowledgment ######################################
 - This project (modified version) is/was partially supported by the following :
-  + meguREnergy Co., Ltd.
   + ATSUMITEC Co., Ltd.
