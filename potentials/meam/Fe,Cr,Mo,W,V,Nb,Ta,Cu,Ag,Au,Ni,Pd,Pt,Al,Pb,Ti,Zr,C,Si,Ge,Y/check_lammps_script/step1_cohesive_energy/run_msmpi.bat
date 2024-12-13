@@ -9,4 +9,6 @@ for %%1 in (in.lmp) do (
   echo input file: %%1
 )
 
+fit_eos.gpl
+
 pause
