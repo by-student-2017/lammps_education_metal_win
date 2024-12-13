@@ -1,0 +1,47 @@
+#------------------------------------------------------------------------------------------
+# LAMMPS 64-bit 22Dec2022-MSMPI
+#------------------------------------------------------------------------------------------
+clear
+#echo both
+# ---------- Initializing Simulation ---------------------------------
+units metal 
+dimension 3 
+boundary p p p 
+atom_style atomic 
+atom_modify map array
+
+read_data B.data
+
+replicate 1 1 1
+
+# ---------- Defining the Interatomic Potential ---------------------
+pair_style meam
+pair_coeff * * ./../../library.meam B ./../../B.meam B B
+
+# ---------- Defining Settings -----------------------------------------
+compute eng all pe/atom 
+compute eatoms all reduce sum c_eng # sum(pe/atom) -> pe [eV]
+
+# ---------- Runing Minimization -------------------------------------
+reset_timestep 0 
+
+fix 1 all box/relax iso 0.0 vmax 0.001
+
+thermo 10 
+thermo_style custom step pe c_eatoms lx lz press pxx pzz
+
+min_style cg 
+minimize 1e-25 1e-25 5000 10000 
+
+variable natoms equal "count(all)" # Number of atoms in unit cell
+variable   teng equal "c_eatoms"
+variable length equal "lx"
+variable   ecoh equal "v_teng/v_natoms" # pe/atoms [eV/atom]
+
+print "The total energy (eV) = ${teng};"
+print "The number of atoms = ${natoms};"
+print "The lattice constant (Angstoms) = ${length};"
+print "The cohesive energy (eV/atom) = ${ecoh};"
+print "Simulations completed !"
+
+write_data ./../step2_elastic/data.in
