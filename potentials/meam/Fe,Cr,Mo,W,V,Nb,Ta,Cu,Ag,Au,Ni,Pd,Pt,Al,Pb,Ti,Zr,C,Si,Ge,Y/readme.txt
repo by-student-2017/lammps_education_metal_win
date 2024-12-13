@@ -33,3 +33,7 @@ Won-Seok Ko, Byeong-Joo Lee, Modelling Simul. Mater. Sci. Eng. 21, 085008 (2013)
 9.       In
 A Modified Embedded Atom Method Interatomic Potential for Indium
 Eun Cheol Do, Young-Han Shin, Byeong-Joo Lee , CALPHAD 32, 82-88 (2008).
+
+10.      B
+Development of a 2NN-MEAM potential for boron
+S. Xiao et al., J. Micromechanics Mol. Phys. 5 (2020) 2050008.: https://doi.org/10.1142/S2424913020500083
