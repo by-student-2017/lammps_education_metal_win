@@ -4,6 +4,7 @@ Calculation of physical properties of various cubic materials and impurities
 Calculation of equations of state, elastic modulus, structural energy, lattice constants, simple defects and surfaces
 -----------------------------------------------------------------------------
 Vella 2014:
+
 First Cui 2NN MEAM potential (Cui1):
 Evaluation of thermal expansion
 Prediction of melting point
