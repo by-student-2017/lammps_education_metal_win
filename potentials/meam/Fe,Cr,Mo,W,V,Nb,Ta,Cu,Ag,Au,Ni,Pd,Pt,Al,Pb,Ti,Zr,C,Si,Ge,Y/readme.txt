@@ -1,3 +1,16 @@
+#-----------------------------------------------------------
+# Single crystal
+pair_style meam
+pair_coeff * * library.meam Fe Fe.meam Fe
+#-----------------------------------------------------------
+# When there is no combination that can be found. 
+# If you can find a match even qualitatively or semi-quantitatively, you're lucky.
+# To improve accuracy, it is necessary to optimize lattice, Ec, re, alpha, Cmin, and Cmax using DFT or other methods.
+# Mixture rules may be used for Cmin and Cmax.
+pair_style meam
+pair_coeff * * library.meam Pt H NULL Pt H
+#-----------------------------------------------------------
+
 1.       Fe, Cr, Mo, W, V, Nb, Ta
 Second Nearest-Neighbor Modified Embedded Atom Method Potentials for BCC Transition Metals
 Byeong-Joo Lee, M.I. Baskes, Hanchul Kim and Yang Koo Cho, Phys. Rev. B. 64, 184102 (2001).
