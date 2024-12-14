@@ -10,7 +10,7 @@ pair_coeff * * library.meam Fe Fe.meam Fe
 pair_style meam
 pair_coeff * * library.meam Ni H NULL Ni H
 #-----------------------------------------------------------
-# M. I. Baskes et al., Phys. Rev. B 46 (1992) 2727.: https://doi.org/10.1103/PhysRevB.46.2727
+# M. I. Baskes, Phys. Rev. B 46 (1992) 2727.: https://doi.org/10.1103/PhysRevB.46.2727
 - This simple model was found to explain the elastic behavior and simple defect properties of these diverse materials. 
 - The surface properties are in fair agreement with experiments, but the energies of bcc metals in open structure do not match the LDA calculations.
 - In contrast to previous methods, it was found to be sufficient to consider only first neighbors, even for hcp or bcc structures. Energy differences such as fcc (not diamond cubic) stacking defects naturally arise from angular dependence rather than long-range interactions. 
