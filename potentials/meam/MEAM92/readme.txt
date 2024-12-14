@@ -1,5 +1,5 @@
 #-----------------------------------------------------------
-In the paper by Vella et al. (2015), the Baskes formula uses ibar = 0. Since the cooperation of Baskes et al. is clearly stated in the acknowledgements, the parameter here is ibar = 0.
+In the paper by Vella et al. (2015), ibar = 0 is used in the Baskes formula. Since the cooperation of Baskes et al. is clearly stated in the acknowledgements, the parameters here are set to ibar = 0. The other unknown parameters (rc and dr) are also set to rc = 4.0 and dr = 0.1, following the same rule.
 #-----------------------------------------------------------
 # Single crystal (Application: the elastic behavior, simple defect properties, and the surface properties, except bcc metals in open structure.)
 pair_style meam
