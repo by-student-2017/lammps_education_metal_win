@@ -8,7 +8,7 @@ pair_coeff * * library.meam Fe Fe.meam Fe
 # To improve accuracy, it is necessary to optimize lattice, Ec, re, alpha, Cmin, and Cmax using DFT or other methods.
 # Mixture rules may be used for Cmin and Cmax.
 pair_style meam
-pair_coeff * * library.meam Pt H NULL Pt H
+pair_coeff * * library.meam Fe C NULL Fe C
 #-----------------------------------------------------------
 
 1.       Fe, Cr, Mo, W, V, Nb, Ta
