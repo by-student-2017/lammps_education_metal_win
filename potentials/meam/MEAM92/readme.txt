@@ -1,4 +1,6 @@
 #-----------------------------------------------------------
+In the paper by Vella et al. (2015), the Baskes formula uses ibar = 0. Since the cooperation of Baskes et al. is clearly stated in the acknowledgements, the parameter here is ibar = 0.
+#-----------------------------------------------------------
 # Single crystal (Application: the elastic behavior, simple defect properties, and the surface properties, except bcc metals in open structure.)
 pair_style meam
 pair_coeff * * library.meam Fe Fe.meam Fe
