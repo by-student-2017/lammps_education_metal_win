@@ -1,9 +1,9 @@
 #-----------------------------------------------------------
-# Single crystal
+# Single crystal (Application: the elastic behavior, simple defect properties, and the surface properties, except bcc metals in open structure.)
 pair_style meam
 pair_coeff * * library.meam Fe Fe.meam Fe
 #-----------------------------------------------------------
-# When there is no combination that can be found. 
+# When there is no combination that can be found. (Application: dilute heats of solution) 
 # If you can find a match even qualitatively or semi-quantitatively, you're lucky.
 # To improve accuracy, it is necessary to optimize lattice, Ec, re, alpha, Cmin, and Cmax using DFT or other methods.
 # Mixture rules may be used for Cmin and Cmax.
