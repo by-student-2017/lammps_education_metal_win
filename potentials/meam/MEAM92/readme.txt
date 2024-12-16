@@ -26,6 +26,9 @@ Be,Co,Dy,Er,Gd,Hf,Ho,Mg,Nd,Pr,Re,Ru,Sc,Tb,Tl,Ti,Y,Zr
 - For all metals except Be, the double vacancies are found to be unbound.
 - The calculated stacking fault energies and surface energies are found to be in good agreement with experiment.
 #-----------------------------------------------------------
+# R. Ravelo et al., Phys. Rev. Lett. 79 (1997) 2482-2485.: https://doi.org/10.1103/PhysRevLett.79.2482
+Sn
+#-----------------------------------------------------------
 # D.-D. Wang et al., Surf. Sci. 600 (2006) 2990-2996.: https://doi.org/10.1016/j.susc.2006.05.012
 - hcp (c/a < 1.633) metals: Be, Hf, Ru, Ti, Y
 #-----------------------------------------------------------
