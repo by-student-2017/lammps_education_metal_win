@@ -20,7 +20,7 @@ Cu,Ag,Au,Ni,Pd,Pt,Al,Pb,Rh,Ir,Li,Na,K,V,Nb,Ta,Cr,Mo,W,Fe,C,Si,Ge,H,N,O
 - In contrast to previous methods, it was found to be sufficient to consider only first neighbors, even for hcp or bcc structures. Energy differences such as fcc (not diamond cubic) stacking defects naturally arise from angular dependence rather than long-range interactions. 
 - These calculations make many severe approximations, and their use is not recommended until the alloy potential has been fully optimized.
 #-----------------------------------------------------------
-# M. I. Baskes et al., Modelling Simul. Mater. Sci. Eng. 2 (1994) 147-163.: 10.1088/0965-0393/2/1/011
+# M. I. Baskes et al., Modelling Simul. Mater. Sci. Eng. 2 (1994) 147-163.: https://iopscience.iop.org/article/10.1088/0965-0393/2/1/011
 Be,Co,Dy,Er,Gd,Hf,Ho,Mg,Nd,Pr,Re,Ru,Sc,Tb,Tl,Ti,Y,Zr
 - For 18 HCP metals, we found that MEAM is able to reproduce the database very well.
 - For all metals except Be, the double vacancies are found to be unbound.
