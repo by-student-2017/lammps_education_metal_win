@@ -25,7 +25,7 @@ Be,Co,Dy,Er,Gd,Hf,Ho,Mg,Nd,Pr,Re,Ru,Sc,Tb,Tl,Ti,Y,Zr
 - For 18 HCP metals, we found that MEAM is able to reproduce the database very well.
 - For all metals except Be, the double vacancies are found to be unbound.
 - The calculated stacking fault energies and surface energies are found to be in good agreement with experiment.
-- It should be noted that for all HCP metals considered here, c/a < 1. Zn and Cd, for which c/a > 1, are not considered. This is because the combination of equilibrium with experimental cia, agreement with experimental elastic constants, and correct HCP/FCC lattice stability was found not to be obtained with this model. To achieve c/a < 1, f(3) must be less than zero, and vice versa.
+- It should be noted that for all HCP metals considered here, c/a (relative lo ideal) < 1. Zn and Cd, for which c/a (relative lo ideal) > 1, are not considered. This is because the combination of equilibrium with experimental c/a (relative lo ideal), agreement with experimental elastic constants, and correct HCP/FCC lattice stability was found not to be obtained with this model. To achieve c/a (relative lo ideal) < 1, f(3) must be less than zero, and vice versa.
 #-----------------------------------------------------------
 # R. Ravelo et al., Phys. Rev. Lett. 79 (1997) 2482-2485.: https://doi.org/10.1103/PhysRevLett.79.2482
 Sn
