@@ -14,10 +14,17 @@ pair_style meam
 pair_coeff * * library.meam Ni H NULL Ni H
 #-----------------------------------------------------------
 # M. I. Baskes, Phys. Rev. B 46 (1992) 2727.: https://doi.org/10.1103/PhysRevB.46.2727
+Cu,Ag,Au,Ni,Pd,Pt,Al,Pb,Rh,Ir,Li,Na,K,V,Nb,Ta,Cr,Mo,W,Fe,C,Si,Ge,H,N,O
 - This simple model was found to explain the elastic behavior and simple defect properties of these diverse materials. 
 - The surface properties are in fair agreement with experiments, but the energies of bcc metals in open structure do not match the LDA calculations.
 - In contrast to previous methods, it was found to be sufficient to consider only first neighbors, even for hcp or bcc structures. Energy differences such as fcc (not diamond cubic) stacking defects naturally arise from angular dependence rather than long-range interactions. 
 - These calculations make many severe approximations, and their use is not recommended until the alloy potential has been fully optimized.
+#-----------------------------------------------------------
+# M. I. Baskes et al., Modelling Simul. Mater. Sci. Eng. 2 (1994) 147-163.: 10.1088/0965-0393/2/1/011
+Be,Co,Dy,Er,Gd,Hf,Ho,Mg,Nd,Pr,Re,Ru,Sc,Tb,Tl,Ti,Y,Zr
+- For 18 HCP metals, we found that MEAM is able to reproduce the database very well.
+- For all metals except Be, the double vacancies are found to be unbound.
+- The calculated stacking fault energies and surface energies are found to be in good agreement with experiment.
 #-----------------------------------------------------------
 # D.-D. Wang et al., Surf. Sci. 600 (2006) 2990-2996.: https://doi.org/10.1016/j.susc.2006.05.012
 - hcp (c/a < 1.633) metals: Be, Hf, Ru, Ti, Y
