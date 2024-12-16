@@ -25,7 +25,9 @@ Be,Co,Dy,Er,Gd,Hf,Ho,Mg,Nd,Pr,Re,Ru,Sc,Tb,Tl,Ti,Y,Zr
 - For 18 HCP metals, we found that MEAM is able to reproduce the database very well.
 - For all metals except Be, the double vacancies are found to be unbound.
 - The calculated stacking fault energies and surface energies are found to be in good agreement with experiment.
+- The value of t(3) is chosen contingent on the equilibrium c/a agreeing with experiment. A numerical procedure is used to vary both c and a to achieve a global minimum.
 - It should be noted that for all HCP metals considered here, c/a (relative lo ideal) < 1. Zn and Cd, for which c/a (relative lo ideal) > 1, are not considered. This is because the combination of equilibrium with experimental c/a (relative lo ideal), agreement with experimental elastic constants, and correct HCP/FCC lattice stability was found not to be obtained with this model. To achieve c/a (relative lo ideal) < 1, t(3) must be less than zero, and vice versa.
+- If internal relaxation data become available in the future from first-principles calculations or experiments, we encourage the determination of beta(1) from these data.
 #-----------------------------------------------------------
 # R. Ravelo et al., Phys. Rev. Lett. 79 (1997) 2482-2485.: https://doi.org/10.1103/PhysRevLett.79.2482
 Sn
