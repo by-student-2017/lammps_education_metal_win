@@ -55,26 +55,30 @@ Won-Seok Ko, Nack. J. Kim and Byeong-Joo Lee, Journal of Physics: Condensed Matt
 Atomistic modeling of pure Li and Mg-Li System
 Young-Min Kim, In-Ho Jung and Byeong-Joo Lee, MSMSE 20, 035005 (2012).
 
-11.      Mg
-Atomistic modeling of pure Mg and Mg-Al System
-Young-Min Kim, Nack J. Kim and Byeong-Joo Lee, CALPHAD 33, 650-657 (2009).
-
-12.      Mn
-Modified embedded-atom method interatomic potentials for pure Mn and Fe-Mn system
-Young-Min Kim, Young-Han Shin and Byeong-Joo Lee, Acta Materialia 57, 474-482 (2009).
-
-13.      Zn
-Modified embedded-atom method interatomic potentials for pure Zn and Mg-Zn binary system
-Hyo-Sun Jang, Kyeong-Min Kim and Byeong-Joo Lee, CALPHAD 60, 200-207 (2018).
-
-14.      Na
+11.      Na
 Second nearest-neighbor modified embedded atom method interatomic potentials for the Na unary and Na-Sn binary systems
 Yongmin Kim, Won-Seok Ko and Byeong-Joo Lee, Computational Materials Science 185, 109953 (2020).
 
-15.      Ca
+12.      Mg
+Atomistic modeling of pure Mg and Mg-Al System
+Young-Min Kim, Nack J. Kim and Byeong-Joo Lee, CALPHAD 33, 650-657 (2009).
+
+13.      Ca
 Modified embedded-atom method interatomic potentials for Mg-X (X = Y, Sn, Ca) binary systems
 Ki-Hyun Kim, Jong Bae Jeon and Byeong-Joo Lee, CALPHAD 48, 27-34 (2015).
 
-16.      B
+14.      Mn
+Modified embedded-atom method interatomic potentials for pure Mn and Fe-Mn system
+Young-Min Kim, Young-Han Shin and Byeong-Joo Lee, Acta Materialia 57, 474-482 (2009).
+
+15.      Zn
+Modified embedded-atom method interatomic potentials for pure Zn and Mg-Zn binary system
+Hyo-Sun Jang, Kyeong-Min Kim and Byeong-Joo Lee, CALPHAD 60, 200-207 (2018).
+
+16.      Cd
+Modified embedded-atom method potential for cadmium
+M. O. Zacate, Hyperfine Interactions (2019) 240: 100.: https://doi.org/10.1007/s10751-019-1640-5
+
+17.      B
 Development of a 2NN-MEAM potential for boron
 S. Xiao et al., J. Micromechanics Mol. Phys. 5 (2020) 2050008.: https://doi.org/10.1142/S2424913020500083
