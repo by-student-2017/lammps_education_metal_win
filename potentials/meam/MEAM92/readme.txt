@@ -19,3 +19,5 @@ pair_coeff * * library.meam Ni H NULL Ni H
 - In contrast to previous methods, it was found to be sufficient to consider only first neighbors, even for hcp or bcc structures. Energy differences such as fcc (not diamond cubic) stacking defects naturally arise from angular dependence rather than long-range interactions. 
 - These calculations make many severe approximations, and their use is not recommended until the alloy potential has been fully optimized.
 #-----------------------------------------------------------
+Be,Hf,Ru,Ti,Y: https://doi.org/10.1016/j.susc.2006.05.012
+#-----------------------------------------------------------
