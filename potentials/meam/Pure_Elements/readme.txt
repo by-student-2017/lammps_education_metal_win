@@ -82,3 +82,7 @@ M. O. Zacate, Hyperfine Interactions (2019) 240: 100.: https://doi.org/10.1007/s
 17.      B
 Development of a 2NN-MEAM potential for boron
 S. Xiao et al., J. Micromechanics Mol. Phys. 5 (2020) 2050008.: https://doi.org/10.1142/S2424913020500083
+
+18.      Tc
+Cohesive Relations for Surface Atoms in the Iron-Technetium Binary System
+C. D. Taylor, J. Metall. 2011.:  doi:10.1155/2011/954170.: https://doi.org/10.1155/2011/954170
