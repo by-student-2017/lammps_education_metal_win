@@ -29,6 +29,10 @@ Be,Co,Dy,Er,Gd,Hf,Ho,Mg,Nd,Pr,Re,Ru,Sc,Tb,Tl,Ti,Y,Zr
 - It should be noted that for all HCP metals considered here, c/a (relative lo ideal) < 1. Zn and Cd, for which c/a (relative lo ideal) > 1, are not considered. This is because the combination of equilibrium with experimental c/a (relative lo ideal), agreement with experimental elastic constants, and correct HCP/FCC lattice stability was found not to be obtained with this model. To achieve c/a (relative lo ideal) < 1, t(3) must be less than zero, and vice versa.
 - If internal relaxation data become available in the future from first-principles calculations or experiments, we encourage the determination of beta(1) from these data.
 #-----------------------------------------------------------
+# M. I. Baskes, Meter. Sci. Eng. A261 (1999) 165-168.
+augt1 = 0 from Baskes et al. [BAS99].
+[BAS99] M. I. Baskes et al., Model. Simul. Mater. Sci. Eng. 2 (1994) 505-518.
+#-----------------------------------------------------------
 # R. Ravelo et al., Phys. Rev. Lett. 79 (1997) 2482-2485.: https://doi.org/10.1103/PhysRevLett.79.2482
 Sn
 #-----------------------------------------------------------
