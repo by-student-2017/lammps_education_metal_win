@@ -1,5 +1,6 @@
 Usage in lammps input
 #-------------------------------------------------------------
+# 1NN-MEAM
 pair_style meam
 pair_coeff * * ./../../library.meam Fe Cr Ni O ./../../FeCrNiO.meam Fe O
 #-------------------------------------------------------------
