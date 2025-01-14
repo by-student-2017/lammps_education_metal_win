@@ -6,6 +6,7 @@ pair_coeff * * ./../../library.meam Fe Cr Ni O ./../../FeCrNiO.meam Fe O
 
 The parameters are as described in the paper, but the results are not correct.
 Am I doing something wrong ?
+
 #-------------------------------------------------------------
 # Reference: T. Ohira et al., Mat. Res. Soc. Symp. Proc. 492 (1997) 401-406.: https://link.springer.com/journal/43582/aims-and-scope
 # Calculation (Expt.)
