@@ -1,5 +1,6 @@
 #-----------------------------------------------------------
 # Single crystal
+# If it doesn't work, delete all elements except the ones you need in library.meam.
 pair_style meam
 pair_coeff * * library.meam Fe Fe.meam Fe
 #-----------------------------------------------------------
@@ -7,6 +8,7 @@ pair_coeff * * library.meam Fe Fe.meam Fe
 # If you can find a match even qualitatively or semi-quantitatively, you're lucky.
 # To improve accuracy, it is necessary to optimize lattice, Ec, re, alpha, Cmin, and Cmax using DFT or other methods.
 # Mixture rules may be used for Cmin and Cmax.
+# If it doesn't work, delete all elements except the ones you need in library.meam.
 pair_style meam
 pair_coeff * * library.meam Fe C NULL Fe C
 #-----------------------------------------------------------
