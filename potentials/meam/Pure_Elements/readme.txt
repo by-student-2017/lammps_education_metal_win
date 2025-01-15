@@ -92,3 +92,7 @@ C. D. Taylor, J. Metall. 2011.:  doi:10.1155/2011/954170.: https://doi.org/10.11
 19.      Bi
 Amodified embedded-atom method interatomic potential for bismuth
 H. Zhou et al., Modelling Simul. Mater. Sci. Eng. 29 (2021) 065008.:  https://doi.org/10.1088/1361-651X/ac095c
+
+20.      Ga
+Atomistic model of gallium
+M. I. Baskes et al., Phys. Rev. B 66 (2002) 104107.: https://doi.org/10.1103/PhysRevB.66.104107
