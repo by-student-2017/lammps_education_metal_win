@@ -40,6 +40,7 @@ variable dmax equal 1.0e-2
 dimension    3
 boundary     p p p
 read_data    data.in
+#replicate    2 3 4
 replicate    2 3 4
 change_box   all triclinic
 
