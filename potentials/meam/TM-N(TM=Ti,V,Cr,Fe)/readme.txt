@@ -48,7 +48,7 @@ Hill shear modulus, G=(GV+GR)/2:       409.98934 [GPa]
 Pughs modulus ratio, k=G/B:     0.035470108
 -------------------------------------------------------------
 
-Reference (# S. Ding et al., J. Alloys Compd. 805 (2019) 1081-1089.: https://doi.org/10.1016/j.jallcom.2019.07.114)
+Reference (S. Ding et al., J. Alloys Compd. 805 (2019) 1081-1089.: https://doi.org/10.1016/j.jallcom.2019.07.114)
 -------------------------------------------------------------
 TiN (NaCl type)
 a 4.24
