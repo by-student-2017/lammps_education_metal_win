@@ -2,8 +2,10 @@
 Common settings found in detailed 2NN-MEAM files
 
 library.meam
-ibar 3            # The most common value is 3, followed by 0 (seen for elements set to 'dim').
+ibar 3            # The most common value is 3, followed by 0 (seen for elements set to 'dim'). -5 is also seen occasionally, but only occasionally.
 
+# rc is often written as a cut-off in papers. When calculating dimer, it is necessary to check for rc less than 4.0.
+# In a densely packed structure, the potential is close to 0 near 4.0, so the default value of 4.0 is not so bad. If the cut-off value is not written in the paper, it is not a bad idea to start from 4.0.
 delr = 0.1        # default = 0.1
 augt1 = 0         # default = 1
 erose_form = 2    # The default is 0, but 2 is often used for papers and MEAM files.
