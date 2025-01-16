@@ -1,4 +1,18 @@
 
+The MEAM file is described in detail in the literature.
+#-------------------------------------------------------------
+NbTiZrMoV_HEA
+Fe-X(X=Al,Cu,Nb,W)_CoNb
+CoFe-X(X=V,Nb,Mo,W)
+NiTiCu
+#-------------------------------------------------------------
+
+#-------------------------------------------------------------
+BTi: Results obtained with TiB2 were close to those in the literature.
+#-------------------------------------------------------------
+NiSn: Results similar to those in the literature were obtained with Ni3Sn.
+#-------------------------------------------------------------
+
 I was unable to obtain values ​​close to those found in the literature.
 I apologize for this being due to my lack of ability.
 #-------------------------------------------------------------
