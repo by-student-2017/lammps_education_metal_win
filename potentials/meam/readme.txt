@@ -1,3 +1,20 @@
+#-------------------------------------------------------------
+Common settings found in detailed 2NN-MEAM files
+
+library.meam
+ibar 3            # The most common value is 3, followed by 0 (seen for elements set to 'dim').
+
+delr = 0.1        # default = 0.1
+augt1 = 0         # default = 1
+erose_form = 2    # The default is 0, but 2 is often used for papers and MEAM files.
+ialloy = 2        # default = 0
+
+# The following is often not listed, so the default settings will be used.
+mixture_ref_t = 0 # default = 0
+emb_lin_neg = 0   # default = 0
+bkgd_dyn = 0      # default = 0
+#-------------------------------------------------------------
+
 
 The MEAM file is described in detail in the literature.
 #-------------------------------------------------------------
@@ -21,4 +38,8 @@ TiVN: The unknown parameters were changed to bring the elastic constants closer 
 TM-N(TM=Ti,V,Cr,Fe): The unknown parameters were changed in the same way as TiVN, but the elastic constants do not match those in the literature.
 #-------------------------------------------------------------
 TiCrN: The unknown parameters were changed in the same way as TiVN, but the elastic constants do not match those in the literature.
+#-------------------------------------------------------------
+
+#-------------------------------------------------------------
+FeXO(X=Ni,Cr): Although we tried various things, we were unable to obtain values ​​close to the results in Table 3 using only the data in the paper.
 #-------------------------------------------------------------
