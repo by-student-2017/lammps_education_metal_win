@@ -7,48 +7,49 @@ pair_coeff * * ./../../library.meam Fe Cr Ni O ./../../FeCrNiO.meam Fe O
 
 The parameters are as described in the paper, but the results are not correct.
 Am I doing something wrong ?
+
 Fe3O4 (using mp-19306: Fe3O4 (cubic, Fd-3m, 227))
 -------------------------------------------------------------
 Show results of 1st step (Running Minimization)
 The number of atoms = 56;
-The lattice constant, x (Angstoms) = 9.12198119023532;
-The lattice constant, y (Angstoms) = 9.12198119023532;
-The lattice constant, z (Angstoms) = 9.12198119023532;
-The volume (Angstoms^3) = 759.044988326242;
-The total energy (eV) = -410.631252304872;
-The cohesive energy (eV/atom) = -7.33270093401557;
+The lattice constant, x (Angstoms) = 9.23588362790623;
+The lattice constant, y (Angstoms) = 9.23588362790623;
+The lattice constant, z (Angstoms) = 9.23588362790623;
+The volume (Angstoms^3) = 787.835155722105;
+The total energy (eV) = -353.136820792438;
+The cohesive energy (eV/atom) = -6.30601465700783;
 -------------------------------------------------------------
 # Murnaghan equation of state
 f(x) = (a*x/(b*(b-1)))*(b*(1-c/x)+(c/x)**b-1)+d
 
 Final set of parameters            Asymptotic Standard Error
 =======================            ==========================
-a               = 0.851972         +/- 0.0003492    (0.04099%)
-b               = 3.36214          +/- 0.01313      (0.3907%)
-c               = 633.132          +/- 0.03037      (0.004796%)
-d               = -418.85          +/- 0.001659     (0.000396%)
+a               = 0.817578         +/- 0.0003374    (0.04127%)
+b               = 3.3908           +/- 0.01322      (0.3898%)
+c               = 657.148          +/- 0.03172      (0.004827%)
+d               = -361.31          +/- 0.001663     (0.0004603%)
 
-633.132^(1/3) = 8.5868 [A]
--418.85/56 = -7.4795 [eV/atom]
+657.148^(1/3) = 8.6940 [A]
+-361.31/56 = -6.45196 [eV/atom]
 -------------------------------------------------------------
 C tensor [GPa] (elastic stiffness constants)
           1                 2                 3                 4                 5                 6
-1       246.26685         29.416794         29.416794     3.6963643e-10     2.0313161e-10     3.1138935e-10
-2       29.416794         246.26685         29.416794     9.8276797e-10     -6.081338e-10    -1.5663428e-09
-3       29.416794         29.416794         246.26685    -6.0203909e-09    -2.1917385e-09     2.1703919e-09
-4   3.6963643e-10     9.8276797e-10    -6.0203909e-09         74.783007     1.1083189e-09      1.289478e-09
-5   2.0313161e-10     -6.081338e-10    -2.1917385e-09     1.1083189e-09         74.783007    -3.1004834e-09
-6   3.1138935e-10    -1.5663428e-09     2.1703919e-09      1.289478e-09    -3.1004834e-09         74.783007
+1       265.01775         70.707573         70.707573     1.6981871e-09    -4.5923135e-09     4.0345156e-08
+2       70.707573         265.01775         70.707573    -1.0570303e-08    -6.5737582e-09      3.170579e-08
+3       70.707573         70.707573         265.01775    -3.5881118e-09    -4.2485646e-09      3.427476e-08
+4   1.6981871e-09    -1.0570303e-08    -3.5881118e-09         58.848166    -1.3624484e-08     2.3457897e-07
+5  -4.5923135e-09    -6.5737582e-09    -4.2485646e-09    -1.3624484e-08         58.848166     8.7873267e-09
+6   4.0345156e-08      3.170579e-08      3.427476e-08     2.3457897e-07     8.7873267e-09         58.848165
 -------------------------------------------------------------
-Voigt bulk modulus, BV:       101.70015
-Reuss bulk modulus, BR:       101.70015
-Hill bulk modulus, B=(BV+BR)/2:       101.70015 [GPa]
+Voigt bulk modulus, BV:       135.47763
+Reuss bulk modulus, BR:       135.47763
+Hill bulk modulus, B=(BV+BR)/2:       135.47763 [GPa]
 
-Voigt shear modulus, GV:       133.10962
-Reuss shear modulus, GR:       175.59298
-Hill shear modulus, G=(GV+GR)/2:        154.3513 [GPa]
+Voigt shear modulus, GV:       109.47983
+Reuss shear modulus, GR:       150.01363
+Hill shear modulus, G=(GV+GR)/2:       129.74673 [GPa]
 
-Pughs modulus ratio, k=G/B:       1.5177097
+Pughs modulus ratio, k=G/B:      0.95769854
 -------------------------------------------------------------
 
 #-------------------------------------------------------------
