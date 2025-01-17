@@ -26,6 +26,7 @@ CoFe-X(X=V,Nb,Mo,W)
 NiTiCu
 #-------------------------------------------------------------
 
+
 #-------------------------------------------------------------
 BTi: Results obtained with TiB2 were close to those in the literature.
 #-------------------------------------------------------------
@@ -43,6 +44,7 @@ MoSi: Similar results were obtained for MoSi2, but the elastic constants for Mo3
 #-------------------------------------------------------------
 NiTiC: NiTi is close to the literature, but the elastic constants of TiC and NiC do not match.
 #-------------------------------------------------------------
+
 
 I was unable to obtain values ​​close to those found in the literature.
 I apologize for this being due to my lack of ability.
