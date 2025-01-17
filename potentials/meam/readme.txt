@@ -16,6 +16,7 @@ mixture_ref_t = 0 # default = 0
 emb_lin_neg = 0   # default = 0
 bkgd_dyn = 0      # default = 0
 #-------------------------------------------------------------
+Note: https://repository.library.carleton.ca/concern/etds/05741s48q <- This is also discussed in various papers.
 
 
 The MEAM file is described in detail in the literature.
