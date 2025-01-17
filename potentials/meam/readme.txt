@@ -31,6 +31,10 @@ BTi: Results obtained with TiB2 were close to those in the literature.
 #-------------------------------------------------------------
 NiSn: Results similar to those in the literature were obtained with Ni3Sn.
 #-------------------------------------------------------------
+TiAlC: Results similar to those in the literature were obtained with Ti2AlC.
+Mao's group at Henan University has achieved reproducibility. Amazing !
+China, the world's number one in research, is certainly capable.
+#-------------------------------------------------------------
 
 I was unable to obtain values ​​close to those found in the literature.
 I apologize for this being due to my lack of ability.
