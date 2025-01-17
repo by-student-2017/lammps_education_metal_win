@@ -36,6 +36,7 @@ Mao's group at Henan University has achieved reproducibility. Amazing !
 #-------------------------------------------------------------
 FeCrNiN_AISI_316: Results similar to those in the literature were obtained with NiN and Ni3Fe.
 Since the elastic constants of CrN did not match, Cmax(i-j-i) was changed from 2.80 to 1.44, the same as Fe-N.
+Due to the change in Cmax(2,4,2), the Cmax value for the ternary system was also changed.
 I haven't checked the ternary system yet.
 #-------------------------------------------------------------
 
