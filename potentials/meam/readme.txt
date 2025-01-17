@@ -41,6 +41,8 @@ I haven't checked the ternary system yet.
 #-------------------------------------------------------------
 MoSi: Similar results were obtained for MoSi2, but the elastic constants for Mo3Si and Mo5Si3 did not match the literature values.
 #-------------------------------------------------------------
+NiTiC: NiTi is close to the literature, but the elastic constants of TiC and NiC do not match.
+#-------------------------------------------------------------
 
 I was unable to obtain values ​​close to those found in the literature.
 I apologize for this being due to my lack of ability.
