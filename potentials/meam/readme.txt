@@ -9,7 +9,7 @@ ibar 3            # The most common value is 3, followed by 0 (seen for elements
 delr = 0.1        # default = 0.1
 augt1 = 0         # default = 1
 erose_form = 2    # The default is 0, but 2 is often used for papers and MEAM files.
-ialloy = 2        # default = 0
+ialloy = 2        # default = 0, The default is 0, but 2 is often used for papers and MEAM files.
 
 # The following is often not listed, so the default settings will be used.
 mixture_ref_t = 0 # default = 0
