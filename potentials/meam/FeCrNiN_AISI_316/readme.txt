@@ -112,7 +112,7 @@ C44 281.1 [GPa]
 
 
 
-Results [CrN NaCl-type]
+Results [CrN NaCl-type] (Cmax(2,4,2) = 2.80 case in the paper.)
 -------------------------------------------------------------
 Show results of 1st step (Running Minimization)
 The number of atoms = 8;
@@ -162,4 +162,49 @@ CrN NaCl-type
 C11 502.5 [GPa]
 C12 247.5 [GPa]
 C44  10.3 [GPa]
+-------------------------------------------------------------
+
+
+Results [CrN NaCl-type] (Cmax(2,4,2) = 1.44 case in the paper.)
+-------------------------------------------------------------
+Show results of 1st step (Running Minimization)
+The number of atoms = 8;
+The lattice constant, x (Angstoms) = 4.40634438818955;
+The lattice constant, y (Angstoms) = 4.40634438818955;
+The lattice constant, z (Angstoms) = 4.40634438818955;
+The volume (Angstoms^3) = 85.5530136380702;
+The total energy (eV) = -39.7370129323702;
+The cohesive energy (eV/atom) = -4.96712661654628;
+-------------------------------------------------------------
+# Murnaghan equation of state
+f(x) = (a*x/(b*(b-1)))*(b*(1-c/x)+(c/x)**b-1)+d
+
+Final set of parameters            Asymptotic Standard Error
+=======================            ==========================
+a               = 2.04291          +/- 0.001676     (0.08202%)
+b               = 4.73281          +/- 0.02548      (0.5385%)
+c               = 71.3693          +/- 0.006594     (0.009239%)
+d               = -41.7917         +/- 0.0008833    (0.002114%)
+
+71.3693^(1/3) = 4.147984 [A]
+-41.7917/8 = -5.22396 [eV/atom]
+-------------------------------------------------------------
+C tensor [GPa] (elastic stiffness constants)
+          1                 2                 3                 4                 5                 6
+1       509.22577         245.29568         245.29568    -2.7905768e-09     5.3446462e-09     3.2862961e-09
+2       245.29568         509.22577         245.29568     1.4375021e-09      3.764988e-09      2.863216e-09
+3       245.29568         245.29568         509.22577     7.9357233e-10     2.1195333e-09     2.4278829e-09
+4  -2.7905768e-09     1.4375021e-09     7.9357233e-10         27.533066     7.8210073e-10      4.998525e-10
+5   5.3446462e-09      3.764988e-09     2.1195333e-09     7.8210073e-10         27.533066     9.3999611e-10
+6   3.2862961e-09      2.863216e-09     2.4278829e-09      4.998525e-10     9.3999611e-10         27.533066
+-------------------------------------------------------------
+Voigt bulk modulus, BV:       333.27237
+Reuss bulk modulus, BR:       333.27237
+Hill bulk modulus, B=(BV+BR)/2:       333.27237 [GPa]
+
+Voigt shear modulus, GV:       85.825699
+Reuss shear modulus, GR:       117.93704
+Hill shear modulus, G=(GV+GR)/2:       101.88137 [GPa]
+
+Pughs modulus ratio, k=G/B:      0.30570001
 -------------------------------------------------------------
