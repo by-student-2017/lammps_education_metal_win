@@ -40,14 +40,17 @@ Since the elastic constants of CrN did not match, Cmax(i-j-i) was changed from 2
 Due to the change in Cmax(2,4,2), the Cmax value for the ternary system was also changed.
 I haven't checked the ternary system yet.
 #-------------------------------------------------------------
+
+
+I was unable to obtain values ​​close to those found in the literature.
+I apologize for this being due to my lack of ability.
+
+#-------------------------------------------------------------
 MoSi: Similar results were obtained for MoSi2, but the elastic constants for Mo3Si and Mo5Si3 did not match the literature values.
 #-------------------------------------------------------------
 NiTiC: NiTi is close to the literature, but the elastic constants of TiC and NiC do not match.
 #-------------------------------------------------------------
 
-
-I was unable to obtain values ​​close to those found in the literature.
-I apologize for this being due to my lack of ability.
 #-------------------------------------------------------------
 TiVN: The unknown parameters were changed to bring the elastic constants closer to the TiV values. Looking at the results below, this is unlikely to be true.
 #-------------------------------------------------------------
