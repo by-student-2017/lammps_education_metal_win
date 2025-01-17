@@ -34,6 +34,10 @@ NiSn: Results similar to those in the literature were obtained with Ni3Sn.
 TiAlC: Results similar to those in the literature were obtained with Ti2AlC.
 Mao's group at Henan University has achieved reproducibility. Amazing !
 #-------------------------------------------------------------
+FeCrNiN_AISI_316: Results similar to those in the literature were obtained with NiN and Ni3Fe.
+Since the elastic constants of CrN did not match, Cmax(i-j-i) was changed from 2.80 to 1.44, the same as Fe-N.
+I haven't checked the ternary system yet.
+#-------------------------------------------------------------
 
 I was unable to obtain values ​​close to those found in the literature.
 I apologize for this being due to my lack of ability.
