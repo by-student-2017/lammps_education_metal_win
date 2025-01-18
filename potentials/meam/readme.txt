@@ -21,6 +21,11 @@ Note: https://repository.library.carleton.ca/concern/etds/05741s48q <- This is a
 Note: As shown in the example of BTi, when Cmin and Cmax published by NIST are added, or when ibar is changed from 3 to 0 or -5, the difference in lattice constant, cohesive energy, and elastic constant is not clear, so it is difficult to clarify which setting is best.
 Note: There are also papers in which only the ibar has been changed using files and parameters from published previous papers.
 #-------------------------------------------------------------
+Conclusion
+1. Publishers, referees, and editors should require that input files used in supplementary materials be made public as a condition of publication. It would be ideal if all conditions could be described in the paper, but this is not currently the case.
+2. Papers that cannot be reproduced should be downgraded so that they can be used as research results for the next generation. Predecessors should not be obstacles to those who follow.
+3. International efforts and institutions should be created to verify the potential and develop the technology at public institutions other than NIST.
+#-------------------------------------------------------------
 
 
 The MEAM file is described in detail in the literature.
