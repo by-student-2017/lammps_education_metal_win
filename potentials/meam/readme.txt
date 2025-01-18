@@ -5,7 +5,7 @@ library.meam
 ibar 3            # The most common value is "3", followed by "0" (seen for elements set to 'dim'). "-5" has also become more common since 2019.
 
 # rc is often written as a cut-off in papers. When calculating dimer, it is necessary to check for rc less than 4.0. 
-# In a densely packed structure, the potential is close to 0 near 4.0, so the default value of 4.0 is not so bad. If the cut-off value is not written in the paper, it is not a bad idea to start from 4.0. This is because the potential approaches zero at about 4.0 A (recall that the potential asymptotically approaches zero at large distances).
+# In a densely packed structure, the potential is close to 0 near 4.0, so the default value of 4.0 is not so bad. If the cut-off value is not written in the paper, it is not a bad idea to start from 4.0. This is because the potential is close to 0 at approximately 4.0 A. (recall that the potential asymptotically approaches zero at large distances).
 delr = 0.1        # default = 0.1
 augt1 = 0         # default = 1
 erose_form = 2    # The default is 0, but 2 is often used for papers and MEAM files.
