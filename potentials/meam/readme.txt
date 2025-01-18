@@ -63,6 +63,13 @@ Conclusion
 4. If there is a correlation between the credibility of potential and the impact factor, it should be shown. If there is no positive correlation, the impact factor is meaningless for the topic under discussion here.
 #-------------------------------------------------------------
 
+#-------------------------------------------------------------
+# How to create potentials for HEA, Fe-based, Ni-based, and Al-based, etc
+1. The unit system uses Pure_Elements.
+2. The Materials Project provides Ec, re, and B for the alloy, so alpha can be calculated. The elastic constants are also given, so Cmin and Cmax can be optimized.
+3. The Cmin and Cmax of X-Y-Z can be estimated using a binary system.
+#-------------------------------------------------------------
+
 
 The MEAM file is described in detail in the literature.
 #-------------------------------------------------------------
