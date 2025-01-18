@@ -68,6 +68,7 @@ Conclusion
 1. The unit system uses Pure_Elements.
 2. The Materials Project provides Ec, re, and B for the alloy, so alpha can be calculated. The elastic constants are also given, so Cmin and Cmax can be optimized.
 3. The Cmin and Cmax of X-Y-Z can be estimated using a binary system.
+Note: For reasons known as the Hume-Rothery Law, multi-dimensional systems other than the HEA rarely exist except in dilute states.
 #-------------------------------------------------------------
 
 
