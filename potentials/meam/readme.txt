@@ -23,12 +23,13 @@ Note: https://repository.library.carleton.ca/concern/etds/05741s48q <- This is a
 - 1NN-MEAM vs. 2NN-MEAM: The basic formalism of the MEAM and 2nnMEAM is the same, except for the pair potential and the screening function parameters. The original MEAM [3] had a nearest neighbor screening function in order to limit interactions to the rst neighbors and the limiting values of the C parameter were chosen as Cmin = 2.0 and Cmax = 2.8. Now, those limiting values have to be changed to allow for second nearest-neighbor  interactions to be included in the energy calculations. For fcc and bcc Cmin has to be lower than 1.0 and 2.0, respectively [2].
 
 - BCC case
-|              | A | b0 | t1 | t2 | t3 | Cmin |
-| C11 and C12  | + | +  |    | -  |    |  +   |
-| C44          | + | +  |    | -  |    |  +   |
-| Esurf        | + | -  | +  | -  | -  |  -   |
-| dE(bcc->fcc) | + | +  |    |    | +  |  +   |
-| dE(fcc->hcp) | + | +  |    |    | +  |  +   |
+|              | A  | b0 | t1 | t2 | t3 | Cmin |
+| ------------ | -- | -- | -- | -- | -- | ---- |
+| C11 and C12  | +  | +  |    | -  |    |  +   |
+| C44          | +  | +  |    | -  |    |  +   |
+| Esurf        | +  | -  | +  | -  | -  |  -   |
+| dE(bcc->fcc) | +  | +  |    |    | +  |  +   |
+| dE(fcc->hcp) | +  | +  |    |    | +  |  +   |
 #-------------------------------------------------------------
 Note: As shown in the example of BTi, when Cmin and Cmax published by NIST are added, or when ibar is changed from 3 to 0 or -5, the difference in lattice constant, cohesive energy, and elastic constant is not clear, so it is difficult to clarify which setting is best.
 Note: There are also papers in which only the ibar has been changed using files and parameters from published previous papers.
