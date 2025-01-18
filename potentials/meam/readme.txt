@@ -30,6 +30,7 @@ Note: https://repository.library.carleton.ca/concern/etds/05741s48q <- This is a
 | Esurf        | +  | -  | +  | -  | -  |  -   |
 | dE(bcc->fcc) | +  | +  |    |    | +  |  +   |
 | dE(fcc->hcp) | +  | +  |    |    | +  |  +   |
+- One of the approaches for the tting procedure is to rst determine values of A, b0, Cmin,and t3 by tting to elastic constants (C11, C44) and structural energy di erences ( E(bcc->fcc), E(fcc->hcp)). But, it is not always possible to t all of those properties with four parameters. Elastic constants are tted exactly and structural energies as close as possible. After that, t1 and t2 are determined from surface energies and heat of vacancy formation. As a test, the order of the low index surface energies can be checked, and one can also confirm what is the most stable phase of the element in question [2].
 #-------------------------------------------------------------
 Note: As shown in the example of BTi, when Cmin and Cmax published by NIST are added, or when ibar is changed from 3 to 0 or -5, the difference in lattice constant, cohesive energy, and elastic constant is not clear, so it is difficult to clarify which setting is best.
 Note: There are also papers in which only the ibar has been changed using files and parameters from published previous papers.
