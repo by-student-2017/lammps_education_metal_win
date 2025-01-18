@@ -4,8 +4,8 @@ Common settings found in detailed 2NN-MEAM files
 library.meam
 ibar 3            # The most common value is "3", followed by "0" (seen for elements set to 'dim'). "-5" has also become more common since 2019.
 
-# rc is often written as a cut-off in papers. When calculating dimer, it is necessary to check for rc less than 4.0.
-# In a densely packed structure, the potential is close to 0 near 4.0, so the default value of 4.0 is not so bad. If the cut-off value is not written in the paper, it is not a bad idea to start from 4.0.
+# rc is often written as a cut-off in papers. When calculating dimer, it is necessary to check for rc less than 4.0. 
+# In a densely packed structure, the potential is close to 0 near 4.0, so the default value of 4.0 is not so bad. If the cut-off value is not written in the paper, it is not a bad idea to start from 4.0. This is because the potential approaches zero at about 4.0 A (recall that the potential asymptotically approaches zero at large distances).
 delr = 0.1        # default = 0.1
 augt1 = 0         # default = 1
 erose_form = 2    # The default is 0, but 2 is often used for papers and MEAM files.
@@ -68,6 +68,7 @@ Conclusion
 1. The unit system uses Pure_Elements.
 2. The Materials Project provides Ec, re, and B for the alloy, so alpha can be calculated. The elastic constants are also given, so Cmin and Cmax can be optimized.
 3. The Cmin and Cmax of X-Y-Z can be estimated using a binary system.
+4. If you want to treat the surface more accurately than the bulk, such as surface energy, you can fit more detailed parameters (e.g. Cmin and Cmax).
 Note: For reasons known as the Hume-Rothery Law, multi-dimensional systems other than the HEA rarely exist except in dilute states. Therefore, if we prepare binary systems fitted with the data from the Materials Project, and even ternary systems estimated from the binary systems, we can make fairly good predictions.
 #-------------------------------------------------------------
 
