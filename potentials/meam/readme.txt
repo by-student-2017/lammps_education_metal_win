@@ -34,6 +34,18 @@ Note: https://repository.library.carleton.ca/concern/etds/05741s48q <- This is a
 - parameters: A total of 13 parameters need to be determined, 4 of which are from the equation of state (Ecoh, re, B and d), 8 are Cmin and Cmax and the nal one is the 0. As seen in Table 4.1, each pure element has its own Cmin and Cmax, because all interaction are between atoms of the same type (A-A-A or B-B-B). On the other hand, in alloys there are 4 di erent cases for screening (A-B-A, B-A-B, A-A-B, and A-B-B) that need to be taken into consideration. In this notation (A-B-C) means the screening e ect of a B atom on a bond between A and C atoms.
 - Parameters with (i,j) mean all combinations of (i,j), for example lattce(i,j) which describes the crystal lattice of the pure elements 1 and 2, lattce(1,1) and lattce(2,2), and that of their alloy lattce(1,2). Cmin(i jk) means a minimum value of the screen ing factor where the interaction between atoms i and j starts to be fully screened by the atom k. On the other hand, Cmax(i jk), means the value where atom k does not interfere in the interaction between atoms i and j. Then those two atoms are unscreened by the atom k.
 - fitting: [7] B.-J. Lee and J.-W. Jang, A modi ed embedded-atom method interatomic potential for the FeH system, Acta Materialia, vol. 55, pp. 67796788, Dec. 2007.https://doi.org/10.1103/PhysRevB.93.144110
+| Parameter     | Selected value                       | Fitting procedure |
+| Ecoh          | 0.5*Ecoh(Fe) + 0.5*Ecoh(H) + 0.164   | Fitting dilute heat of solution of H in bcc and fcc Fe |
+| re            | 1.835                                | Fitting lattice parameter of NaCl-type FeH and for better overall agreement |
+| B             | 2.95                                 | Fitting rst-principles bulk modulus of NaCl-type FeH MEAM |
+| d             | 0.5*d(Fe) + 0.5*d(H)                 | Assumption |
+| Cmin(Fe,Fe,H) | 0.36 = Cmin(Fe)                      | Assumption |
+| Cmin(H,H,Fe)  | 2.0 = Cmin(H)                        | Assumption |
+| Cmin(Fe,Fe,H) | 2.15                                 | Relative size of heat of solution in bcc and fcc Fe |
+| Cmin(Fe,H,Fe) | [0.5*Cmin(Fe)^0.5+0.5*Cmin(H)^0.5]^2 | Assumption |
+| Cmin(Fe,H,H)  | [0.5*Cmin(Fe)^0.5+0.5*Cmin(H)^0.5]^2 | Assumption |
+| rho0          | rho0(H)/rho0(Fe) = 18                | For better overall agreement |
+Note: Cmin(A-C-B) = Cmin(A,B,C)
 #-------------------------------------------------------------
 Note: As shown in the example of BTi, when Cmin and Cmax published by NIST are added, or when ibar is changed from 3 to 0 or -5, the difference in lattice constant, cohesive energy, and elastic constant is not clear, so it is difficult to clarify which setting is best.
 Note: There are also papers in which only the ibar has been changed using files and parameters from published previous papers.
