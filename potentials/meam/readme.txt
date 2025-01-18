@@ -69,7 +69,7 @@ Conclusion
 2. The Materials Project provides Ec, re, and B for the alloy, so alpha can be calculated. The elastic constants are also given, so Cmin and Cmax can be optimized.
 3. The Cmin and Cmax of X-Y-Z can be estimated using a binary system.
 4. If you want to treat the surface more accurately than the bulk, such as surface energy, you can fit more detailed parameters (e.g. Cmin and Cmax).
-Note: For reasons known as the Hume-Rothery Law, multi-dimensional systems other than the HEA rarely exist except in dilute states. Therefore, if we prepare binary systems fitted with the data from the Materials Project, and even ternary systems estimated from the binary systems, we can make fairly good predictions.
+Note: Due to a reason known as the Hume-Rothery law, multidimensional systems other than the HEA are quite difficult to exist in, except at dilute states, so much insight would be gained from preparing binary systems that fit the Materials Project data, and even ternary systems that can be inferred from the binary systems.
 #-------------------------------------------------------------
 
 
