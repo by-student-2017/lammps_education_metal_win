@@ -21,7 +21,6 @@ Note: https://repository.library.carleton.ca/concern/etds/05741s48q <- This is a
 - Cmin and Cmax: Generally used values for Cmin and Cmax are 2.0 or 0.8 and 2.8, respectively. 
   For the bcc structure, in the case of Cmin < 0.47, even the third nearest-neighbor interactions are not completely screened for the reference structure. In case of element Fe (Cmin = 0.16) the contribution to the potential energy from them is very small, as well as the error in the potential energy calculations if they are ignored. So, in order to avoid that error all together, Cmin should remain larger than 0.47 and then third nearest-neighbor interactions are completely screened [3].
 - 1NN-MEAM vs. 2NN-MEAM: The basic formalism of the MEAM and 2nnMEAM is the same, except for the pair potential and the screening function parameters. The original MEAM [3] had a nearest neighbor screening function in order to limit interactions to the rst neighbors and the limiting values of the C parameter were chosen as Cmin = 2.0 and Cmax = 2.8. Now, those limiting values have to be changed to allow for second nearest-neighbor  interactions to be included in the energy calculations. For fcc and bcc Cmin has to be lower than 1.0 and 2.0, respectively [2].
-
 - BCC case
 |              | A  | b0 | t1 | t2 | t3 | Cmin |
 | ------------ | -- | -- | -- | -- | -- | ---- |
