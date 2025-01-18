@@ -19,7 +19,7 @@ bkgd_dyn = 0      # default = 0
 Note: https://repository.library.carleton.ca/concern/etds/05741s48q <- This is also discussed in various papers.
 #-------------------------------------------------------------
 Note: As shown in the example of BTi, when Cmin and Cmax published by NIST are added, or when ibar is changed from 3 to 0 or -5, the difference in lattice constant, cohesive energy, and elastic constant is not clear, so it is difficult to clarify which setting is best.
-Note: 
+Note: There are also papers in which only the ibar has been changed using files and parameters from published previous papers.
 #-------------------------------------------------------------
 
 
