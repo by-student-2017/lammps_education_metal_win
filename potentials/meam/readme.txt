@@ -17,6 +17,10 @@ emb_lin_neg = 0   # default = 0
 bkgd_dyn = 0      # default = 0
 #-------------------------------------------------------------
 Note: https://repository.library.carleton.ca/concern/etds/05741s48q <- This is also discussed in various papers.
+#-------------------------------------------------------------
+Note: As shown in the example of BTi, when Cmin and Cmax published by NIST are added, or when ibar is changed from 3 to 0 or -5, the difference in lattice constant, cohesive energy, and elastic constant is not clear, so it is difficult to clarify which setting is best.
+Note: 
+#-------------------------------------------------------------
 
 
 The MEAM file is described in detail in the literature.
