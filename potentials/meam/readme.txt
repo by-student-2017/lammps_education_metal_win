@@ -24,7 +24,8 @@ Note: There are also papers in which only the ibar has been changed using files 
 Conclusion
 1. Publishers, referees, and editors should require that input files used in supplementary materials be made public as a condition of publication. It would be ideal if all conditions could be described in the paper, but this is not currently the case.
 2. Other than NIST, public institutions should be involved in international efforts to verify and develop the potential, and appropriate institutions should be created.
-3. Papers that cannot be reproduced should be downgraded so that they can be used as research results for the next generation. Predecessors should not be obstacles to those who follow.
+3. Papers that cannot be reproduced should be downgraded so that they can be used as research results for the next generation. Predecessors should not be obstacles to those who follow. 
+4. If there is a correlation between the credibility of potential and the impact factor, it should be shown. If there is no positive correlation, the impact factor is meaningless for the topic under discussion here.
 #-------------------------------------------------------------
 
 
