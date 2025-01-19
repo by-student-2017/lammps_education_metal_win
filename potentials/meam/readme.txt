@@ -106,7 +106,7 @@ I haven't checked the ternary system yet.
 #-------------------------------------------------------------
 MoSi: The convergence conditions were tightened to calculate the elastic modulus of Mo5Si3.
 init.mod
-variable ftol equal 1.0e-8 -> 1.0e-12
+variable ftol equal 1.0e-8 -> 1.0e-10
 variable maxiter equal 100 -> 10000
 variable maxeval equal 1000 -> 1000000
 #-------------------------------------------------------------
