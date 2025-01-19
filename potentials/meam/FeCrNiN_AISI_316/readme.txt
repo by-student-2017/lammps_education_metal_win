@@ -165,7 +165,7 @@ C44  10.3 [GPa]
 -------------------------------------------------------------
 
 
-Results [CrN NaCl-type] (Cmax(2,4,2) = 1.44 case in the paper.)
+Results [CrN NaCl-type] (Cmax(2,4,2) = Cmax(4,2,2) = 1.44 case in the paper.)
 -------------------------------------------------------------
 Show results of 1st step (Running Minimization)
 The number of atoms = 8;
@@ -207,4 +207,12 @@ Reuss shear modulus, GR:       117.93704
 Hill shear modulus, G=(GV+GR)/2:       101.88137 [GPa]
 
 Pughs modulus ratio, k=G/B:      0.30570001
+-------------------------------------------------------------
+
+Reference (P. Liu et al., Comput. Mater. Sci. 182 (2020) 109757.: https://doi.org/10.1016/j.commatsci.2020.109757)
+-------------------------------------------------------------
+CrN NaCl-type
+C11 502.5 [GPa]
+C12 247.5 [GPa]
+C44  10.3 [GPa]
 -------------------------------------------------------------
