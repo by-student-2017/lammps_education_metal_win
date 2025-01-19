@@ -74,7 +74,7 @@ Conclusion
 #-------------------------------------------------------------
 # How to create potentials for High Entropy Alloys (HEA), Fe-based, Ni-based, and Al-based, etc
 1. The unit system uses Pure_Elements.
-2. The Materials Project provides Ec, re, and B for the alloy, so alpha can be calculated. The elastic constants are also given, so Cmin and Cmax can be optimized.
+2. The Materials Project provides Ec, re, and B for the alloy, so alpha can be calculated. The elastic constants are also given, so Cmin and Cmax can be optimized. ("meam_converter.xlsx" allows you to calculate alpha.)
 3. The Cmin and Cmax of X-Y-Z can be estimated using a binary system.
 4. If you want to treat the surface more accurately than the bulk, such as surface energy, you can fit more detailed parameters (e.g. Cmin and Cmax).
 Note: Due to a reason known as the Hume-Rothery law, multidimensional systems other than the HEA are quite difficult to exist in, except at dilute states, so much insight would be gained from preparing binary systems that fit the Materials Project data, and even ternary systems that can be inferred from the binary systems.
