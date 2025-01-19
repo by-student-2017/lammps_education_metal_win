@@ -52,6 +52,7 @@ Note: Cmin(i-k-j) = Cmin(i,j,k) and Cmin(i,j,k) = Cmin(j,i,k): see 2007--Lee-B-J
 Cmax(I,J,K) = Cmax screening parameter when I-J pair is screened by K (I<=J); default = 2.8
 Cmin(I,J,K) = Cmin screening parameter when I-J pair is screened by K (I<=J); default = 2.0
 Cmin and Cmax are necessary up to (I<=J), but listing C(j,i,k) in addition to C(i,j,k) is often done because it is convenient for finding errors and using the mixing rule.
+see "Lammps format"(https://www.ctcms.nist.gov/potentials/Download/2009--Kim-H-K-Jung-W-S-Lee-B-J--Fe-Ti-C/1/FeTiC_Implementation.pdf)
 #-------------------------------------------------------------
 - Bulk case
 Note: As shown in the example of BTi, when Cmin and Cmax published by NIST are added, or when ibar is changed from 3 to 0 or -5, the difference in lattice constant, cohesive energy, and elastic constant is not clear, so it is difficult to clarify which setting is best.
