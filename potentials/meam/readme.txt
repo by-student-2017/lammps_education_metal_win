@@ -38,12 +38,11 @@ Note: https://repository.library.carleton.ca/concern/etds/05741s48q <- This is a
 | re            | 1.835                                | Fitting lattice parameter of NaCl-type FeH and for better overall agreement |
 | B             | 2.95                                 | Fitting rst-principles bulk modulus of NaCl-type FeH MEAM |
 | d             | 0.5*d(Fe) + 0.5*d(H)                 | Assumption |
-| Cmin(Fe,Fe,H) | 0.36 = Cmin(Fe)                      | Assumption |
-| Cmin(H,H,Fe)  | 2.0 = Cmin(H)                        | Assumption |
-| Cmin(Fe,Fe,H) | 2.15                                 | Relative size of heat of solution in bcc and fcc Fe |
-| Cmin(Fe,H,Fe) | [0.5*Cmin(Fe)^0.5+0.5*Cmin(H)^0.5]^2 | Assumption |
-| Cmin(Fe,H,H)  | [0.5*Cmin(Fe)^0.5+0.5*Cmin(H)^0.5]^2 | Assumption |
-| rho0          | rho0(H)/rho0(Fe) = 18                | For better overall agreement |
+| Cmin(Fe-H-Fe) | 0.36 = Cmin(Fe)                      | Assumption, Cmin(Fe-H-Fe) = Cmin(1,1,3) = Cmin(Fe,Fe,H) |
+| Cmin(H-Fe-H)  | 2.0 = Cmin(H)                        | Assumption, Cmin(H-Fe-H) = Cmin(3,3,1) = Cmin(H,H,Fe) |
+| Cmin(Fe-Fe-H) | 2.15                                 | Relative size of heat of solution in bcc and fcc Fe, Cmin(Fe-Fe-H) = Cmin(1,3,1) = Cmin(Fe,H,Fe) |
+| Cmin(Fe-H-H)  | [0.5*Cmin(Fe)^0.5+0.5*Cmin(H)^0.5]^2 | Assumption, Cmin(Fe-H-H) = Cmin(1,3,3) = Cmin(Fe,H,H) |
+| rho0          | rho0(H)/rho0(Fe) = 18                | For better overall agreement, rho0(1) = 1, rho0(3) = 18 |
 Note: Cmin(A-C-B) = Cmin(A,B,C) and Cmin(A,B,C) = Cmin(B,A,C): see 2007--Lee-B-J-Jang-J-W--Fe-H on NIST (Interatomic Potentials Repository).
 Note: Cmin(i-k-j) = Cmin(i,j,k) and Cmin(i,j,k) = Cmin(j,i,k): see 2007--Lee-B-J-Jang-J-W--Fe-H on NIST (Interatomic Potentials Repository). (Empirically, papers often include an explanation of C(i-k-j).)
 - Conclusion: Prior to them the MEAM potential was successfully used to calculate the basic properties of the variety of zirconium hydrides. But, MEAM failed in all stacking fault tests. On the other hand, 2nnMEAM was successful in all three tests and once again proved the advantages of the 2nnMEAM formalism. The main challenge was nding the right tting parameters for the new 2nn MEAM. Although, separate 2nnMEAM potentials might have been created for each of the three tests, our focus was more on the transferability of the new 2nnMEAM. DFT results were used for ne-tuning. 2nnMEAM is capable of simulating a realistic response of the solution during shearing. 2nnMEAM results were qualitatively very similar to DFT results, although energy levels were noticeably higher than in DFT tests. At the same time, the ratios of the unstable stacking faults of the pure hcp zirconium to = 0.125, and the pure hcp zirconium to = 0.5 were similar. In order to improve the results of this thesis, better optimization has to be im plemented and new calculations of the reference structure need to be done with rst principles. Furthermore, more DFT results for stacking fault tests of zirconium hy drides would give a better insight of the zirconium hydrogen interaction and help create a better 2nnMEAM
