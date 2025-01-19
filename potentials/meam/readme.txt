@@ -64,6 +64,11 @@ Conclusion
 #-------------------------------------------------------------
 
 #-------------------------------------------------------------
+# Inferred phylogenetic tree
+- C-Fe-Mn-Si (Aslam 2019) -> FeCoCrMnSi (Salloom 2022)
+#-------------------------------------------------------------
+
+#-------------------------------------------------------------
 # How to create potentials for High Entropy Alloys (HEA), Fe-based, Ni-based, and Al-based, etc
 1. The unit system uses Pure_Elements.
 2. The Materials Project provides Ec, re, and B for the alloy, so alpha can be calculated. The elastic constants are also given, so Cmin and Cmax can be optimized.
