@@ -104,16 +104,18 @@ Due to the change in Cmax(2,4,2), the Cmax value for the ternary system was also
 I haven't checked the ternary system yet.
 #-------------------------------------------------------------
 
+
+I was unable to obtain values ​​close to those found in the literature.
+I apologize for this being due to my lack of ability.
+
 #-------------------------------------------------------------
 MoSi: The convergence conditions were tightened to calculate the elastic modulus of Mo5Si3.
 init.mod
 variable ftol equal 1.0e-8 -> 1.0e-10
 variable maxiter equal 100 -> 10000
 variable maxeval equal 1000 -> 1000000
+Note: It's nowhere near the value of a very good document. I'm sure I've still got it wrong somewhere.
 #-------------------------------------------------------------
-
-I was unable to obtain values ​​close to those found in the literature.
-I apologize for this being due to my lack of ability.
 
 #-------------------------------------------------------------
 NiTiC: NiTi is close to the literature, but the elastic constants of TiC and NiC do not match.
