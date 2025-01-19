@@ -86,6 +86,7 @@ NbTiZrMoV_HEA
 Fe-X(X=Al,Cu,Nb,W)_CoNb
 CoFe-X(X=V,Nb,Mo,W)
 NiTiCu
+FeCH
 #-------------------------------------------------------------
 
 
