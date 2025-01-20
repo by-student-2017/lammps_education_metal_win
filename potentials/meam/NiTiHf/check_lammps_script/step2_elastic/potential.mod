@@ -16,7 +16,9 @@
 #pair_coeff * * AlCrFeCoNi_Zhou04.eam.alloy Fe
 #-----------------------
 pair_style meam
-pair_coeff * * ./../../library.meam Ni Ti Hf ./../../NiTiHf.meam Ni Ti
+#pair_coeff * * ./../../library.meam Ni Ti Hf ./../../NiTiHf.meam Ni Ti
+pair_coeff * * ./../../library.meam Ni Ti Hf ./../../NiTiHf.meam Ni Hf
+#pair_coeff * * ./../../library.meam Ni Ti Hf ./../../NiTiHf.meam Ti Hf
 #-----------------------
 
 # Setup neighbor style
