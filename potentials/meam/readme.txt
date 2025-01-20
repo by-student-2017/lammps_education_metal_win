@@ -62,7 +62,7 @@ FCC: r1 < rc < r2, r2 = sqrt(2)*r1 = 1.4142*r1
 Diamond: r1 < rc < r2, r2 = sqrt(8/3)*r1 = 1.633*r1
 #-------------------------------------------------------------
 see https://matsci.org/t/lammps-users-meam-is-ialloy-implemented-in-lammps/7889
-When matching with DYNAMO code
+If you want to match the DYNAMO code
 ialloy = 0 or 1 # https://matsci.org/t/ialloy-parameter-in-meam/32853
 emb_lin_neg = 1
 bkgd_dyn = 1
@@ -112,6 +112,7 @@ Fe-X(X=Al,Cu,Nb,W)_CoNb
 CoFe-X(X=V,Nb,Mo,W)
 NiTiCu
 FeCH
+TiNAg
 #-------------------------------------------------------------
 
 
