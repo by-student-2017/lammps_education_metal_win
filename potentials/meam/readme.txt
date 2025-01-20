@@ -53,11 +53,21 @@ Cmax(I,J,K) = Cmax screening parameter when I-J pair is screened by K (I<=J); de
 Cmin(I,J,K) = Cmin screening parameter when I-J pair is screened by K (I<=J); default = 2.0
 Cmin and Cmax are necessary up to (I<=J), but listing C(j,i,k) in addition to C(i,j,k) is often done because it is convenient for finding errors and using the mixing rule.
 see "Lammps format"(https://www.ctcms.nist.gov/potentials/Download/2009--Kim-H-K-Jung-W-S-Lee-B-J--Fe-Ti-C/1/FeTiC_Implementation.pdf)
+see https://matsci.org/t/meam-screening-parameters/22778/4
 #-------------------------------------------------------------
 r1 = 1st neighbour, r2 = 2nd neighbour
 BCC: r1 < rc < r2, r2 = sqrt(4/3)*r1 = 1.1547*r1
 FCC: r1 < rc < r2, r2 = sqrt(2)*r1 = 1.4142*r1
 Diamond: r1 < rc < r2, r2 = sqrt(8/3)*r1 = 1.633*r1
+#-------------------------------------------------------------
+see https://matsci.org/t/lammps-users-meam-is-ialloy-implemented-in-lammps/7889
+DYNAMO
+ialloy = 1
+emb_lin_neg = 1
+bkgd_dyn = 1
+#-------------------------------------------------------------
+https://matsci.org/t/lammps-users-meam-potentials/5982
+Note: Since Ga is placed and d is not introduced in 1NN-MEAM (because a3=0), erose_form = 0, 1, 2 are the same. Therefore, erose_form = 0 or the default is used.
 #-------------------------------------------------------------
 - Bulk case
 Note: As shown in the example of BTi, when Cmin and Cmax published by NIST are added, or when ibar is changed from 3 to 0 or -5, the difference in lattice constant, cohesive energy, and elastic constant is not clear, so it is difficult to clarify which setting is best.
