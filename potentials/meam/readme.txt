@@ -67,7 +67,8 @@ emb_lin_neg = 1
 bkgd_dyn = 1
 #-------------------------------------------------------------
 https://matsci.org/t/lammps-users-meam-potentials/5982
-Note: Since Ga is placed and d is not introduced in 1NN-MEAM (because a3=0), erose_form = 0, 1, 2 are the same. Therefore, erose_form = 0 or the default is used.
+Note: In 1NN-MEAM, d is not introduced (attract = repuls = a3 = 0), so erose_form = 0, 1, 2 are the same. Therefore, erose_form = 0 or the default is often used.
+Note: In 2NN-MEAM, d is introduced, and the formula for erose_form = 2 is often specified in papers. Therefore, erose_form = 2 is often used.
 #-------------------------------------------------------------
 - Bulk case
 Note: As shown in the example of BTi, when Cmin and Cmax published by NIST are added, or when ibar is changed from 3 to 0 or -5, the difference in lattice constant, cohesive energy, and elastic constant is not clear, so it is difficult to clarify which setting is best.
