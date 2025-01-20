@@ -54,6 +54,11 @@ Cmin(I,J,K) = Cmin screening parameter when I-J pair is screened by K (I<=J); de
 Cmin and Cmax are necessary up to (I<=J), but listing C(j,i,k) in addition to C(i,j,k) is often done because it is convenient for finding errors and using the mixing rule.
 see "Lammps format"(https://www.ctcms.nist.gov/potentials/Download/2009--Kim-H-K-Jung-W-S-Lee-B-J--Fe-Ti-C/1/FeTiC_Implementation.pdf)
 #-------------------------------------------------------------
+r1 = 1st neighbour, r2 = 2nd neighbour
+BCC: r1 < rc < r2, r2 = sqrt(4/3)*r1 = 1.1547*r1
+FCC: r1 < rc < r2, r2 = sqrt(2)*r1 = 1.4142*r1
+Diamond: r1 < rc < r2, r2 = sqrt(8/3)*r1 = 1.633*r1
+#-------------------------------------------------------------
 - Bulk case
 Note: As shown in the example of BTi, when Cmin and Cmax published by NIST are added, or when ibar is changed from 3 to 0 or -5, the difference in lattice constant, cohesive energy, and elastic constant is not clear, so it is difficult to clarify which setting is best.
 Note: There are also papers in which only the ibar has been changed using files and parameters from published previous papers.
