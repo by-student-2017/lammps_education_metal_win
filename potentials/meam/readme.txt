@@ -62,7 +62,7 @@ Diamond: r1 < rc < r2, r2 = sqrt(8/3)*r1 = 1.633*r1
 #-------------------------------------------------------------
 see https://matsci.org/t/lammps-users-meam-is-ialloy-implemented-in-lammps/7889
 When matching with DYNAMO code
-ialloy = 0 or 1
+ialloy = 0 or 1 # https://matsci.org/t/ialloy-parameter-in-meam/32853
 emb_lin_neg = 1
 bkgd_dyn = 1
 #-------------------------------------------------------------
