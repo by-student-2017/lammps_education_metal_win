@@ -142,6 +142,9 @@ TiVN
 TiCrN
 Note: Perhaps there is a setting that is closer to the literature value.
 #-------------------------------------------------------------
+NiTiC: For NiTi, values ​​close to those in the literature were obtained.
+Note: Perhaps there is a setting that is closer to the literature value.
+#-------------------------------------------------------------
 
 
 I was unable to obtain values ​​close to those found in the literature.
@@ -150,10 +153,6 @@ I apologize for this being due to my lack of ability.
 #-------------------------------------------------------------
 SiAuO: I tried it with mp-6930 but it doesn't match the literature.
 SiAu: Si and Au are generally good, but I haven't tried Si-Au.
-#-------------------------------------------------------------
-
-#-------------------------------------------------------------
-NiTiC: NiTi is close to the literature, but the elastic constants of TiC and NiC do not match.
 #-------------------------------------------------------------
 
 #-------------------------------------------------------------
