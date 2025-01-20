@@ -126,19 +126,17 @@ Since the elastic constants of CrN did not match, Cmax(i-j-i) was changed from 2
 Due to the change in Cmax(2,4,2), the Cmax value for the ternary system was also changed.
 I haven't checked the ternary system yet.
 #-------------------------------------------------------------
-
-
-I was unable to obtain values ​​close to those found in the literature.
-I apologize for this being due to my lack of ability.
-
-#-------------------------------------------------------------
 MoSi: The convergence conditions were tightened to calculate the elastic modulus of Mo5Si3.
 init.mod
 variable ftol equal 1.0e-8 -> 1.0e-10
 variable maxiter equal 100 -> 10000
 variable maxeval equal 1000 -> 1000000
-Note: It's nowhere near the value of a very good document. I'm sure I've still got it wrong somewhere.
+Note: Perhaps there is a setting that is closer to the literature value.
 #-------------------------------------------------------------
+
+
+I was unable to obtain values ​​close to those found in the literature.
+I apologize for this being due to my lack of ability.
 
 #-------------------------------------------------------------
 SiAuO: I tried it with mp-6930 but it doesn't match the literature.
