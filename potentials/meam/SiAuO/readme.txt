@@ -10,12 +10,12 @@ Results [SiO2,  P3_221, alpha-quartz, mp-6930]
 -------------------------------------------------------------
 Show results of 1st step (Running Minimization)
 The number of atoms = 9;
-The lattice constant, x (Angstoms) = 2.84449198507118;
-The lattice constant, y (Angstoms) = 2.46340231993773;
-The lattice constant, z (Angstoms) = 3.12235452156586;
-The volume (Angstoms^3) = 21.87873827817;
-The total energy (eV) = -255.210434978457;
-The cohesive energy (eV/atom) = -28.3567149976064;
+The lattice constant, x (Angstoms) = 4.37089768526704;
+The lattice constant, y (Angstoms) = 3.78530843279129;
+The lattice constant, z (Angstoms) = 4.7978662701536;
+The volume (Angstoms^3) = 79.3816371829287;
+The total energy (eV) = -94.0863029625615;
+The cohesive energy (eV/atom) = -10.4540336625068;
 -------------------------------------------------------------
 C tensor [GPa] (elastic stiffness constants)
           1                 2                 3                 4                 5                 6
@@ -35,4 +35,22 @@ Reuss shear modulus, GR:       70447.688
 Hill shear modulus, G=(GV+GR)/2:        86957.03 [GPa]
 
 Pughs modulus ratio, k=G/B:       22.795447
+-------------------------------------------------------------
+
+[SiO2,  P3_221, alpha-quartz, mp-6930]
+-------------------------------------------------------------
+C11  80 [GPa]
+C12  -9 [GPa]
+C13   4 [GPa]
+C33  84 [GPa]
+C44  52 [GPa]
+C66  44 [GPa]
+
+BV   27 [GPa]
+BR   27 [GPa]
+BVRH 27 [GPa]
+
+GV   46 [GPa]
+GR   42 [GPa]
+GVRH 44 [GPa]
 -------------------------------------------------------------
