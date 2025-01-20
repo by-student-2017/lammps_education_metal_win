@@ -96,3 +96,7 @@ H. Zhou et al., Modelling Simul. Mater. Sci. Eng. 29 (2021) 065008.:  https://do
 20.      Ga
 Atomistic model of gallium
 M. I. Baskes et al., Phys. Rev. B 66 (2002) 104107.: https://doi.org/10.1103/PhysRevB.66.104107
+
+21.      Be
+Modified Embedded Atom Method Potential for Modeling the Thermodynamic Properties of High Thermal Conductivity Beryllium Oxide
+J. Wei et al., ACS Omega 2019, 4, 4, 6339-6346.: https://pubs.acs.org/doi/full/10.1021/acsomega.9b00174
