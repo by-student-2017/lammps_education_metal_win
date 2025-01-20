@@ -8,44 +8,31 @@ Results [TiV BCC_B2]
 -------------------------------------------------------------
 Show results of 1st step (Running Minimization)
 The number of atoms = 2;
-The lattice constant, x (Angstoms) = 3.24457323646615;
-The lattice constant, y (Angstoms) = 3.24457323646615;
-The lattice constant, z (Angstoms) = 3.24457323646615;
-The volume (Angstoms^3) = 34.1564514058881;
-The total energy (eV) = -10.086127464693;
-The cohesive energy (eV/atom) = -5.04306373234651;
--------------------------------------------------------------
-# Murnaghan equation of state
-f(x) = (a*x/(b*(b-1)))*(b*(1-c/x)+(c/x)**b-1)+d
-
-Final set of parameters            Asymptotic Standard Error
-=======================            ==========================
-a               = 0.783872         +/- 0.0004504    (0.05745%)
-b               = 3.92972          +/- 0.01823      (0.4638%)
-c               = 28.4915          +/- 0.001892     (0.00664%)
-d               = -10.4155         +/- 9.58e-05     (0.0009198%)
-
-28.4915^(1/3) = 3.05425 [A]
--10.4155/2 = -5.20775 [eV/atom]
+The lattice constant, x (Angstoms) = 3.24457323889205;
+The lattice constant, y (Angstoms) = 3.24457323889205;
+The lattice constant, z (Angstoms) = 3.24457323889205;
+The volume (Angstoms^3) = 34.1564514825024;
+The total energy (eV) = -10.0861274570351;
+The cohesive energy (eV/atom) = -5.04306372851753;
 -------------------------------------------------------------
 C tensor [GPa] (elastic stiffness constants)
           1                 2                 3                 4                 5                 6
-1       136.26647         92.199188         79.134493      -0.025124273         1.1824037     -0.0020016769
-2       92.199188         232.87411         89.209582        0.16831768        -2.0825053      -0.063483089
-3       79.134493         89.209582         144.95986      -0.029075749         2.2046243     -0.0048728581
-4    -0.025124273        0.16831768      -0.029075749         38.547787     8.2250068e-05         1.8206627
-5       1.1824037        -2.0825053         2.2046243     8.2250068e-05         27.775013      0.0030271876
-6   -0.0020016769      -0.063483089     -0.0048728581         1.8206627      0.0030271876         38.917433
+1        181.4635         100.08492         100.08492     3.7498496e-09    -1.8291804e-09    -2.3413535e-09
+2       100.08492          181.4635         100.08492     2.9681261e-09    -2.2275374e-09    -3.4837694e-09
+3       100.08492         100.08492          181.4635     3.2569354e-09    -1.3918048e-09    -4.5984237e-11
+4   3.7498496e-09     2.9681261e-09     3.2569354e-09         53.126654     4.6494232e-10     2.3074321e-09
+5  -1.8291804e-09    -2.2275374e-09    -1.3918048e-09     4.6494232e-10         53.126654      5.515594e-10
+6  -2.3413535e-09    -3.4837694e-09    -4.5984237e-11     2.3074321e-09      5.515594e-10         53.126654
 -------------------------------------------------------------
-Voigt bulk modulus, BV:       115.02077
-Reuss bulk modulus, BR:        107.4439
-Hill bulk modulus, B=(BV+BR)/2:       111.23234 [GPa]
+Voigt bulk modulus, BV:       127.21112
+Reuss bulk modulus, BR:       127.21112
+Hill bulk modulus, B=(BV+BR)/2:       127.21112 [GPa]
 
-Voigt shear modulus, GV:       58.999906
-Reuss shear modulus, GR:        66.98293
-Hill shear modulus, G=(GV+GR)/2:       62.991418 [GPa]
+Voigt shear modulus, GV:       80.027699
+Reuss shear modulus, GR:        79.02615
+Hill shear modulus, G=(GV+GR)/2:       79.526925 [GPa]
 
-Pughs modulus ratio, k=G/B:       0.5663049
+Pughs modulus ratio, k=G/B:      0.62515704
 -------------------------------------------------------------
 
 Reference (S. Ding et al., J. Alloy. Comp. 814 (2020) 152151.: https://doi.org/10.1016/j.jallcom.2019.152151)
