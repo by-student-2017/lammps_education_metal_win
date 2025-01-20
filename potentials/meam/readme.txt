@@ -135,6 +135,11 @@ variable maxiter equal 100 -> 10000
 variable maxeval equal 1000 -> 1000000
 Note: Perhaps there is a setting that is closer to the literature value.
 #-------------------------------------------------------------
+TM-N(TM=Ti,V,Cr,Fe): he convergence conditions were tightened to calculate the elastic modulus of FeN and TiV..
+TiVN
+TiCrN
+Note: Perhaps there is a setting that is closer to the literature value.
+#-------------------------------------------------------------
 
 
 I was unable to obtain values ​​close to those found in the literature.
@@ -147,14 +152,6 @@ SiAu: Si and Au are generally good, but I haven't tried Si-Au.
 
 #-------------------------------------------------------------
 NiTiC: NiTi is close to the literature, but the elastic constants of TiC and NiC do not match.
-#-------------------------------------------------------------
-
-#-------------------------------------------------------------
-TiVN: The unknown parameters were changed to bring the elastic constants closer to the TiV values. Looking at the results below, this is unlikely to be true.
-#-------------------------------------------------------------
-TM-N(TM=Ti,V,Cr,Fe): The unknown parameters were changed in the same way as TiVN, but the elastic constants do not match those in the literature.
-#-------------------------------------------------------------
-TiCrN: The unknown parameters were changed in the same way as TiVN, but the elastic constants do not match those in the literature.
 #-------------------------------------------------------------
 
 #-------------------------------------------------------------
