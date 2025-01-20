@@ -8,31 +8,31 @@ Results [MoSi2, mp-2592: Si2Mo (tetragonal, I4/mmm, 139)]
 -------------------------------------------------------------
 Show results of 1st step (Running Minimization)
 The number of atoms = 6;
-The lattice constant, x (Angstoms) = 3.76271808534617;
-The lattice constant, y (Angstoms) = 3.76271808534617;
-The lattice constant, z (Angstoms) = 9.19426385234162;
-The volume (Angstoms^3) = 130.172823335696;
-The total energy (eV) = -32.9231267714274;
-The cohesive energy (eV/atom) = -5.48718779523791;
+The lattice constant, x (Angstoms) = 3.75106905441817;
+The lattice constant, y (Angstoms) = 3.75106905441817;
+The lattice constant, z (Angstoms) = 9.16579925267014;
+The volume (Angstoms^3) = 128.967553002462;
+The total energy (eV) = -32.5920132904254;
+The cohesive energy (eV/atom) = -5.43200221507091;
 -------------------------------------------------------------
 C tensor [GPa] (elastic stiffness constants)
           1                 2                 3                 4                 5                 6
-1       294.43741          140.3198         117.70392    -2.8882694e-07    -3.7627833e-08    -1.3232133e-09
-2        140.3198         294.43741         117.70392    -2.8389199e-07    -3.6974059e-08     3.4293235e-10
-3       117.70392         117.70392         572.41308     -1.011131e-09    -2.1359786e-09      1.222599e-09
-4  -2.8882694e-07    -2.8389199e-07     -1.011131e-09         50.312288     1.3340962e-07     2.0739497e-09
-5  -3.7627833e-08    -3.6974059e-08    -2.1359786e-09     1.3340962e-07         50.312287     4.5093506e-09
-6  -1.3232133e-09     3.4293235e-10      1.222599e-09     2.0739497e-09     4.5093506e-09         113.73892
+1       250.17046         147.24441         151.97435    -5.0930984e-09     1.6833783e-09     1.1281673e-10
+2       147.24441         250.17046         151.97435    -5.6248071e-09      1.124701e-09    -2.2419154e-09
+3       151.97435         151.97435         494.79601    -5.1981256e-09     3.8238069e-09    -5.7220556e-09
+4  -5.0930984e-09    -5.6248071e-09    -5.1981256e-09         27.573971    -1.1132945e-08    -1.0495011e-10
+5   1.6833783e-09      1.124701e-09     3.8238069e-09    -1.1132945e-08         27.573971     6.1356782e-10
+6   1.1281673e-10    -2.2419154e-09    -5.7220556e-09    -1.0495011e-10     6.1356782e-10         131.85375
 -------------------------------------------------------------
-Voigt bulk modulus, BV:       212.52702
-Reuss bulk modulus, BR:       199.45773
-Hill bulk modulus, B=(BV+BR)/2:       205.99238 [GPa]
+Voigt bulk modulus, BV:       210.83591
+Reuss bulk modulus, BR:       193.10108
+Hill bulk modulus, B=(BV+BR)/2:       201.96849 [GPa]
 
-Voigt shear modulus, GV:       138.11608
-Reuss shear modulus, GR:       161.92213
-Hill shear modulus, G=(GV+GR)/2:       150.01911 [GPa]
+Voigt shear modulus, GV:        111.0636
+Reuss shear modulus, GR:       104.45196
+Hill shear modulus, G=(GV+GR)/2:       107.75778 [GPa]
 
-Pughs modulus ratio, k=G/B:      0.72827504
+Pughs modulus ratio, k=G/B:      0.53353759
 -------------------------------------------------------------
 
 Reference (M. I. Baskes, Mater. Sci. Eng. A261 (1999) 165-168.: https://doi.org/10.1016/S0921-5093(98)01062-4)
@@ -57,31 +57,31 @@ Results [Mo3Si, mp-1275: SiMo3 (cubic, Pm-3n, 223)]
 -------------------------------------------------------------
 Show results of 1st step (Running Minimization)
 The number of atoms = 8;
-The lattice constant, x (Angstoms) = 5.51682852046125;
-The lattice constant, y (Angstoms) = 5.51682852046125;
-The lattice constant, z (Angstoms) = 5.51682852046125;
-The volume (Angstoms^3) = 167.906865782845;
-The total energy (eV) = -48.7282620714691;
-The cohesive energy (eV/atom) = -6.09103275893363;
+The lattice constant, x (Angstoms) = 5.51927794503277;
+The lattice constant, y (Angstoms) = 5.51927794503277;
+The lattice constant, z (Angstoms) = 5.51927794503277;
+The volume (Angstoms^3) = 168.130612722381;
+The total energy (eV) = -48.5581068828608;
+The cohesive energy (eV/atom) = -6.06976336035759;
 -------------------------------------------------------------
 C tensor [GPa] (elastic stiffness constants)
           1                 2                 3                 4                 5                 6
-1       758.05244         8.4143055         8.4142995    -3.1604328e-07     2.8494421e-07     3.8685761e-07
-2       8.4143055         758.05244         8.4142976      2.700045e-07    -2.7151016e-07    -2.6409916e-07
-3       8.4142995         8.4142976         758.05245      3.858072e-08    -7.8094216e-08    -1.1199342e-07
-4  -3.1604328e-07      2.700045e-07      3.858072e-08         719.83648    -5.6413846e-07    -4.2255267e-06
-5   2.8494421e-07    -2.7151016e-07    -7.8094216e-08    -5.6413846e-07         719.83648     3.6845862e-06
-6   3.8685761e-07    -2.6409916e-07    -1.1199342e-07    -4.2255267e-06     3.6845862e-06         719.83649
+1       639.65465         64.195669         64.195669     3.3507388e-08    -1.7789514e-08     1.0116768e-08
+2       64.195669         639.65465         64.195669     2.3349488e-08     1.5273861e-08    -1.4608075e-08
+3       64.195669         64.195669         639.65465    -3.9912723e-08    -1.1310015e-08    -7.2393664e-09
+4   3.3507388e-08     2.3349488e-08    -3.9912723e-08         407.19118    -4.7829819e-08     9.3545613e-10
+5  -1.7789514e-08     1.5273861e-08    -1.1310015e-08    -4.7829819e-08         407.19118      4.599326e-09
+6   1.0116768e-08    -1.4608075e-08    -7.2393664e-09     9.3545613e-10      4.599326e-09         407.19118
 -------------------------------------------------------------
-Voigt bulk modulus, BV:       258.29368
-Reuss bulk modulus, BR:       258.29368
-Hill bulk modulus, B=(BV+BR)/2:       258.29368 [GPa]
+Voigt bulk modulus, BV:       256.01533
+Reuss bulk modulus, BR:       256.01533
+Hill bulk modulus, B=(BV+BR)/2:       256.01533 [GPa]
 
-Voigt shear modulus, GV:       1013.7314
-Reuss shear modulus, GR:       783.96803
-Hill shear modulus, G=(GV+GR)/2:       898.84972 [GPa]
+Voigt shear modulus, GV:       603.72121
+Reuss shear modulus, GR:        568.6432
+Hill shear modulus, G=(GV+GR)/2:        586.1822 [GPa]
 
-Pughs modulus ratio, k=G/B:       3.4799524
+Pughs modulus ratio, k=G/B:       2.2896371
 -------------------------------------------------------------
 
 Reference (M. I. Baskes, Mater. Sci. Eng. A261 (1999) 165-168.: https://doi.org/10.1016/S0921-5093(98)01062-4)
@@ -102,31 +102,31 @@ Results [Mo5Si3, mp-1332: Si3Mo5 (tetragonal, I4/mcm, 140)]
 -------------------------------------------------------------
 Show results of 1st step (Running Minimization)
 The number of atoms = 32;
-The lattice constant, x (Angstoms) = 11.0382745727618;
-The lattice constant, y (Angstoms) = 11.0382745727618;
-The lattice constant, z (Angstoms) = 5.62131510139957;
-The volume (Angstoms^3) = 684.920737720149;
-The total energy (eV) = -187.099757856846;
-The cohesive energy (eV/atom) = -5.84686743302644;
+The lattice constant, x (Angstoms) = 11.0317543101226;
+The lattice constant, y (Angstoms) = 11.0317543101226;
+The lattice constant, z (Angstoms) = 5.61799461407182;
+The volume (Angstoms^3) = 683.707715081421;
+The total energy (eV) = -191.01818218773;
+The cohesive energy (eV/atom) = -5.96931819336657;
 -------------------------------------------------------------
 C tensor [GPa] (elastic stiffness constants)
           1                 2                 3                 4                 5                 6
-1       300.49451         193.46431         170.28439    -1.5815244e-08    -3.7328834e-07    -3.1409481e-08
-2       193.46431         300.49451         170.28439    -3.2884305e-08     2.4358072e-07    -2.2704642e-08
-3       170.28439         170.28439         340.15369    -1.6709494e-07    -2.2217947e-07     5.5620973e-08
-4  -1.5815244e-08    -3.2884305e-08    -1.6709494e-07         27.161331     7.3013959e-09      2.537637e-07
-5  -3.7328834e-07     2.4358072e-07    -2.2217947e-07     7.3013959e-09         27.161332     2.6743673e-07
-6  -3.1409481e-08    -2.2704642e-08     5.5620973e-08      2.537637e-07     2.6743673e-07         61.217829
+1       312.90185         151.26863         135.75583       -0.92906036       -0.73900035       -0.13286271
+2       151.26863         310.91914         133.40736        0.45703023         1.3275304       -0.02552296
+3       135.75583         133.40736         459.41133        -1.6675914         1.9567737        0.72599382
+4     -0.92906036        0.45703023        -1.6675914         199.63088         2.3086309       0.061927198
+5     -0.73900035         1.3275304         1.9567737         2.3086309         214.40666       -0.24626584
+6     -0.13286271       -0.02552296        0.72599382       0.061927198       -0.24626584         163.48419
 -------------------------------------------------------------
-Voigt bulk modulus, BV:       223.24543
-Reuss bulk modulus, BR:       223.12305
-Hill bulk modulus, B=(BV+BR)/2:       223.18424 [GPa]
+Voigt bulk modulus, BV:       213.78844
+Reuss bulk modulus, BR:       209.27195
+Hill bulk modulus, B=(BV+BR)/2:        211.5302 [GPa]
 
-Voigt shear modulus, GV:       73.356838
-Reuss shear modulus, GR:        93.71632
-Hill shear modulus, G=(GV+GR)/2:       83.536579 [GPa]
+Voigt shear modulus, GV:       275.19539
+Reuss shear modulus, GR:       211.28177
+Hill shear modulus, G=(GV+GR)/2:       243.23858 [GPa]
 
-Pughs modulus ratio, k=G/B:      0.37429425
+Pughs modulus ratio, k=G/B:          1.1499
 -------------------------------------------------------------
 
 Reference (M. I. Baskes, Mater. Sci. Eng. A261 (1999) 165-168.: https://doi.org/10.1016/S0921-5093(98)01062-4)
