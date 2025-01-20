@@ -52,6 +52,7 @@ Note: Cmin(i-k-j) = Cmin(i,j,k) and Cmin(i,j,k) = Cmin(j,i,k): see 2007--Lee-B-J
 Cmax(I,J,K) = Cmax screening parameter when I-J pair is screened by K (I<=J); default = 2.8
 Cmin(I,J,K) = Cmin screening parameter when I-J pair is screened by K (I<=J); default = 2.0
 Cmin and Cmax are necessary up to (I<=J), but listing C(j,i,k) in addition to C(i,j,k) is often done because it is convenient for finding errors and using the mixing rule.
+Note: In some papers, it is not specified whether j or k is used for screening. In such cases, it is a good idea to check by setting C(i,j,k) = C(j,i,k). If a different value of C(j,i,k) exists, it may be possible that the atoms you are currently considering for screening are incorrect.
 see "Lammps format"(https://www.ctcms.nist.gov/potentials/Download/2009--Kim-H-K-Jung-W-S-Lee-B-J--Fe-Ti-C/1/FeTiC_Implementation.pdf)
 see https://matsci.org/t/meam-screening-parameters/22778/4
 #-------------------------------------------------------------
