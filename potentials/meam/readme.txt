@@ -97,7 +97,7 @@ Conclusion
 Note: Due to a reason known as the Hume-Rothery law, multidimensional systems other than the HEA are quite difficult to exist in, except at dilute states, so much insight would be gained from preparing binary systems that fit the Materials Project data, and even ternary systems that can be inferred from the binary systems.
 #-------------------------------------------------------------
 # MPC (https://matsci.org/t/fitting-tool-for-meam-parameters/26254)
-Intended as a teaching tool, MPC is designed to run on personal computers (Windows 7 64-bit, MacOS X Yosemite) without MATLAB.
+Intended as a teaching tool, MPC is designed to run on personal computers (Windows 7 64-bit, MacOS X Yosemite) without "MATLAB".
 #-------------------------------------------------------------
 see "KISSMD_LAMMPS_converter.xlsx" (https://cmse.postech.ac.kr/lammps/3707)
 #-------------------------------------------------------------
