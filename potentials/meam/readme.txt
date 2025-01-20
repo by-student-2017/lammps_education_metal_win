@@ -69,6 +69,7 @@ Conclusion
 # Inferred phylogenetic tree
 - C-Fe-Mn-Si (Aslam 2019) -> FeCoCrMnSi (Salloom 2022)
 - Fe-X(X=Al,Cu,Nb,W)_CoNb (Muralles 2023) -> CoFe-X(X=V,Nb,Mo,W) (Muralles 2024)
+- SiAu -> SiAuO
 #-------------------------------------------------------------
 
 #-------------------------------------------------------------
@@ -118,6 +119,11 @@ variable ftol equal 1.0e-8 -> 1.0e-10
 variable maxiter equal 100 -> 10000
 variable maxeval equal 1000 -> 1000000
 Note: It's nowhere near the value of a very good document. I'm sure I've still got it wrong somewhere.
+#-------------------------------------------------------------
+
+#-------------------------------------------------------------
+SiAuO: I tried it with mp-6930 but it doesn't match the literature.
+SiAu: Si and Au are generally good, but I haven't tried Si-Au.
 #-------------------------------------------------------------
 
 #-------------------------------------------------------------
