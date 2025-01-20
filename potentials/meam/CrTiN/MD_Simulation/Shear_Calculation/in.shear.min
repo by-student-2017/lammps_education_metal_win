@@ -1,0 +1,225 @@
+# shear TiTiN
+
+dimension     3
+boundary      p p p
+
+units         metal
+atom_style    atomic
+neighbor      0.3 bin
+neigh_modify  delay 5
+
+# create geometry
+
+read_data     data.meam
+
+#displace_atoms all move 0.0 -59.0 0.0 units box
+
+
+
+# potentials
+include "poten.mod"
+
+# remember to scale the stresses with respect to the amunt
+# of the box that is fixed
+
+
+# define regions & groups
+region		top  block INF INF   63  INF  INF INF 
+region		bot  block INF INF  INF   63  INF INF
+
+region		ftop block INF INF  99  INF  INF INF 
+region		fbot block INF INF  INF 6  INF INF 
+
+region		mtop block INF INF  70.  90.  INF INF 
+region		mbot block INF INF 15. 50.  INF INF 
+
+region		mid block INF INF  15.  90.  INF INF
+
+
+group		topblock region top
+group		botblock region bot
+group		fix_top region ftop
+group		fix_bot region fbot
+group		mob_top region mtop
+group		mob_bot region mbot
+
+group		middle region mid
+
+group		mob_all subtract all fix_bot fix_top
+
+
+write_data result.data
+
+
+# calculate stress for all atoms
+compute		sall all stress/atom NULL
+
+# load direction
+variable	theta equal 0/180*3.14159265
+variable	specx equal cos(v_theta)
+variable	specz equal sin(v_theta)
+
+variable	stsincre equal 500  # was 500 before
+
+# shear stress  # boxlength for Cr/TiN is 150.0
+# yx top layer
+compute		yx_top mob_top reduce sum c_sall[4]
+variable	Syx_top equal (c_yx_top)/(lx*lz*ly*0.133)   #13.3% of boxlength (30/150)
+# yz top layer
+compute		yz_top mob_top reduce sum c_sall[6]
+variable	Syz_top equal (c_yz_top)/(lx*lz*ly*0.133)    #13.33% of boxlength (30/150)
+# yx bot layer
+compute		yx_bot mob_bot reduce sum c_sall[4]
+variable	Syx_bot equal (c_yx_bot)/(lx*lz*ly*0.233)        #23.3% of boxlength (45/150)
+# yz bot layer
+compute		yz_bot mob_bot reduce sum c_sall[6]
+variable	Syz_bot equal (c_yz_bot)/(lx*lz*ly*0.233)    #23.3% of boxlength (45/150)
+
+# yx total average 
+compute 	yx_tot middle reduce sum c_sall[4]
+variable	Syx_tot equal (c_yx_tot)/(lx*lz*ly*0.5)   #50% of boxlength (85/150)
+
+# zx total average 
+compute         yz_tot middle reduce sum c_sall[6]
+variable        Syz_tot equal (c_yz_tot)/(lx*lz*ly*0.5)    #50% of boxlength (85/150)
+
+variable	ststop equal v_Syx_top*v_specx+v_Syz_top*v_specz
+variable	stsbot equal v_Syx_bot*v_specx+v_Syz_bot*v_specz
+
+# fix ....
+
+fix			2 fix_top setforce 0.0 0.0 0.0
+fix			3 fix_bot setforce 0.0 0.0 0.0
+
+fix			1 mob_all npt temp 10.0 10.0 0.2 x 0.0 0.0 2.0 z 0.0 0.0 2.0 drag 1.0
+velocity 	mob_all create 10.0 4928459 mom yes dist gaussian
+timestep	0.001
+
+
+thermo	      10
+thermo_style  custom step temp v_ststop v_stsbot v_Syx_tot v_Syz_tot
+thermo_modify format 2 %20.13g
+
+dump	      1 all atom 100000 dump.indent
+
+run			10
+
+minimize	1.0e-11 1.0e-11 1000 1000
+
+
+run			100
+
+minimize	1.0e-11 1.0e-11 1000 1000
+
+
+run			1000
+
+minimize	1.0e-11 1.0e-11 1000 1000
+
+
+
+write_data    init.data
+
+unfix		1
+
+
+
+# define shear constants of both layers
+variable	c44_top equal 1630000  #expt 163GPa
+variable	c46_top equal 0.
+variable	c66_top equal 2920000  # expt 292 GPa
+
+variable	c44_bot equal 1032000  
+variable	c46_bot equal 0.
+variable	c66_bot equal 1032000   # 103.2 GPa
+
+variable	ser equal abs(v_ststop-v_stsbot)
+
+# set up iteration
+label		loopa
+variable	a loop 2000
+print 		"Iteration No. $a"
+
+# adjust according to stress
+run 0
+if "($(v_ststop) >= $(v_stsbot)) && ($(v_ser)>=$(v_stsincre))" then &
+	"variable   sinct equal v_ststop" &
+	"variable   stsyx equal v_sinct*v_specx" &
+	"variable   stsyz equal v_sinct*v_specz" &
+	"variable   dyxtop equal v_stsyx-v_Syx_top" &
+	"variable   dyztop equal v_stsyz-v_Syz_top" &
+	"variable   Eyz_top equal (v_c46_top*v_dyxtop-v_c66_top*v_dyztop)/(v_c46_top*v_c46_top-v_c66_top*v_c44_top)" &
+	"variable   Eyx_top equal (v_c44_top*v_dyxtop-v_c46_top*v_dyztop)/(v_c66_top*v_c44_top-v_c46_top*v_c46_top)" &
+	"variable   dyxbot equal v_stsyx-v_Syx_bot" &
+	"variable   dyzbot equal v_stsyz-v_Syz_bot" &
+	"variable   Eyz_bot equal (v_c46_bot*v_dyxbot-v_c66_bot*v_dyzbot)/(v_c46_bot*v_c46_bot-v_c66_bot*v_c44_bot)" &
+	"variable   Eyx_bot equal (v_c44_bot*v_dyxbot-v_c46_bot*v_dyzbot)/(v_c66_bot*v_c44_bot-v_c46_bot*v_c46_bot)" &
+elif "($(v_ststop) >= $(v_stsbot)) && ($(v_ser)<$(v_stsincre))" &
+	"variable   sinct equal v_stsbot+v_stsincre" &
+	"variable   stsyx equal v_sinct*v_specx" &
+	"variable   stsyz equal v_sinct*v_specz" &
+	"variable   dyxtop equal v_stsyx-v_Syx_top" &
+	"variable   dyztop equal v_stsyz-v_Syz_top" &
+	"variable   Eyz_top equal (v_c46_top*v_dyxtop-v_c66_top*v_dyztop)/(v_c46_top*v_c46_top-v_c66_top*v_c44_top)" &
+	"variable   Eyx_top equal (v_c44_top*v_dyxtop-v_c46_top*v_dyztop)/(v_c66_top*v_c44_top-v_c46_top*v_c46_top)" &
+	"variable   dyxbot equal v_stsyx-v_Syx_bot" &
+	"variable   dyzbot equal v_stsyz-v_Syz_bot" &
+	"variable   Eyz_bot equal (v_c46_bot*v_dyxbot-v_c66_bot*v_dyzbot)/(v_c46_bot*v_c46_bot-v_c66_bot*v_c44_bot)" &
+	"variable   Eyx_bot equal (v_c44_bot*v_dyxbot-v_c46_bot*v_dyzbot)/(v_c66_bot*v_c44_bot-v_c46_bot*v_c46_bot)" &
+elif "($(v_ststop) < $(v_stsbot)) && ($(v_ser)>=$(v_stsincre))" &
+	"variable   sinct equal v_stsbot" &
+	"variable   stsyx equal v_sinct*v_specx" &
+	"variable   stsyz equal v_sinct*v_specz" &
+	"variable   dyxtop equal v_stsyx-v_Syx_top" &
+	"variable   dyztop equal v_stsyz-v_Syz_top" &
+	"variable   Eyz_top equal (v_c46_top*v_dyxtop-v_c66_top*v_dyztop)/(v_c46_top*v_c46_top-v_c66_top*v_c44_top)" &
+	"variable   Eyx_top equal (v_c44_top*v_dyxtop-v_c46_top*v_dyztop)/(v_c66_top*v_c44_top-v_c46_top*v_c46_top)" &
+	"variable   dyxbot equal v_stsyx-v_Syx_bot" &
+	"variable   dyzbot equal v_stsyz-v_Syz_bot" &
+	"variable   Eyz_bot equal (v_c46_bot*v_dyxbot-v_c66_bot*v_dyzbot)/(v_c46_bot*v_c46_bot-v_c66_bot*v_c44_bot)" &
+	"variable   Eyx_bot equal (v_c44_bot*v_dyxbot-v_c46_bot*v_dyzbot)/(v_c66_bot*v_c44_bot-v_c46_bot*v_c46_bot)" &
+elif "($(v_ststop) < $(v_stsbot)) && ($(v_ser)<$(v_stsincre))" &
+	"variable   sinct equal v_ststop+v_stsincre" &
+	"variable   stsyx equal v_sinct*v_specx" &
+	"variable   stsyz equal v_sinct*v_specz" &
+	"variable   dyxtop equal v_stsyx-v_Syx_top" &
+	"variable   dyztop equal v_stsyz-v_Syz_top" &
+	"variable   Eyz_top equal (v_c46_top*v_dyxtop-v_c66_top*v_dyztop)/(v_c46_top*v_c46_top-v_c66_top*v_c44_top)" &
+	"variable   Eyx_top equal (v_c44_top*v_dyxtop-v_c46_top*v_dyztop)/(v_c66_top*v_c44_top-v_c46_top*v_c46_top)" &
+	"variable   dyxbot equal v_stsyx-v_Syx_bot" &
+	"variable   dyzbot equal v_stsyz-v_Syz_bot" &
+	"variable   Eyz_bot equal (v_c46_bot*v_dyxbot-v_c66_bot*v_dyzbot)/(v_c46_bot*v_c46_bot-v_c66_bot*v_c44_bot)" &
+	"variable   Eyx_bot equal (v_c44_bot*v_dyxbot-v_c46_bot*v_dyzbot)/(v_c66_bot*v_c44_bot-v_c46_bot*v_c46_bot)" &
+
+# apply shear top
+# x direction
+displace_atoms	topblock ramp x $(0-v_Eyx_top*90) $(v_Eyx_top*90) y -30 150 units box
+# z direction
+displace_atoms	topblock ramp z $(0-v_Eyz_top*90) $(v_Eyz_top*90) y -30 150 units box
+
+# apply shear bot
+# x direction
+displace_atoms	botblock ramp x $(0-v_Eyx_bot*90) $(v_Eyx_bot*90) y  -30 150 units box
+# z direction
+displace_atoms	botblock ramp z $(0-v_Eyz_bot*90) $(v_Eyz_bot*90) y  -30 150 units box
+
+print	"-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-"
+# print	
+print		"!!!!!! $(v_Syx_top)  $(v_Syz_top)  $(v_Syx_bot) $(v_Syz_bot) $(v_Eyx_top)  $(v_Eyz_top)  $(v_Eyx_bot) $(v_Eyz_bot)"
+print		"###### $(v_Syx_tot)  $(v_Syz_tot)"
+
+
+minimize	1.0e-11 1.0e-11 1000 1000
+
+fix			1 mob_all nvt temp 5.0 5.0 0.2 drag 1.0
+velocity 		mob_all create 5.0 4928459 mom yes dist gaussian
+run			10
+
+minimize	1.0e-11 1.0e-11 1000 1000
+run			500
+
+minimize	1.0e-11 1.0e-11 1000 1000
+#write_data    Nb-NbC.struc
+
+next		a
+jump		in.shear.min loopa

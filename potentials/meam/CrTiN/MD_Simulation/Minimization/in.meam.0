@@ -1,0 +1,54 @@
+# Test of MEAM potential for SiC system
+
+
+units           metal
+dimension       3
+boundary        p p m
+atom_style      atomic
+atom_modify map array
+
+
+
+# ---------- Create Atoms --------------------- 
+read_data data.meam
+
+# this is part that scales 
+#change_box all x scale ${x_scale} y scale ${y_scale} remap
+change_box all x scale ${x_scale} y scale ${y_scale} z scale ${z_scale} remap
+
+
+region 1 block INF INF INF INF 98 INF
+region 2 block INF INF INF INF INF 7
+region 3 block INF INF INF INF 7 98
+
+group top region 1
+group bottom region 2
+group mid region 3
+
+fix 2 top    setforce NULL NULL 0.0
+fix 3 bottom setforce NULL NULL 0.0
+
+
+
+dump 1 all xyz 1000 dump.xyz
+
+include "poten.mod"
+
+# ---------- Define Settings --------------------- 
+compute eng all pe/atom 
+compute eatoms all reduce sum c_eng 
+
+# ---------- Run Minimization --------------------- 
+reset_timestep 0 
+#fix 1 all box/relax iso 0.0 vmax 0.001
+thermo 100
+thermo_style custom step pe lx ly lz press pxx pyy pzz temp
+
+
+
+min_style cg
+minimize 1e-25 1e-25 10000 10000 
+write_data result.data
+
+
+
