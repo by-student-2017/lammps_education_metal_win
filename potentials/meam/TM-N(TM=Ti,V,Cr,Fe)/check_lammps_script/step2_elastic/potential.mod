@@ -18,8 +18,8 @@
 pair_style meam
 #pair_coeff * * ./../../library.meam Ti V Cr Fe N ./../../TiVCrFeN.meam Ti N
 #pair_coeff * * ./../../library.meam Ti V Cr Fe N ./../../TiVCrFeN.meam V N
-#pair_coeff * * ./../../library.meam Ti V Cr Fe N ./../../TiVCrFeN.meam Cr N
-pair_coeff * * ./../../library.meam Ti V Cr Fe N ./../../TiVCrFeN.meam Fe N
+pair_coeff * * ./../../library.meam Ti V Cr Fe N ./../../TiVCrFeN.meam Cr N
+#pair_coeff * * ./../../library.meam Ti V Cr Fe N ./../../TiVCrFeN.meam Fe N
 #-----------------------
 
 # Setup neighbor style
