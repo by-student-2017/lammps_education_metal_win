@@ -142,13 +142,15 @@ TiVN
 TiCrN
 Note: Perhaps there is a setting that is closer to the literature value.
 #-------------------------------------------------------------
-NiTiC: For NiTi, values ​​close to those in the literature were obtained.
-Note: Perhaps there is a setting that is closer to the literature value.
-#-------------------------------------------------------------
 
 
 I was unable to obtain values ​​close to those found in the literature.
 I apologize for this being due to my lack of ability.
+
+#-------------------------------------------------------------
+NiTiC: For NiTi, values ​​close to those in the literature were obtained. B2 NiHf and L12 Ti3Hf do not match the literature.
+Note: Perhaps there is a setting that is closer to the literature value.
+#-------------------------------------------------------------
 
 #-------------------------------------------------------------
 SiAuO: I tried it with mp-6930 but it doesn't match the literature.
