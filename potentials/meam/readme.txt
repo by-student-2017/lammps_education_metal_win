@@ -140,6 +140,7 @@ variable ftol equal 1.0e-8 -> 1.0e-10
 variable maxiter equal 100 -> 10000
 variable maxeval equal 1000 -> 1000000
 Note: Perhaps there is a setting that is closer to the literature value.
+Note: Looking at these results, one can see that there may be hope for calculating thermal conductivity in the Mn-Si system, which has a chimney-ladder structure, an important thermoelectric material.
 #-------------------------------------------------------------
 TM-N(TM=Ti,V,Cr,Fe): he convergence conditions were tightened to calculate the elastic modulus of FeN and TiV..
 TiVN
