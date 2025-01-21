@@ -145,7 +145,7 @@ Note: Looking at these results, one can see that there may be hope for calculati
 TM-N(TM=Ti,V,Cr,Fe): he convergence conditions were tightened to calculate the elastic modulus of FeN and TiV..
 TiVN
 TiCrN
-Note: Perhaps there is a setting that is closer to the literature value.
+Note: Perhaps there is a setting that is closer to the literature value. It doesn't go well with Cr.
 #-------------------------------------------------------------
 
 
