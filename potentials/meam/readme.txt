@@ -81,6 +81,8 @@ Conclusion
 3. Papers that cannot be reproduced should be downgraded so that they can be used as research results for the next generation. Predecessors should not be obstacles to those who follow. 
 4. If there is a correlation between the credibility of potential and the impact factor, it should be shown. If there is no positive correlation, the impact factor is meaningless for the topic under discussion here.
 #-------------------------------------------------------------
+5. If possible, we should consider using donations to improve the facility. We would like to ask philanthropists who are unsure of how to spend their money to do so.
+#-------------------------------------------------------------
 
 #-------------------------------------------------------------
 # Inferred phylogenetic tree
