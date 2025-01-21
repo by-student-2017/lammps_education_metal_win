@@ -52,6 +52,7 @@ Pughs modulus ratio, k=G/B:       1.2454258
 Reference (N. Dhariwal et al., Mater. Des. 210 (2021) 110120.: https://pubs.acs.org/doi/pdf/10.1021/acs.jpcc.6b05296)
 -------------------------------------------------------------
 ZrN NaCl-type
+a   4.61 [A]
 C11 480 [GPa]
 C12  83 [GPa]
 C44 125 [GPa]
