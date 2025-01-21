@@ -90,6 +90,7 @@ Conclusion
 - Fe-X(X=Al,Cu,Nb,W)_CoNb (Muralles 2023) -> CoFe-X(X=V,Nb,Mo,W) (Muralles 2024)
 - SiAu -> SiAuO
 - TM-N (Ding 2019) -> TiNV (Ding 2020) -> TiCrV (Ding 2021)
+- Ni-Ti (Ko 2015) -> Nb-Ni-Ti (Lee 2022)
 #-------------------------------------------------------------
 
 #-------------------------------------------------------------
