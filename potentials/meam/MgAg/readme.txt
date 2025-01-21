@@ -1,0 +1,44 @@
+Usage in lammps input
+#-------------------------------------------------------------
+pair_style meam
+pair_coeff * * ./../../library.meam Mg Ag ./../../MgAg.meam Mg Ag
+#-------------------------------------------------------------
+
+Results [B2-MgAg, CsCl-type = B2 structure]
+-------------------------------------------------------------
+Show results of 1st step (Running Minimization)
+The number of atoms = 2;
+The lattice constant, x (Angstoms) = 3.51934994838411;
+The lattice constant, y (Angstoms) = 3.51934994838411;
+The lattice constant, z (Angstoms) = 3.51934994838411;
+The volume (Angstoms^3) = 43.5900492634094;
+The total energy (eV) = -4.65513895657619;
+The cohesive energy (eV/atom) = -2.32756947828809;
+-------------------------------------------------------------
+C tensor [GPa] (elastic stiffness constants)
+          1                 2                 3                 4                 5                 6
+1       83.459909         59.242465         59.242465      1.110004e-09     1.4656776e-09    -3.3639936e-10
+2       59.242465         83.459909         59.242465     8.6581758e-10     6.7407631e-10    -1.1840218e-10
+3       59.242465         59.242465         83.459909     1.0158076e-09      1.259082e-09    -5.5285473e-10
+4    1.110004e-09     8.6581758e-10     1.0158076e-09         46.466459    -8.2344181e-10     7.6815452e-11
+5   1.4656776e-09     6.7407631e-10      1.259082e-09    -8.2344181e-10         46.466459     2.3057061e-10
+6  -3.3639936e-10    -1.1840218e-10    -5.5285473e-10     7.6815452e-11     2.3057061e-10         46.466459
+-------------------------------------------------------------
+Voigt bulk modulus, BV:       67.314946
+Reuss bulk modulus, BR:       67.314946
+Hill bulk modulus, B=(BV+BR)/2:       67.314946 [GPa]
+
+Voigt shear modulus, GV:       60.603239
+Reuss shear modulus, GR:       27.576946
+Hill shear modulus, G=(GV+GR)/2:       44.090092 [GPa]
+
+Pughs modulus ratio, k=G/B:      0.65498221
+-------------------------------------------------------------
+
+Reference (S. Groh,  Modelling Simul. Mater. Sci. Eng. 24 065011.: 10.1088/0965-0393/24/6/065011)
+-------------------------------------------------------------
+B2-MgAg, CsCl-type = B2 structure
+C11 84.5 [GPa]
+C12 58.6 [GPa]
+C44 47.6 [GPa]
+-------------------------------------------------------------
