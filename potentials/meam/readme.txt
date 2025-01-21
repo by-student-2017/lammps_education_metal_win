@@ -128,6 +128,8 @@ NiSn: Results similar to those in the literature were obtained with Ni3Sn. Aweso
 #-------------------------------------------------------------
 ZrN: The values ​​obtained for NaCl-type ZrN are close to those in the literature. Awesome !
 #-------------------------------------------------------------
+MgAg: The values ​​obtained for CsCl-type B2-MgAg are close to those in the literature. Awesome !
+#-------------------------------------------------------------
 TiAlC: Results similar to those in the literature were obtained with Ti2AlC.
 Mao's group at Henan University has achieved reproducibility. Amazing !
 #-------------------------------------------------------------
