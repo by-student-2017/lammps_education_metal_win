@@ -120,9 +120,11 @@ CrTiN
 
 
 #-------------------------------------------------------------
-BTi: Results obtained with TiB2 were close to those in the literature.
+BTi: Results obtained with TiB2 were close to those in the literature. Awesome !
 #-------------------------------------------------------------
-NiSn: Results similar to those in the literature were obtained with Ni3Sn.
+NiSn: Results similar to those in the literature were obtained with Ni3Sn. Awesome !
+#-------------------------------------------------------------
+ZrN: The values ​​obtained for NaCl-type ZrN are close to those in the literature. Awesome !
 #-------------------------------------------------------------
 TiAlC: Results similar to those in the literature were obtained with Ti2AlC.
 Mao's group at Henan University has achieved reproducibility. Amazing !
