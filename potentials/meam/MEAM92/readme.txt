@@ -1,7 +1,7 @@
 #-----------------------------------------------------------
 1NN MEAM
 In the paper by Vella et al. (2015), ibar = 0 is used in the Baskes formula. Since the cooperation of Baskes et al. is clearly stated in the acknowledgements, the parameters here are set to ibar = 0. The other unknown parameters (rc and dr) are also set to rc = 4.0 and dr = 0.1, following the same rule.
-Note: Earlier MEAM formalisms used 'ibar = 0', but this is not appropriate when any of the t(h) values ​​are less than 0, because it produces an imaginary electron density when Gamma < 1. Here we rewrite it as -5, which has an almost identical format.
+Note: Earlier MEAM formalisms used 'ibar = 0', but this is not appropriate when any of the t(h) values ​​are less than 0, because it produces an imaginary electron density when Gamma < -1. Here we rewrite it as -5, which has an almost identical format.
 #-----------------------------------------------------------
 # Single crystal (Application: the elastic behavior, simple defect properties, and the surface properties, except bcc metals in open structure.)
 # If it doesn't work, delete all elements except the ones you need in library.meam.
