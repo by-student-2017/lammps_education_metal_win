@@ -1,0 +1,2668 @@
+LAMMPS (22 Dec 2022)
+  using 1 OpenMP thread(s) per MPI task
+Loaded 1 plugins from C:\Program Files\LAMMPS 64-bit 23Jun2022\plugins
+Loaded 0 plugins from C:\Program Files\LAMMPS 64-bit 23Jun2022-MPI\plugins
+Loaded 1 plugins from C:\Program Files\LAMMPS 64-bit 22Dec2022-MSMPI\plugins
+Loaded 1 plugins from C:\Program Files\LAMMPS 64-bit 28Mar2023-MPI\plugins
+#------------------------------------------------------------------------------------------
+# LAMMPS 64-bit 22Dec2022-MSMPI
+#------------------------------------------------------------------------------------------
+clear
+  using 1 OpenMP thread(s) per MPI task
+Loaded 1 plugins from C:\Program Files\LAMMPS 64-bit 23Jun2022\plugins
+Loaded 0 plugins from C:\Program Files\LAMMPS 64-bit 23Jun2022-MPI\plugins
+Loaded 1 plugins from C:\Program Files\LAMMPS 64-bit 22Dec2022-MSMPI\plugins
+Loaded 1 plugins from C:\Program Files\LAMMPS 64-bit 28Mar2023-MPI\plugins
+#echo both
+# ---------- Initializing Simulation ---------------------------------
+units metal
+dimension 3
+boundary p p p
+atom_style atomic
+atom_modify map array
+
+read_data ./../../Pt.data
+Reading data file ...
+  orthogonal box = (0 0 0) to (3.97677 3.97677 3.97677)
+  2 by 2 by 2 MPI processor grid
+  reading atoms ...
+  4 atoms
+  read_data CPU = 0.001 seconds
+
+replicate 1 1 1
+Replication is creating a 1x1x1 = 1 times larger system...
+  orthogonal box = (0 0 0) to (3.97677 3.97677 3.97677)
+  2 by 2 by 2 MPI processor grid
+  4 atoms
+  replicate CPU = 0.000 seconds
+
+# ---------- Defining the Interatomic Potential ---------------------
+pair_style meam
+pair_coeff * * ./../../library.meam Pt Pd Rh ./../../PtPdRh.meam Pt
+
+# ---------- Running Minimization -------------------------------------
+fix 1 all box/relax iso 0.0 vmax 0.001
+
+thermo 10
+thermo_style custom step pe etotal lx ly lz vol press pxx pyy pzz
+
+min_style cg
+minimize 1e-25 1e-25 5000 10000
+Neighbor list info ...
+  update: every = 1 steps, delay = 0 steps, check = yes
+  max neighbors/atom: 2000, page size: 100000
+  master list distance cutoff = 6
+  ghost atom cutoff = 6
+  binsize = 3, bins = 2 2 2
+  2 neighbor lists, perpetual/occasional/extra = 2 0 0
+  (1) pair meam, perpetual
+      attributes: full, newton on
+      pair build: full/bin/atomonly
+      stencil: full/bin/3d
+      bin: standard
+  (2) pair meam, perpetual, half/full from (1)
+      attributes: half, newton on
+      pair build: halffull/newton
+      stencil: none
+      bin: none
+WARNING: Proc sub-domain size < neighbor skin, could lead to lost atoms (src/domain.cpp:966)
+Per MPI rank memory allocation (min/avg/max) = 9.653 | 9.653 | 9.653 Mbytes
+   Step         PotEng         TotEng           Lx             Ly             Lz           Volume         Press           Pxx            Pyy            Pzz      
+         0  -21.876543     -21.876543      3.97677        3.97677        3.97677        62.891423      20760.942      20760.942      20760.942      20760.942    
+         9  -21.88         -21.88          3.9880822      3.9880822      3.9880822      63.42965       3.7326189e-10  3.3132235e-10  3.6906794e-10  4.1939538e-10
+Loop time of 0.0031375 on 8 procs for 9 steps with 4 atoms
+
+0.0% CPU use with 8 MPI tasks x 1 OpenMP threads
+
+Minimization stats:
+  Stopping criterion = energy tolerance
+  Energy initial, next-to-last, final = 
+     -21.8765431300307  -21.8800000001263  -21.8800000001263
+  Force two-norm initial, final = 2.444834 4.9875661e-14
+  Force max component initial, final = 2.444834 4.4206205e-14
+  Final line search alpha, max atom move = 1 4.4206205e-14
+  Iterations, force evaluations = 9 16
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 0.001823   | 0.0018964  | 0.002054   |   0.2 | 60.44
+Neigh   | 0          | 0          | 0          |   0.0 |  0.00
+Comm    | 0.000354   | 0.00050537 | 0.000583   |   0.0 | 16.11
+Output  | 0          | 0          | 0          |   0.0 |  0.00
+Modify  | 0          | 0          | 0          |   0.0 |  0.00
+Other   |            | 0.0007358  |            |       | 23.45
+
+Nlocal:            0.5 ave           1 max           0 min
+Histogram: 4 0 0 0 0 0 0 0 0 4
+Nghost:          255.5 ave         256 max         255 min
+Histogram: 4 0 0 0 0 0 0 0 0 4
+Neighs:           13.5 ave          27 max           0 min
+Histogram: 4 0 0 0 0 0 0 0 0 4
+FullNghs:           27 ave          54 max           0 min
+Histogram: 4 0 0 0 0 0 0 0 0 4
+
+Total # of neighbors = 216
+Ave neighs/atom = 54
+Neighbor list builds = 0
+Dangerous builds = 0
+
+variable  natoms equal "count(all)"
+variable      x0 equal "lx"
+variable      y0 equal "ly"
+variable      z0 equal "lz"
+variable      v0 equal "vol"
+variable   etot0 equal "etotal"
+variable   ecoh0 equal "pe/v_natoms"
+
+unfix 1
+write_data ./../step2_elastic/data.in
+System init for write_data ...
+WARNING: Proc sub-domain size < neighbor skin, could lead to lost atoms (src/domain.cpp:966)
+
+# ---------- For Equation of States -------------------------------------
+change_box all x scale 0.94 y scale 0.94 z scale 0.94 remap
+Changing box ...
+  orthogonal box = (0.11398635 -0.0056561194 -0.0056561194) to (3.8627837 3.9824261 3.9824261)
+  orthogonal box = (0.11398635 0.11398635 -0.0056561194) to (3.8627837 3.8627837 3.9824261)
+  orthogonal box = (0.11398635 0.11398635 0.11398635) to (3.8627837 3.8627837 3.8627837)
+run 1
+WARNING: No fixes with time integration, atoms won't move (src/verlet.cpp:60)
+WARNING: Proc sub-domain size < neighbor skin, could lead to lost atoms (src/domain.cpp:966)
+Per MPI rank memory allocation (min/avg/max) = 8.528 | 8.528 | 8.53 Mbytes
+   Step         PotEng         TotEng           Lx             Ly             Lz           Volume         Press           Pxx            Pyy            Pzz      
+         9  -19.911302     -19.911302      3.7487973      3.7487973      3.7487973      52.683653      705594.26      705594.26      705594.26      705594.26    
+        10  -19.911302     -19.911302      3.7487973      3.7487973      3.7487973      52.683653      705594.26      705594.26      705594.26      705594.26    
+Loop time of 0.000129125 on 8 procs for 1 steps with 4 atoms
+
+Performance: 669.119 ns/day, 0.036 hours/ns, 7744.434 timesteps/s, 30.978 katom-step/s
+0.0% CPU use with 8 MPI tasks x 1 OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 9.3e-05    | 9.45e-05   | 9.7e-05    |   0.0 | 73.18
+Neigh   | 0          | 0          | 0          |   0.0 |  0.00
+Comm    | 1.6e-05    | 1.775e-05  | 2e-05      |   0.0 | 13.75
+Output  | 1.1e-05    | 1.2875e-05 | 1.5e-05    |   0.0 |  9.97
+Modify  | 0          | 5e-07      | 1e-06      |   0.0 |  0.39
+Other   |            | 3.5e-06    |            |       |  2.71
+
+Nlocal:            0.5 ave           3 max           0 min
+Histogram: 6 0 0 1 0 0 0 0 0 1
+Nghost:          255.5 ave         256 max         253 min
+Histogram: 1 0 0 0 0 0 1 0 0 6
+Neighs:           19.5 ave         111 max           0 min
+Histogram: 6 0 0 0 1 0 0 0 0 1
+FullNghs:           39 ave         234 max           0 min
+Histogram: 6 0 0 1 0 0 0 0 0 1
+
+Total # of neighbors = 312
+Ave neighs/atom = 78
+Neighbor list builds = 0
+Dangerous builds = 0
+print "# Lattice constant (Angstroms), Volume (Angstrom), Total energy (eV), Cohesive energy (eV/atom)" file lattice_cohesive_energy.txt screen no
+
+
+# Loop over lattice constants
+variable i loop 49 # Number of steps
+label loop
+
+change_box all x scale 1.0025 y scale 1.0025 z scale 1.0025 remap
+Changing box ...
+  orthogonal box = (0.10930035 0.11398635 0.11398635) to (3.8674696 3.8627837 3.8627837)
+  orthogonal box = (0.10930035 0.10930035 0.11398635) to (3.8674696 3.8674696 3.8627837)
+  orthogonal box = (0.10930035 0.10930035 0.10930035) to (3.8674696 3.8674696 3.8674696)
+
+run 1
+WARNING: No fixes with time integration, atoms won't move (src/verlet.cpp:60)
+WARNING: Proc sub-domain size < neighbor skin, could lead to lost atoms (src/domain.cpp:966)
+Per MPI rank memory allocation (min/avg/max) = 8.556 | 8.556 | 8.559 Mbytes
+   Step         PotEng         TotEng           Lx             Ly             Lz           Volume         Press           Pxx            Pyy            Pzz      
+        10  -20.080673     -20.080673      3.7581693      3.7581693      3.7581693      53.079769      664777.08      664777.08      664777.08      664777.08    
+        11  -20.080673     -20.080673      3.7581693      3.7581693      3.7581693      53.079769      664777.08      664777.08      664777.08      664777.08    
+Loop time of 0.000149375 on 8 procs for 1 steps with 4 atoms
+
+Performance: 578.410 ns/day, 0.041 hours/ns, 6694.561 timesteps/s, 26.778 katom-step/s
+0.0% CPU use with 8 MPI tasks x 1 OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 0.000113   | 0.000115   | 0.000117   |   0.0 | 76.99
+Neigh   | 0          | 0          | 0          |   0.0 |  0.00
+Comm    | 1.2e-05    | 1.4875e-05 | 1.8e-05    |   0.0 |  9.96
+Output  | 1.1e-05    | 1.5e-05    | 2e-05      |   0.0 | 10.04
+Modify  | 0          | 1.25e-07   | 1e-06      |   0.0 |  0.08
+Other   |            | 4.375e-06  |            |       |  2.93
+
+Nlocal:            0.5 ave           4 max           0 min
+Histogram: 7 0 0 0 0 0 0 0 0 1
+Nghost:          255.5 ave         256 max         252 min
+Histogram: 1 0 0 0 0 0 0 0 0 7
+Neighs:           19.5 ave         156 max           0 min
+Histogram: 7 0 0 0 0 0 0 0 0 1
+FullNghs:           39 ave         312 max           0 min
+Histogram: 7 0 0 0 0 0 0 0 0 1
+
+Total # of neighbors = 312
+Ave neighs/atom = 78
+Neighbor list builds = 0
+Dangerous builds = 0
+variable  natoms equal "count(all)"
+variable xlength equal "lx"
+variable  volume equal "vol"
+variable  etotal equal "etotal"
+variable    ecoh equal "pe/v_natoms"
+print "${xlength}, ${volume}, ${etotal}, ${ecoh}" append lattice_cohesive_energy.txt screen no
+
+next i
+jump SELF loop
+
+change_box all x scale 1.0025 y scale 1.0025 z scale 1.0025 remap
+Changing box ...
+  orthogonal box = (0.10460264 0.10930035 0.10930035) to (3.8721674 3.8674696 3.8674696)
+  orthogonal box = (0.10460264 0.10460264 0.10930035) to (3.8721674 3.8721674 3.8674696)
+  orthogonal box = (0.10460264 0.10460264 0.10460264) to (3.8721674 3.8721674 3.8721674)
+
+run 1
+WARNING: No fixes with time integration, atoms won't move (src/verlet.cpp:60)
+WARNING: Proc sub-domain size < neighbor skin, could lead to lost atoms (src/domain.cpp:966)
+Per MPI rank memory allocation (min/avg/max) = 8.556 | 8.556 | 8.559 Mbytes
+   Step         PotEng         TotEng           Lx             Ly             Lz           Volume         Press           Pxx            Pyy            Pzz      
+        11  -20.241304     -20.241304      3.7675647      3.7675647      3.7675647      53.478863      625191.09      625191.09      625191.09      625191.09    
+        12  -20.241304     -20.241304      3.7675647      3.7675647      3.7675647      53.478863      625191.09      625191.09      625191.09      625191.09    
+Loop time of 0.000193375 on 8 procs for 1 steps with 4 atoms
+
+Performance: 446.800 ns/day, 0.054 hours/ns, 5171.299 timesteps/s, 20.685 katom-step/s
+0.0% CPU use with 8 MPI tasks x 1 OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 0.000112   | 0.000135   | 0.000156   |   0.0 | 69.81
+Neigh   | 0          | 0          | 0          |   0.0 |  0.00
+Comm    | 1.1e-05    | 1.975e-05  | 5.9e-05    |   0.0 | 10.21
+Output  | 1.4e-05    | 3.35e-05   | 6.2e-05    |   0.0 | 17.32
+Modify  | 0          | 1.25e-07   | 1e-06      |   0.0 |  0.06
+Other   |            | 5e-06      |            |       |  2.59
+
+Nlocal:            0.5 ave           4 max           0 min
+Histogram: 7 0 0 0 0 0 0 0 0 1
+Nghost:          255.5 ave         256 max         252 min
+Histogram: 1 0 0 0 0 0 0 0 0 7
+Neighs:           19.5 ave         156 max           0 min
+Histogram: 7 0 0 0 0 0 0 0 0 1
+FullNghs:           39 ave         312 max           0 min
+Histogram: 7 0 0 0 0 0 0 0 0 1
+
+Total # of neighbors = 312
+Ave neighs/atom = 78
+Neighbor list builds = 0
+Dangerous builds = 0
+variable  natoms equal "count(all)"
+variable xlength equal "lx"
+variable  volume equal "vol"
+variable  etotal equal "etotal"
+variable    ecoh equal "pe/v_natoms"
+print "${xlength}, ${volume}, ${etotal}, ${ecoh}" append lattice_cohesive_energy.txt screen no
+
+next i
+jump SELF loop
+
+change_box all x scale 1.0025 y scale 1.0025 z scale 1.0025 remap
+Changing box ...
+  orthogonal box = (0.099893184 0.10460264 0.10460264) to (3.8768768 3.8721674 3.8721674)
+  orthogonal box = (0.099893184 0.099893184 0.10460264) to (3.8768768 3.8768768 3.8721674)
+  orthogonal box = (0.099893184 0.099893184 0.099893184) to (3.8768768 3.8768768 3.8768768)
+
+run 1
+WARNING: No fixes with time integration, atoms won't move (src/verlet.cpp:60)
+WARNING: Proc sub-domain size < neighbor skin, could lead to lost atoms (src/domain.cpp:966)
+Per MPI rank memory allocation (min/avg/max) = 8.556 | 8.556 | 8.559 Mbytes
+   Step         PotEng         TotEng           Lx             Ly             Lz           Volume         Press           Pxx            Pyy            Pzz      
+        12  -20.393359     -20.393359      3.7769836      3.7769836      3.7769836      53.880958      586808.18      586808.18      586808.18      586808.18    
+        13  -20.393359     -20.393359      3.7769836      3.7769836      3.7769836      53.880958      586808.18      586808.18      586808.18      586808.18    
+Loop time of 0.000148375 on 8 procs for 1 steps with 4 atoms
+
+Performance: 582.308 ns/day, 0.041 hours/ns, 6739.680 timesteps/s, 26.959 katom-step/s
+0.0% CPU use with 8 MPI tasks x 1 OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 0.000113   | 0.00011425 | 0.000116   |   0.0 | 77.00
+Neigh   | 0          | 0          | 0          |   0.0 |  0.00
+Comm    | 1.2e-05    | 1.4875e-05 | 1.8e-05    |   0.0 | 10.03
+Output  | 1.1e-05    | 1.4875e-05 | 1.9e-05    |   0.0 | 10.03
+Modify  | 0          | 3.75e-07   | 1e-06      |   0.0 |  0.25
+Other   |            | 4e-06      |            |       |  2.70
+
+Nlocal:            0.5 ave           4 max           0 min
+Histogram: 7 0 0 0 0 0 0 0 0 1
+Nghost:          255.5 ave         256 max         252 min
+Histogram: 1 0 0 0 0 0 0 0 0 7
+Neighs:           19.5 ave         156 max           0 min
+Histogram: 7 0 0 0 0 0 0 0 0 1
+FullNghs:           39 ave         312 max           0 min
+Histogram: 7 0 0 0 0 0 0 0 0 1
+
+Total # of neighbors = 312
+Ave neighs/atom = 78
+Neighbor list builds = 0
+Dangerous builds = 0
+variable  natoms equal "count(all)"
+variable xlength equal "lx"
+variable  volume equal "vol"
+variable  etotal equal "etotal"
+variable    ecoh equal "pe/v_natoms"
+print "${xlength}, ${volume}, ${etotal}, ${ecoh}" append lattice_cohesive_energy.txt screen no
+
+next i
+jump SELF loop
+
+change_box all x scale 1.0025 y scale 1.0025 z scale 1.0025 remap
+Changing box ...
+  orthogonal box = (0.095171954 0.099893184 0.099893184) to (3.881598 3.8768768 3.8768768)
+  orthogonal box = (0.095171954 0.095171954 0.099893184) to (3.881598 3.881598 3.8768768)
+  orthogonal box = (0.095171954 0.095171954 0.095171954) to (3.881598 3.881598 3.881598)
+
+run 1
+WARNING: No fixes with time integration, atoms won't move (src/verlet.cpp:60)
+WARNING: Proc sub-domain size < neighbor skin, could lead to lost atoms (src/domain.cpp:966)
+Per MPI rank memory allocation (min/avg/max) = 8.556 | 8.556 | 8.559 Mbytes
+   Step         PotEng         TotEng           Lx             Ly             Lz           Volume         Press           Pxx            Pyy            Pzz      
+        13  -20.537002     -20.537002      3.7864261      3.7864261      3.7864261      54.286076      549600.87      549600.87      549600.87      549600.87    
+        14  -20.537002     -20.537002      3.7864261      3.7864261      3.7864261      54.286076      549600.87      549600.87      549600.87      549600.87    
+Loop time of 0.000149375 on 8 procs for 1 steps with 4 atoms
+
+Performance: 578.410 ns/day, 0.041 hours/ns, 6694.561 timesteps/s, 26.778 katom-step/s
+0.0% CPU use with 8 MPI tasks x 1 OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 0.000114   | 0.00011475 | 0.000117   |   0.0 | 76.82
+Neigh   | 0          | 0          | 0          |   0.0 |  0.00
+Comm    | 1.1e-05    | 1.4625e-05 | 1.9e-05    |   0.0 |  9.79
+Output  | 1.1e-05    | 1.5375e-05 | 1.9e-05    |   0.0 | 10.29
+Modify  | 0          | 1.25e-07   | 1e-06      |   0.0 |  0.08
+Other   |            | 4.5e-06    |            |       |  3.01
+
+Nlocal:            0.5 ave           4 max           0 min
+Histogram: 7 0 0 0 0 0 0 0 0 1
+Nghost:          255.5 ave         256 max         252 min
+Histogram: 1 0 0 0 0 0 0 0 0 7
+Neighs:           19.5 ave         156 max           0 min
+Histogram: 7 0 0 0 0 0 0 0 0 1
+FullNghs:           39 ave         312 max           0 min
+Histogram: 7 0 0 0 0 0 0 0 0 1
+
+Total # of neighbors = 312
+Ave neighs/atom = 78
+Neighbor list builds = 0
+Dangerous builds = 0
+variable  natoms equal "count(all)"
+variable xlength equal "lx"
+variable  volume equal "vol"
+variable  etotal equal "etotal"
+variable    ecoh equal "pe/v_natoms"
+print "${xlength}, ${volume}, ${etotal}, ${ecoh}" append lattice_cohesive_energy.txt screen no
+
+next i
+jump SELF loop
+
+change_box all x scale 1.0025 y scale 1.0025 z scale 1.0025 remap
+Changing box ...
+  orthogonal box = (0.090438921 0.095171954 0.095171954) to (3.8863311 3.881598 3.881598)
+  orthogonal box = (0.090438921 0.090438921 0.095171954) to (3.8863311 3.8863311 3.881598)
+  orthogonal box = (0.090438921 0.090438921 0.090438921) to (3.8863311 3.8863311 3.8863311)
+
+run 1
+WARNING: No fixes with time integration, atoms won't move (src/verlet.cpp:60)
+WARNING: Proc sub-domain size < neighbor skin, could lead to lost atoms (src/domain.cpp:966)
+Per MPI rank memory allocation (min/avg/max) = 8.556 | 8.556 | 8.559 Mbytes
+   Step         PotEng         TotEng           Lx             Ly             Lz           Volume         Press           Pxx            Pyy            Pzz      
+        14  -20.672393     -20.672393      3.7958922      3.7958922      3.7958922      54.694241      513542.09      513542.09      513542.09      513542.09    
+        15  -20.672393     -20.672393      3.7958922      3.7958922      3.7958922      54.694241      513542.09      513542.09      513542.09      513542.09    
+Loop time of 0.00015 on 8 procs for 1 steps with 4 atoms
+
+Performance: 576.000 ns/day, 0.042 hours/ns, 6666.667 timesteps/s, 26.667 katom-step/s
+0.0% CPU use with 8 MPI tasks x 1 OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 0.000113   | 0.00011375 | 0.000115   |   0.0 | 75.83
+Neigh   | 0          | 0          | 0          |   0.0 |  0.00
+Comm    | 1.2e-05    | 1.5375e-05 | 1.9e-05    |   0.0 | 10.25
+Output  | 1.2e-05    | 1.6e-05    | 2e-05      |   0.0 | 10.67
+Modify  | 0          | 0          | 0          |   0.0 |  0.00
+Other   |            | 4.875e-06  |            |       |  3.25
+
+Nlocal:            0.5 ave           4 max           0 min
+Histogram: 7 0 0 0 0 0 0 0 0 1
+Nghost:          255.5 ave         256 max         252 min
+Histogram: 1 0 0 0 0 0 0 0 0 7
+Neighs:           13.5 ave         108 max           0 min
+Histogram: 7 0 0 0 0 0 0 0 0 1
+FullNghs:           27 ave         216 max           0 min
+Histogram: 7 0 0 0 0 0 0 0 0 1
+
+Total # of neighbors = 216
+Ave neighs/atom = 54
+Neighbor list builds = 0
+Dangerous builds = 0
+variable  natoms equal "count(all)"
+variable xlength equal "lx"
+variable  volume equal "vol"
+variable  etotal equal "etotal"
+variable    ecoh equal "pe/v_natoms"
+print "${xlength}, ${volume}, ${etotal}, ${ecoh}" append lattice_cohesive_energy.txt screen no
+
+next i
+jump SELF loop
+
+change_box all x scale 1.0025 y scale 1.0025 z scale 1.0025 remap
+Changing box ...
+  orthogonal box = (0.085694056 0.090438921 0.090438921) to (3.8910759 3.8863311 3.8863311)
+  orthogonal box = (0.085694056 0.085694056 0.090438921) to (3.8910759 3.8910759 3.8863311)
+  orthogonal box = (0.085694056 0.085694056 0.085694056) to (3.8910759 3.8910759 3.8910759)
+
+run 1
+WARNING: No fixes with time integration, atoms won't move (src/verlet.cpp:60)
+WARNING: Proc sub-domain size < neighbor skin, could lead to lost atoms (src/domain.cpp:966)
+Per MPI rank memory allocation (min/avg/max) = 8.556 | 8.556 | 8.559 Mbytes
+   Step         PotEng         TotEng           Lx             Ly             Lz           Volume         Press           Pxx            Pyy            Pzz      
+        15  -20.799692     -20.799692      3.8053819      3.8053819      3.8053819      55.105474      478605.32      478605.32      478605.32      478605.32    
+        16  -20.799692     -20.799692      3.8053819      3.8053819      3.8053819      55.105474      478605.32      478605.32      478605.32      478605.32    
+Loop time of 0.00014575 on 8 procs for 1 steps with 4 atoms
+
+Performance: 592.796 ns/day, 0.040 hours/ns, 6861.063 timesteps/s, 27.444 katom-step/s
+0.0% CPU use with 8 MPI tasks x 1 OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 0.00011    | 0.00011125 | 0.000113   |   0.0 | 76.33
+Neigh   | 0          | 0          | 0          |   0.0 |  0.00
+Comm    | 1.2e-05    | 1.4875e-05 | 1.8e-05    |   0.0 | 10.21
+Output  | 1.1e-05    | 1.5625e-05 | 1.9e-05    |   0.0 | 10.72
+Modify  | 0          | 1.25e-07   | 1e-06      |   0.0 |  0.09
+Other   |            | 3.875e-06  |            |       |  2.66
+
+Nlocal:            0.5 ave           4 max           0 min
+Histogram: 7 0 0 0 0 0 0 0 0 1
+Nghost:          255.5 ave         256 max         252 min
+Histogram: 1 0 0 0 0 0 0 0 0 7
+Neighs:           13.5 ave         108 max           0 min
+Histogram: 7 0 0 0 0 0 0 0 0 1
+FullNghs:           27 ave         216 max           0 min
+Histogram: 7 0 0 0 0 0 0 0 0 1
+
+Total # of neighbors = 216
+Ave neighs/atom = 54
+Neighbor list builds = 0
+Dangerous builds = 0
+variable  natoms equal "count(all)"
+variable xlength equal "lx"
+variable  volume equal "vol"
+variable  etotal equal "etotal"
+variable    ecoh equal "pe/v_natoms"
+print "${xlength}, ${volume}, ${etotal}, ${ecoh}" append lattice_cohesive_energy.txt screen no
+
+next i
+jump SELF loop
+
+change_box all x scale 1.0025 y scale 1.0025 z scale 1.0025 remap
+Changing box ...
+  orthogonal box = (0.080937329 0.085694056 0.085694056) to (3.8958327 3.8910759 3.8910759)
+  orthogonal box = (0.080937329 0.080937329 0.085694056) to (3.8958327 3.8958327 3.8910759)
+  orthogonal box = (0.080937329 0.080937329 0.080937329) to (3.8958327 3.8958327 3.8958327)
+
+run 1
+WARNING: No fixes with time integration, atoms won't move (src/verlet.cpp:60)
+WARNING: Proc sub-domain size < neighbor skin, could lead to lost atoms (src/domain.cpp:966)
+Per MPI rank memory allocation (min/avg/max) = 8.556 | 8.556 | 8.559 Mbytes
+   Step         PotEng         TotEng           Lx             Ly             Lz           Volume         Press           Pxx            Pyy            Pzz      
+        16  -20.919056     -20.919056      3.8148953      3.8148953      3.8148953      55.519799      444764.55      444764.55      444764.55      444764.55    
+        17  -20.919056     -20.919056      3.8148953      3.8148953      3.8148953      55.519799      444764.55      444764.55      444764.55      444764.55    
+Loop time of 0.00014875 on 8 procs for 1 steps with 4 atoms
+
+Performance: 580.840 ns/day, 0.041 hours/ns, 6722.689 timesteps/s, 26.891 katom-step/s
+0.0% CPU use with 8 MPI tasks x 1 OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 0.000112   | 0.000113   | 0.000115   |   0.0 | 75.97
+Neigh   | 0          | 0          | 0          |   0.0 |  0.00
+Comm    | 1.3e-05    | 1.575e-05  | 2e-05      |   0.0 | 10.59
+Output  | 1.1e-05    | 1.575e-05  | 2e-05      |   0.0 | 10.59
+Modify  | 0          | 1.25e-07   | 1e-06      |   0.0 |  0.08
+Other   |            | 4.125e-06  |            |       |  2.77
+
+Nlocal:            0.5 ave           4 max           0 min
+Histogram: 7 0 0 0 0 0 0 0 0 1
+Nghost:          255.5 ave         256 max         252 min
+Histogram: 1 0 0 0 0 0 0 0 0 7
+Neighs:           13.5 ave         108 max           0 min
+Histogram: 7 0 0 0 0 0 0 0 0 1
+FullNghs:           27 ave         216 max           0 min
+Histogram: 7 0 0 0 0 0 0 0 0 1
+
+Total # of neighbors = 216
+Ave neighs/atom = 54
+Neighbor list builds = 0
+Dangerous builds = 0
+variable  natoms equal "count(all)"
+variable xlength equal "lx"
+variable  volume equal "vol"
+variable  etotal equal "etotal"
+variable    ecoh equal "pe/v_natoms"
+print "${xlength}, ${volume}, ${etotal}, ${ecoh}" append lattice_cohesive_energy.txt screen no
+
+next i
+jump SELF loop
+
+change_box all x scale 1.0025 y scale 1.0025 z scale 1.0025 remap
+Changing box ...
+  orthogonal box = (0.07616871 0.080937329 0.080937329) to (3.9006013 3.8958327 3.8958327)
+  orthogonal box = (0.07616871 0.07616871 0.080937329) to (3.9006013 3.9006013 3.8958327)
+  orthogonal box = (0.07616871 0.07616871 0.07616871) to (3.9006013 3.9006013 3.9006013)
+
+run 1
+WARNING: No fixes with time integration, atoms won't move (src/verlet.cpp:60)
+WARNING: Proc sub-domain size < neighbor skin, could lead to lost atoms (src/domain.cpp:966)
+Per MPI rank memory allocation (min/avg/max) = 8.556 | 8.556 | 8.559 Mbytes
+   Step         PotEng         TotEng           Lx             Ly             Lz           Volume         Press           Pxx            Pyy            Pzz      
+        17  -21.03064      -21.03064       3.8244326      3.8244326      3.8244326      55.937239      411994.15      411994.15      411994.15      411994.15    
+        18  -21.03064      -21.03064       3.8244326      3.8244326      3.8244326      55.937239      411994.15      411994.15      411994.15      411994.15    
+Loop time of 0.000146 on 8 procs for 1 steps with 4 atoms
+
+Performance: 591.781 ns/day, 0.041 hours/ns, 6849.315 timesteps/s, 27.397 katom-step/s
+0.0% CPU use with 8 MPI tasks x 1 OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 0.00011    | 0.00011188 | 0.000114   |   0.0 | 76.63
+Neigh   | 0          | 0          | 0          |   0.0 |  0.00
+Comm    | 1.1e-05    | 1.4375e-05 | 1.8e-05    |   0.0 |  9.85
+Output  | 1.1e-05    | 1.5375e-05 | 2e-05      |   0.0 | 10.53
+Modify  | 0          | 2.5e-07    | 1e-06      |   0.0 |  0.17
+Other   |            | 4.125e-06  |            |       |  2.83
+
+Nlocal:            0.5 ave           4 max           0 min
+Histogram: 7 0 0 0 0 0 0 0 0 1
+Nghost:          255.5 ave         256 max         252 min
+Histogram: 1 0 0 0 0 0 0 0 0 7
+Neighs:           13.5 ave         108 max           0 min
+Histogram: 7 0 0 0 0 0 0 0 0 1
+FullNghs:           27 ave         216 max           0 min
+Histogram: 7 0 0 0 0 0 0 0 0 1
+
+Total # of neighbors = 216
+Ave neighs/atom = 54
+Neighbor list builds = 0
+Dangerous builds = 0
+variable  natoms equal "count(all)"
+variable xlength equal "lx"
+variable  volume equal "vol"
+variable  etotal equal "etotal"
+variable    ecoh equal "pe/v_natoms"
+print "${xlength}, ${volume}, ${etotal}, ${ecoh}" append lattice_cohesive_energy.txt screen no
+
+next i
+jump SELF loop
+
+change_box all x scale 1.0025 y scale 1.0025 z scale 1.0025 remap
+Changing box ...
+  orthogonal box = (0.071388169 0.07616871 0.07616871) to (3.9053818 3.9006013 3.9006013)
+  orthogonal box = (0.071388169 0.071388169 0.07616871) to (3.9053818 3.9053818 3.9006013)
+  orthogonal box = (0.071388169 0.071388169 0.071388169) to (3.9053818 3.9053818 3.9053818)
+
+run 1
+WARNING: No fixes with time integration, atoms won't move (src/verlet.cpp:60)
+WARNING: Proc sub-domain size < neighbor skin, could lead to lost atoms (src/domain.cpp:966)
+Per MPI rank memory allocation (min/avg/max) = 8.556 | 8.556 | 8.559 Mbytes
+   Step         PotEng         TotEng           Lx             Ly             Lz           Volume         Press           Pxx            Pyy            Pzz      
+        18  -21.134599     -21.134599      3.8339937      3.8339937      3.8339937      56.357818      380269.16      380269.16      380269.16      380269.16    
+        19  -21.134599     -21.134599      3.8339937      3.8339937      3.8339937      56.357818      380269.16      380269.16      380269.16      380269.16    
+Loop time of 0.000145375 on 8 procs for 1 steps with 4 atoms
+
+Performance: 594.325 ns/day, 0.040 hours/ns, 6878.762 timesteps/s, 27.515 katom-step/s
+0.0% CPU use with 8 MPI tasks x 1 OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 0.00011    | 0.00011138 | 0.000114   |   0.0 | 76.61
+Neigh   | 0          | 0          | 0          |   0.0 |  0.00
+Comm    | 1.1e-05    | 1.5375e-05 | 2e-05      |   0.0 | 10.58
+Output  | 1.1e-05    | 1.5125e-05 | 1.8e-05    |   0.0 | 10.40
+Modify  | 0          | 0          | 0          |   0.0 |  0.00
+Other   |            | 3.5e-06    |            |       |  2.41
+
+Nlocal:            0.5 ave           4 max           0 min
+Histogram: 7 0 0 0 0 0 0 0 0 1
+Nghost:          255.5 ave         256 max         252 min
+Histogram: 1 0 0 0 0 0 0 0 0 7
+Neighs:           13.5 ave         108 max           0 min
+Histogram: 7 0 0 0 0 0 0 0 0 1
+FullNghs:           27 ave         216 max           0 min
+Histogram: 7 0 0 0 0 0 0 0 0 1
+
+Total # of neighbors = 216
+Ave neighs/atom = 54
+Neighbor list builds = 0
+Dangerous builds = 0
+variable  natoms equal "count(all)"
+variable xlength equal "lx"
+variable  volume equal "vol"
+variable  etotal equal "etotal"
+variable    ecoh equal "pe/v_natoms"
+print "${xlength}, ${volume}, ${etotal}, ${ecoh}" append lattice_cohesive_energy.txt screen no
+
+next i
+jump SELF loop
+
+change_box all x scale 1.0025 y scale 1.0025 z scale 1.0025 remap
+Changing box ...
+  orthogonal box = (0.066595677 0.071388169 0.071388169) to (3.9101743 3.9053818 3.9053818)
+  orthogonal box = (0.066595677 0.066595677 0.071388169) to (3.9101743 3.9101743 3.9053818)
+  orthogonal box = (0.066595677 0.066595677 0.066595677) to (3.9101743 3.9101743 3.9101743)
+
+run 1
+WARNING: No fixes with time integration, atoms won't move (src/verlet.cpp:60)
+WARNING: Proc sub-domain size < neighbor skin, could lead to lost atoms (src/domain.cpp:966)
+Per MPI rank memory allocation (min/avg/max) = 8.556 | 8.556 | 8.559 Mbytes
+   Step         PotEng         TotEng           Lx             Ly             Lz           Volume         Press           Pxx            Pyy            Pzz      
+        19  -21.231084     -21.231084      3.8435786      3.8435786      3.8435786      56.781559      349564.8       349564.8       349564.8       349564.8     
+        20  -21.231084     -21.231084      3.8435786      3.8435786      3.8435786      56.781559      349564.8       349564.8       349564.8       349564.8     
+Loop time of 0.00014425 on 8 procs for 1 steps with 4 atoms
+
+Performance: 598.960 ns/day, 0.040 hours/ns, 6932.409 timesteps/s, 27.730 katom-step/s
+0.0% CPU use with 8 MPI tasks x 1 OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 0.000109   | 0.00011163 | 0.000113   |   0.0 | 77.38
+Neigh   | 0          | 0          | 0          |   0.0 |  0.00
+Comm    | 1.1e-05    | 1.3875e-05 | 1.7e-05    |   0.0 |  9.62
+Output  | 1.1e-05    | 1.45e-05   | 1.8e-05    |   0.0 | 10.05
+Modify  | 0          | 2.5e-07    | 1e-06      |   0.0 |  0.17
+Other   |            | 4e-06      |            |       |  2.77
+
+Nlocal:            0.5 ave           4 max           0 min
+Histogram: 7 0 0 0 0 0 0 0 0 1
+Nghost:          255.5 ave         256 max         252 min
+Histogram: 1 0 0 0 0 0 0 0 0 7
+Neighs:           13.5 ave         108 max           0 min
+Histogram: 7 0 0 0 0 0 0 0 0 1
+FullNghs:           27 ave         216 max           0 min
+Histogram: 7 0 0 0 0 0 0 0 0 1
+
+Total # of neighbors = 216
+Ave neighs/atom = 54
+Neighbor list builds = 0
+Dangerous builds = 0
+variable  natoms equal "count(all)"
+variable xlength equal "lx"
+variable  volume equal "vol"
+variable  etotal equal "etotal"
+variable    ecoh equal "pe/v_natoms"
+print "${xlength}, ${volume}, ${etotal}, ${ecoh}" append lattice_cohesive_energy.txt screen no
+
+next i
+jump SELF loop
+
+change_box all x scale 1.0025 y scale 1.0025 z scale 1.0025 remap
+Changing box ...
+  orthogonal box = (0.061791204 0.066595677 0.066595677) to (3.9149788 3.9101743 3.9101743)
+  orthogonal box = (0.061791204 0.061791204 0.066595677) to (3.9149788 3.9149788 3.9101743)
+  orthogonal box = (0.061791204 0.061791204 0.061791204) to (3.9149788 3.9149788 3.9149788)
+
+run 1
+WARNING: No fixes with time integration, atoms won't move (src/verlet.cpp:60)
+WARNING: Proc sub-domain size < neighbor skin, could lead to lost atoms (src/domain.cpp:966)
+Per MPI rank memory allocation (min/avg/max) = 8.556 | 8.556 | 8.559 Mbytes
+   Step         PotEng         TotEng           Lx             Ly             Lz           Volume         Press           Pxx            Pyy            Pzz      
+        20  -21.320247     -21.320247      3.8531876      3.8531876      3.8531876      57.208487      319857.12      319857.12      319857.12      319857.12    
+        21  -21.320247     -21.320247      3.8531876      3.8531876      3.8531876      57.208487      319857.12      319857.12      319857.12      319857.12    
+Loop time of 0.000167125 on 8 procs for 1 steps with 4 atoms
+
+Performance: 516.978 ns/day, 0.046 hours/ns, 5983.545 timesteps/s, 23.934 katom-step/s
+0.0% CPU use with 8 MPI tasks x 1 OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 0.000113   | 0.00011838 | 0.000123   |   0.0 | 70.83
+Neigh   | 0          | 0          | 0          |   0.0 |  0.00
+Comm    | 1.2e-05    | 1.7e-05    | 2.8e-05    |   0.0 | 10.17
+Output  | 1.6e-05    | 2.4125e-05 | 3.2e-05    |   0.0 | 14.44
+Modify  | 0          | 3.75e-07   | 1e-06      |   0.0 |  0.22
+Other   |            | 7.25e-06   |            |       |  4.34
+
+Nlocal:            0.5 ave           4 max           0 min
+Histogram: 7 0 0 0 0 0 0 0 0 1
+Nghost:          255.5 ave         256 max         252 min
+Histogram: 1 0 0 0 0 0 0 0 0 7
+Neighs:           13.5 ave         108 max           0 min
+Histogram: 7 0 0 0 0 0 0 0 0 1
+FullNghs:           27 ave         216 max           0 min
+Histogram: 7 0 0 0 0 0 0 0 0 1
+
+Total # of neighbors = 216
+Ave neighs/atom = 54
+Neighbor list builds = 0
+Dangerous builds = 0
+variable  natoms equal "count(all)"
+variable xlength equal "lx"
+variable  volume equal "vol"
+variable  etotal equal "etotal"
+variable    ecoh equal "pe/v_natoms"
+print "${xlength}, ${volume}, ${etotal}, ${ecoh}" append lattice_cohesive_energy.txt screen no
+
+next i
+jump SELF loop
+
+change_box all x scale 1.0025 y scale 1.0025 z scale 1.0025 remap
+Changing box ...
+  orthogonal box = (0.056974719 0.061791204 0.061791204) to (3.9197953 3.9149788 3.9149788)
+  orthogonal box = (0.056974719 0.056974719 0.061791204) to (3.9197953 3.9197953 3.9149788)
+  orthogonal box = (0.056974719 0.056974719 0.056974719) to (3.9197953 3.9197953 3.9197953)
+
+run 1
+WARNING: No fixes with time integration, atoms won't move (src/verlet.cpp:60)
+WARNING: Proc sub-domain size < neighbor skin, could lead to lost atoms (src/domain.cpp:966)
+Per MPI rank memory allocation (min/avg/max) = 8.556 | 8.556 | 8.559 Mbytes
+   Step         PotEng         TotEng           Lx             Ly             Lz           Volume         Press           Pxx            Pyy            Pzz      
+        21  -21.402235     -21.402235      3.8628206      3.8628206      3.8628206      57.638624      291122.22      291122.22      291122.22      291122.22    
+        22  -21.402235     -21.402235      3.8628206      3.8628206      3.8628206      57.638624      291122.22      291122.22      291122.22      291122.22    
+Loop time of 0.000164 on 8 procs for 1 steps with 4 atoms
+
+Performance: 526.829 ns/day, 0.046 hours/ns, 6097.561 timesteps/s, 24.390 katom-step/s
+0.0% CPU use with 8 MPI tasks x 1 OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 0.000112   | 0.00011537 | 0.000118   |   0.0 | 70.35
+Neigh   | 0          | 0          | 0          |   0.0 |  0.00
+Comm    | 1.2e-05    | 1.675e-05  | 2.3e-05    |   0.0 | 10.21
+Output  | 1.6e-05    | 2.075e-05  | 2.6e-05    |   0.0 | 12.65
+Modify  | 0          | 0          | 0          |   0.0 |  0.00
+Other   |            | 1.112e-05  |            |       |  6.78
+
+Nlocal:            0.5 ave           4 max           0 min
+Histogram: 7 0 0 0 0 0 0 0 0 1
+Nghost:          255.5 ave         256 max         252 min
+Histogram: 1 0 0 0 0 0 0 0 0 7
+Neighs:           13.5 ave         108 max           0 min
+Histogram: 7 0 0 0 0 0 0 0 0 1
+FullNghs:           27 ave         216 max           0 min
+Histogram: 7 0 0 0 0 0 0 0 0 1
+
+Total # of neighbors = 216
+Ave neighs/atom = 54
+Neighbor list builds = 0
+Dangerous builds = 0
+variable  natoms equal "count(all)"
+variable xlength equal "lx"
+variable  volume equal "vol"
+variable  etotal equal "etotal"
+variable    ecoh equal "pe/v_natoms"
+print "${xlength}, ${volume}, ${etotal}, ${ecoh}" append lattice_cohesive_energy.txt screen no
+
+next i
+jump SELF loop
+
+change_box all x scale 1.0025 y scale 1.0025 z scale 1.0025 remap
+Changing box ...
+  orthogonal box = (0.052146193 0.056974719 0.056974719) to (3.9246238 3.9197953 3.9197953)
+  orthogonal box = (0.052146193 0.052146193 0.056974719) to (3.9246238 3.9246238 3.9197953)
+  orthogonal box = (0.052146193 0.052146193 0.052146193) to (3.9246238 3.9246238 3.9246238)
+
+run 1
+WARNING: No fixes with time integration, atoms won't move (src/verlet.cpp:60)
+WARNING: Proc sub-domain size < neighbor skin, could lead to lost atoms (src/domain.cpp:966)
+Per MPI rank memory allocation (min/avg/max) = 8.556 | 8.556 | 8.559 Mbytes
+   Step         PotEng         TotEng           Lx             Ly             Lz           Volume         Press           Pxx            Pyy            Pzz      
+        22  -21.477197     -21.477197      3.8724776      3.8724776      3.8724776      58.071995      263337.05      263337.05      263337.05      263337.05    
+        23  -21.477197     -21.477197      3.8724776      3.8724776      3.8724776      58.071995      263337.05      263337.05      263337.05      263337.05    
+Loop time of 0.000157 on 8 procs for 1 steps with 4 atoms
+
+Performance: 550.318 ns/day, 0.044 hours/ns, 6369.427 timesteps/s, 25.478 katom-step/s
+0.0% CPU use with 8 MPI tasks x 1 OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 0.000111   | 0.00011538 | 0.000118   |   0.0 | 73.49
+Neigh   | 0          | 0          | 0          |   0.0 |  0.00
+Comm    | 1.2e-05    | 1.625e-05  | 2.2e-05    |   0.0 | 10.35
+Output  | 1.4e-05    | 1.95e-05   | 2.5e-05    |   0.0 | 12.42
+Modify  | 0          | 1.25e-07   | 1e-06      |   0.0 |  0.08
+Other   |            | 5.75e-06   |            |       |  3.66
+
+Nlocal:            0.5 ave           4 max           0 min
+Histogram: 7 0 0 0 0 0 0 0 0 1
+Nghost:          255.5 ave         256 max         252 min
+Histogram: 1 0 0 0 0 0 0 0 0 7
+Neighs:           13.5 ave         108 max           0 min
+Histogram: 7 0 0 0 0 0 0 0 0 1
+FullNghs:           27 ave         216 max           0 min
+Histogram: 7 0 0 0 0 0 0 0 0 1
+
+Total # of neighbors = 216
+Ave neighs/atom = 54
+Neighbor list builds = 0
+Dangerous builds = 0
+variable  natoms equal "count(all)"
+variable xlength equal "lx"
+variable  volume equal "vol"
+variable  etotal equal "etotal"
+variable    ecoh equal "pe/v_natoms"
+print "${xlength}, ${volume}, ${etotal}, ${ecoh}" append lattice_cohesive_energy.txt screen no
+
+next i
+jump SELF loop
+
+change_box all x scale 1.0025 y scale 1.0025 z scale 1.0025 remap
+Changing box ...
+  orthogonal box = (0.047305596 0.052146193 0.052146193) to (3.9294644 3.9246238 3.9246238)
+  orthogonal box = (0.047305596 0.047305596 0.052146193) to (3.9294644 3.9294644 3.9246238)
+  orthogonal box = (0.047305596 0.047305596 0.047305596) to (3.9294644 3.9294644 3.9294644)
+
+run 1
+WARNING: No fixes with time integration, atoms won't move (src/verlet.cpp:60)
+WARNING: Proc sub-domain size < neighbor skin, could lead to lost atoms (src/domain.cpp:966)
+Per MPI rank memory allocation (min/avg/max) = 8.556 | 8.556 | 8.559 Mbytes
+   Step         PotEng         TotEng           Lx             Ly             Lz           Volume         Press           Pxx            Pyy            Pzz      
+        23  -21.545277     -21.545277      3.8821588      3.8821588      3.8821588      58.508625      236478.64      236478.64      236478.64      236478.64    
+        24  -21.545277     -21.545277      3.8821588      3.8821588      3.8821588      58.508625      236478.64      236478.64      236478.64      236478.64    
+Loop time of 0.000158 on 8 procs for 1 steps with 4 atoms
+
+Performance: 546.835 ns/day, 0.044 hours/ns, 6329.114 timesteps/s, 25.316 katom-step/s
+0.0% CPU use with 8 MPI tasks x 1 OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 0.000113   | 0.00011612 | 0.000118   |   0.0 | 73.50
+Neigh   | 0          | 0          | 0          |   0.0 |  0.00
+Comm    | 1.3e-05    | 1.6375e-05 | 2.1e-05    |   0.0 | 10.36
+Output  | 1.3e-05    | 1.85e-05   | 2.4e-05    |   0.0 | 11.71
+Modify  | 0          | 1.25e-07   | 1e-06      |   0.0 |  0.08
+Other   |            | 6.875e-06  |            |       |  4.35
+
+Nlocal:            0.5 ave           4 max           0 min
+Histogram: 7 0 0 0 0 0 0 0 0 1
+Nghost:          255.5 ave         256 max         252 min
+Histogram: 1 0 0 0 0 0 0 0 0 7
+Neighs:           13.5 ave         108 max           0 min
+Histogram: 7 0 0 0 0 0 0 0 0 1
+FullNghs:           27 ave         216 max           0 min
+Histogram: 7 0 0 0 0 0 0 0 0 1
+
+Total # of neighbors = 216
+Ave neighs/atom = 54
+Neighbor list builds = 0
+Dangerous builds = 0
+variable  natoms equal "count(all)"
+variable xlength equal "lx"
+variable  volume equal "vol"
+variable  etotal equal "etotal"
+variable    ecoh equal "pe/v_natoms"
+print "${xlength}, ${volume}, ${etotal}, ${ecoh}" append lattice_cohesive_energy.txt screen no
+
+next i
+jump SELF loop
+
+change_box all x scale 1.0025 y scale 1.0025 z scale 1.0025 remap
+Changing box ...
+  orthogonal box = (0.042452898 0.047305596 0.047305596) to (3.9343171 3.9294644 3.9294644)
+  orthogonal box = (0.042452898 0.042452898 0.047305596) to (3.9343171 3.9343171 3.9294644)
+  orthogonal box = (0.042452898 0.042452898 0.042452898) to (3.9343171 3.9343171 3.9343171)
+
+run 1
+WARNING: No fixes with time integration, atoms won't move (src/verlet.cpp:60)
+WARNING: Proc sub-domain size < neighbor skin, could lead to lost atoms (src/domain.cpp:966)
+Per MPI rank memory allocation (min/avg/max) = 8.556 | 8.556 | 8.559 Mbytes
+   Step         PotEng         TotEng           Lx             Ly             Lz           Volume         Press           Pxx            Pyy            Pzz      
+        24  -21.60662      -21.60662       3.8918642      3.8918642      3.8918642      58.948538      210524.75      210524.75      210524.75      210524.75    
+        25  -21.60662      -21.60662       3.8918642      3.8918642      3.8918642      58.948538      210524.75      210524.75      210524.75      210524.75    
+Loop time of 0.000157 on 8 procs for 1 steps with 4 atoms
+
+Performance: 550.318 ns/day, 0.044 hours/ns, 6369.427 timesteps/s, 25.478 katom-step/s
+0.0% CPU use with 8 MPI tasks x 1 OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 0.000113   | 0.00011563 | 0.000118   |   0.0 | 73.65
+Neigh   | 0          | 0          | 0          |   0.0 |  0.00
+Comm    | 1.2e-05    | 1.6125e-05 | 2.1e-05    |   0.0 | 10.27
+Output  | 1.3e-05    | 1.9125e-05 | 2.5e-05    |   0.0 | 12.18
+Modify  | 0          | 2.5e-07    | 2e-06      |   0.0 |  0.16
+Other   |            | 5.875e-06  |            |       |  3.74
+
+Nlocal:            0.5 ave           4 max           0 min
+Histogram: 7 0 0 0 0 0 0 0 0 1
+Nghost:          255.5 ave         256 max         252 min
+Histogram: 1 0 0 0 0 0 0 0 0 7
+Neighs:           13.5 ave         108 max           0 min
+Histogram: 7 0 0 0 0 0 0 0 0 1
+FullNghs:           27 ave         216 max           0 min
+Histogram: 7 0 0 0 0 0 0 0 0 1
+
+Total # of neighbors = 216
+Ave neighs/atom = 54
+Neighbor list builds = 0
+Dangerous builds = 0
+variable  natoms equal "count(all)"
+variable xlength equal "lx"
+variable  volume equal "vol"
+variable  etotal equal "etotal"
+variable    ecoh equal "pe/v_natoms"
+print "${xlength}, ${volume}, ${etotal}, ${ecoh}" append lattice_cohesive_energy.txt screen no
+
+next i
+jump SELF loop
+
+change_box all x scale 1.0025 y scale 1.0025 z scale 1.0025 remap
+Changing box ...
+  orthogonal box = (0.037588068 0.042452898 0.042452898) to (3.9391819 3.9343171 3.9343171)
+  orthogonal box = (0.037588068 0.037588068 0.042452898) to (3.9391819 3.9391819 3.9343171)
+  orthogonal box = (0.037588068 0.037588068 0.037588068) to (3.9391819 3.9391819 3.9391819)
+
+run 1
+WARNING: No fixes with time integration, atoms won't move (src/verlet.cpp:60)
+WARNING: Proc sub-domain size < neighbor skin, could lead to lost atoms (src/domain.cpp:966)
+Per MPI rank memory allocation (min/avg/max) = 8.556 | 8.556 | 8.559 Mbytes
+   Step         PotEng         TotEng           Lx             Ly             Lz           Volume         Press           Pxx            Pyy            Pzz      
+        25  -21.661366     -21.661366      3.9015939      3.9015939      3.9015939      59.391758      185453.36      185453.36      185453.36      185453.36    
+        26  -21.661366     -21.661366      3.9015939      3.9015939      3.9015939      59.391758      185453.36      185453.36      185453.36      185453.36    
+Loop time of 0.000158625 on 8 procs for 1 steps with 4 atoms
+
+Performance: 544.681 ns/day, 0.044 hours/ns, 6304.177 timesteps/s, 25.217 katom-step/s
+0.0% CPU use with 8 MPI tasks x 1 OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 0.000112   | 0.00011463 | 0.000117   |   0.0 | 72.26
+Neigh   | 0          | 0          | 0          |   0.0 |  0.00
+Comm    | 1.2e-05    | 1.6375e-05 | 2.2e-05    |   0.0 | 10.32
+Output  | 1.3e-05    | 1.95e-05   | 2.6e-05    |   0.0 | 12.29
+Modify  | 0          | 1.25e-07   | 1e-06      |   0.0 |  0.08
+Other   |            | 8e-06      |            |       |  5.04
+
+Nlocal:            0.5 ave           4 max           0 min
+Histogram: 7 0 0 0 0 0 0 0 0 1
+Nghost:          255.5 ave         256 max         252 min
+Histogram: 1 0 0 0 0 0 0 0 0 7
+Neighs:           13.5 ave         108 max           0 min
+Histogram: 7 0 0 0 0 0 0 0 0 1
+FullNghs:           27 ave         216 max           0 min
+Histogram: 7 0 0 0 0 0 0 0 0 1
+
+Total # of neighbors = 216
+Ave neighs/atom = 54
+Neighbor list builds = 0
+Dangerous builds = 0
+variable  natoms equal "count(all)"
+variable xlength equal "lx"
+variable  volume equal "vol"
+variable  etotal equal "etotal"
+variable    ecoh equal "pe/v_natoms"
+print "${xlength}, ${volume}, ${etotal}, ${ecoh}" append lattice_cohesive_energy.txt screen no
+
+next i
+jump SELF loop
+
+change_box all x scale 1.0025 y scale 1.0025 z scale 1.0025 remap
+Changing box ...
+  orthogonal box = (0.032711075 0.037588068 0.037588068) to (3.9440589 3.9391819 3.9391819)
+  orthogonal box = (0.032711075 0.032711075 0.037588068) to (3.9440589 3.9440589 3.9391819)
+  orthogonal box = (0.032711075 0.032711075 0.032711075) to (3.9440589 3.9440589 3.9440589)
+
+run 1
+WARNING: No fixes with time integration, atoms won't move (src/verlet.cpp:60)
+WARNING: Proc sub-domain size < neighbor skin, could lead to lost atoms (src/domain.cpp:966)
+Per MPI rank memory allocation (min/avg/max) = 8.556 | 8.556 | 8.559 Mbytes
+   Step         PotEng         TotEng           Lx             Ly             Lz           Volume         Press           Pxx            Pyy            Pzz      
+        26  -21.709657     -21.709657      3.9113478      3.9113478      3.9113478      59.83831       161242.97      161242.97      161242.97      161242.97    
+        27  -21.709657     -21.709657      3.9113478      3.9113478      3.9113478      59.83831       161242.97      161242.97      161242.97      161242.97    
+Loop time of 0.000157625 on 8 procs for 1 steps with 4 atoms
+
+Performance: 548.136 ns/day, 0.044 hours/ns, 6344.171 timesteps/s, 25.377 katom-step/s
+0.0% CPU use with 8 MPI tasks x 1 OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 0.000112   | 0.000115   | 0.000117   |   0.0 | 72.96
+Neigh   | 0          | 0          | 0          |   0.0 |  0.00
+Comm    | 1.3e-05    | 1.7e-05    | 2.3e-05    |   0.0 | 10.79
+Output  | 1.3e-05    | 2.0125e-05 | 2.7e-05    |   0.0 | 12.77
+Modify  | 0          | 0          | 0          |   0.0 |  0.00
+Other   |            | 5.5e-06    |            |       |  3.49
+
+Nlocal:            0.5 ave           4 max           0 min
+Histogram: 7 0 0 0 0 0 0 0 0 1
+Nghost:          255.5 ave         256 max         252 min
+Histogram: 1 0 0 0 0 0 0 0 0 7
+Neighs:           13.5 ave         108 max           0 min
+Histogram: 7 0 0 0 0 0 0 0 0 1
+FullNghs:           27 ave         216 max           0 min
+Histogram: 7 0 0 0 0 0 0 0 0 1
+
+Total # of neighbors = 216
+Ave neighs/atom = 54
+Neighbor list builds = 0
+Dangerous builds = 0
+variable  natoms equal "count(all)"
+variable xlength equal "lx"
+variable  volume equal "vol"
+variable  etotal equal "etotal"
+variable    ecoh equal "pe/v_natoms"
+print "${xlength}, ${volume}, ${etotal}, ${ecoh}" append lattice_cohesive_energy.txt screen no
+
+next i
+jump SELF loop
+
+change_box all x scale 1.0025 y scale 1.0025 z scale 1.0025 remap
+Changing box ...
+  orthogonal box = (0.02782189 0.032711075 0.032711075) to (3.9489481 3.9440589 3.9440589)
+  orthogonal box = (0.02782189 0.02782189 0.032711075) to (3.9489481 3.9489481 3.9440589)
+  orthogonal box = (0.02782189 0.02782189 0.02782189) to (3.9489481 3.9489481 3.9489481)
+
+run 1
+WARNING: No fixes with time integration, atoms won't move (src/verlet.cpp:60)
+WARNING: Proc sub-domain size < neighbor skin, could lead to lost atoms (src/domain.cpp:966)
+Per MPI rank memory allocation (min/avg/max) = 8.556 | 8.556 | 8.559 Mbytes
+   Step         PotEng         TotEng           Lx             Ly             Lz           Volume         Press           Pxx            Pyy            Pzz      
+        27  -21.751631     -21.751631      3.9211262      3.9211262      3.9211262      60.288221      137872.52      137872.52      137872.52      137872.52    
+        28  -21.751631     -21.751631      3.9211262      3.9211262      3.9211262      60.288221      137872.52      137872.52      137872.52      137872.52    
+Loop time of 0.0002415 on 8 procs for 1 steps with 4 atoms
+
+Performance: 357.764 ns/day, 0.067 hours/ns, 4140.787 timesteps/s, 16.563 katom-step/s
+0.0% CPU use with 8 MPI tasks x 1 OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 0.000135   | 0.000143   | 0.000164   |   0.0 | 59.21
+Neigh   | 0          | 0          | 0          |   0.0 |  0.00
+Comm    | 1.3e-05    | 2.275e-05  | 4.5e-05    |   0.0 |  9.42
+Output  | 4.6e-05    | 6.425e-05  | 8.2e-05    |   0.0 | 26.60
+Modify  | 0          | 2.5e-07    | 2e-06      |   0.0 |  0.10
+Other   |            | 1.125e-05  |            |       |  4.66
+
+Nlocal:            0.5 ave           4 max           0 min
+Histogram: 7 0 0 0 0 0 0 0 0 1
+Nghost:          255.5 ave         256 max         252 min
+Histogram: 1 0 0 0 0 0 0 0 0 7
+Neighs:           13.5 ave         108 max           0 min
+Histogram: 7 0 0 0 0 0 0 0 0 1
+FullNghs:           27 ave         216 max           0 min
+Histogram: 7 0 0 0 0 0 0 0 0 1
+
+Total # of neighbors = 216
+Ave neighs/atom = 54
+Neighbor list builds = 0
+Dangerous builds = 0
+variable  natoms equal "count(all)"
+variable xlength equal "lx"
+variable  volume equal "vol"
+variable  etotal equal "etotal"
+variable    ecoh equal "pe/v_natoms"
+print "${xlength}, ${volume}, ${etotal}, ${ecoh}" append lattice_cohesive_energy.txt screen no
+
+next i
+jump SELF loop
+
+change_box all x scale 1.0025 y scale 1.0025 z scale 1.0025 remap
+Changing box ...
+  orthogonal box = (0.022920483 0.02782189 0.02782189) to (3.9538495 3.9489481 3.9489481)
+  orthogonal box = (0.022920483 0.022920483 0.02782189) to (3.9538495 3.9538495 3.9489481)
+  orthogonal box = (0.022920483 0.022920483 0.022920483) to (3.9538495 3.9538495 3.9538495)
+
+run 1
+WARNING: No fixes with time integration, atoms won't move (src/verlet.cpp:60)
+WARNING: Proc sub-domain size < neighbor skin, could lead to lost atoms (src/domain.cpp:966)
+Per MPI rank memory allocation (min/avg/max) = 8.556 | 8.556 | 8.559 Mbytes
+   Step         PotEng         TotEng           Lx             Ly             Lz           Volume         Press           Pxx            Pyy            Pzz      
+        28  -21.787425     -21.787425      3.930929       3.930929       3.930929       60.741514      115321.21      115321.21      115321.21      115321.21    
+        29  -21.787425     -21.787425      3.930929       3.930929       3.930929       60.741514      115321.21      115321.21      115321.21      115321.21    
+Loop time of 0.000190875 on 8 procs for 1 steps with 4 atoms
+
+Performance: 452.652 ns/day, 0.053 hours/ns, 5239.031 timesteps/s, 20.956 katom-step/s
+0.0% CPU use with 8 MPI tasks x 1 OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 0.000126   | 0.00013275 | 0.000148   |   0.0 | 69.55
+Neigh   | 0          | 0          | 0          |   0.0 |  0.00
+Comm    | 1e-05      | 1.9125e-05 | 3.7e-05    |   0.0 | 10.02
+Output  | 1.5e-05    | 2.9125e-05 | 4.2e-05    |   0.0 | 15.26
+Modify  | 0          | 2.5e-07    | 1e-06      |   0.0 |  0.13
+Other   |            | 9.625e-06  |            |       |  5.04
+
+Nlocal:            0.5 ave           4 max           0 min
+Histogram: 7 0 0 0 0 0 0 0 0 1
+Nghost:          255.5 ave         256 max         252 min
+Histogram: 1 0 0 0 0 0 0 0 0 7
+Neighs:           13.5 ave         108 max           0 min
+Histogram: 7 0 0 0 0 0 0 0 0 1
+FullNghs:           27 ave         216 max           0 min
+Histogram: 7 0 0 0 0 0 0 0 0 1
+
+Total # of neighbors = 216
+Ave neighs/atom = 54
+Neighbor list builds = 0
+Dangerous builds = 0
+variable  natoms equal "count(all)"
+variable xlength equal "lx"
+variable  volume equal "vol"
+variable  etotal equal "etotal"
+variable    ecoh equal "pe/v_natoms"
+print "${xlength}, ${volume}, ${etotal}, ${ecoh}" append lattice_cohesive_energy.txt screen no
+
+next i
+jump SELF loop
+
+change_box all x scale 1.0025 y scale 1.0025 z scale 1.0025 remap
+Changing box ...
+  orthogonal box = (0.018006821 0.022920483 0.022920483) to (3.9587632 3.9538495 3.9538495)
+  orthogonal box = (0.018006821 0.018006821 0.022920483) to (3.9587632 3.9587632 3.9538495)
+  orthogonal box = (0.018006821 0.018006821 0.018006821) to (3.9587632 3.9587632 3.9587632)
+
+run 1
+WARNING: No fixes with time integration, atoms won't move (src/verlet.cpp:60)
+WARNING: Proc sub-domain size < neighbor skin, could lead to lost atoms (src/domain.cpp:966)
+Per MPI rank memory allocation (min/avg/max) = 8.556 | 8.556 | 8.559 Mbytes
+   Step         PotEng         TotEng           Lx             Ly             Lz           Volume         Press           Pxx            Pyy            Pzz      
+        29  -21.817175     -21.817175      3.9407564      3.9407564      3.9407564      61.198215      93568.901      93568.901      93568.901      93568.901    
+        30  -21.817175     -21.817175      3.9407564      3.9407564      3.9407564      61.198215      93568.901      93568.901      93568.901      93568.901    
+Loop time of 0.00018875 on 8 procs for 1 steps with 4 atoms
+
+Performance: 457.748 ns/day, 0.052 hours/ns, 5298.013 timesteps/s, 21.192 katom-step/s
+0.0% CPU use with 8 MPI tasks x 1 OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 0.000125   | 0.0001315  | 0.000146   |   0.0 | 69.67
+Neigh   | 0          | 0          | 0          |   0.0 |  0.00
+Comm    | 1.1e-05    | 1.9e-05    | 3.7e-05    |   0.0 | 10.07
+Output  | 1.5e-05    | 2.8625e-05 | 4.1e-05    |   0.0 | 15.17
+Modify  | 0          | 3.75e-07   | 1e-06      |   0.0 |  0.20
+Other   |            | 9.25e-06   |            |       |  4.90
+
+Nlocal:            0.5 ave           4 max           0 min
+Histogram: 7 0 0 0 0 0 0 0 0 1
+Nghost:          255.5 ave         256 max         252 min
+Histogram: 1 0 0 0 0 0 0 0 0 7
+Neighs:           13.5 ave         108 max           0 min
+Histogram: 7 0 0 0 0 0 0 0 0 1
+FullNghs:           27 ave         216 max           0 min
+Histogram: 7 0 0 0 0 0 0 0 0 1
+
+Total # of neighbors = 216
+Ave neighs/atom = 54
+Neighbor list builds = 0
+Dangerous builds = 0
+variable  natoms equal "count(all)"
+variable xlength equal "lx"
+variable  volume equal "vol"
+variable  etotal equal "etotal"
+variable    ecoh equal "pe/v_natoms"
+print "${xlength}, ${volume}, ${etotal}, ${ecoh}" append lattice_cohesive_energy.txt screen no
+
+next i
+jump SELF loop
+
+change_box all x scale 1.0025 y scale 1.0025 z scale 1.0025 remap
+Changing box ...
+  orthogonal box = (0.013080876 0.018006821 0.018006821) to (3.9636891 3.9587632 3.9587632)
+  orthogonal box = (0.013080876 0.013080876 0.018006821) to (3.9636891 3.9636891 3.9587632)
+  orthogonal box = (0.013080876 0.013080876 0.013080876) to (3.9636891 3.9636891 3.9636891)
+
+run 1
+WARNING: No fixes with time integration, atoms won't move (src/verlet.cpp:60)
+WARNING: Proc sub-domain size < neighbor skin, could lead to lost atoms (src/domain.cpp:966)
+Per MPI rank memory allocation (min/avg/max) = 8.556 | 8.556 | 8.559 Mbytes
+   Step         PotEng         TotEng           Lx             Ly             Lz           Volume         Press           Pxx            Pyy            Pzz      
+        30  -21.841013     -21.841013      3.9506082      3.9506082      3.9506082      61.65835       72595.545      72595.545      72595.545      72595.545    
+        31  -21.841013     -21.841013      3.9506082      3.9506082      3.9506082      61.65835       72595.545      72595.545      72595.545      72595.545    
+Loop time of 0.0001895 on 8 procs for 1 steps with 4 atoms
+
+Performance: 455.937 ns/day, 0.053 hours/ns, 5277.045 timesteps/s, 21.108 katom-step/s
+0.0% CPU use with 8 MPI tasks x 1 OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 0.000124   | 0.0001315  | 0.000147   |   0.0 | 69.39
+Neigh   | 0          | 0          | 0          |   0.0 |  0.00
+Comm    | 1.1e-05    | 1.9625e-05 | 3.8e-05    |   0.0 | 10.36
+Output  | 1.6e-05    | 2.9625e-05 | 4.2e-05    |   0.0 | 15.63
+Modify  | 0          | 2.5e-07    | 1e-06      |   0.0 |  0.13
+Other   |            | 8.5e-06    |            |       |  4.49
+
+Nlocal:            0.5 ave           4 max           0 min
+Histogram: 7 0 0 0 0 0 0 0 0 1
+Nghost:          255.5 ave         256 max         252 min
+Histogram: 1 0 0 0 0 0 0 0 0 7
+Neighs:           13.5 ave         108 max           0 min
+Histogram: 7 0 0 0 0 0 0 0 0 1
+FullNghs:           27 ave         216 max           0 min
+Histogram: 7 0 0 0 0 0 0 0 0 1
+
+Total # of neighbors = 216
+Ave neighs/atom = 54
+Neighbor list builds = 0
+Dangerous builds = 0
+variable  natoms equal "count(all)"
+variable xlength equal "lx"
+variable  volume equal "vol"
+variable  etotal equal "etotal"
+variable    ecoh equal "pe/v_natoms"
+print "${xlength}, ${volume}, ${etotal}, ${ecoh}" append lattice_cohesive_energy.txt screen no
+
+next i
+jump SELF loop
+
+change_box all x scale 1.0025 y scale 1.0025 z scale 1.0025 remap
+Changing box ...
+  orthogonal box = (0.0081426156 0.013080876 0.013080876) to (3.9686274 3.9636891 3.9636891)
+  orthogonal box = (0.0081426156 0.0081426156 0.013080876) to (3.9686274 3.9686274 3.9636891)
+  orthogonal box = (0.0081426156 0.0081426156 0.0081426156) to (3.9686274 3.9686274 3.9686274)
+
+run 1
+WARNING: No fixes with time integration, atoms won't move (src/verlet.cpp:60)
+WARNING: Proc sub-domain size < neighbor skin, could lead to lost atoms (src/domain.cpp:966)
+Per MPI rank memory allocation (min/avg/max) = 8.556 | 8.556 | 8.559 Mbytes
+   Step         PotEng         TotEng           Lx             Ly             Lz           Volume         Press           Pxx            Pyy            Pzz      
+        31  -21.859073     -21.859073      3.9604848      3.9604848      3.9604848      62.121945      52381.763      52381.763      52381.763      52381.763    
+        32  -21.859073     -21.859073      3.9604848      3.9604848      3.9604848      62.121945      52381.763      52381.763      52381.763      52381.763    
+Loop time of 0.000207 on 8 procs for 1 steps with 4 atoms
+
+Performance: 417.391 ns/day, 0.057 hours/ns, 4830.918 timesteps/s, 19.324 katom-step/s
+0.0% CPU use with 8 MPI tasks x 1 OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 0.000145   | 0.00015038 | 0.000164   |   0.0 | 72.64
+Neigh   | 0          | 0          | 0          |   0.0 |  0.00
+Comm    | 1.1e-05    | 1.925e-05  | 3.6e-05    |   0.0 |  9.30
+Output  | 1.6e-05    | 2.8625e-05 | 4.2e-05    |   0.0 | 13.83
+Modify  | 0          | 0          | 0          |   0.0 |  0.00
+Other   |            | 8.75e-06   |            |       |  4.23
+
+Nlocal:            0.5 ave           4 max           0 min
+Histogram: 7 0 0 0 0 0 0 0 0 1
+Nghost:          255.5 ave         256 max         252 min
+Histogram: 1 0 0 0 0 0 0 0 0 7
+Neighs:           13.5 ave         108 max           0 min
+Histogram: 7 0 0 0 0 0 0 0 0 1
+FullNghs:           27 ave         216 max           0 min
+Histogram: 7 0 0 0 0 0 0 0 0 1
+
+Total # of neighbors = 216
+Ave neighs/atom = 54
+Neighbor list builds = 0
+Dangerous builds = 0
+variable  natoms equal "count(all)"
+variable xlength equal "lx"
+variable  volume equal "vol"
+variable  etotal equal "etotal"
+variable    ecoh equal "pe/v_natoms"
+print "${xlength}, ${volume}, ${etotal}, ${ecoh}" append lattice_cohesive_energy.txt screen no
+
+next i
+jump SELF loop
+
+change_box all x scale 1.0025 y scale 1.0025 z scale 1.0025 remap
+Changing box ...
+  orthogonal box = (0.0031920097 0.0081426156 0.0081426156) to (3.973578 3.9686274 3.9686274)
+  orthogonal box = (0.0031920097 0.0031920097 0.0081426156) to (3.973578 3.973578 3.9686274)
+  orthogonal box = (0.0031920097 0.0031920097 0.0031920097) to (3.973578 3.973578 3.973578)
+
+run 1
+WARNING: No fixes with time integration, atoms won't move (src/verlet.cpp:60)
+WARNING: Proc sub-domain size < neighbor skin, could lead to lost atoms (src/domain.cpp:966)
+Per MPI rank memory allocation (min/avg/max) = 8.556 | 8.556 | 8.559 Mbytes
+   Step         PotEng         TotEng           Lx             Ly             Lz           Volume         Press           Pxx            Pyy            Pzz      
+        32  -21.871484     -21.871484      3.970386       3.970386       3.970386       62.589025      32908.368      32908.368      32908.368      32908.368    
+        33  -21.871484     -21.871484      3.970386       3.970386       3.970386       62.589025      32908.368      32908.368      32908.368      32908.368    
+Loop time of 0.000187375 on 8 procs for 1 steps with 4 atoms
+
+Performance: 461.107 ns/day, 0.052 hours/ns, 5336.891 timesteps/s, 21.348 katom-step/s
+0.0% CPU use with 8 MPI tasks x 1 OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 0.000124   | 0.0001305  | 0.000145   |   0.0 | 69.65
+Neigh   | 0          | 0          | 0          |   0.0 |  0.00
+Comm    | 1.1e-05    | 1.95e-05   | 3.7e-05    |   0.0 | 10.41
+Output  | 1.5e-05    | 2.8375e-05 | 4.1e-05    |   0.0 | 15.14
+Modify  | 0          | 1.25e-07   | 1e-06      |   0.0 |  0.07
+Other   |            | 8.875e-06  |            |       |  4.74
+
+Nlocal:            0.5 ave           4 max           0 min
+Histogram: 7 0 0 0 0 0 0 0 0 1
+Nghost:          255.5 ave         256 max         252 min
+Histogram: 1 0 0 0 0 0 0 0 0 7
+Neighs:           13.5 ave         108 max           0 min
+Histogram: 7 0 0 0 0 0 0 0 0 1
+FullNghs:           27 ave         216 max           0 min
+Histogram: 7 0 0 0 0 0 0 0 0 1
+
+Total # of neighbors = 216
+Ave neighs/atom = 54
+Neighbor list builds = 0
+Dangerous builds = 0
+variable  natoms equal "count(all)"
+variable xlength equal "lx"
+variable  volume equal "vol"
+variable  etotal equal "etotal"
+variable    ecoh equal "pe/v_natoms"
+print "${xlength}, ${volume}, ${etotal}, ${ecoh}" append lattice_cohesive_energy.txt screen no
+
+next i
+jump SELF loop
+
+change_box all x scale 1.0025 y scale 1.0025 z scale 1.0025 remap
+Changing box ...
+  orthogonal box = (-0.0017709728 0.0031920097 0.0031920097) to (3.978541 3.973578 3.973578)
+  orthogonal box = (-0.0017709728 -0.0017709728 0.0031920097) to (3.978541 3.978541 3.973578)
+  orthogonal box = (-0.0017709728 -0.0017709728 -0.0017709728) to (3.978541 3.978541 3.978541)
+
+run 1
+WARNING: No fixes with time integration, atoms won't move (src/verlet.cpp:60)
+WARNING: Proc sub-domain size < neighbor skin, could lead to lost atoms (src/domain.cpp:966)
+Per MPI rank memory allocation (min/avg/max) = 8.556 | 8.556 | 8.559 Mbytes
+   Step         PotEng         TotEng           Lx             Ly             Lz           Volume         Press           Pxx            Pyy            Pzz      
+        33  -21.878375     -21.878375      3.9803119      3.9803119      3.9803119      63.059617      14156.606      14156.606      14156.606      14156.606    
+        34  -21.878375     -21.878375      3.9803119      3.9803119      3.9803119      63.059617      14156.606      14156.606      14156.606      14156.606    
+Loop time of 0.000188 on 8 procs for 1 steps with 4 atoms
+
+Performance: 459.574 ns/day, 0.052 hours/ns, 5319.149 timesteps/s, 21.277 katom-step/s
+0.0% CPU use with 8 MPI tasks x 1 OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 0.000124   | 0.00013075 | 0.000146   |   0.0 | 69.55
+Neigh   | 0          | 0          | 0          |   0.0 |  0.00
+Comm    | 1.1e-05    | 1.9625e-05 | 3.7e-05    |   0.0 | 10.44
+Output  | 1.5e-05    | 2.9125e-05 | 4.2e-05    |   0.0 | 15.49
+Modify  | 0          | 1.25e-07   | 1e-06      |   0.0 |  0.07
+Other   |            | 8.375e-06  |            |       |  4.45
+
+Nlocal:            0.5 ave           4 max           0 min
+Histogram: 7 0 0 0 0 0 0 0 0 1
+Nghost:          255.5 ave         256 max         252 min
+Histogram: 1 0 0 0 0 0 0 0 0 7
+Neighs:           13.5 ave         108 max           0 min
+Histogram: 7 0 0 0 0 0 0 0 0 1
+FullNghs:           27 ave         216 max           0 min
+Histogram: 7 0 0 0 0 0 0 0 0 1
+
+Total # of neighbors = 216
+Ave neighs/atom = 54
+Neighbor list builds = 0
+Dangerous builds = 0
+variable  natoms equal "count(all)"
+variable xlength equal "lx"
+variable  volume equal "vol"
+variable  etotal equal "etotal"
+variable    ecoh equal "pe/v_natoms"
+print "${xlength}, ${volume}, ${etotal}, ${ecoh}" append lattice_cohesive_energy.txt screen no
+
+next i
+jump SELF loop
+
+change_box all x scale 1.0025 y scale 1.0025 z scale 1.0025 remap
+Changing box ...
+  orthogonal box = (-0.0067463627 -0.0017709728 -0.0017709728) to (3.9835164 3.978541 3.978541)
+  orthogonal box = (-0.0067463627 -0.0067463627 -0.0017709728) to (3.9835164 3.9835164 3.978541)
+  orthogonal box = (-0.0067463627 -0.0067463627 -0.0067463627) to (3.9835164 3.9835164 3.9835164)
+
+run 1
+WARNING: No fixes with time integration, atoms won't move (src/verlet.cpp:60)
+WARNING: Proc sub-domain size < neighbor skin, could lead to lost atoms (src/domain.cpp:966)
+Per MPI rank memory allocation (min/avg/max) = 8.556 | 8.556 | 8.559 Mbytes
+   Step         PotEng         TotEng           Lx             Ly             Lz           Volume         Press           Pxx            Pyy            Pzz      
+        34  -21.879873     -21.879873      3.9902627      3.9902627      3.9902627      63.533748     -3891.8151     -3891.8151     -3891.8151     -3891.8151    
+        35  -21.879873     -21.879873      3.9902627      3.9902627      3.9902627      63.533748     -3891.8151     -3891.8151     -3891.8151     -3891.8151    
+Loop time of 0.000187 on 8 procs for 1 steps with 4 atoms
+
+Performance: 462.032 ns/day, 0.052 hours/ns, 5347.594 timesteps/s, 21.390 katom-step/s
+0.0% CPU use with 8 MPI tasks x 1 OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 0.000125   | 0.00013075 | 0.000146   |   0.0 | 69.92
+Neigh   | 0          | 0          | 0          |   0.0 |  0.00
+Comm    | 1.1e-05    | 1.925e-05  | 3.7e-05    |   0.0 | 10.29
+Output  | 1.5e-05    | 2.8375e-05 | 4.1e-05    |   0.0 | 15.17
+Modify  | 0          | 1.25e-07   | 1e-06      |   0.0 |  0.07
+Other   |            | 8.5e-06    |            |       |  4.55
+
+Nlocal:            0.5 ave           4 max           0 min
+Histogram: 7 0 0 0 0 0 0 0 0 1
+Nghost:          255.5 ave         256 max         252 min
+Histogram: 1 0 0 0 0 0 0 0 0 7
+Neighs:           13.5 ave         108 max           0 min
+Histogram: 7 0 0 0 0 0 0 0 0 1
+FullNghs:           27 ave         216 max           0 min
+Histogram: 7 0 0 0 0 0 0 0 0 1
+
+Total # of neighbors = 216
+Ave neighs/atom = 54
+Neighbor list builds = 0
+Dangerous builds = 0
+variable  natoms equal "count(all)"
+variable xlength equal "lx"
+variable  volume equal "vol"
+variable  etotal equal "etotal"
+variable    ecoh equal "pe/v_natoms"
+print "${xlength}, ${volume}, ${etotal}, ${ecoh}" append lattice_cohesive_energy.txt screen no
+
+next i
+jump SELF loop
+
+change_box all x scale 1.0025 y scale 1.0025 z scale 1.0025 remap
+Changing box ...
+  orthogonal box = (-0.011734191 -0.0067463627 -0.0067463627) to (3.9885042 3.9835164 3.9835164)
+  orthogonal box = (-0.011734191 -0.011734191 -0.0067463627) to (3.9885042 3.9885042 3.9835164)
+  orthogonal box = (-0.011734191 -0.011734191 -0.011734191) to (3.9885042 3.9885042 3.9885042)
+
+run 1
+WARNING: No fixes with time integration, atoms won't move (src/verlet.cpp:60)
+Per MPI rank memory allocation (min/avg/max) = 8.532 | 8.533 | 8.535 Mbytes
+   Step         PotEng         TotEng           Lx             Ly             Lz           Volume         Press           Pxx            Pyy            Pzz      
+        35  -21.876105     -21.876105      4.0002384      4.0002384      4.0002384      64.011443     -21255.008     -21255.008     -21255.008     -21255.008    
+        36  -21.876105     -21.876105      4.0002384      4.0002384      4.0002384      64.011443     -21255.008     -21255.008     -21255.008     -21255.008    
+Loop time of 0.00012075 on 8 procs for 1 steps with 4 atoms
+
+Performance: 715.528 ns/day, 0.034 hours/ns, 8281.573 timesteps/s, 33.126 katom-step/s
+0.0% CPU use with 8 MPI tasks x 1 OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 6.5e-05    | 7e-05      | 8.3e-05    |   0.0 | 57.97
+Neigh   | 0          | 0          | 0          |   0.0 |  0.00
+Comm    | 7e-06      | 1.4375e-05 | 3.1e-05    |   0.0 | 11.90
+Output  | 1.5e-05    | 2.75e-05   | 3.9e-05    |   0.0 | 22.77
+Modify  | 0          | 0          | 0          |   0.0 |  0.00
+Other   |            | 8.875e-06  |            |       |  7.35
+
+Nlocal:            0.5 ave           4 max           0 min
+Histogram: 7 0 0 0 0 0 0 0 0 1
+Nghost:          107.5 ave         108 max         104 min
+Histogram: 1 0 0 0 0 0 0 0 0 7
+Neighs:           13.5 ave         108 max           0 min
+Histogram: 7 0 0 0 0 0 0 0 0 1
+FullNghs:           27 ave         216 max           0 min
+Histogram: 7 0 0 0 0 0 0 0 0 1
+
+Total # of neighbors = 216
+Ave neighs/atom = 54
+Neighbor list builds = 0
+Dangerous builds = 0
+variable  natoms equal "count(all)"
+variable xlength equal "lx"
+variable  volume equal "vol"
+variable  etotal equal "etotal"
+variable    ecoh equal "pe/v_natoms"
+print "${xlength}, ${volume}, ${etotal}, ${ecoh}" append lattice_cohesive_energy.txt screen no
+
+next i
+jump SELF loop
+
+change_box all x scale 1.0025 y scale 1.0025 z scale 1.0025 remap
+Changing box ...
+  orthogonal box = (-0.016734489 -0.011734191 -0.011734191) to (3.9935045 3.9885042 3.9885042)
+  orthogonal box = (-0.016734489 -0.016734489 -0.011734191) to (3.9935045 3.9935045 3.9885042)
+  orthogonal box = (-0.016734489 -0.016734489 -0.016734489) to (3.9935045 3.9935045 3.9935045)
+
+run 1
+WARNING: No fixes with time integration, atoms won't move (src/verlet.cpp:60)
+Per MPI rank memory allocation (min/avg/max) = 8.532 | 8.533 | 8.535 Mbytes
+   Step         PotEng         TotEng           Lx             Ly             Lz           Volume         Press           Pxx            Pyy            Pzz      
+        36  -21.867192     -21.867192      4.010239       4.010239       4.010239       64.49273      -37950.506     -37950.506     -37950.506     -37950.506    
+        37  -21.867192     -21.867192      4.010239       4.010239       4.010239       64.49273      -37950.506     -37950.506     -37950.506     -37950.506    
+Loop time of 0.00012 on 8 procs for 1 steps with 4 atoms
+
+Performance: 720.000 ns/day, 0.033 hours/ns, 8333.333 timesteps/s, 33.333 katom-step/s
+0.0% CPU use with 8 MPI tasks x 1 OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 6.5e-05    | 7e-05      | 8.3e-05    |   0.0 | 58.33
+Neigh   | 0          | 0          | 0          |   0.0 |  0.00
+Comm    | 7e-06      | 1.4875e-05 | 3.1e-05    |   0.0 | 12.40
+Output  | 1.5e-05    | 2.725e-05  | 3.9e-05    |   0.0 | 22.71
+Modify  | 0          | 0          | 0          |   0.0 |  0.00
+Other   |            | 7.875e-06  |            |       |  6.56
+
+Nlocal:            0.5 ave           4 max           0 min
+Histogram: 7 0 0 0 0 0 0 0 0 1
+Nghost:          107.5 ave         108 max         104 min
+Histogram: 1 0 0 0 0 0 0 0 0 7
+Neighs:           13.5 ave         108 max           0 min
+Histogram: 7 0 0 0 0 0 0 0 0 1
+FullNghs:           27 ave         216 max           0 min
+Histogram: 7 0 0 0 0 0 0 0 0 1
+
+Total # of neighbors = 216
+Ave neighs/atom = 54
+Neighbor list builds = 0
+Dangerous builds = 0
+variable  natoms equal "count(all)"
+variable xlength equal "lx"
+variable  volume equal "vol"
+variable  etotal equal "etotal"
+variable    ecoh equal "pe/v_natoms"
+print "${xlength}, ${volume}, ${etotal}, ${ecoh}" append lattice_cohesive_energy.txt screen no
+
+next i
+jump SELF loop
+
+change_box all x scale 1.0025 y scale 1.0025 z scale 1.0025 remap
+Changing box ...
+  orthogonal box = (-0.021747288 -0.016734489 -0.016734489) to (3.9985173 3.9935045 3.9935045)
+  orthogonal box = (-0.021747288 -0.021747288 -0.016734489) to (3.9985173 3.9985173 3.9935045)
+  orthogonal box = (-0.021747288 -0.021747288 -0.021747288) to (3.9985173 3.9985173 3.9985173)
+
+run 1
+WARNING: No fixes with time integration, atoms won't move (src/verlet.cpp:60)
+Per MPI rank memory allocation (min/avg/max) = 8.532 | 8.533 | 8.535 Mbytes
+   Step         PotEng         TotEng           Lx             Ly             Lz           Volume         Press           Pxx            Pyy            Pzz      
+        37  -21.853259     -21.853259      4.0202646      4.0202646      4.0202646      64.977636     -53995.655     -53995.655     -53995.655     -53995.655    
+        38  -21.853259     -21.853259      4.0202646      4.0202646      4.0202646      64.977636     -53995.655     -53995.655     -53995.655     -53995.655    
+Loop time of 0.00012 on 8 procs for 1 steps with 4 atoms
+
+Performance: 720.000 ns/day, 0.033 hours/ns, 8333.333 timesteps/s, 33.333 katom-step/s
+0.0% CPU use with 8 MPI tasks x 1 OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 6.4e-05    | 6.925e-05  | 8.2e-05    |   0.0 | 57.71
+Neigh   | 0          | 0          | 0          |   0.0 |  0.00
+Comm    | 7e-06      | 1.4875e-05 | 3.1e-05    |   0.0 | 12.40
+Output  | 1.5e-05    | 2.7375e-05 | 3.9e-05    |   0.0 | 22.81
+Modify  | 0          | 1.25e-07   | 1e-06      |   0.0 |  0.10
+Other   |            | 8.375e-06  |            |       |  6.98
+
+Nlocal:            0.5 ave           4 max           0 min
+Histogram: 7 0 0 0 0 0 0 0 0 1
+Nghost:          107.5 ave         108 max         104 min
+Histogram: 1 0 0 0 0 0 0 0 0 7
+Neighs:           13.5 ave         108 max           0 min
+Histogram: 7 0 0 0 0 0 0 0 0 1
+FullNghs:           27 ave         216 max           0 min
+Histogram: 7 0 0 0 0 0 0 0 0 1
+
+Total # of neighbors = 216
+Ave neighs/atom = 54
+Neighbor list builds = 0
+Dangerous builds = 0
+variable  natoms equal "count(all)"
+variable xlength equal "lx"
+variable  volume equal "vol"
+variable  etotal equal "etotal"
+variable    ecoh equal "pe/v_natoms"
+print "${xlength}, ${volume}, ${etotal}, ${ecoh}" append lattice_cohesive_energy.txt screen no
+
+next i
+jump SELF loop
+
+change_box all x scale 1.0025 y scale 1.0025 z scale 1.0025 remap
+Changing box ...
+  orthogonal box = (-0.026772619 -0.021747288 -0.021747288) to (4.0035426 3.9985173 3.9985173)
+  orthogonal box = (-0.026772619 -0.026772619 -0.021747288) to (4.0035426 4.0035426 3.9985173)
+  orthogonal box = (-0.026772619 -0.026772619 -0.026772619) to (4.0035426 4.0035426 4.0035426)
+
+run 1
+WARNING: No fixes with time integration, atoms won't move (src/verlet.cpp:60)
+Per MPI rank memory allocation (min/avg/max) = 8.532 | 8.533 | 8.535 Mbytes
+   Step         PotEng         TotEng           Lx             Ly             Lz           Volume         Press           Pxx            Pyy            Pzz      
+        38  -21.834426     -21.834426      4.0303152      4.0303152      4.0303152      65.466187     -69407.412     -69407.412     -69407.412     -69407.412    
+        39  -21.834426     -21.834426      4.0303152      4.0303152      4.0303152      65.466187     -69407.412     -69407.412     -69407.412     -69407.412    
+Loop time of 0.000120625 on 8 procs for 1 steps with 4 atoms
+
+Performance: 716.269 ns/day, 0.034 hours/ns, 8290.155 timesteps/s, 33.161 katom-step/s
+0.0% CPU use with 8 MPI tasks x 1 OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 6.5e-05    | 7.025e-05  | 8.3e-05    |   0.0 | 58.24
+Neigh   | 0          | 0          | 0          |   0.0 |  0.00
+Comm    | 7e-06      | 1.45e-05   | 3.1e-05    |   0.0 | 12.02
+Output  | 1.5e-05    | 2.7e-05    | 3.9e-05    |   0.0 | 22.38
+Modify  | 0          | 1.25e-07   | 1e-06      |   0.0 |  0.10
+Other   |            | 8.75e-06   |            |       |  7.25
+
+Nlocal:            0.5 ave           4 max           0 min
+Histogram: 7 0 0 0 0 0 0 0 0 1
+Nghost:          107.5 ave         108 max         104 min
+Histogram: 1 0 0 0 0 0 0 0 0 7
+Neighs:           13.5 ave         108 max           0 min
+Histogram: 7 0 0 0 0 0 0 0 0 1
+FullNghs:           27 ave         216 max           0 min
+Histogram: 7 0 0 0 0 0 0 0 0 1
+
+Total # of neighbors = 216
+Ave neighs/atom = 54
+Neighbor list builds = 0
+Dangerous builds = 0
+variable  natoms equal "count(all)"
+variable xlength equal "lx"
+variable  volume equal "vol"
+variable  etotal equal "etotal"
+variable    ecoh equal "pe/v_natoms"
+print "${xlength}, ${volume}, ${etotal}, ${ecoh}" append lattice_cohesive_energy.txt screen no
+
+next i
+jump SELF loop
+
+change_box all x scale 1.0025 y scale 1.0025 z scale 1.0025 remap
+Changing box ...
+  orthogonal box = (-0.031810513 -0.026772619 -0.026772619) to (4.0085805 4.0035426 4.0035426)
+  orthogonal box = (-0.031810513 -0.031810513 -0.026772619) to (4.0085805 4.0085805 4.0035426)
+  orthogonal box = (-0.031810513 -0.031810513 -0.031810513) to (4.0085805 4.0085805 4.0085805)
+
+run 1
+WARNING: No fixes with time integration, atoms won't move (src/verlet.cpp:60)
+Per MPI rank memory allocation (min/avg/max) = 8.532 | 8.533 | 8.535 Mbytes
+   Step         PotEng         TotEng           Lx             Ly             Lz           Volume         Press           Pxx            Pyy            Pzz      
+        39  -21.810811     -21.810811      4.040391       4.040391       4.040391       65.958412     -84202.293     -84202.293     -84202.293     -84202.293    
+        40  -21.810811     -21.810811      4.040391       4.040391       4.040391       65.958412     -84202.293     -84202.293     -84202.293     -84202.293    
+Loop time of 0.0001195 on 8 procs for 1 steps with 4 atoms
+
+Performance: 723.013 ns/day, 0.033 hours/ns, 8368.201 timesteps/s, 33.473 katom-step/s
+0.0% CPU use with 8 MPI tasks x 1 OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 6.4e-05    | 6.925e-05  | 8.2e-05    |   0.0 | 57.95
+Neigh   | 0          | 0          | 0          |   0.0 |  0.00
+Comm    | 7e-06      | 1.4875e-05 | 3e-05      |   0.0 | 12.45
+Output  | 1.5e-05    | 2.7125e-05 | 3.8e-05    |   0.0 | 22.70
+Modify  | 0          | 0          | 0          |   0.0 |  0.00
+Other   |            | 8.25e-06   |            |       |  6.90
+
+Nlocal:            0.5 ave           4 max           0 min
+Histogram: 7 0 0 0 0 0 0 0 0 1
+Nghost:          107.5 ave         108 max         104 min
+Histogram: 1 0 0 0 0 0 0 0 0 7
+Neighs:           13.5 ave         108 max           0 min
+Histogram: 7 0 0 0 0 0 0 0 0 1
+FullNghs:           27 ave         216 max           0 min
+Histogram: 7 0 0 0 0 0 0 0 0 1
+
+Total # of neighbors = 216
+Ave neighs/atom = 54
+Neighbor list builds = 0
+Dangerous builds = 0
+variable  natoms equal "count(all)"
+variable xlength equal "lx"
+variable  volume equal "vol"
+variable  etotal equal "etotal"
+variable    ecoh equal "pe/v_natoms"
+print "${xlength}, ${volume}, ${etotal}, ${ecoh}" append lattice_cohesive_energy.txt screen no
+
+next i
+jump SELF loop
+
+change_box all x scale 1.0025 y scale 1.0025 z scale 1.0025 remap
+Changing box ...
+  orthogonal box = (-0.036861001 -0.031810513 -0.031810513) to (4.013631 4.0085805 4.0085805)
+  orthogonal box = (-0.036861001 -0.036861001 -0.031810513) to (4.013631 4.013631 4.0085805)
+  orthogonal box = (-0.036861001 -0.036861001 -0.036861001) to (4.013631 4.013631 4.013631)
+
+run 1
+WARNING: No fixes with time integration, atoms won't move (src/verlet.cpp:60)
+Per MPI rank memory allocation (min/avg/max) = 8.532 | 8.533 | 8.535 Mbytes
+   Step         PotEng         TotEng           Lx             Ly             Lz           Volume         Press           Pxx            Pyy            Pzz      
+        40  -21.782533     -21.782533      4.050492       4.050492       4.050492       66.454338     -98396.648     -98396.648     -98396.648     -98396.648    
+        41  -21.782533     -21.782533      4.050492       4.050492       4.050492       66.454338     -98396.648     -98396.648     -98396.648     -98396.648    
+Loop time of 0.000126875 on 8 procs for 1 steps with 4 atoms
+
+Performance: 680.985 ns/day, 0.035 hours/ns, 7881.773 timesteps/s, 31.527 katom-step/s
+0.0% CPU use with 8 MPI tasks x 1 OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 6.7e-05    | 7.325e-05  | 8.7e-05    |   0.0 | 57.73
+Neigh   | 0          | 0          | 0          |   0.0 |  0.00
+Comm    | 8e-06      | 1.5875e-05 | 3.2e-05    |   0.0 | 12.51
+Output  | 1.5e-05    | 2.8e-05    | 3.9e-05    |   0.0 | 22.07
+Modify  | 0          | 2.5e-07    | 1e-06      |   0.0 |  0.20
+Other   |            | 9.5e-06    |            |       |  7.49
+
+Nlocal:            0.5 ave           4 max           0 min
+Histogram: 7 0 0 0 0 0 0 0 0 1
+Nghost:          107.5 ave         108 max         104 min
+Histogram: 1 0 0 0 0 0 0 0 0 7
+Neighs:           13.5 ave         108 max           0 min
+Histogram: 7 0 0 0 0 0 0 0 0 1
+FullNghs:           27 ave         216 max           0 min
+Histogram: 7 0 0 0 0 0 0 0 0 1
+
+Total # of neighbors = 216
+Ave neighs/atom = 54
+Neighbor list builds = 0
+Dangerous builds = 0
+variable  natoms equal "count(all)"
+variable xlength equal "lx"
+variable  volume equal "vol"
+variable  etotal equal "etotal"
+variable    ecoh equal "pe/v_natoms"
+print "${xlength}, ${volume}, ${etotal}, ${ecoh}" append lattice_cohesive_energy.txt screen no
+
+next i
+jump SELF loop
+
+change_box all x scale 1.0025 y scale 1.0025 z scale 1.0025 remap
+Changing box ...
+  orthogonal box = (-0.041924116 -0.036861001 -0.036861001) to (4.0186941 4.013631 4.013631)
+  orthogonal box = (-0.041924116 -0.041924116 -0.036861001) to (4.0186941 4.0186941 4.013631)
+  orthogonal box = (-0.041924116 -0.041924116 -0.041924116) to (4.0186941 4.0186941 4.0186941)
+
+run 1
+WARNING: No fixes with time integration, atoms won't move (src/verlet.cpp:60)
+Per MPI rank memory allocation (min/avg/max) = 8.532 | 8.533 | 8.535 Mbytes
+   Step         PotEng         TotEng           Lx             Ly             Lz           Volume         Press           Pxx            Pyy            Pzz      
+        41  -21.749707     -21.749707      4.0606182      4.0606182      4.0606182      66.953993     -112006.33     -112006.33     -112006.33     -112006.33    
+        42  -21.749707     -21.749707      4.0606182      4.0606182      4.0606182      66.953993     -112006.33     -112006.33     -112006.33     -112006.33    
+Loop time of 0.00012025 on 8 procs for 1 steps with 4 atoms
+
+Performance: 718.503 ns/day, 0.033 hours/ns, 8316.008 timesteps/s, 33.264 katom-step/s
+0.0% CPU use with 8 MPI tasks x 1 OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 6.4e-05    | 6.95e-05   | 8.3e-05    |   0.0 | 57.80
+Neigh   | 0          | 0          | 0          |   0.0 |  0.00
+Comm    | 7e-06      | 1.45e-05   | 3.1e-05    |   0.0 | 12.06
+Output  | 1.5e-05    | 2.7125e-05 | 3.9e-05    |   0.0 | 22.56
+Modify  | 0          | 1.25e-07   | 1e-06      |   0.0 |  0.10
+Other   |            | 9e-06      |            |       |  7.48
+
+Nlocal:            0.5 ave           4 max           0 min
+Histogram: 7 0 0 0 0 0 0 0 0 1
+Nghost:          107.5 ave         108 max         104 min
+Histogram: 1 0 0 0 0 0 0 0 0 7
+Neighs:           13.5 ave         108 max           0 min
+Histogram: 7 0 0 0 0 0 0 0 0 1
+FullNghs:           27 ave         216 max           0 min
+Histogram: 7 0 0 0 0 0 0 0 0 1
+
+Total # of neighbors = 216
+Ave neighs/atom = 54
+Neighbor list builds = 0
+Dangerous builds = 0
+variable  natoms equal "count(all)"
+variable xlength equal "lx"
+variable  volume equal "vol"
+variable  etotal equal "etotal"
+variable    ecoh equal "pe/v_natoms"
+print "${xlength}, ${volume}, ${etotal}, ${ecoh}" append lattice_cohesive_energy.txt screen no
+
+next i
+jump SELF loop
+
+change_box all x scale 1.0025 y scale 1.0025 z scale 1.0025 remap
+Changing box ...
+  orthogonal box = (-0.046999889 -0.041924116 -0.041924116) to (4.0237699 4.0186941 4.0186941)
+  orthogonal box = (-0.046999889 -0.046999889 -0.041924116) to (4.0237699 4.0237699 4.0186941)
+  orthogonal box = (-0.046999889 -0.046999889 -0.046999889) to (4.0237699 4.0237699 4.0237699)
+
+run 1
+WARNING: No fixes with time integration, atoms won't move (src/verlet.cpp:60)
+Per MPI rank memory allocation (min/avg/max) = 8.532 | 8.533 | 8.535 Mbytes
+   Step         PotEng         TotEng           Lx             Ly             Lz           Volume         Press           Pxx            Pyy            Pzz      
+        42  -21.712448     -21.712448      4.0707698      4.0707698      4.0707698      67.457404     -125046.95     -125046.95     -125046.95     -125046.95    
+        43  -21.712448     -21.712448      4.0707698      4.0707698      4.0707698      67.457404     -125046.95     -125046.95     -125046.95     -125046.95    
+Loop time of 0.000119625 on 8 procs for 1 steps with 4 atoms
+
+Performance: 722.257 ns/day, 0.033 hours/ns, 8359.457 timesteps/s, 33.438 katom-step/s
+0.0% CPU use with 8 MPI tasks x 1 OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 6.5e-05    | 7.0125e-05 | 8.3e-05    |   0.0 | 58.62
+Neigh   | 0          | 0          | 0          |   0.0 |  0.00
+Comm    | 7e-06      | 1.4375e-05 | 3e-05      |   0.0 | 12.02
+Output  | 1.5e-05    | 2.6375e-05 | 3.8e-05    |   0.0 | 22.05
+Modify  | 0          | 1.25e-07   | 1e-06      |   0.0 |  0.10
+Other   |            | 8.625e-06  |            |       |  7.21
+
+Nlocal:            0.5 ave           4 max           0 min
+Histogram: 7 0 0 0 0 0 0 0 0 1
+Nghost:          107.5 ave         108 max         104 min
+Histogram: 1 0 0 0 0 0 0 0 0 7
+Neighs:           13.5 ave         108 max           0 min
+Histogram: 7 0 0 0 0 0 0 0 0 1
+FullNghs:           27 ave         216 max           0 min
+Histogram: 7 0 0 0 0 0 0 0 0 1
+
+Total # of neighbors = 216
+Ave neighs/atom = 54
+Neighbor list builds = 0
+Dangerous builds = 0
+variable  natoms equal "count(all)"
+variable xlength equal "lx"
+variable  volume equal "vol"
+variable  etotal equal "etotal"
+variable    ecoh equal "pe/v_natoms"
+print "${xlength}, ${volume}, ${etotal}, ${ecoh}" append lattice_cohesive_energy.txt screen no
+
+next i
+jump SELF loop
+
+change_box all x scale 1.0025 y scale 1.0025 z scale 1.0025 remap
+Changing box ...
+  orthogonal box = (-0.052088351 -0.046999889 -0.046999889) to (4.0288584 4.0237699 4.0237699)
+  orthogonal box = (-0.052088351 -0.052088351 -0.046999889) to (4.0288584 4.0288584 4.0237699)
+  orthogonal box = (-0.052088351 -0.052088351 -0.052088351) to (4.0288584 4.0288584 4.0288584)
+
+run 1
+WARNING: No fixes with time integration, atoms won't move (src/verlet.cpp:60)
+Per MPI rank memory allocation (min/avg/max) = 8.532 | 8.533 | 8.535 Mbytes
+   Step         PotEng         TotEng           Lx             Ly             Lz           Volume         Press           Pxx            Pyy            Pzz      
+        43  -21.670869     -21.670869      4.0809467      4.0809467      4.0809467      67.964601     -137533.82     -137533.82     -137533.82     -137533.82    
+        44  -21.670869     -21.670869      4.0809467      4.0809467      4.0809467      67.964601     -137533.82     -137533.82     -137533.82     -137533.82    
+Loop time of 0.000124625 on 8 procs for 1 steps with 4 atoms
+
+Performance: 693.280 ns/day, 0.035 hours/ns, 8024.072 timesteps/s, 32.096 katom-step/s
+0.0% CPU use with 8 MPI tasks x 1 OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 6.6e-05    | 7.175e-05  | 8.5e-05    |   0.0 | 57.57
+Neigh   | 0          | 0          | 0          |   0.0 |  0.00
+Comm    | 7e-06      | 1.4625e-05 | 3.2e-05    |   0.0 | 11.74
+Output  | 1.6e-05    | 2.85e-05   | 4e-05      |   0.0 | 22.87
+Modify  | 0          | 0          | 0          |   0.0 |  0.00
+Other   |            | 9.75e-06   |            |       |  7.82
+
+Nlocal:            0.5 ave           4 max           0 min
+Histogram: 7 0 0 0 0 0 0 0 0 1
+Nghost:          107.5 ave         108 max         104 min
+Histogram: 1 0 0 0 0 0 0 0 0 7
+Neighs:           13.5 ave         108 max           0 min
+Histogram: 7 0 0 0 0 0 0 0 0 1
+FullNghs:           27 ave         216 max           0 min
+Histogram: 7 0 0 0 0 0 0 0 0 1
+
+Total # of neighbors = 216
+Ave neighs/atom = 54
+Neighbor list builds = 0
+Dangerous builds = 0
+variable  natoms equal "count(all)"
+variable xlength equal "lx"
+variable  volume equal "vol"
+variable  etotal equal "etotal"
+variable    ecoh equal "pe/v_natoms"
+print "${xlength}, ${volume}, ${etotal}, ${ecoh}" append lattice_cohesive_energy.txt screen no
+
+next i
+jump SELF loop
+
+change_box all x scale 1.0025 y scale 1.0025 z scale 1.0025 remap
+Changing box ...
+  orthogonal box = (-0.057189535 -0.052088351 -0.052088351) to (4.0339595 4.0288584 4.0288584)
+  orthogonal box = (-0.057189535 -0.057189535 -0.052088351) to (4.0339595 4.0339595 4.0288584)
+  orthogonal box = (-0.057189535 -0.057189535 -0.057189535) to (4.0339595 4.0339595 4.0339595)
+
+run 1
+WARNING: No fixes with time integration, atoms won't move (src/verlet.cpp:60)
+Per MPI rank memory allocation (min/avg/max) = 8.532 | 8.533 | 8.535 Mbytes
+   Step         PotEng         TotEng           Lx             Ly             Lz           Volume         Press           Pxx            Pyy            Pzz      
+        44  -21.625081     -21.625081      4.0911491      4.0911491      4.0911491      68.47561      -149481.84     -149481.84     -149481.84     -149481.84    
+        45  -21.625081     -21.625081      4.0911491      4.0911491      4.0911491      68.47561      -149481.84     -149481.84     -149481.84     -149481.84    
+Loop time of 0.000127375 on 8 procs for 1 steps with 4 atoms
+
+Performance: 678.312 ns/day, 0.035 hours/ns, 7850.834 timesteps/s, 31.403 katom-step/s
+0.0% CPU use with 8 MPI tasks x 1 OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 6.6e-05    | 7.0375e-05 | 8.3e-05    |   0.0 | 55.25
+Neigh   | 0          | 0          | 0          |   0.0 |  0.00
+Comm    | 7e-06      | 1.4125e-05 | 3e-05      |   0.0 | 11.09
+Output  | 1.5e-05    | 2.6625e-05 | 3.7e-05    |   0.0 | 20.90
+Modify  | 0          | 2.5e-07    | 1e-06      |   0.0 |  0.20
+Other   |            | 1.6e-05    |            |       | 12.56
+
+Nlocal:            0.5 ave           4 max           0 min
+Histogram: 7 0 0 0 0 0 0 0 0 1
+Nghost:          107.5 ave         108 max         104 min
+Histogram: 1 0 0 0 0 0 0 0 0 7
+Neighs:           13.5 ave         108 max           0 min
+Histogram: 7 0 0 0 0 0 0 0 0 1
+FullNghs:           27 ave         216 max           0 min
+Histogram: 7 0 0 0 0 0 0 0 0 1
+
+Total # of neighbors = 216
+Ave neighs/atom = 54
+Neighbor list builds = 0
+Dangerous builds = 0
+variable  natoms equal "count(all)"
+variable xlength equal "lx"
+variable  volume equal "vol"
+variable  etotal equal "etotal"
+variable    ecoh equal "pe/v_natoms"
+print "${xlength}, ${volume}, ${etotal}, ${ecoh}" append lattice_cohesive_energy.txt screen no
+
+next i
+jump SELF loop
+
+change_box all x scale 1.0025 y scale 1.0025 z scale 1.0025 remap
+Changing box ...
+  orthogonal box = (-0.062303471 -0.057189535 -0.057189535) to (4.0390735 4.0339595 4.0339595)
+  orthogonal box = (-0.062303471 -0.062303471 -0.057189535) to (4.0390735 4.0390735 4.0339595)
+  orthogonal box = (-0.062303471 -0.062303471 -0.062303471) to (4.0390735 4.0390735 4.0390735)
+
+run 1
+WARNING: No fixes with time integration, atoms won't move (src/verlet.cpp:60)
+Per MPI rank memory allocation (min/avg/max) = 8.532 | 8.533 | 8.535 Mbytes
+   Step         PotEng         TotEng           Lx             Ly             Lz           Volume         Press           Pxx            Pyy            Pzz      
+        45  -21.575194     -21.575194      4.1013769      4.1013769      4.1013769      68.990463     -160905.69     -160905.69     -160905.69     -160905.69    
+        46  -21.575194     -21.575194      4.1013769      4.1013769      4.1013769      68.990463     -160905.69     -160905.69     -160905.69     -160905.69    
+Loop time of 0.000118625 on 8 procs for 1 steps with 4 atoms
+
+Performance: 728.346 ns/day, 0.033 hours/ns, 8429.926 timesteps/s, 33.720 katom-step/s
+0.0% CPU use with 8 MPI tasks x 1 OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 6.6e-05    | 7.0375e-05 | 8.2e-05    |   0.0 | 59.33
+Neigh   | 0          | 0          | 0          |   0.0 |  0.00
+Comm    | 7e-06      | 1.3875e-05 | 2.8e-05    |   0.0 | 11.70
+Output  | 1.5e-05    | 2.6125e-05 | 3.6e-05    |   0.0 | 22.02
+Modify  | 0          | 0          | 0          |   0.0 |  0.00
+Other   |            | 8.25e-06   |            |       |  6.95
+
+Nlocal:            0.5 ave           4 max           0 min
+Histogram: 7 0 0 0 0 0 0 0 0 1
+Nghost:          107.5 ave         108 max         104 min
+Histogram: 1 0 0 0 0 0 0 0 0 7
+Neighs:           13.5 ave         108 max           0 min
+Histogram: 7 0 0 0 0 0 0 0 0 1
+FullNghs:           27 ave         216 max           0 min
+Histogram: 7 0 0 0 0 0 0 0 0 1
+
+Total # of neighbors = 216
+Ave neighs/atom = 54
+Neighbor list builds = 0
+Dangerous builds = 0
+variable  natoms equal "count(all)"
+variable xlength equal "lx"
+variable  volume equal "vol"
+variable  etotal equal "etotal"
+variable    ecoh equal "pe/v_natoms"
+print "${xlength}, ${volume}, ${etotal}, ${ecoh}" append lattice_cohesive_energy.txt screen no
+
+next i
+jump SELF loop
+
+change_box all x scale 1.0025 y scale 1.0025 z scale 1.0025 remap
+Changing box ...
+  orthogonal box = (-0.067430192 -0.062303471 -0.062303471) to (4.0442002 4.0390735 4.0390735)
+  orthogonal box = (-0.067430192 -0.067430192 -0.062303471) to (4.0442002 4.0442002 4.0390735)
+  orthogonal box = (-0.067430192 -0.067430192 -0.067430192) to (4.0442002 4.0442002 4.0442002)
+
+run 1
+WARNING: No fixes with time integration, atoms won't move (src/verlet.cpp:60)
+Per MPI rank memory allocation (min/avg/max) = 8.532 | 8.533 | 8.535 Mbytes
+   Step         PotEng         TotEng           Lx             Ly             Lz           Volume         Press           Pxx            Pyy            Pzz      
+        46  -21.521317     -21.521317      4.1116304      4.1116304      4.1116304      69.509186     -171819.73     -171819.73     -171819.73     -171819.73    
+        47  -21.521317     -21.521317      4.1116304      4.1116304      4.1116304      69.509186     -171819.73     -171819.73     -171819.73     -171819.73    
+Loop time of 0.00011975 on 8 procs for 1 steps with 4 atoms
+
+Performance: 721.503 ns/day, 0.033 hours/ns, 8350.731 timesteps/s, 33.403 katom-step/s
+0.0% CPU use with 8 MPI tasks x 1 OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 6.4e-05    | 6.975e-05  | 8.2e-05    |   0.0 | 58.25
+Neigh   | 0          | 0          | 0          |   0.0 |  0.00
+Comm    | 7e-06      | 1.4375e-05 | 3e-05      |   0.0 | 12.00
+Output  | 1.5e-05    | 2.8e-05    | 3.9e-05    |   0.0 | 23.38
+Modify  | 0          | 0          | 0          |   0.0 |  0.00
+Other   |            | 7.625e-06  |            |       |  6.37
+
+Nlocal:            0.5 ave           4 max           0 min
+Histogram: 7 0 0 0 0 0 0 0 0 1
+Nghost:          107.5 ave         108 max         104 min
+Histogram: 1 0 0 0 0 0 0 0 0 7
+Neighs:           13.5 ave         108 max           0 min
+Histogram: 7 0 0 0 0 0 0 0 0 1
+FullNghs:           27 ave         216 max           0 min
+Histogram: 7 0 0 0 0 0 0 0 0 1
+
+Total # of neighbors = 216
+Ave neighs/atom = 54
+Neighbor list builds = 0
+Dangerous builds = 0
+variable  natoms equal "count(all)"
+variable xlength equal "lx"
+variable  volume equal "vol"
+variable  etotal equal "etotal"
+variable    ecoh equal "pe/v_natoms"
+print "${xlength}, ${volume}, ${etotal}, ${ecoh}" append lattice_cohesive_energy.txt screen no
+
+next i
+jump SELF loop
+
+change_box all x scale 1.0025 y scale 1.0025 z scale 1.0025 remap
+Changing box ...
+  orthogonal box = (-0.07256973 -0.067430192 -0.067430192) to (4.0493397 4.0442002 4.0442002)
+  orthogonal box = (-0.07256973 -0.07256973 -0.067430192) to (4.0493397 4.0493397 4.0442002)
+  orthogonal box = (-0.07256973 -0.07256973 -0.07256973) to (4.0493397 4.0493397 4.0493397)
+
+run 1
+WARNING: No fixes with time integration, atoms won't move (src/verlet.cpp:60)
+Per MPI rank memory allocation (min/avg/max) = 8.532 | 8.533 | 8.535 Mbytes
+   Step         PotEng         TotEng           Lx             Ly             Lz           Volume         Press           Pxx            Pyy            Pzz      
+        47  -21.463555     -21.463555      4.1219095      4.1219095      4.1219095      70.031809     -182237.93     -182237.93     -182237.93     -182237.93    
+        48  -21.463555     -21.463555      4.1219095      4.1219095      4.1219095      70.031809     -182237.93     -182237.93     -182237.93     -182237.93    
+Loop time of 0.000120375 on 8 procs for 1 steps with 4 atoms
+
+Performance: 717.757 ns/day, 0.033 hours/ns, 8307.373 timesteps/s, 33.229 katom-step/s
+0.0% CPU use with 8 MPI tasks x 1 OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 6.5e-05    | 7.05e-05   | 8.4e-05    |   0.0 | 58.57
+Neigh   | 0          | 0          | 0          |   0.0 |  0.00
+Comm    | 7e-06      | 1.45e-05   | 3.1e-05    |   0.0 | 12.05
+Output  | 1.5e-05    | 2.7e-05    | 3.9e-05    |   0.0 | 22.43
+Modify  | 0          | 1.25e-07   | 1e-06      |   0.0 |  0.10
+Other   |            | 8.25e-06   |            |       |  6.85
+
+Nlocal:            0.5 ave           4 max           0 min
+Histogram: 7 0 0 0 0 0 0 0 0 1
+Nghost:          107.5 ave         108 max         104 min
+Histogram: 1 0 0 0 0 0 0 0 0 7
+Neighs:           13.5 ave         108 max           0 min
+Histogram: 7 0 0 0 0 0 0 0 0 1
+FullNghs:           27 ave         216 max           0 min
+Histogram: 7 0 0 0 0 0 0 0 0 1
+
+Total # of neighbors = 216
+Ave neighs/atom = 54
+Neighbor list builds = 0
+Dangerous builds = 0
+variable  natoms equal "count(all)"
+variable xlength equal "lx"
+variable  volume equal "vol"
+variable  etotal equal "etotal"
+variable    ecoh equal "pe/v_natoms"
+print "${xlength}, ${volume}, ${etotal}, ${ecoh}" append lattice_cohesive_energy.txt screen no
+
+next i
+jump SELF loop
+
+change_box all x scale 1.0025 y scale 1.0025 z scale 1.0025 remap
+Changing box ...
+  orthogonal box = (-0.077722117 -0.07256973 -0.07256973) to (4.0544921 4.0493397 4.0493397)
+  orthogonal box = (-0.077722117 -0.077722117 -0.07256973) to (4.0544921 4.0544921 4.0493397)
+  orthogonal box = (-0.077722117 -0.077722117 -0.077722117) to (4.0544921 4.0544921 4.0544921)
+
+run 1
+WARNING: No fixes with time integration, atoms won't move (src/verlet.cpp:60)
+Per MPI rank memory allocation (min/avg/max) = 8.532 | 8.533 | 8.535 Mbytes
+   Step         PotEng         TotEng           Lx             Ly             Lz           Volume         Press           Pxx            Pyy            Pzz      
+        48  -21.402015     -21.402015      4.1322142      4.1322142      4.1322142      70.558362     -192174.08     -192174.08     -192174.08     -192174.08    
+        49  -21.402015     -21.402015      4.1322142      4.1322142      4.1322142      70.558362     -192174.08     -192174.08     -192174.08     -192174.08    
+Loop time of 0.00011925 on 8 procs for 1 steps with 4 atoms
+
+Performance: 724.528 ns/day, 0.033 hours/ns, 8385.744 timesteps/s, 33.543 katom-step/s
+0.0% CPU use with 8 MPI tasks x 1 OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 6.5e-05    | 6.9875e-05 | 8.2e-05    |   0.0 | 58.60
+Neigh   | 0          | 0          | 0          |   0.0 |  0.00
+Comm    | 7e-06      | 1.4375e-05 | 3e-05      |   0.0 | 12.05
+Output  | 1.5e-05    | 2.6875e-05 | 3.8e-05    |   0.0 | 22.54
+Modify  | 0          | 0          | 0          |   0.0 |  0.00
+Other   |            | 8.125e-06  |            |       |  6.81
+
+Nlocal:            0.5 ave           4 max           0 min
+Histogram: 7 0 0 0 0 0 0 0 0 1
+Nghost:          107.5 ave         108 max         104 min
+Histogram: 1 0 0 0 0 0 0 0 0 7
+Neighs:           13.5 ave         108 max           0 min
+Histogram: 7 0 0 0 0 0 0 0 0 1
+FullNghs:           27 ave         216 max           0 min
+Histogram: 7 0 0 0 0 0 0 0 0 1
+
+Total # of neighbors = 216
+Ave neighs/atom = 54
+Neighbor list builds = 0
+Dangerous builds = 0
+variable  natoms equal "count(all)"
+variable xlength equal "lx"
+variable  volume equal "vol"
+variable  etotal equal "etotal"
+variable    ecoh equal "pe/v_natoms"
+print "${xlength}, ${volume}, ${etotal}, ${ecoh}" append lattice_cohesive_energy.txt screen no
+
+next i
+jump SELF loop
+
+change_box all x scale 1.0025 y scale 1.0025 z scale 1.0025 remap
+Changing box ...
+  orthogonal box = (-0.082887385 -0.077722117 -0.077722117) to (4.0596574 4.0544921 4.0544921)
+  orthogonal box = (-0.082887385 -0.082887385 -0.077722117) to (4.0596574 4.0596574 4.0544921)
+  orthogonal box = (-0.082887385 -0.082887385 -0.082887385) to (4.0596574 4.0596574 4.0596574)
+
+run 1
+WARNING: No fixes with time integration, atoms won't move (src/verlet.cpp:60)
+Per MPI rank memory allocation (min/avg/max) = 8.532 | 8.533 | 8.535 Mbytes
+   Step         PotEng         TotEng           Lx             Ly             Lz           Volume         Press           Pxx            Pyy            Pzz      
+        49  -21.3368       -21.3368        4.1425448      4.1425448      4.1425448      71.088873     -201641.65     -201641.65     -201641.65     -201641.65    
+        50  -21.3368       -21.3368        4.1425448      4.1425448      4.1425448      71.088873     -201641.65     -201641.65     -201641.65     -201641.65    
+Loop time of 0.00022425 on 8 procs for 1 steps with 4 atoms
+
+Performance: 385.284 ns/day, 0.062 hours/ns, 4459.309 timesteps/s, 17.837 katom-step/s
+0.0% CPU use with 8 MPI tasks x 1 OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 0.000165   | 0.0001705  | 0.000185   |   0.0 | 76.03
+Neigh   | 0          | 0          | 0          |   0.0 |  0.00
+Comm    | 7e-06      | 1.55e-05   | 3.2e-05    |   0.0 |  6.91
+Output  | 1.5e-05    | 2.925e-05  | 4.2e-05    |   0.0 | 13.04
+Modify  | 0          | 3.75e-07   | 2e-06      |   0.0 |  0.17
+Other   |            | 8.625e-06  |            |       |  3.85
+
+Nlocal:            0.5 ave           4 max           0 min
+Histogram: 7 0 0 0 0 0 0 0 0 1
+Nghost:          107.5 ave         108 max         104 min
+Histogram: 1 0 0 0 0 0 0 0 0 7
+Neighs:           13.5 ave         108 max           0 min
+Histogram: 7 0 0 0 0 0 0 0 0 1
+FullNghs:           27 ave         216 max           0 min
+Histogram: 7 0 0 0 0 0 0 0 0 1
+
+Total # of neighbors = 216
+Ave neighs/atom = 54
+Neighbor list builds = 0
+Dangerous builds = 0
+variable  natoms equal "count(all)"
+variable xlength equal "lx"
+variable  volume equal "vol"
+variable  etotal equal "etotal"
+variable    ecoh equal "pe/v_natoms"
+print "${xlength}, ${volume}, ${etotal}, ${ecoh}" append lattice_cohesive_energy.txt screen no
+
+next i
+jump SELF loop
+
+change_box all x scale 1.0025 y scale 1.0025 z scale 1.0025 remap
+Changing box ...
+  orthogonal box = (-0.088065566 -0.082887385 -0.082887385) to (4.0648356 4.0596574 4.0596574)
+  orthogonal box = (-0.088065566 -0.088065566 -0.082887385) to (4.0648356 4.0648356 4.0596574)
+  orthogonal box = (-0.088065566 -0.088065566 -0.088065566) to (4.0648356 4.0648356 4.0648356)
+
+run 1
+WARNING: No fixes with time integration, atoms won't move (src/verlet.cpp:60)
+Per MPI rank memory allocation (min/avg/max) = 8.532 | 8.533 | 8.535 Mbytes
+   Step         PotEng         TotEng           Lx             Ly             Lz           Volume         Press           Pxx            Pyy            Pzz      
+        50  -21.268013     -21.268013      4.1529011      4.1529011      4.1529011      71.623374     -210653.74     -210653.74     -210653.74     -210653.74    
+        51  -21.268013     -21.268013      4.1529011      4.1529011      4.1529011      71.623374     -210653.74     -210653.74     -210653.74     -210653.74    
+Loop time of 0.000456125 on 8 procs for 1 steps with 4 atoms
+
+Performance: 189.422 ns/day, 0.127 hours/ns, 2192.381 timesteps/s, 8.770 katom-step/s
+856.4% CPU use with 8 MPI tasks x 1 OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 9.1e-05    | 9.875e-05  | 0.00011    |   0.0 | 21.65
+Neigh   | 0          | 0          | 0          |   0.0 |  0.00
+Comm    | 1e-05      | 1.75e-05   | 3.4e-05    |   0.0 |  3.84
+Output  | 0.000128   | 0.0001625  | 0.000342   |   0.0 | 35.63
+Modify  | 0          | 1.25e-07   | 1e-06      |   0.0 |  0.03
+Other   |            | 0.0001773  |            |       | 38.86
+
+Nlocal:            0.5 ave           4 max           0 min
+Histogram: 7 0 0 0 0 0 0 0 0 1
+Nghost:          107.5 ave         108 max         104 min
+Histogram: 1 0 0 0 0 0 0 0 0 7
+Neighs:           13.5 ave         108 max           0 min
+Histogram: 7 0 0 0 0 0 0 0 0 1
+FullNghs:           27 ave         216 max           0 min
+Histogram: 7 0 0 0 0 0 0 0 0 1
+
+Total # of neighbors = 216
+Ave neighs/atom = 54
+Neighbor list builds = 0
+Dangerous builds = 0
+variable  natoms equal "count(all)"
+variable xlength equal "lx"
+variable  volume equal "vol"
+variable  etotal equal "etotal"
+variable    ecoh equal "pe/v_natoms"
+print "${xlength}, ${volume}, ${etotal}, ${ecoh}" append lattice_cohesive_energy.txt screen no
+
+next i
+jump SELF loop
+
+change_box all x scale 1.0025 y scale 1.0025 z scale 1.0025 remap
+Changing box ...
+  orthogonal box = (-0.093256692 -0.088065566 -0.088065566) to (4.0700267 4.0648356 4.0648356)
+  orthogonal box = (-0.093256692 -0.093256692 -0.088065566) to (4.0700267 4.0700267 4.0648356)
+  orthogonal box = (-0.093256692 -0.093256692 -0.093256692) to (4.0700267 4.0700267 4.0700267)
+
+run 1
+WARNING: No fixes with time integration, atoms won't move (src/verlet.cpp:60)
+Per MPI rank memory allocation (min/avg/max) = 8.532 | 8.533 | 8.535 Mbytes
+   Step         PotEng         TotEng           Lx             Ly             Lz           Volume         Press           Pxx            Pyy            Pzz      
+        51  -21.195755     -21.195755      4.1632834      4.1632834      4.1632834      72.161893     -219223.29     -219223.29     -219223.29     -219223.29    
+        52  -21.195755     -21.195755      4.1632834      4.1632834      4.1632834      72.161893     -219223.29     -219223.29     -219223.29     -219223.29    
+Loop time of 0.00013925 on 8 procs for 1 steps with 4 atoms
+
+Performance: 620.467 ns/day, 0.039 hours/ns, 7181.329 timesteps/s, 28.725 katom-step/s
+0.0% CPU use with 8 MPI tasks x 1 OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 7.9e-05    | 8.675e-05  | 9.7e-05    |   0.0 | 62.30
+Neigh   | 0          | 0          | 0          |   0.0 |  0.00
+Comm    | 9e-06      | 1.6625e-05 | 3e-05      |   0.0 | 11.94
+Output  | 1.9e-05    | 2.8125e-05 | 4.1e-05    |   0.0 | 20.20
+Modify  | 0          | 7.5e-07    | 2e-06      |   0.0 |  0.54
+Other   |            | 7e-06      |            |       |  5.03
+
+Nlocal:            0.5 ave           4 max           0 min
+Histogram: 7 0 0 0 0 0 0 0 0 1
+Nghost:          107.5 ave         108 max         104 min
+Histogram: 1 0 0 0 0 0 0 0 0 7
+Neighs:           13.5 ave         108 max           0 min
+Histogram: 7 0 0 0 0 0 0 0 0 1
+FullNghs:           27 ave         216 max           0 min
+Histogram: 7 0 0 0 0 0 0 0 0 1
+
+Total # of neighbors = 216
+Ave neighs/atom = 54
+Neighbor list builds = 0
+Dangerous builds = 0
+variable  natoms equal "count(all)"
+variable xlength equal "lx"
+variable  volume equal "vol"
+variable  etotal equal "etotal"
+variable    ecoh equal "pe/v_natoms"
+print "${xlength}, ${volume}, ${etotal}, ${ecoh}" append lattice_cohesive_energy.txt screen no
+
+next i
+jump SELF loop
+
+change_box all x scale 1.0025 y scale 1.0025 z scale 1.0025 remap
+Changing box ...
+  orthogonal box = (-0.098460797 -0.093256692 -0.093256692) to (4.0752308 4.0700267 4.0700267)
+  orthogonal box = (-0.098460797 -0.098460797 -0.093256692) to (4.0752308 4.0752308 4.0700267)
+  orthogonal box = (-0.098460797 -0.098460797 -0.098460797) to (4.0752308 4.0752308 4.0752308)
+
+run 1
+WARNING: No fixes with time integration, atoms won't move (src/verlet.cpp:60)
+Per MPI rank memory allocation (min/avg/max) = 8.532 | 8.533 | 8.535 Mbytes
+   Step         PotEng         TotEng           Lx             Ly             Lz           Volume         Press           Pxx            Pyy            Pzz      
+        52  -21.120124     -21.120124      4.1736916      4.1736916      4.1736916      72.704462     -227362.89     -227362.89     -227362.89     -227362.89    
+        53  -21.120124     -21.120124      4.1736916      4.1736916      4.1736916      72.704462     -227362.89     -227362.89     -227362.89     -227362.89    
+Loop time of 0.000136375 on 8 procs for 1 steps with 4 atoms
+
+Performance: 633.547 ns/day, 0.038 hours/ns, 7332.722 timesteps/s, 29.331 katom-step/s
+0.0% CPU use with 8 MPI tasks x 1 OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 7.7e-05    | 8.4125e-05 | 9.4e-05    |   0.0 | 61.69
+Neigh   | 0          | 0          | 0          |   0.0 |  0.00
+Comm    | 1e-05      | 1.675e-05  | 3e-05      |   0.0 | 12.28
+Output  | 1.9e-05    | 2.8e-05    | 4e-05      |   0.0 | 20.53
+Modify  | 0          | 1.25e-07   | 1e-06      |   0.0 |  0.09
+Other   |            | 7.375e-06  |            |       |  5.41
+
+Nlocal:            0.5 ave           4 max           0 min
+Histogram: 7 0 0 0 0 0 0 0 0 1
+Nghost:          107.5 ave         108 max         104 min
+Histogram: 1 0 0 0 0 0 0 0 0 7
+Neighs:           13.5 ave         108 max           0 min
+Histogram: 7 0 0 0 0 0 0 0 0 1
+FullNghs:           27 ave         216 max           0 min
+Histogram: 7 0 0 0 0 0 0 0 0 1
+
+Total # of neighbors = 216
+Ave neighs/atom = 54
+Neighbor list builds = 0
+Dangerous builds = 0
+variable  natoms equal "count(all)"
+variable xlength equal "lx"
+variable  volume equal "vol"
+variable  etotal equal "etotal"
+variable    ecoh equal "pe/v_natoms"
+print "${xlength}, ${volume}, ${etotal}, ${ecoh}" append lattice_cohesive_energy.txt screen no
+
+next i
+jump SELF loop
+
+change_box all x scale 1.0025 y scale 1.0025 z scale 1.0025 remap
+Changing box ...
+  orthogonal box = (-0.10367791 -0.098460797 -0.098460797) to (4.0804479 4.0752308 4.0752308)
+  orthogonal box = (-0.10367791 -0.10367791 -0.098460797) to (4.0804479 4.0804479 4.0752308)
+  orthogonal box = (-0.10367791 -0.10367791 -0.10367791) to (4.0804479 4.0804479 4.0804479)
+
+run 1
+WARNING: No fixes with time integration, atoms won't move (src/verlet.cpp:60)
+Per MPI rank memory allocation (min/avg/max) = 8.532 | 8.533 | 8.535 Mbytes
+   Step         PotEng         TotEng           Lx             Ly             Lz           Volume         Press           Pxx            Pyy            Pzz      
+        53  -21.041219     -21.041219      4.1841258      4.1841258      4.1841258      73.25111      -235084.83     -235084.83     -235084.83     -235084.83    
+        54  -21.041219     -21.041219      4.1841258      4.1841258      4.1841258      73.25111      -235084.83     -235084.83     -235084.83     -235084.83    
+Loop time of 0.000136375 on 8 procs for 1 steps with 4 atoms
+
+Performance: 633.547 ns/day, 0.038 hours/ns, 7332.722 timesteps/s, 29.331 katom-step/s
+0.0% CPU use with 8 MPI tasks x 1 OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 7.7e-05    | 8.425e-05  | 9.3e-05    |   0.0 | 61.78
+Neigh   | 0          | 0          | 0          |   0.0 |  0.00
+Comm    | 9e-06      | 1.625e-05  | 2.9e-05    |   0.0 | 11.92
+Output  | 1.9e-05    | 2.8125e-05 | 4.1e-05    |   0.0 | 20.62
+Modify  | 0          | 2.5e-07    | 1e-06      |   0.0 |  0.18
+Other   |            | 7.5e-06    |            |       |  5.50
+
+Nlocal:            0.5 ave           4 max           0 min
+Histogram: 7 0 0 0 0 0 0 0 0 1
+Nghost:          107.5 ave         108 max         104 min
+Histogram: 1 0 0 0 0 0 0 0 0 7
+Neighs:           13.5 ave         108 max           0 min
+Histogram: 7 0 0 0 0 0 0 0 0 1
+FullNghs:           27 ave         216 max           0 min
+Histogram: 7 0 0 0 0 0 0 0 0 1
+
+Total # of neighbors = 216
+Ave neighs/atom = 54
+Neighbor list builds = 0
+Dangerous builds = 0
+variable  natoms equal "count(all)"
+variable xlength equal "lx"
+variable  volume equal "vol"
+variable  etotal equal "etotal"
+variable    ecoh equal "pe/v_natoms"
+print "${xlength}, ${volume}, ${etotal}, ${ecoh}" append lattice_cohesive_energy.txt screen no
+
+next i
+jump SELF loop
+
+change_box all x scale 1.0025 y scale 1.0025 z scale 1.0025 remap
+Changing box ...
+  orthogonal box = (-0.10890807 -0.10367791 -0.10367791) to (4.0856781 4.0804479 4.0804479)
+  orthogonal box = (-0.10890807 -0.10890807 -0.10367791) to (4.0856781 4.0856781 4.0804479)
+  orthogonal box = (-0.10890807 -0.10890807 -0.10890807) to (4.0856781 4.0856781 4.0856781)
+
+run 1
+WARNING: No fixes with time integration, atoms won't move (src/verlet.cpp:60)
+Per MPI rank memory allocation (min/avg/max) = 8.532 | 8.533 | 8.535 Mbytes
+   Step         PotEng         TotEng           Lx             Ly             Lz           Volume         Press           Pxx            Pyy            Pzz      
+        54  -20.959137     -20.959137      4.1945861      4.1945861      4.1945861      73.801867     -242401.23     -242401.23     -242401.23     -242401.23    
+        55  -20.959137     -20.959137      4.1945861      4.1945861      4.1945861      73.801867     -242401.23     -242401.23     -242401.23     -242401.23    
+Loop time of 0.000221 on 8 procs for 1 steps with 4 atoms
+
+Performance: 390.950 ns/day, 0.061 hours/ns, 4524.887 timesteps/s, 18.100 katom-step/s
+0.0% CPU use with 8 MPI tasks x 1 OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 7.7e-05    | 0.00010725 | 0.000176   |   0.0 | 48.53
+Neigh   | 0          | 0          | 0          |   0.0 |  0.00
+Comm    | 9e-06      | 3.6375e-05 | 0.000113   |   0.0 | 16.46
+Output  | 2e-05      | 6.9375e-05 | 0.000125   |   0.0 | 31.39
+Modify  | 0          | 2.5e-07    | 1e-06      |   0.0 |  0.11
+Other   |            | 7.75e-06   |            |       |  3.51
+
+Nlocal:            0.5 ave           4 max           0 min
+Histogram: 7 0 0 0 0 0 0 0 0 1
+Nghost:          107.5 ave         108 max         104 min
+Histogram: 1 0 0 0 0 0 0 0 0 7
+Neighs:           13.5 ave         108 max           0 min
+Histogram: 7 0 0 0 0 0 0 0 0 1
+FullNghs:           27 ave         216 max           0 min
+Histogram: 7 0 0 0 0 0 0 0 0 1
+
+Total # of neighbors = 216
+Ave neighs/atom = 54
+Neighbor list builds = 0
+Dangerous builds = 0
+variable  natoms equal "count(all)"
+variable xlength equal "lx"
+variable  volume equal "vol"
+variable  etotal equal "etotal"
+variable    ecoh equal "pe/v_natoms"
+print "${xlength}, ${volume}, ${etotal}, ${ecoh}" append lattice_cohesive_energy.txt screen no
+
+next i
+jump SELF loop
+
+change_box all x scale 1.0025 y scale 1.0025 z scale 1.0025 remap
+Changing box ...
+  orthogonal box = (-0.1141513 -0.10890807 -0.10890807) to (4.0909213 4.0856781 4.0856781)
+  orthogonal box = (-0.1141513 -0.1141513 -0.10890807) to (4.0909213 4.0909213 4.0856781)
+  orthogonal box = (-0.1141513 -0.1141513 -0.1141513) to (4.0909213 4.0909213 4.0909213)
+
+run 1
+WARNING: No fixes with time integration, atoms won't move (src/verlet.cpp:60)
+Per MPI rank memory allocation (min/avg/max) = 8.532 | 8.533 | 8.535 Mbytes
+   Step         PotEng         TotEng           Lx             Ly             Lz           Volume         Press           Pxx            Pyy            Pzz      
+        55  -20.873972     -20.873972      4.2050726      4.2050726      4.2050726      74.356766     -249323.89     -249323.89     -249323.89     -249323.89    
+        56  -20.873972     -20.873972      4.2050726      4.2050726      4.2050726      74.356766     -249323.89     -249323.89     -249323.89     -249323.89    
+Loop time of 0.000135375 on 8 procs for 1 steps with 4 atoms
+
+Performance: 638.227 ns/day, 0.038 hours/ns, 7386.888 timesteps/s, 29.548 katom-step/s
+0.0% CPU use with 8 MPI tasks x 1 OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 7.7e-05    | 8.4375e-05 | 9.4e-05    |   0.0 | 62.33
+Neigh   | 0          | 0          | 0          |   0.0 |  0.00
+Comm    | 1e-05      | 1.6125e-05 | 2.8e-05    |   0.0 | 11.91
+Output  | 1.8e-05    | 2.7125e-05 | 3.9e-05    |   0.0 | 20.04
+Modify  | 0          | 3.75e-07   | 2e-06      |   0.0 |  0.28
+Other   |            | 7.375e-06  |            |       |  5.45
+
+Nlocal:            0.5 ave           4 max           0 min
+Histogram: 7 0 0 0 0 0 0 0 0 1
+Nghost:          107.5 ave         108 max         104 min
+Histogram: 1 0 0 0 0 0 0 0 0 7
+Neighs:           13.5 ave         108 max           0 min
+Histogram: 7 0 0 0 0 0 0 0 0 1
+FullNghs:           27 ave         216 max           0 min
+Histogram: 7 0 0 0 0 0 0 0 0 1
+
+Total # of neighbors = 216
+Ave neighs/atom = 54
+Neighbor list builds = 0
+Dangerous builds = 0
+variable  natoms equal "count(all)"
+variable xlength equal "lx"
+variable  volume equal "vol"
+variable  etotal equal "etotal"
+variable    ecoh equal "pe/v_natoms"
+print "${xlength}, ${volume}, ${etotal}, ${ecoh}" append lattice_cohesive_energy.txt screen no
+
+next i
+jump SELF loop
+
+change_box all x scale 1.0025 y scale 1.0025 z scale 1.0025 remap
+Changing box ...
+  orthogonal box = (-0.11940764 -0.1141513 -0.1141513) to (4.0961776 4.0909213 4.0909213)
+  orthogonal box = (-0.11940764 -0.11940764 -0.1141513) to (4.0961776 4.0961776 4.0909213)
+  orthogonal box = (-0.11940764 -0.11940764 -0.11940764) to (4.0961776 4.0961776 4.0961776)
+
+run 1
+WARNING: No fixes with time integration, atoms won't move (src/verlet.cpp:60)
+Per MPI rank memory allocation (min/avg/max) = 8.532 | 8.533 | 8.535 Mbytes
+   Step         PotEng         TotEng           Lx             Ly             Lz           Volume         Press           Pxx            Pyy            Pzz      
+        56  -20.785818     -20.785818      4.2155853      4.2155853      4.2155853      74.915838     -255864.31     -255864.31     -255864.31     -255864.31    
+        57  -20.785818     -20.785818      4.2155853      4.2155853      4.2155853      74.915838     -255864.31     -255864.31     -255864.31     -255864.31    
+Loop time of 0.000134875 on 8 procs for 1 steps with 4 atoms
+
+Performance: 640.593 ns/day, 0.037 hours/ns, 7414.272 timesteps/s, 29.657 katom-step/s
+0.0% CPU use with 8 MPI tasks x 1 OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 7.6e-05    | 8.3625e-05 | 9.3e-05    |   0.0 | 62.00
+Neigh   | 0          | 0          | 0          |   0.0 |  0.00
+Comm    | 9e-06      | 1.6125e-05 | 2.8e-05    |   0.0 | 11.96
+Output  | 1.8e-05    | 2.7125e-05 | 4e-05      |   0.0 | 20.11
+Modify  | 0          | 2.5e-07    | 1e-06      |   0.0 |  0.19
+Other   |            | 7.75e-06   |            |       |  5.75
+
+Nlocal:            0.5 ave           4 max           0 min
+Histogram: 7 0 0 0 0 0 0 0 0 1
+Nghost:          107.5 ave         108 max         104 min
+Histogram: 1 0 0 0 0 0 0 0 0 7
+Neighs:           13.5 ave         108 max           0 min
+Histogram: 7 0 0 0 0 0 0 0 0 1
+FullNghs:           27 ave         216 max           0 min
+Histogram: 7 0 0 0 0 0 0 0 0 1
+
+Total # of neighbors = 216
+Ave neighs/atom = 54
+Neighbor list builds = 0
+Dangerous builds = 0
+variable  natoms equal "count(all)"
+variable xlength equal "lx"
+variable  volume equal "vol"
+variable  etotal equal "etotal"
+variable    ecoh equal "pe/v_natoms"
+print "${xlength}, ${volume}, ${etotal}, ${ecoh}" append lattice_cohesive_energy.txt screen no
+
+next i
+jump SELF loop
+
+change_box all x scale 1.0025 y scale 1.0025 z scale 1.0025 remap
+Changing box ...
+  orthogonal box = (-0.12467712 -0.11940764 -0.11940764) to (4.1014471 4.0961776 4.0961776)
+  orthogonal box = (-0.12467712 -0.12467712 -0.11940764) to (4.1014471 4.1014471 4.0961776)
+  orthogonal box = (-0.12467712 -0.12467712 -0.12467712) to (4.1014471 4.1014471 4.1014471)
+
+run 1
+WARNING: No fixes with time integration, atoms won't move (src/verlet.cpp:60)
+Per MPI rank memory allocation (min/avg/max) = 8.532 | 8.533 | 8.535 Mbytes
+   Step         PotEng         TotEng           Lx             Ly             Lz           Volume         Press           Pxx            Pyy            Pzz      
+        57  -20.694768     -20.694768      4.2261242      4.2261242      4.2261242      75.479112     -262033.81     -262033.81     -262033.81     -262033.81    
+        58  -20.694768     -20.694768      4.2261242      4.2261242      4.2261242      75.479112     -262033.81     -262033.81     -262033.81     -262033.81    
+Loop time of 0.000133875 on 8 procs for 1 steps with 4 atoms
+
+Performance: 645.378 ns/day, 0.037 hours/ns, 7469.655 timesteps/s, 29.879 katom-step/s
+0.0% CPU use with 8 MPI tasks x 1 OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 7.7e-05    | 8.4e-05    | 9.4e-05    |   0.0 | 62.75
+Neigh   | 0          | 0          | 0          |   0.0 |  0.00
+Comm    | 8e-06      | 1.5875e-05 | 2.8e-05    |   0.0 | 11.86
+Output  | 1.7e-05    | 2.65e-05   | 3.9e-05    |   0.0 | 19.79
+Modify  | 0          | 3.75e-07   | 1e-06      |   0.0 |  0.28
+Other   |            | 7.125e-06  |            |       |  5.32
+
+Nlocal:            0.5 ave           4 max           0 min
+Histogram: 7 0 0 0 0 0 0 0 0 1
+Nghost:          107.5 ave         108 max         104 min
+Histogram: 1 0 0 0 0 0 0 0 0 7
+Neighs:           13.5 ave         108 max           0 min
+Histogram: 7 0 0 0 0 0 0 0 0 1
+FullNghs:           27 ave         216 max           0 min
+Histogram: 7 0 0 0 0 0 0 0 0 1
+
+Total # of neighbors = 216
+Ave neighs/atom = 54
+Neighbor list builds = 0
+Dangerous builds = 0
+variable  natoms equal "count(all)"
+variable xlength equal "lx"
+variable  volume equal "vol"
+variable  etotal equal "etotal"
+variable    ecoh equal "pe/v_natoms"
+print "${xlength}, ${volume}, ${etotal}, ${ecoh}" append lattice_cohesive_energy.txt screen no
+
+next i
+jump SELF loop
+
+change_box all x scale 1.0025 y scale 1.0025 z scale 1.0025 remap
+Changing box ...
+  orthogonal box = (-0.12995978 -0.12467712 -0.12467712) to (4.1067298 4.1014471 4.1014471)
+  orthogonal box = (-0.12995978 -0.12995978 -0.12467712) to (4.1067298 4.1067298 4.1014471)
+  orthogonal box = (-0.12995978 -0.12995978 -0.12995978) to (4.1067298 4.1067298 4.1067298)
+
+run 1
+WARNING: No fixes with time integration, atoms won't move (src/verlet.cpp:60)
+Per MPI rank memory allocation (min/avg/max) = 8.532 | 8.533 | 8.535 Mbytes
+   Step         PotEng         TotEng           Lx             Ly             Lz           Volume         Press           Pxx            Pyy            Pzz      
+        58  -20.600912     -20.600912      4.2366896      4.2366896      4.2366896      76.046622     -267843.44     -267843.44     -267843.44     -267843.44    
+        59  -20.600912     -20.600912      4.2366896      4.2366896      4.2366896      76.046622     -267843.44     -267843.44     -267843.44     -267843.44    
+Loop time of 0.000134125 on 8 procs for 1 steps with 4 atoms
+
+Performance: 644.175 ns/day, 0.037 hours/ns, 7455.732 timesteps/s, 29.823 katom-step/s
+0.0% CPU use with 8 MPI tasks x 1 OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 7.6e-05    | 8.3375e-05 | 9.2e-05    |   0.0 | 62.16
+Neigh   | 0          | 0          | 0          |   0.0 |  0.00
+Comm    | 1e-05      | 1.6125e-05 | 2.7e-05    |   0.0 | 12.02
+Output  | 1.7e-05    | 2.675e-05  | 3.9e-05    |   0.0 | 19.94
+Modify  | 0          | 1.25e-07   | 1e-06      |   0.0 |  0.09
+Other   |            | 7.75e-06   |            |       |  5.78
+
+Nlocal:            0.5 ave           4 max           0 min
+Histogram: 7 0 0 0 0 0 0 0 0 1
+Nghost:          107.5 ave         108 max         104 min
+Histogram: 1 0 0 0 0 0 0 0 0 7
+Neighs:           13.5 ave         108 max           0 min
+Histogram: 7 0 0 0 0 0 0 0 0 1
+FullNghs:           27 ave         216 max           0 min
+Histogram: 7 0 0 0 0 0 0 0 0 1
+
+Total # of neighbors = 216
+Ave neighs/atom = 54
+Neighbor list builds = 0
+Dangerous builds = 0
+variable  natoms equal "count(all)"
+variable xlength equal "lx"
+variable  volume equal "vol"
+variable  etotal equal "etotal"
+variable    ecoh equal "pe/v_natoms"
+print "${xlength}, ${volume}, ${etotal}, ${ecoh}" append lattice_cohesive_energy.txt screen no
+
+next i
+jump SELF loop
+
+print "-------------------------------------------------------------"
+-------------------------------------------------------------
+print "Show results of 1st step (Running Minimization)"
+Show results of 1st step (Running Minimization)
+print "The number of atoms = ${natoms};"
+The number of atoms = 4;
+print "The lattice constant, x (Angstoms) = ${x0};"
+The lattice constant, x (Angstoms) = 4.2366895572111;
+print "The lattice constant, y (Angstoms) = ${y0};"
+The lattice constant, y (Angstoms) = 4.2366895572111;
+print "The lattice constant, z (Angstoms) = ${z0};"
+The lattice constant, z (Angstoms) = 4.2366895572111;
+print "The volume (Angstoms^3) = ${v0};"
+The volume (Angstoms^3) = 76.0466219137558;
+print "The total energy (eV) = ${etot0};"
+The total energy (eV) = -20.6009117667366;
+print "The cohesive energy (eV/atom) = ${ecoh0};"
+The cohesive energy (eV/atom) = -5.15022794168414;
+print "-------------------------------------------------------------"
+-------------------------------------------------------------
+print "Simulations completed !"
+Simulations completed !
+Total wall time: 0:00:00
