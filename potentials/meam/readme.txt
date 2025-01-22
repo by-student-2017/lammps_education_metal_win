@@ -154,6 +154,8 @@ Note: Perhaps there is a setting that is closer to the literature value. It does
 #-------------------------------------------------------------
 
 #-------------------------------------------------------------
+VNbTaTiZr_HEA: For binary systems, the values ​​were almost the same except for NbZr. For ternary systems, the values ​​did not match.
+#-------------------------------------------------------------
 NiRe: It mostly fits. Refitting Cmin and Cmax may bring it closer to the DFT results.
 #-------------------------------------------------------------
 RePt: It mostly fits. Refitting Cmin and Cmax may bring it closer to the DFT results.
