@@ -95,6 +95,7 @@ Conclusion
 - AgTiO3 (Gao 2013) -> CuTiO (CuTaO3 or CuTa2O6) (Gao 2015)
 - HfNbTaTiZr_HEA -> AlHfNbTaTiZr_HEIC
   (Note: "VNbTaTiZr_HEA" is probably a different system because the NbTaTiZr parameters do not match those of HfNbTaTiZr_HEA.)
+- RhPt (Luyten 2007) -> PtPdRh (Luyten 2009)
 #-------------------------------------------------------------
 
 #-------------------------------------------------------------
