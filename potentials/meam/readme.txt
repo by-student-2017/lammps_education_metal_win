@@ -86,12 +86,12 @@ Conclusion
 
 #-------------------------------------------------------------
 # Inferred phylogenetic tree
-- C-Fe-Mn-Si (Aslam 2019) -> FeCoCrMnSi (Salloom 2022)
+- CFeMnSi (Aslam 2019) -> FeCoCrMnSi (Salloom 2022)
 - Fe-X(X=Al,Cu,Nb,W)_CoNb (Muralles 2023) -> CoFe-X(X=V,Nb,Mo,W) (Muralles 2024)
 - SiAu -> SiAuO
-- TM-N (Ding 2019) -> TiNV (Ding 2020) -> TiCrV (Ding 2021)
-- Ni-Ti (Ko 2015) -> Nb-Ni-Ti (Lee 2022)
-- Ca-Mg (Kim 2015) -> CaMgTi (Nersisyan 2024)
+- TMN (Ding 2019) -> TiNV (Ding 2020) -> TiCrV (Ding 2021)
+- NiTi (Ko 2015) -> NbNiTi (Lee 2022)
+- CaMg (Kim 2015) -> CaMgTi (Nersisyan 2024)
 #-------------------------------------------------------------
 
 #-------------------------------------------------------------
