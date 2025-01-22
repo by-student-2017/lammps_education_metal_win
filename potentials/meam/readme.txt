@@ -156,6 +156,8 @@ Note: Perhaps there is a setting that is closer to the literature value. It does
 #-------------------------------------------------------------
 NiRe: It mostly fits. Refitting Cmin and Cmax may bring it closer to the DFT results.
 #-------------------------------------------------------------
+RePt: It mostly fits. Refitting Cmin and Cmax may bring it closer to the DFT results.
+#-------------------------------------------------------------
 
 I was unable to obtain values ​​close to those found in the literature.
 I apologize for this being due to my lack of ability.
