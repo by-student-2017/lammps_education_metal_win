@@ -26,7 +26,8 @@ pair_style meam
 #pair_coeff * * ./../../library.meam V Nb Ta Ti Zr ./../../VNbTaTiZr.meam Ta Ti
 #pair_coeff * * ./../../library.meam V Nb Ta Ti Zr ./../../VNbTaTiZr.meam Ta Zr
 #pair_coeff * * ./../../library.meam V Nb Ta Ti Zr ./../../VNbTaTiZr.meam Ti Zr
-pair_coeff * * ./../../library.meam V Nb Ta Ti Zr ./../../VNbTaTiZr.meam Nb Ti Zr
+pair_coeff * * ./../../library.meam V Nb Ta Ti Zr ./../../VNbTaTiZr.meam V Ti Zr
+#pair_coeff * * ./../../library.meam V Nb Ta Ti Zr ./../../VNbTaTiZr.meam Nb Ti Zr
 #-----------------------
 
 # Setup neighbor style
