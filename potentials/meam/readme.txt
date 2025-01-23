@@ -96,6 +96,8 @@ Conclusion
 - HfNbTaTiZr_HEA -> AlHfNbTaTiZr_HEIC
   (Note: "VNbTaTiZr_HEA" is probably a different system because the NbTaTiZr parameters do not match those of HfNbTaTiZr_HEA.)
 - RhPt (Luyten 2007) -> PtPdRh (Luyten 2009)
+- Li (Cui 2012) -> LiMo (Vella 2017)
+- Li (Cui 2012) -> LiSi (Godet 2020)
 #-------------------------------------------------------------
 
 #-------------------------------------------------------------
@@ -123,6 +125,8 @@ FeCH
 CrTiN
 NiTiCu
 TiNAg
+LiSi
+LiMo
 #-------------------------------------------------------------
 
 
