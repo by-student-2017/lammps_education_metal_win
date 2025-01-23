@@ -89,7 +89,7 @@ Conclusion
 - CFeMnSi (Aslam 2019) -> FeCoCrMnSi (Salloom 2022)
 - Fe-X(X=Al,Cu,Nb,W)_CoNb (Muralles 2023) -> CoFe-X(X=V,Nb,Mo,W) (Muralles 2024)
 - SiAu -> SiAuO
-- TMN (Ding 2019) -> TiNV (Ding 2020) -> TiCrV (Ding 2021)
+- TM-N(TM=Ti,V,Cr,Fe) (Ding 2019) -> TiNV (Ding 2020) -> TiCrV (Ding 2021)
 - NiTi (Ko 2015) -> NbNiTi (Lee 2022)
 - CaMg (Kim 2015) -> CaMgTi (Nersisyan 2024)
 - AgTiO3 (Gao 2013) -> CuTiO (CuTaO3 or CuTa2O6) (Gao 2015)
