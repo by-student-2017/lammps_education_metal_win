@@ -16,7 +16,9 @@
 #pair_coeff * * AlCrFeCoNi_Zhou04.eam.alloy Fe
 #-----------------------
 pair_style meam
-pair_coeff * * ./../../library.meam Pt Pd Rh ./../../PtPdRh.meam Pt
+#pair_coeff * * ./../../library.meam Pt Pd Rh ./../../PtPdRh.meam Pt
+#pair_coeff * * ./../../library.meam Pt Pd Rh ./../../PtPdRh.meam Pd
+pair_coeff * * ./../../library.meam Pt Pd Rh ./../../PtPdRh.meam Rh
 #-----------------------
 
 # Setup neighbor style
