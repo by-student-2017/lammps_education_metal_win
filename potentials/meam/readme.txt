@@ -126,7 +126,7 @@ CrTiN
 NiTiCu
 TiNAg
 LiSi
-LiMo
+LiMo (LiMo.meam only. "library.meam" does not exist. The publisher may have listed it incorrectly. Here, we have constructed library.meam from previously published data.)
 #-------------------------------------------------------------
 
 
