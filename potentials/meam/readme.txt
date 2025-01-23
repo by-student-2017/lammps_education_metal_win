@@ -101,7 +101,7 @@ Conclusion
 #-------------------------------------------------------------
 
 #-------------------------------------------------------------
-# C-X(X=H, Ti, Nb, W, Mn, Fe, Ni, Pd, Pt, Cu, Al, Si)
+# C-X(X=H, Ti, Nb, (W), Mn, Fe, Ni, Pd, Pt, Cu, Al, Si)
 CCu, CH, TiC, CNb, (WC), CFeMnSi, FeCH, FeTiC, NbFeC, NiTiC, CNi, PdC, PtC, CCu, SiC, TiAlC
 Note: (WC): I'm not sure if I can reproduce the paper.
 #-------------------------------------------------------------
