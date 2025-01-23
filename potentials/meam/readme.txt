@@ -101,13 +101,17 @@ Conclusion
 #-------------------------------------------------------------
 
 #-------------------------------------------------------------
-# C-X(X=H, Ti, Nb, (W), Mn, Fe, Ni, Pd, Pt, Cu, Al, Si)
+# B-X (X=Mg, Ti, Al)
+(MgAlB), BTi,
+Note: (MgAlB): I'm not sure if I can reproduce the paper.
+#-------------------------------------------------------------
+# C-X (X=H, Ti, Nb, (W), Mn, Fe, Ni, Pd, Pt, Cu, Al, Si)
 CCu, CH, TiC, CNb, (WC), CFeMnSi, FeCH, FeTiC, NbFeC, NiTiC, CNi, PdC, PtC, CCu, SiC, TiAlC
 Note: (WC): I'm not sure if I can reproduce the paper.
 #-------------------------------------------------------------
-# N-X(X=Ti, Zr, V, Cr, Nb, Fe, (Ni), Cu, Al, In, Ga
+# N-X (X=Ti, Zr, V, Cr, Nb, Fe, (Ni), Cu, Al, In, Ga)
 TiN, TiVN, (Ti2X(X=N,C)), ZrN, (TM-N(TM=Ti,V,Cr,Fe)), CrTiN, (TiCrN), FeNbN, FeN, FeTiN, (FeCrNiN), CuNTi, TiAlN, GaInN
-Note: (TM-N(TM=Ti,V,Cr,Fe)), (Ti2X(X=N,C)), (TiCrN), (FeCrNiN),: I'm not sure if I can reproduce the paper.
+Note: (TM-N(TM=Ti,V,Cr,Fe)), (Ti2X(X=N,C)), (TiCrN), (FeCrNiN): I'm not sure if I can reproduce the paper.
 #-------------------------------------------------------------
 
 #-------------------------------------------------------------
