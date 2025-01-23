@@ -168,6 +168,8 @@ NiRe: It mostly fits. Refitting Cmin and Cmax may bring it closer to the DFT res
 #-------------------------------------------------------------
 RePt: It mostly fits. Refitting Cmin and Cmax may bring it closer to the DFT results.
 #-------------------------------------------------------------
+WC: I'm not sure if I can reproduce the paper.
+#-------------------------------------------------------------
 
 I was unable to obtain values ​​close to those found in the literature.
 I apologize for this being due to my lack of ability.
