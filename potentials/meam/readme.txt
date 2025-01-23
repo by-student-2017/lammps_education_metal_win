@@ -101,6 +101,12 @@ Conclusion
 #-------------------------------------------------------------
 
 #-------------------------------------------------------------
+# C-X(X=H, Ti, Nb, W, Mn, Fe, Ni, Pd, Pt, Cu, Al, Si)
+CCu, CH, TiC, CNb, (WC), CFeMnSi, FeCH, FeTiC, NbFeC, NiTiC, CNi, PdC, PtC, CCu, SiC, TiAlC
+Note: (WC): I'm not sure if I can reproduce the paper.
+#-------------------------------------------------------------
+
+#-------------------------------------------------------------
 # How to create potentials for High Entropy Alloys (HEA), Fe-based, Ni-based, and Al-based, etc
 1. The unit system uses Pure_Elements.
 2. The Materials Project provides Ec, re, and B for the alloy, so alpha can be calculated. The elastic constants are also given, so Cmin and Cmax can be optimized. ("meam_converter.xlsx" allows you to calculate alpha.)
