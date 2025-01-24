@@ -87,7 +87,7 @@ Conclusion
 #-------------------------------------------------------------
 # Assumption in ternary systems
 C(1st-2nd-3rd), when 1st-3rd atom pair is screened by 2nd.
-#----------(see VPdY.meam)
+#----------(see VPdY.meam or TiVN.meam)
 Cmin(i-k-j) = [0.5*Cmin(i-k-i)^0.5 + 0.5*Cmin(j-k-j)^0.5]^2
 Cmax(i-k-j) = [0.5*Cmax(i-k-i)^0.5 + 0.5*Cmax(j-k-j)^0.5]^2
 For Lammps
