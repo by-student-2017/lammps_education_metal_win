@@ -101,8 +101,11 @@ Conclusion
 #-------------------------------------------------------------
 
 #-------------------------------------------------------------
+# H-X (X=C, Zr, V, Fe, Ni, Cu, Al)
+CH, ZrH, VH, VNiH, AlVH, FeH, FeCH, NiH, NiVH, ZrCuH, AlH
+#-------------------------------------------------------------
 # B-X (X=Mg, Ti, Al)
-(MgAlB), BTi,
+(MgAlB), BTi
 Note: (MgAlB): I'm not sure if I can reproduce the paper.
 #-------------------------------------------------------------
 # C-X (X=H, Ti, Nb, (W), Mn, Fe, Ni, Pd, Pt, Cu, Al, Si)
