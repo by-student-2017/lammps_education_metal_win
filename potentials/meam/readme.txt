@@ -86,7 +86,7 @@ Conclusion
 
 #-------------------------------------------------------------
 # Assumption in ternary systems
-C(1st,2nd,3rd), when 1st-3rd atom pair is screened by 2nd.
+C(1st-2nd-3rd), when 1st-3rd atom pair is screened by 2nd.
 #----------(see VPdY.meam)
 Cmin(i-k-j) = [0.5*Cmin(i-k-i)^0.5 + 0.5*Cmin(j-k-j)^0.5]^2
 Cmax(i-k-j) = [0.5*Cmax(i-k-i)^0.5 + 0.5*Cmax(j-k-j)^0.5]^2
@@ -95,10 +95,10 @@ Cmin(i,j,k) = [0.5*Cmin(i,i,k)^0.5 + 0.5*Cmin(j,j,k)^0.5]^2
 Cmax(i,j,k) = [0.5*Cmax(i,i,k)^0.5 + 0.5*Cmax(j,j,k)^0.5]^2
 #----------
 #----------(see NiAlCo.meam)
-Cmin(A-B-C) = [0.5*Cmin(A-B-A)^0.5 + 0.5*Cmin(C-B-C)^0.5]^2
-Cmax(A-B-C) = [0.5*Cmax(A-B-A)^0.5 + 0.5*Cmax(C-B-C)^0.5]^2
-Cmin(A-C-B) = [0.5*Cmin(A-A-B)^0.5 + 0.5*Cmin(C-C-B)^0.5]^2 = Cmin(B-A-C)
-Cmax(A-C-B) = [0.5*Cmax(A-A-B)^0.5 + 0.5*Cmax(C-C-B)^0.5]^2 = Cmin(B-A-C)
+Cmin(i-j-k) = [0.5*Cmin(i-j-i)^0.5 + 0.5*Cmin(k-j-k)^0.5]^2
+Cmax(i-j-k) = [0.5*Cmax(i-j-i)^0.5 + 0.5*Cmax(k-j-k)^0.5]^2
+Cmin(i-k-j) = [0.5*Cmin(i-i-j)^0.5 + 0.5*Cmin(k-k-j)^0.5]^2 = Cmin(j-i-k)
+Cmax(i-k-j) = [0.5*Cmax(i-i-j)^0.5 + 0.5*Cmax(k-k-j)^0.5]^2 = Cmin(j-i-k)
 For Lammps
 Cmin(i,k,j) = [0.5*Cmin(i,i,j)^0.5 + 0.5*Cmin(k,k,j)^0.5]^2
 Cmax(i,k,j) = [0.5*Cmax(i,i,j)^0.5 + 0.5*Cmax(k,k,j)^0.5]^2
