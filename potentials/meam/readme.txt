@@ -101,8 +101,8 @@ Conclusion
 #-------------------------------------------------------------
 
 #-------------------------------------------------------------
-# H-X (X=C, Zr, V, Fe, Ni, Cu, Al)
-CH, ZrH, VH, VNiH, AlVH, FeH, FeCH, NiH, NiVH, ZrCuH, AlH
+# H-X (X=Zr, V, Fe, Ni, Cu, Al, C)
+ZrH, VH, VNiH, AlVH, FeH, FeCH, NiH, NiVH, ZrCuH, AlH, CH
 #-------------------------------------------------------------
 # B-X (X=Mg, Ti, Al)
 (MgAlB), BTi
@@ -115,6 +115,10 @@ Note: (WC): I'm not sure if I can reproduce the paper.
 # N-X (X=Ti, Zr, V, Cr, Nb, Fe, (Ni), Cu, Al, In, Ga)
 TiN, TiVN, (Ti2X(X=N,C)), ZrN, (TM-N(TM=Ti,V,Cr,Fe)), CrTiN, (TiCrN), FeNbN, FeN, FeTiN, (FeCrNiN), CuNTi, TiAlN, GaInN
 Note: (TM-N(TM=Ti,V,Cr,Fe)), (Ti2X(X=N,C)), (TiCrN), (FeCrNiN): I'm not sure if I can reproduce the paper.
+#-------------------------------------------------------------
+# Si-X (X=Li, Mg, Mo, Cr, Mn, Fe, Co, Ni, Cu, Zn, Al, C, Ge, O, He
+LiSi, AlSiMgCuFe_AA6061, AlSiMgCuZn_AA7075, MoSi, FeCrSi, CFeMnSi, FeCoCrMnSi_HEA, FeCrNiN_AISI_316, SiAl, SiC, SiGe, SiO, SiHe, X-Y(FeMnSiCAlZnO)
+Note: AlSiMgCuZn_AA7075, MoSi, FeCrNiN_AISI_316, X-Y(FeMnSiCAlZnO), SiGe, SiHe: I'm not sure if I can reproduce the paper.
 #-------------------------------------------------------------
 
 #-------------------------------------------------------------
