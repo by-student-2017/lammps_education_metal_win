@@ -86,6 +86,7 @@ Conclusion
 
 #-------------------------------------------------------------
 # Assumption in ternary systems (see VPdY.meam)
+When i-j pair is screened by k.
 Cmin(i-k-j) = [0.5*Cmin(i-k-i)^0.5 + 0.5*Cmin(j-k-j)^0.5]^2
 Cmax(i-k-j) = [0.5*Cmax(i-k-i)^0.5 + 0.5*Cmax(j-k-j)^0.5]^2
 For Lammps
