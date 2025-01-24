@@ -1,0 +1,1 @@
+M.S. Nitol, M.J. Echeverria, K. Dang, M.I. Baskes, and S.J. Fensin (2024), "New modified embedded-atom method interatomic potential to understand deformation behavior in VNbTaTiZr refractory high entropy alloy", Computational Materials Science, 237, 112886. DOI: 10.1016/j.commatsci.2024.112886.
