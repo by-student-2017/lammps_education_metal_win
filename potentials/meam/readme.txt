@@ -85,6 +85,15 @@ Conclusion
 #-------------------------------------------------------------
 
 #-------------------------------------------------------------
+# Assumption in ternary systems (see VPdY.meam)
+Cmin(i-k-j) = [0.5*Cmin(i-k-i)^0.5 + 0.5*Cmin(j-k-j)^0.5]^2
+Cmax(i-k-j) = [0.5*Cmax(i-k-i)^0.5 + 0.5*Cmax(j-k-j)^0.5]^2
+For Lammps
+Cmin(i,j,k) = [0.5*Cmin(i,i,k)^0.5 + 0.5*Cmin(j,j,k)^0.5]^2
+Cmax(i,j,k) = [0.5*Cmax(i,i,k)^0.5 + 0.5*Cmax(j,j,k)^0.5]^2
+#-------------------------------------------------------------
+
+#-------------------------------------------------------------
 # Inferred phylogenetic tree
 - CFeMnSi (Aslam 2019) -> FeCoCrMnSi (Salloom 2022)
 - Fe-X(X=Al,Cu,Nb,W)_CoNb (Muralles 2023) -> CoFe-X(X=V,Nb,Mo,W) (Muralles 2024)
