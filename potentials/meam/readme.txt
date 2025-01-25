@@ -34,7 +34,7 @@ Note: https://repository.library.carleton.ca/concern/etds/05741s48q <- This is a
 - Parameters with (i,j) mean all combinations of (i,j), for example lattce(i,j) which describes the crystal lattice of the pure elements 1 and 2, lattce(1,1) and lattce(2,2), and that of their alloy lattce(1,2). Cmin(i jk) means a minimum value of the screen ing factor where the interaction between atoms i and j starts to be fully screened by the atom k. On the other hand, Cmax(i jk), means the value where atom k does not interfere in the interaction between atoms i and j. Then those two atoms are unscreened by the atom k.
 - fitting: (The reference number may be incorrect.->) [7] B.-J. Lee and J.-W. Jang, A modi ed embedded-atom method interatomic potential for the FeH system, Acta Materialia, vol. 55, pp. 67796788, Dec. 2007.https://doi.org/10.1103/PhysRevB.93.144110
 | Parameter     | Selected value                       | Fitting procedure |
-| Ecoh          | 0.5*Ecoh(Fe) + 0.5*Ecoh(H) + 0.164   | Fitting dilute heat of solution of H in bcc and fcc Fe |
+| Ecoh          | 0.5*Ecoh(Fe) + 0.5*Ecoh(H) + 0.164   | Fitting dilute heat of solution of H in bcc and fcc Fe. 0.5*Ecoh(Fe) + 0.5*Ecoh(H) - (-0.164), delta=-0.164 |
 | re            | 1.835                                | Fitting lattice parameter of NaCl-type FeH and for better overall agreement |
 | B             | 2.95                                 | Fitting rst-principles bulk modulus of NaCl-type FeH MEAM |
 | d             | 0.5*d(Fe) + 0.5*d(H)                 | Assumption |
