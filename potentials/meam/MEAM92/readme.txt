@@ -54,3 +54,7 @@ Be, Mg (Modified)
 # A. P. Thompson et al.,  AIP Conf. Proc. 1195, 833-836 (2009).:  https://doi.org/10.1063/1.3295271
 Be (Modified)
 #-----------------------------------------------------------
+# H. W. Jang et al., Comput. Mater. Sci. 159 (2019) 66-72.: https://doi.org/10.1016/j.commatsci.2018.11.050
+# Related paper: H. W. Jang et al., Materials 2020, 13(9), 2062; https://doi.org/10.3390/ma13092062 (Open Access)
+Zn
+#-----------------------------------------------------------
