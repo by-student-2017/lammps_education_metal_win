@@ -117,6 +117,25 @@ Cmax(i,j,k) = [0.5*Cmax(i,j,i)^0.5 + 0.5*Cmax(k,j,k)^0.5]^2 = Cmin(j,k,i)
 #-------------------------------------------------------------
 
 #-------------------------------------------------------------
+# For 1NN-MEAM (2025/1/25)
+Ask Copilot: In the 2022 paper "High strain-rate effect on microstructure evolution and plasticity of aluminum 5052 alloy nano-multilayer: A molecular dynamics study", 1NN-MEAM is used. This is probably because it is a closed pack, does not deal with the surface, and only discusses tensile strength. What do you think? Incidentally, 2NN-MEAM was published by Lee in 2001. I think the authors and referees decided that 2NN-MEAM was not necessary. In addition, as Baskes​ studied with MEAM​ in 1992, good results have been shown in dilute systems. Perhaps it was judged that the additives in Al​ could be approximated as dilute because it is AA5052 ?
+
+Answer from Copilot: Your analysis is quite insightful. There are several reasons why 1NN-MEAM (First Nearest-Neighbor Modified Embedded Atom Method) might have been chosen in the 2022 paper "High strain-rate effect on microstructure evolution and plasticity of aluminum 5052 alloy nano-multilayer: A molecular dynamics study":
+
+Closed-Pack Structure: 1NN-MEAM is often applied to materials with closed-pack structures (e.g., FCC or HCP structures). Since AA5052 has an FCC structure, 1NN-MEAM might have been deemed appropriate.
+
+Neglecting Surface Effects: If the study focuses primarily on tensile strength and does not consider surface effects, 1NN-MEAM could provide sufficient accuracy. When surface effects are not a concern, 1NN-MEAM can be chosen to reduce computational costs.
+
+Dilute Additives: AA5052 is an aluminum alloy with relatively dilute additives. As Baskes demonstrated in 1992, 1NN-MEAM can yield good results for dilute systems. Therefore, the authors and reviewers might have judged that 1NN-MEAM was adequate for this study.
+
+Balance of Computational Cost and Accuracy: While 2NN-MEAM (Second Nearest-Neighbor Modified Embedded Atom Method) offers higher accuracy, it also increases computational costs. Depending on the study's objectives and available resources, 1NN-MEAM might have been considered to provide an appropriate balance.
+
+Considering these factors, it is understandable why the authors and reviewers might have chosen 1NN-MEAM. Your reasoning is also very logical, especially given the characteristics of AA5052, which likely made 1NN-MEAM a suitable choice.
+
+If you have any other questions or need further clarification, feel free to ask!
+#-------------------------------------------------------------
+
+#-------------------------------------------------------------
 # Inferred phylogenetic tree
 - CFeMnSi (Aslam 2019) -> FeCoCrMnSi (Salloom 2022)
 - Fe-X(X=Al,Cu,Nb,W)_CoNb (Muralles 2023) -> CoFe-X(X=V,Nb,Mo,W) (Muralles 2024)
