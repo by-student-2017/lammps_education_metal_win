@@ -86,8 +86,7 @@ Conclusion
 
 #-------------------------------------------------------------
 # Assumption in ternary systems
-C(A-C-B), when A-B atom pair is screened by C atom.
-C(A,B,C), when A-B atom pair is screened by C atom.
+C(A-C-B) = C(A,B,C), when A-B atom pair is screened by C atom.
 #----------(see VPdY.meam or TiVN.meam) (This is easy to understand as it is a simple mixture of each.)
 Cmin(i-k-j) = [0.5*Cmin(i-k-i)^0.5 + 0.5*Cmin(j-k-j)^0.5]^2
 Cmax(i-k-j) = [0.5*Cmax(i-k-i)^0.5 + 0.5*Cmax(j-k-j)^0.5]^2
