@@ -7,15 +7,6 @@ dimension 3
 boundary p p p 
 atom_style atomic
 
-# 1NN-MEAM case
-pair_style meam
-pair_coeff * * library.meam Al Si Mg Cu Zn NULL Al Si Mg Cu Zn 
-#------------------------------------------------------------------------
-units metal
-dimension 3
-boundary p p p 
-atom_style atomic
-
 # 2NN-MEAM case
 pair_style meam
 pair_coeff * * library.meam Al Si Mg Cu Zn AlSiMgCuZn.meam Al Si Mg Cu Zn
