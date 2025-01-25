@@ -56,5 +56,5 @@ Be (Modified)
 #-----------------------------------------------------------
 # H. W. Jang et al., Comput. Mater. Sci. 159 (2019) 66-72.: https://doi.org/10.1016/j.commatsci.2018.11.050
 # Related paper: H. W. Jang et al., Materials 2020, 13(9), 2062; https://doi.org/10.3390/ma13092062 (Open Access)
-Zn
+Zn (from EAM Zn to MEAM Zn) (Note: b1=b2=b2=t1=t2=t3=0 !!!)
 #-----------------------------------------------------------
