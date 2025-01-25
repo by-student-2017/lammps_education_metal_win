@@ -108,6 +108,13 @@ Cmax(i,j,k) = [0.5*Cmax(i,j,i)^0.5 + 0.5*Cmax(k,j,k)^0.5]^2 = Cmin(j,k,i)
 #-------------------------------------------------------------
 
 #-------------------------------------------------------------
+# Relationship between EAM and MEAM in the "b1=b2=b3=t1=t2=t3=O" case
+- If all the b parameters (b1, b2, b3) other than b0 and all the t parameters (t1, t2, t3) other than t0 are 0, then the MEAM is equivalent to the EAM. This is because the MEAM is an extension of the EAM, with the additional parameters b and t being used to introduce angular dependence.
+- Specifically, b0 represents the fundamental term of the angular dependence, and t0 is the parameter for scaling it. If all other parameters are 0, then the angular dependence disappears, resulting in the same form as the EAM.
+- his can be confirmed in the following literature: https://doi.org/10.1016/j.commatsci.2018.11.050 and https://doi.org/10.3390/ma13092062
+#-------------------------------------------------------------
+
+#-------------------------------------------------------------
 # Inferred phylogenetic tree
 - CFeMnSi (Aslam 2019) -> FeCoCrMnSi (Salloom 2022)
 - Fe-X(X=Al,Cu,Nb,W)_CoNb (Muralles 2023) -> CoFe-X(X=V,Nb,Mo,W) (Muralles 2024)
