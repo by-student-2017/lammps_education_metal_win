@@ -37,7 +37,7 @@ Note: https://repository.library.carleton.ca/concern/etds/05741s48q <- This is a
 | Ecoh          | 0.5*Ecoh(Fe) + 0.5*Ecoh(H) + 0.164   | Fitting dilute heat of solution of H in bcc and fcc Fe. 0.5*Ecoh(Fe) + 0.5*Ecoh(H) - (-0.164), delta=-0.164 |
 | re            | 1.835                                | Fitting lattice parameter of NaCl-type FeH and for better overall agreement |
 | B             | 2.95                                 | Fitting rst-principles bulk modulus of NaCl-type FeH MEAM |
-| d             | 0.5*d(Fe) + 0.5*d(H)                 | Assumption, attrac=repuls=d=a3=0.5*d(Fe) + 0.5*d(H) |
+| d             | 0.5*d(Fe) + 0.5*d(H)                 | Assumption, in many cases, attrac=repuls=d=a3=0.5*d(Fe) + 0.5*d(H) |
 | Cmin(Fe-H-Fe) | 0.36 = Cmin(Fe)                      | Assumption, Cmin(Fe-H-Fe) = Cmin(1,1,3) = Cmin(Fe,Fe,H) |
 | Cmin(H-Fe-H)  | 2.0 = Cmin(H)                        | Assumption, Cmin(H-Fe-H) = Cmin(3,3,1) = Cmin(H,H,Fe) |
 | Cmin(Fe-Fe-H) | 2.15                                 | Relative size of heat of solution in bcc and fcc Fe, Cmin(Fe-Fe-H) = Cmin(1,3,1) = Cmin(Fe,H,Fe) |
