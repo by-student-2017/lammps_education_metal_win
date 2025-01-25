@@ -113,6 +113,7 @@ Cmax(i,j,k) = [0.5*Cmax(i,j,i)^0.5 + 0.5*Cmax(k,j,k)^0.5]^2 = Cmin(j,k,i)
 - Specifically, b0 represents the fundamental term of the angular dependence, and t0 is the parameter for scaling it. If all other parameters are 0, then the angular dependence disappears, resulting in the same form as the EAM.
 - This can be confirmed in the following literature: https://doi.org/10.1016/j.commatsci.2018.11.050 and https://doi.org/10.3390/ma13092062
 - Note: This is also important when creating potentials with rare gases, since studying different gas atmospheres and their pressures is important for the development of practical materials. 
+- Note: Lammps has a momb that calculates Grimme's -D2 dispersion force, so by using this, you can deal with the problem without having to create a MEAM potential.
 #-------------------------------------------------------------
 
 #-------------------------------------------------------------
