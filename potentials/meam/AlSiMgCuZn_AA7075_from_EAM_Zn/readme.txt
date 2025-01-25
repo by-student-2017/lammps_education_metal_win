@@ -3,7 +3,7 @@ Usage in lammps input
 # 1NN-MEAM
 # Note: Zn (b1=b2=b3=t1=t2=t3=0) from EAM
 # Note that the value of "rozero" is not mentioned in the theory !
-# rozero of Al: J.-W. Hong, CE-Theses_Ph.D. (2021).: https://koasas.kaist.ac.kr/handle/10203/307792
+# rozero data get from J.-W. Hong, CE-Theses_Ph.D. (2021).: https://koasas.kaist.ac.kr/handle/10203/307792
 # Note: ibar = 0 -> -5 for t(h) < 0 and Gamma < -1
 pair_style meam
 pair_coeff * * library.meam Al Si Mg Cu Zn NULL Al Si Mg Cu Zn
