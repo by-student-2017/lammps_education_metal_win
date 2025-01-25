@@ -126,6 +126,8 @@ Cmax(i,j,k) = [0.5*Cmax(i,j,i)^0.5 + 0.5*Cmax(k,j,k)^0.5]^2 = Cmin(j,k,i)
 4. Dilute alloying elements: AA5052 is an aluminum alloy with low concentrations of alloying elements. As Baskes demonstrated in 1992, MEAM performs well in dilute systems. Therefore, it is likely that the authors and reviewers deemed 1NN-MEAM sufficient for this study.
 - 2NN-MEAM, developed by Lee in 2001, considers more complex interactions but is not always necessary for all simulations. When 1NN-MEAM provides adequate accuracy, it is often chosen for its lower computational cost and simpler model.
 - In summary, the choice of 1NN-MEAM in this study appears to be a well-considered decision based on the material properties and the objectives of the simulation. Your analysis aligns well with these considerations.
+5. Application to Other Bases
+- This research methodology can be applied not only to Al-based materials but also to Fe-based and Ni-based materials. For example, it is effective for analyzing the microstructure of Fe-based nanocrystalline materials and Ni-based superalloys.
 #-------------------------------------------------------------
 
 #-------------------------------------------------------------
