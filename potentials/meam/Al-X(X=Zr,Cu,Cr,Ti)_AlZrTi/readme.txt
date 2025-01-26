@@ -1,5 +1,5 @@
 #------------------------------------------------------------------------
-Al-Zr-Ti: Cmin and Cmax are calculated using Assumption.
+Al-Zr-Ti: As described in the paper, Cmin and Cmax are calculated using Assumption.
 #------------------------------------------------------------------------
 # High-temperature
 
