@@ -113,7 +113,8 @@ Cmax(i,j,k) = [0.5*Cmax(i,j,i)^0.5 + 0.5*Cmax(k,j,k)^0.5]^2 = Cmin(j,k,i)
 - Specifically, b0 represents the fundamental term of the angular dependence, and t0 is the parameter for scaling it. If all other parameters are 0, then the angular dependence disappears, resulting in the same form as the EAM.
 - This can be confirmed in the following literature: https://doi.org/10.1016/j.commatsci.2018.11.050 and https://doi.org/10.3390/ma13092062
 - Note: This is also important when creating potentials with rare gases, since studying different gas atmospheres and their pressures is important for the development of practical materials. 
-- Note: The Lammps code has a function ("momb") to calculate Grimme's dispersion force (-D2). It may be worth considering using this function. However, the easiest way to interact with noble gases is to use the Lennerd-Jones potential (see https://doi.org/10.1140/epjd/e2019-100387-9).
+- Note: The Lammps code has a function ("momb") to calculate Grimme's dispersion force (-D2). It may be worth considering using this function. However, the easiest way to interact with noble gases is to use the Lennerd-Jones potential (see https://doi.org/10.1140/epjd/e2019-100387-9). 
+- Note: If you want to take into account the second moment approximation, which has an important effect when changing the coordination number, you need to add it to the MEAM file. In that sense, it is worth taking the trouble to add new elements to the MEAM file.
 #-------------------------------------------------------------
 
 #-------------------------------------------------------------
