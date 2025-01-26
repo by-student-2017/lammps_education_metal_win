@@ -100,3 +100,7 @@ M. I. Baskes et al., Phys. Rev. B 66 (2002) 104107.: https://doi.org/10.1103/Phy
 21.      Be
 Modified Embedded Atom Method Potential for Modeling the Thermodynamic Properties of High Thermal Conductivity Beryllium Oxide
 J. Wei et al., ACS Omega 2019, 4, 4, 6339-6346.: https://pubs.acs.org/doi/full/10.1021/acsomega.9b00174
+
+22.       Co
+"Modified embedded-atom method interatomic potentials for the Co-Cr, Co-Fe, Co-Mn, Cr-Mn and Mn-Ni binary systems"
+Won-Mi Choi, Yongmin Kim, Donghyuk Seol and Byeong-Joo Lee, Compu. Mater. Sci. 130 (2017) 121-129.
