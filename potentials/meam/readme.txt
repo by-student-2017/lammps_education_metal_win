@@ -145,6 +145,7 @@ Cmax(i,j,k) = [0.5*Cmax(i,j,i)^0.5 + 0.5*Cmax(k,j,k)^0.5]^2 = Cmin(j,k,i)
 - RhPt (Luyten 2007) -> PtPdRh (Luyten 2009)
 - Li (Cui 2012) -> LiMo (Vella 2017)
 - Li (Cui 2012) -> LiSi (Godet 2020)
+- AlZrTi (J.-R. Castillo-Sanchez 2022)-> Al-X(X=Li,Zr,Zn) (Rincent 2023)
 #-------------------------------------------------------------
 
 #-------------------------------------------------------------
