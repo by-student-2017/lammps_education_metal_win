@@ -104,3 +104,7 @@ J. Wei et al., ACS Omega 2019, 4, 4, 6339-6346.: https://pubs.acs.org/doi/full/1
 22.       Co
 "Modified embedded-atom method interatomic potentials for the Co-Cr, Co-Fe, Co-Mn, Cr-Mn and Mn-Ni binary systems"
 Won-Mi Choi, Yongmin Kim, Donghyuk Seol and Byeong-Joo Lee, Compu. Mater. Sci. 130 (2017) 121-129.: https://doi.org/10.1016/j.commatsci.2017.01.002
+
+23.       U
+"On the accurate description of uranium metallic phases: a MEAM interatomic potential approach"
+J.R. Fernández, and M.I. Pascuet, Modelling and Simulation in Materials Science and Engineering, 22(5), 055019. DOI: 10.1088/0965-0393/22/5/055019.
