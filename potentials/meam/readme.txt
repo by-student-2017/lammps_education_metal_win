@@ -142,7 +142,7 @@ Cmax(i,j,k) = [0.5*Cmax(i,j,i)^0.5 + 0.5*Cmax(k,j,k)^0.5]^2 = Cmin(j,k,i)
 - AgTiO3 (Gao 2013) -> CuTiO (CuTaO3 or CuTa2O6) (Gao 2015)
 - HfNbTaTiZr_HEA -> AlHfNbTaTiZr_HEIC
   (Note: "VNbTaTiZr_HEA" is probably a different system because the NbTaTiZr parameters do not match those of HfNbTaTiZr_HEA.)
-  ("VNbTaTiZr_HEA_Nitol2024" has been published by NIST [1].)
+  ("VNbTaTiZr_HEA_Nitol2024" is published by NIST [1].)
 - RhPt (Luyten 2007) -> PtPdRh (Luyten 2009)
 - Li (Cui 2012) -> LiMo (Vella 2017)
 - Li (Cui 2012) -> LiSi (Godet 2020)
