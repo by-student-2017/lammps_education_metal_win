@@ -263,3 +263,11 @@ SiAu: Si and Au are generally good, but I haven't tried Si-Au.
 #-------------------------------------------------------------
 FeXO(X=Ni,Cr): Although we tried various things, we were unable to obtain values ​​close to the results in Table 3 using only the data in the paper.
 #-------------------------------------------------------------
+
+
+#-------------------------------------------------------------
+# References
+[1] NIST, Interatomic Potentials Repository: https://www.ctcms.nist.gov/potentials/
+[2] Home of 2NN MEAM Interatomic Potential: https://cmse.postech.ac.kr/home_2nnmeam
+[3] lammps/potentials: https://github.com/lammps/lammps/tree/develop/potentials
+#-------------------------------------------------------------
