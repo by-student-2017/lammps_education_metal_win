@@ -105,21 +105,6 @@ Cmax(i,k,j) = [0.5*Cmax(i,i,j)^0.5 + 0.5*Cmax(k,k,j)^0.5]^2
 Cmin(i,j,k) = [0.5*Cmin(i,j,i)^0.5 + 0.5*Cmin(k,j,k)^0.5]^2 = Cmin(j,k,i)
 Cmax(i,j,k) = [0.5*Cmax(i,j,i)^0.5 + 0.5*Cmax(k,j,k)^0.5]^2 = Cmin(j,k,i)
 #----------
-#----------(TiZrNbHfTa)Al3 HEIC (AlHfNbTaTiZr_HEIC) (It is also difficult to find physical meaning in this mixed method.)
-Cmin(i-j-k) = [0.5*Cmin(i-j-i)^0.5 + 0.5*Cmin(k-j-k)^0.5]^2
-Cmax(i-j-k) = [0.5*Cmax(i-j-i)^0.5 + 0.5*Cmax(k-j-k)^0.5]^2
-Cmin(i-k-j) = [0.5*Cmin(i-j-i)^0.5 + 0.5*Cmin(k-k-i)^0.5]^2
-Cmax(i-k-j) = [0.5*Cmax(i-j-i)^0.5 + 0.5*Cmax(k-k-i)^0.5]^2
-Cmin(j-k-i) = [0.5*Cmin(j-i-i)^0.5 + 0.5*Cmin(j-k-k)^0.5]^2
-Cmax(j-k-i) = [0.5*Cmax(j-i-i)^0.5 + 0.5*Cmax(j-k-k)^0.5]^2
-For Lammps (MEAM potential file)
-Cmin(i,k,j) = [0.5*Cmin(i,i,j)^0.5 + 0.5*Cmin(k,k,j)^0.5]^2
-Cmax(i,k,j) = [0.5*Cmax(i,i,j)^0.5 + 0.5*Cmax(k,k,j)^0.5]^2
-Cmin(i,j,k) = [0.5*Cmin(i,i,j)^0.5 + 0.5*Cmin(k,i,k)^0.5]^2
-Cmax(i,j,k) = [0.5*Cmax(i,i,j)^0.5 + 0.5*Cmax(k,i,k)^0.5]^2
-Cmin(j,i,k) = [0.5*Cmin(j,i,i)^0.5 + 0.5*Cmin(j,k,k)^0.5]^2
-Cmax(j,i,k) = [0.5*Cmax(j,i,i)^0.5 + 0.5*Cmax(j,k,k)^0.5]^2
-#----------
 #-------------------------------------------------------------
 
 #-------------------------------------------------------------
