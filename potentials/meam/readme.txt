@@ -147,9 +147,9 @@ Cmax(i,j,k) = [0.5*Cmax(i,j,i)^0.5 + 0.5*Cmax(k,j,k)^0.5]^2 = Cmin(j,k,i)
 - Li (Cui 2012) -> LiSi (Godet 2020)
 - Al-X(X=Zr,Cu,Cr,Ti)_AlZrTi (J.-R. Castillo-Sanchez 2022)-> Al-X(X=Li,Zr,Zn) (Rincent 2023)
 #-------------------------------------------------------------
-PtPdRhCo_HEA (Ju 2022)
 NbMoTaWV_HEA (Ju 2022)
 AlMoNbTaTiZr_HEA (Ju 2022)
+PtPdRhCo_HEA (Ju 2023)
 #-------------------------------------------------------------
 
 #-------------------------------------------------------------
