@@ -105,7 +105,7 @@ Cmax(i,k,j) = [0.5*Cmax(i,i,j)^0.5 + 0.5*Cmax(k,k,j)^0.5]^2
 Cmin(i,j,k) = [0.5*Cmin(i,j,i)^0.5 + 0.5*Cmin(k,j,k)^0.5]^2 = Cmin(j,k,i)
 Cmax(i,j,k) = [0.5*Cmax(i,j,i)^0.5 + 0.5*Cmax(k,j,k)^0.5]^2 = Cmin(j,k,i)
 #----------
-#----------(TiZrNbHfTa)Al3 HEIC
+#----------(TiZrNbHfTa)Al3 HEIC (It is also difficult to find physical meaning in this mixed method.)
 Cmin(i-j-k) = [0.5*Cmin(i-j-i)^0.5 + 0.5*Cmin(k-j-k)^0.5]^2
 Cmax(i-j-k) = [0.5*Cmax(i-j-i)^0.5 + 0.5*Cmax(k-j-k)^0.5]^2
 Cmin(i-k-j) = [0.5*Cmin(i-j-i)^0.5 + 0.5*Cmin(k-k-i)^0.5]^2
