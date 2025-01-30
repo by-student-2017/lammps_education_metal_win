@@ -264,6 +264,8 @@ SiAu: Si and Au are generally good, but I haven't tried Si-Au.
 #-------------------------------------------------------------
 TaSi: It could not be considered as literature.
 #-------------------------------------------------------------
+NiSi: It could not be considered as literature.
+#-------------------------------------------------------------
 
 #-------------------------------------------------------------
 FeXO(X=Ni,Cr): Although we tried various things, we were unable to obtain values ​​close to the results in Table 3 using only the data in the paper.
