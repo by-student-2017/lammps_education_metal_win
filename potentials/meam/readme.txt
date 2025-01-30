@@ -169,9 +169,9 @@ Note: (WC): I'm not sure if I can reproduce the paper.
 TiN, TiVN, (Ti2X(X=N,C)), ZrN, (TM-N(TM=Ti,V,Cr,Fe)), CrTiN, (TiCrN), FeNbN, FeN, FeTiN, (FeCrNiN), CuNTi, TiAlN, GaInN
 Note: (TM-N(TM=Ti,V,Cr,Fe)), (Ti2X(X=N,C)), (TiCrN), (FeCrNiN): I'm not sure if I can reproduce the paper.
 #-------------------------------------------------------------
-# Si-X (X=Li, Mg, Mo, Cr, Mn, Fe, Co, Ni, Cu, Zn, Al, C, Ge, O, He)
-LiSi, AlSiMgCuFe_AA6061, AlSiMgCuZn_AA7075, MoSi, FeCrSi, CFeMnSi, FeCoCrMnSi_HEA, FeCrNiN_AISI_316, SiAl, SiC, SiGe, SiO, SiHe, X-Y(FeMnSiCAlZnO)
-Note: AlSiMgCuZn_AA7075, MoSi, FeCrNiN_AISI_316, X-Y(FeMnSiCAlZnO), SiGe, SiHe: I'm not sure if I can reproduce the paper.
+# Si-X (X=Li, Mg, Mo, Cr, Mn, Fe, Co, Cu, Zn, Al, C, Ge, O, He)
+LiSi, AlSiMgCuFe_AA6061, AlSiMgCuZn_AA7075, MoSi, FeCrSi, CFeMnSi, FeCoCrMnSi_HEA, SiAl, SiC, SiGe, SiO, SiHe, X-Y(FeMnSiCAlZnO)
+Note: AlSiMgCuZn_AA7075, MoSi, X-Y(FeMnSiCAlZnO), SiGe, SiHe: I'm not sure if I can reproduce the paper.
 #-------------------------------------------------------------
 
 #-------------------------------------------------------------
