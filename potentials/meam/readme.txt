@@ -94,11 +94,10 @@ For Lammps (MEAM potential file)
 Cmin(i,j,k) = [0.5*Cmin(i,i,k)^0.5 + 0.5*Cmin(j,j,k)^0.5]^2
 Cmax(i,j,k) = [0.5*Cmax(i,i,k)^0.5 + 0.5*Cmax(j,j,k)^0.5]^2
 #----------
-#----------(see NiAlCo.meam) (This is difficult to understand because something that is not the atom to be screened is used as the atom to be screened. Since Cmin(i-k-j) = Cmin(j-i-k), the expressiveness is lower than the method shown above. It is necessary to consider the physical reason why this method is adopted.)
-Cmin(i-j-k) = [0.5*Cmin(i-j-i)^0.5 + 0.5*Cmin(k-j-k)^0.5]^2
-Cmax(i-j-k) = [0.5*Cmax(i-j-i)^0.5 + 0.5*Cmax(k-j-k)^0.5]^2
-Cmin(i-k-j) = [0.5*Cmin(i-i-j)^0.5 + 0.5*Cmin(k-k-j)^0.5]^2 = Cmin(j-i-k)
-Cmax(i-k-j) = [0.5*Cmax(i-i-j)^0.5 + 0.5*Cmax(k-k-j)^0.5]^2 = Cmin(j-i-k)
+#----------(see NiAlCo.meam)
+Cmin(i-j-k) = [0.5*Cmin(i-j-i)^0.5 + 0.5*Cmin(k-j-k)^0.5]^2 --(j-k -> k-j)--> Cmin(i-k-j) = [0.5*Cmin(i-i-j)^0.5 + 0.5*Cmin(k-k-j)^0.5]^2 --(i-k -> k-i)--> Cmin(k-i-j) = Cmin(j-i-k) = [0.5*Cmin(i-i-j)^0.5 + 0.5*Cmin(k-k-j)^0.5]^2
+Cmax(i-j-k) = [0.5*Cmax(i-j-i)^0.5 + 0.5*Cmax(k-j-k)^0.5]^2 --(j-k -> k-j)--> Cmax(i-k-j) = [0.5*Cmax(i-i-j)^0.5 + 0.5*Cmax(k-k-j)^0.5]^2 --(i-k -> k-i)--> Cmax(k-i-j) = Cmax(j-i-k) = [0.5*Cmax(i-i-j)^0.5 + 0.5*Cmax(k-k-j)^0.5]^2
+As shown above, first create the equation for C(i-k-j), and then use this equation as a basis to create the others.
 For Lammps (MEAM potential file)
 Cmin(i,k,j) = [0.5*Cmin(i,i,j)^0.5 + 0.5*Cmin(k,k,j)^0.5]^2
 Cmax(i,k,j) = [0.5*Cmax(i,i,j)^0.5 + 0.5*Cmax(k,k,j)^0.5]^2
