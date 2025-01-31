@@ -68,7 +68,7 @@ emb_lin_neg = 1
 bkgd_dyn = 1
 #-------------------------------------------------------------
 https://matsci.org/t/lammps-users-meam-potentials/5982
-Note: In 1NN-MEAM, d is not introduced (attract = repuls = a3 = 0), so erose_form = 0, 1, 2 are the same. Therefore, erose_form = 0 or the default is often used.
+Note: in 1NN-MEAM, d is rarely introduced (Because of this, in many cases "attract = repulsion = a3 = 0"), so erose_form = 0, 1, 2 are the same. Therefore, erose_form = 0 or the default is often used.
 Note: In 2NN-MEAM, d is introduced, and the formula for erose_form = 2 is often specified in papers. Therefore, erose_form = 2 is often used.
 #-------------------------------------------------------------
 - Bulk case
