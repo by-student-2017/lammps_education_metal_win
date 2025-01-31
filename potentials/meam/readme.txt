@@ -94,7 +94,8 @@ For Lammps (MEAM potential file)
 Cmin(i,j,k) = [0.5*Cmin(i,i,k)^0.5 + 0.5*Cmin(j,j,k)^0.5]^2
 Cmax(i,j,k) = [0.5*Cmax(i,i,k)^0.5 + 0.5*Cmax(j,j,k)^0.5]^2
 #----------
-#----------(see NiAlCo.meam)
+# Note: The above mixtures have not been compared with FeTiC or FeTiN. It is important to note that only the mixture below (which is described as the best in the paper) and binary have been examined.
+#----------(see NiAlCo.meam, FeTiC.meam, or FeTiN.meam)
 Cmin(i-j-k) = [0.5*Cmin(i-j-i)^0.5 + 0.5*Cmin(k-j-k)^0.5]^2 --(j-k -> k-j)--> Cmin(i-k-j) = [0.5*Cmin(i-i-j)^0.5 + 0.5*Cmin(k-k-j)^0.5]^2 --(i-k -> k-i)--> Cmin(k-i-j) = Cmin(j-i-k) = [0.5*Cmin(i-i-j)^0.5 + 0.5*Cmin(k-k-j)^0.5]^2
 Cmax(i-j-k) = [0.5*Cmax(i-j-i)^0.5 + 0.5*Cmax(k-j-k)^0.5]^2 --(j-k -> k-j)--> Cmax(i-k-j) = [0.5*Cmax(i-i-j)^0.5 + 0.5*Cmax(k-k-j)^0.5]^2 --(i-k -> k-i)--> Cmax(k-i-j) = Cmax(j-i-k) = [0.5*Cmax(i-i-j)^0.5 + 0.5*Cmax(k-k-j)^0.5]^2
 As shown above, first create the equation for C(i-k-j), and then use this equation as a basis to create the others.
