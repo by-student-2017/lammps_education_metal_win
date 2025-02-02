@@ -13,7 +13,7 @@ The lattice constant, y (Angstoms) = 2.79058892349761;
 The lattice constant, z (Angstoms) = 3.42199279655925;
 The volume (Angstoms^3) = 30.7708994758593;
 The total energy (eV) = -18.9824690588632;
-The cohesive energy (eV/atom) = -6.32748968628772;
+The cohesive energy (eV/atom) = 6.32748968628772;
 -------------------------------------------------------------
 # Murnaghan equation of state
 f(x) = (a*x/(b*(b-1)))*(b*(1-c/x)+(c/x)**b-1)+d
@@ -85,7 +85,7 @@ The lattice constant, y (Angstoms) = 2.79058892349761;
 The lattice constant, z (Angstoms) = 3.42199279655925;
 The volume (Angstoms^3) = 30.7708994758593;
 The total energy (eV) = -18.9824690588632;
-The cohesive energy (eV/atom) = -6.32748968628772;
+The cohesive energy (eV/atom) = 6.32748968628772;
 -------------------------------------------------------------
 # Murnaghan equation of state
 f(x) = (a*x/(b*(b-1)))*(b*(1-c/x)+(c/x)**b-1)+d
@@ -126,7 +126,7 @@ The lattice constant, y (Angstoms) = 2.78970508175726;
 The lattice constant, z (Angstoms) = 3.42090897513242;
 The volume (Angstoms^3) = 30.7416712449431;
 The total energy (eV) = -19.0322714909455;
-The cohesive energy (eV/atom) = -6.34409049698184;
+The cohesive energy (eV/atom) = 6.34409049698184;
 -------------------------------------------------------------
 # Murnaghan equation of state
 f(x) = (a*x/(b*(b-1)))*(b*(1-c/x)+(c/x)**b-1)+d
@@ -167,7 +167,7 @@ The lattice constant, y (Angstoms) = 2.78970508175726;
 The lattice constant, z (Angstoms) = 3.42090897513242;
 The volume (Angstoms^3) = 30.7416712449431;
 The total energy (eV) = -19.0322714909455;
-The cohesive energy (eV/atom) = -6.34409049698184;
+The cohesive energy (eV/atom) = 6.34409049698184;
 -------------------------------------------------------------
 # Murnaghan equation of state
 f(x) = (a*x/(b*(b-1)))*(b*(1-c/x)+(c/x)**b-1)+d
