@@ -13,7 +13,7 @@ The lattice constant, y (Angstoms) = 4.50643593976471;
 The lattice constant, z (Angstoms) = 4.50643593976471;
 The volume (Angstoms^3) = 91.51654279512;
 The total energy (eV) = -50.9147108326446;
-The cohesive energy (eV/atom) = -6.36433885408058;
+The cohesive energy (eV/atom) = 6.36433885408058;
 -------------------------------------------------------------
 C tensor [GPa] (elastic stiffness constants)
           1                 2                 3                 4                 5                 6
@@ -56,7 +56,7 @@ The lattice constant, y (Angstoms) = 4.37683075525421;
 The lattice constant, z (Angstoms) = 4.37683075525421;
 The volume (Angstoms^3) = 83.8454037710992;
 The total energy (eV) = -53.4763896207499;
-The cohesive energy (eV/atom) = -6.68454870259374;
+The cohesive energy (eV/atom) = 6.68454870259374;
 -------------------------------------------------------------
 C tensor [GPa] (elastic stiffness constants)
           1                 2                 3                 4                 5                 6
@@ -99,7 +99,7 @@ The lattice constant, y (Angstoms) = 4.40657624267056;
 The lattice constant, z (Angstoms) = 4.40657624267056;
 The volume (Angstoms^3) = 85.5665193186819;
 The total energy (eV) = -40.3831168476938;
-The cohesive energy (eV/atom) = -5.04788960596172;
+The cohesive energy (eV/atom) = 5.04788960596172;
 -------------------------------------------------------------
 C tensor [GPa] (elastic stiffness constants)
           1                 2                 3                 4                 5                 6
@@ -143,7 +143,7 @@ The lattice constant, y (Angstoms) = 4.33433726361915;
 The lattice constant, z (Angstoms) = 4.33433726361915;
 The volume (Angstoms^3) = 81.4269382132049;
 The total energy (eV) = -34.9745415270231;
-The cohesive energy (eV/atom) = -4.37181769087789;
+The cohesive energy (eV/atom) = 4.37181769087789;
 -------------------------------------------------------------
 C tensor [GPa] (elastic stiffness constants)
           1                 2                 3                 4                 5                 6
