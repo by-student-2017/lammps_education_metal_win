@@ -277,4 +277,7 @@ FeXO(X=Ni,Cr): Although we tried various things, we were unable to obtain values
 [1] NIST, Interatomic Potentials Repository: https://www.ctcms.nist.gov/potentials/
 [2] Home of 2NN MEAM Interatomic Potential: https://cmse.postech.ac.kr/home_2nnmeam
 [3] lammps/potentials: https://github.com/lammps/lammps/tree/develop/potentials
+[4] https://github.com/jushinpon
+  https://github.com/jushinpon/PtPdRhCo_HEA
+  https://github.com/jushinpon/CoCrFeMnNi-HfNbTaTiZr-DP-HEA
 #-------------------------------------------------------------
