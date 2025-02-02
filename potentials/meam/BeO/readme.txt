@@ -13,7 +13,7 @@ The lattice constant, y (Angstoms) = 2.44537599194452;
 The lattice constant, z (Angstoms) = 4.58717776072425;
 The volume (Angstoms^3) = 31.6742417129677;
 The total energy (eV) = -14.7902746641211;
-The cohesive energy (eV/atom) = -3.69756866603028;
+The cohesive energy (eV/atom) = 3.69756866603028;
 -------------------------------------------------------------
 C tensor [GPa] (elastic stiffness constants)
           1                 2                 3                 4                 5                 6
