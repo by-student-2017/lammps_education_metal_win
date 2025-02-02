@@ -1,0 +1,60 @@
+# Appendix A: LAMMPS Codes
+# https://tigerprints.clemson.edu/cgi/viewcontent.cgi?article=3761&context=all_dissertations
+
+# Relaxation
+
+#-------------------- Environment Settings -----------------------------------------------
+variable  Tdesird equal  300.0 # Temperature [K]
+variable   Nsteps equal 300000 # Number of simulation cycles
+variable DumpFreq equal    100 # For print out
+
+#-------------------- Initialization -----------------------------------------------------
+# eV,atomic charge,angstroms,ps,kelvin,bars,g/mol 
+units metal
+dimension 3
+boundary p p p
+
+#-------------------- Read structure file ------------------------------------------------
+atom_style atomic
+atom_modify map array
+
+read_data ./../data/noequal.data
+#read_data ./../data/equal.data
+
+replicate 1 1 1
+
+variable elem string "Pd0 Rh0 Co0 Pt0"
+
+#-------------------- Force field --------------------------------------------------------
+pair_style meam
+pair_coeff * * library.meam ${elem} Pd0Rh0Co0Pt0.meam ${elem}
+
+#-------------------- Settings -----------------------------------------------------------
+neighbor 2.0 bin
+neigh_modify delay 10 check yes
+
+reset_timestep 0
+
+timestep 0.0005 # 0.5 [fs]
+
+thermo 100
+thermo_style custom step temp pe etotal pxx pyy pzz pxy pxz pyz press lx ly lz
+
+#---------- output file settings -------------------
+dump            d1 all cfg ${DumpFreq} cfg/run.*.cfg mass type xs ys zs id type vx vy vz fx fy fz
+dump_modify     d1 element ${elem}
+#---------------------------------------------------
+
+velocity all create ${Tdesird} 95812384
+
+fix 3 all npt temp ${Tdesird} ${Tdesird} $(100.0*dt) aniso 0.0 0.0 $(1000.0*dt)
+
+run ${Nsteps}
+
+unfix 3
+
+#-------------------- Output data file ---------------------------------------------------
+write_restart HEA_thermal_equilibrate.restart
+print "Print restart"
+
+#-------------------- End ----------------------------------------------------------------
