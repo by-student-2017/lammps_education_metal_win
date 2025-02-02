@@ -17,7 +17,8 @@
 #-----------------------
 pair_style meam
 #pair_coeff * * ./../../library.meam Co Al W ./../../CoAlW.meam Co Al
-pair_coeff * * ./../../library.meam Co Al W ./../../CoAlW.meam Al W
+#pair_coeff * * ./../../library.meam Co Al W ./../../CoAlW.meam Al W
+pair_coeff * * ./../../library.meam Co Al W ./../../CoAlW.meam Co Al W
 #-----------------------
 
 # Setup neighbor style
