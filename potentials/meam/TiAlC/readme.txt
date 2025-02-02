@@ -13,7 +13,7 @@ The lattice constant, y (Angstoms) = 2.81334233105141;
 The lattice constant, z (Angstoms) = 14.5396694797619;
 The volume (Angstoms^3) = 132.88288981527;
 The total energy (eV) = -43.4202216169833;
-The cohesive energy (eV/atom) = -5.42752770212292;
+The cohesive energy (eV/atom) = 5.42752770212292;
 -------------------------------------------------------------
 # Murnaghan equation of state
 f(x) = (a*x/(b*(b-1)))*(b*(1-c/x)+(c/x)**b-1)+d
