@@ -259,6 +259,10 @@ TiCrN: It could not be considered as literature.
 #-------------------------------------------------------------
 
 #-------------------------------------------------------------
+FeXO(X=Ni,Cr): Overall, the values ​​do not match those in the paper perfectly. In particular, Fe-Cr (FeCr2O4) does not work well.
+#-------------------------------------------------------------
+
+#-------------------------------------------------------------
 SiAuO: I tried it with mp-6930 but it doesn't match the literature.
 SiAu: Si and Au are generally good, but I haven't tried Si-Au.
 #-------------------------------------------------------------
@@ -267,10 +271,6 @@ SiAu: Si and Au are generally good, but I haven't tried Si-Au.
 TaSi: It could not be considered as literature.
 #-------------------------------------------------------------
 NiSi: It could not be considered as literature.
-#-------------------------------------------------------------
-
-#-------------------------------------------------------------
-FeXO(X=Ni,Cr): Although we tried various things, we were unable to obtain values ​​close to the results in Table 3 using only the data in the paper.
 #-------------------------------------------------------------
 
 
