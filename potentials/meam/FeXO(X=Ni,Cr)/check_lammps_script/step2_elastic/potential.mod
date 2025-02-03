@@ -16,7 +16,10 @@
 #pair_coeff * * AlCrFeCoNi_Zhou04.eam.alloy Fe
 #-----------------------
 pair_style meam
-pair_coeff * * ./../../library.meam Fe Cr Ni O ./../../FeCrNiO.meam Fe O
+#pair_coeff * * ./../../library.meam Fe Cr Ni O ./../../FeCrNiO.meam Fe O
+#pair_coeff * * ./../../library.meam Fe Cr Ni O ./../../FeCrNiO.meam Cr O
+#pair_coeff * * ./../../library.meam Fe Cr Ni O ./../../FeCrNiO.meam Fe Ni O
+pair_coeff * * ./../../library.meam Fe Cr Ni O ./../../FeCrNiO.meam Fe Cr O
 #-----------------------
 
 # Setup neighbor style
