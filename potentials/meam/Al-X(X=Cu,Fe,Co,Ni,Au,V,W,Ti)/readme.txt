@@ -21,6 +21,15 @@ pair_coeff * * library.meam Al Ni Cu Au V Fe W Ti Co AlNiCuAuVFeWTiCo.meam Al Ni
 # Co-Al (B2 structure)
 # dEc(Ec(B2) - 0.5*Ec(Co) - 0.5*Ec(Al) = -0.565
 # re = 2.4768, B = 1.62 [10^12 dyn/cm2]
+# C(i-k-j) = C(i,j,k)
+# Cmin(Co-Al-Co) = Cmin(1,1,2) = 0.49 = Cmin(1,1,1)
+# Cmin(Al-Co-Al) = Cmin(2,2,1) = 1.10
+# Cmin(Co-Co-Al) = Cmin(1,2,1) = [0.5*Cmin(1,1,1)^0.5+0.5*Cmin(2,2,2)^0.5]^2
+# Cmin(Co-Al-Al) = Cmin(1,2,2) = [0.5*Cmin(1,1,1)^0.5+0.5*Cmin(2,2,2)^0.5]^2
+# Cmax(Co-Al-Co) = Cmax(1,1,2) = 2.0 = Cmax(1,1,1)
+# Cmax(Al-Co-Al) = Cmax(2,2,1) = 2.8 = Cmax(2,2,2)
+# Cmax(Co-Co-Al) = Cmax(1,2,1) = 2.8 (default value)
+# Cmax(Co-Al-Al) = Cmax(1,2,2) = 2.8 (default value)
 # Ref. [32] W.-P. Dong et al., CALPHAD 38 (2012) 7-16.
 #------------------------------------------------------------------------
 # Al-Cu (B1 structure)
