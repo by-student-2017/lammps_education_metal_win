@@ -14,12 +14,12 @@ pair_coeff * * library.meam Al Ni Cu Au V Fe W Ti Co AlNiCuAuVFeWTiCo.meam Al Ni
 # Although there is no description of Cmin and Cmax for "Al-Y (Y = Ni, Au, V, W, Ti)" in the table, the "Assumption" was applied as with "Al-X (X = Cu, Fe, Co)".
 # Fe in library.meam: The paper contains many errors, so it is difficult to assume that the numerical values ​​are reliable. Here, we use the publicly available data from [27].
 # For AlCo, the reference structure was chosen to be B2 rather than B1, taking into account the values ​​of Ec, B, and re.
-# The Ec of L12-Al3Au and B1-AlCu was checked by referring to the cited paper, but it did not match the value in the paper.
+# The Ec values ​​of L12-Al3Au and B1-AlCu were calculated by referring to the cited paper, but they did not match the values ​​in the paper. On the other hand, the Ec values ​​of B1-AlW and L12-Al3Ti were almost the same as those in the paper.
 #------------------------------------------------------------------------
 # Al-Co
 # Although the literature states that "During the parameterization, the parameter Cmin for Cu is reduced from 1.21 originally to 0.8, 
 # and Cmax for Co is increased from 2.0 originally to 2.8," the calculation was performed with Cmax,Co = 2.0. Here, we decided to follow the values ​​in Table 3.
-# Note 1: The Ec calculation for Co-Al agrees with the value published by NIST, but the reference structure cited is the B2 structure, not the B1.
+# Note: The Ec calculation for Co-Al agrees with the value published by NIST, but the reference structure cited is the B2 structure, not the B1.
 #------------------------------------------------------------------------
 # Co-Al (B2 structure) (see CoAl.meam in CoAl directory)
 # Mistake !!!: dEc(Ec(B2) - 0.5*Ec(Co) - 0.5*Ec(Al) = -0.565
