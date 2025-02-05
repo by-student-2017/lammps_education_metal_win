@@ -21,7 +21,7 @@ pair_coeff * * library.meam Al Ni Cu Au V Fe W Ti Co AlNiCuAuVFeWTiCo.meam Al Ni
 # Co-Al (B2 structure)
 # dEc(Ec(B2) - 0.5*Ec(Co) - 0.5*Ec(Al) = -0.565
 # re = 2.4768, B = 1.62 [10^12 dyn/cm2]
-# 
+# Ref. [32] W.-P. Dong et al., CALPHAD 38 (2012) 7-16.
 #------------------------------------------------------------------------
 # Al-Cu (B1 structure)
 # AlCu(B1): Ec = 3.42 [eV], alpha = 4.85 (B = 89.5 [GPa]), re = 2.52 (885 K), 2.54 (1000 K), and 2.59 (1345 K) 
