@@ -18,6 +18,10 @@ pair_coeff * * library.meam Al Ni Cu Au V Fe W Ti Co AlNiCuAuVFeWTiCo.meam Al Ni
 # Although the literature states that "During the parameterization, the parameter Cmin for Cu is reduced from 1.21 originally to 0.8, 
 # and Cmax for Co is increased from 2.0 originally to 2.8," the calculation was performed with Cmax,Co = 2.0. Here, we decided to follow the values ​​in Table 3.
 #------------------------------------------------------------------------
+# Al-Cu (B1 structure)
+# AlCu(B1): Ec = 3.42 [eV], alpha = 4.85, re = 2.52 (885 K), 2.54 (1000 K), and 2.59 (1345 K) 
+# Ref. [31] M. E. Trybula et al., Comput. Mater. Sci. 122 (2016) 341-352.
+#------------------------------------------------------------------------
 # In my environment, I cannot immediately obtain the papers cited in the MEAM parameters, so I cannot check thoroughly. 
 # In particular, I cannot check whether the B1 structure is the correct reference structure for Al-Co, not the B2 structure.
 #------------------------------------------------------------------------
