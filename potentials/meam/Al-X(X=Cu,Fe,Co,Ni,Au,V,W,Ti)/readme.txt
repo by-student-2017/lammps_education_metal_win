@@ -16,7 +16,7 @@ pair_coeff * * library.meam Al Ni Cu Au V Fe W Ti Co AlNiCuAuVFeWTiCo.meam Al Ni
 # From the "Assumption", it can be inferred that C(i-k-j) = C(i,j,k).
 # C(i-k-j) = C(A-B-A), C(B-A-B), C(A-A-B), C(A-B-B): Perhaps the last C(M-Al-Al) in the "Reference state" is a mistake, instead of C(A-B-B). In addition, the last four Cs are inferred to be errors in Cmax based on the assumptions and values.
 # C(A,A,B), C(B,B,A), C(A,B,A), C(A,B,B) in lammps
-# For "Al-M (M = Ni, Au, V, W, Ti)", we added Cmin and Cmax in "Assumpiton", just like for "A-X (X = Cu, Fe, Co)".
+# For "Al-M (M = Ni, Au, V, W, Ti)", we added Cmin and Cmax in "Assumpiton", just like for "A-X (X = Cu, Fe, Co)". If you don't need them, just delete d, Cmin, and Cmax, or put # at the beginning of the line.
 # Fe in library.meam: The paper contains many errors, so it is difficult to assume that the numerical values ​​are reliable. Here, we use the publicly available data from [27].
 # For AlCo, the reference structure was chosen to be B2 rather than B1, taking into account the values ​​of Ec, B, and re.
 # The Ec values ​​of L12-Al3Au and B1-AlCu were calculated by referring to the cited paper, but they did not match the values ​​in the paper. On the other hand, the Ec values ​​of B1-AlW and L12-Al3Ti were almost the same as those in the paper.
