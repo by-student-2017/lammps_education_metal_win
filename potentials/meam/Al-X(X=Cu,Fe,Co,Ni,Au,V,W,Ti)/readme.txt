@@ -4,13 +4,13 @@ dimension 3
 boundary p p p 
 atom_style atomic
 
-# 2NN-MEAM, Al-X(X=Cu,Fe,Co,Ni,Au,V,W,Ti)
+# 2NN-MEAM, Al-M(M=Cu,Fe,Co,Ni,Au,V,W,Ti)
 pair_style meam
 pair_coeff * * library.meam Al Ni Cu Au V Fe W Ti Co AlNiCuAuVFeWTiCo.meam Al Ni Cu Au V Fe W Ti Co
 #------------------------------------------------------------------------
 # According to the paper, if the parameters are set appropriately, the difference between the experimental and calculated values ​​of Young's modulus (E) and thermal expansion coefficient (alpha) is approximately 15%.
 #------------------------------------------------------------------------
-# In the paper, d, Cmin and Cmax are all calculated using the "Assumption" formula. (A-X(X=Cu,Fe,Co))
+# In the paper, d, Cmin and Cmax are all calculated using the "Assumption" formula. (A-M (M=Cu,Fe,Co))
 # For "Al-M (M = Ni, Au, V, W, Ti)", only Ec, re, and B are provided. There is no mention of d, Cmin, or Cmax in the paper. I don't know if I need to apply the "Assumption" formula. This is because the paper only shows Cu, Fe, and Co being deposited on the Al surface. 
 #------------------------------------------------------------------------
 # From the "Assumption", it can be inferred that C(i-k-j) = C(i,j,k).
