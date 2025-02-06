@@ -13,10 +13,10 @@ pair_coeff 2 3 lj/cut 0.13152 2.06793 # V-H
 #pair_coeff 2 3 lj/cut 0.19041 2.12510 # V-He
 #pair_coeff 2 3 lj/cut 0.19571 2.24278 # V-O
 
-#pair_coeff 3 3 lj/cut 0.00455 3.43085 # C-C
-pair_coeff 3 3 lj/cut 0.00191 2.57113 # H-H
-#pair_coeff 3 3 lj/cut 0.00243 2.10430 # He-He
-#pair_coeff 3 3 lj/cut 0.00260 3.11815 # O-O
+#pair_coeff 3 3 lj/cut 0.00455 3.43085 # C-C (from UFF)
+pair_coeff 3 3 lj/cut 0.00191 2.57113 # H-H (from UFF)
+#pair_coeff 3 3 lj/cut 0.00243 2.10430 # He-He (from UFF)
+#pair_coeff 3 3 lj/cut 0.00260 3.11815 # O-O (from UFF)
 
 #-------------------------------------------------------------
 #-------------------------------------------------------------
