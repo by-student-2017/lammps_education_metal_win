@@ -8,6 +8,8 @@ atom_style atomic
 pair_style meam
 pair_coeff * * library.meam Al Ni Cu Au V Fe W Ti Co AlNiCuAuVFeWTiCo.meam Al Ni Cu Au V Fe W Ti Co
 #------------------------------------------------------------------------
+# According to the paper, if the parameters are set appropriately, the difference between the experimental and calculated values ​​of Young's modulus (E) and thermal expansion coefficient (alpha) is approximately 15%.
+#------------------------------------------------------------------------
 # From the "Assumption", it can be inferred that C(i-k-j) = C(i,j,k).
 # C(i-k-j) = C(A-B-A), C(B-A-B), C(A-A-B), C(A-B-B): Perhaps the last C(M-Al-Al) in the "Reference state" is a mistake, instead of C(A-B-B). In addition, the last four Cs are inferred to be errors in Cmax based on the assumptions and values.
 # C(A,A,B), C(B,B,A), C(A,B,A), C(A,B,B) in lammps
