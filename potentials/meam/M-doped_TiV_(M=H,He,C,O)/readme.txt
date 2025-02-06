@@ -1,3 +1,5 @@
+# Note: I created the MEAM file and input file settings as described in the paper, but I have not yet verified it with Lammps.
+
 Usage in lammps input
 #-------------------------------------------------------------
 pair_style hybrid meam lj/cut 4.8
@@ -17,8 +19,9 @@ pair_coeff 2 3 lj/cut 0.13152 2.06793 # V-H
 pair_coeff 3 3 lj/cut 0.00191 2.57113 # H-H (from UFF)
 #pair_coeff 3 3 lj/cut 0.00243 2.10430 # He-He (from UFF)
 #pair_coeff 3 3 lj/cut 0.00260 3.11815 # O-O (from UFF)
-
 #-------------------------------------------------------------
+
+
 #-------------------------------------------------------------
 #Pair	epsilon [eV]	sigma [A]	r0 = 2^(1/6)*sigma [A]
 #------------------------------
