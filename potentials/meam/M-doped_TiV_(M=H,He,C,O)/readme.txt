@@ -37,6 +37,8 @@ pair_coeff 3 3 lj/cut 0.00191 2.57113 # H-H (from UFF)
 # E_LJ = m/(r^12) - n/(r^6)
 # m = 4*epsilon*sigma^12
 # n = 4*epsilon*sigma^6
+# sigma = (m/n)^(1/6)
+# epsilon = n/(4*sigma^6) = n^2/(4*m)
 #
 #Atomic interaction  m(1.0e-10 eV nm^-12)  n(1.0e-5 eV nm^-6)
 # V-C    9.666  13.110
