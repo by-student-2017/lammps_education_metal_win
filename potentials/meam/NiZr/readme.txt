@@ -2,6 +2,12 @@
 # There is no mention of d in NiZr in the paper.
 # There is no specific statement in the paper as to whether it is C(i-k-j).
 #-------------------------------------------------------------
+# Ref.: F. J. Cherne et al., LA-UR-03-0368.: https://www.osti.gov/servlets/purl/976517
+# We constructed the zirconium potential using fcc as the reference structure.
+# The use of an hcp reference structure is possible [16] but much more cumbersome. 
+# The properties predicted by the MEAM potential are the same whether 
+# we start with the hcp or fcc structures.
+#-------------------------------------------------------------
 
 Usage in lammps input
 #-------------------------------------------------------------
