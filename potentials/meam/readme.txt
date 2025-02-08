@@ -77,7 +77,8 @@ Note: In 2NN-MEAM, d is introduced, and the formula for erose_form = 2 is often 
 Note: As shown in the example of BTi, when Cmin and Cmax published by NIST are added, or when ibar is changed from 3 to 0 or -5, the difference in lattice constant, cohesive energy, and elastic constant is not clear, so it is difficult to clarify which setting is best.
 Note: There are also papers in which only the ibar has been changed using files and parameters from published previous papers.
 #-------------------------------------------------------------
-- Differences in reference structures: We constructed the zirconium potential using fcc as the reference structure. The use of an hcp reference structure is possible [16] but much more cumbersome. The properties predicted by the MEAM potential are the same whether we start with the hcp or fcc structures. (F. J. Cherne et al., LA-UR-03-0368.: https://www.osti.gov/servlets/purl/976517)
+- Differences in reference structures
+- Note: We constructed the zirconium potential using fcc as the reference structure. The use of an hcp reference structure is possible [16] but much more cumbersome. The properties predicted by the MEAM potential are the same whether we start with the hcp or fcc structures. (F. J. Cherne et al., LA-UR-03-0368.: https://www.osti.gov/servlets/purl/976517)
 - Note: The above is written in the literature, and I agree with the idea if Rose's universal curve is considered to be valid without any problems. However, since the data applied to Rose's universal curve has different errors depending on the reference structure, I think that papers that change the reference structure and examine it can be fully supported.
 #-------------------------------------------------------------
 Conclusion
