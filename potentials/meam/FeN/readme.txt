@@ -1,1 +1,2 @@
-Lee, B. J., Lee, T. H., & Kim, S. J. (2006). A modified embedded-atom method interatomic potential for the Fe-N system: A comparative study with the Fe-C system. Acta Materialia, 54(17), 4597-4607. 
+# 2006--Lee-B-J-Lee-T-H-Kim-S-J--Fe-N (NIST, Interatomic Potentials Repository)
+# B.-J. Lee et al., Acta Materialia, 54(17), 4597-4607.: https://doi.org/10.1016/j.actamat.2006.06.003
