@@ -89,6 +89,7 @@ Note: There are also papers in which only the ibar has been changed using files 
 - Therefore, the condition of d > 0.05 should be carefully checked for any misfit.
 - In TB-SMA, it may be possible for p/q = 8 in Li, that is, d = 0.20, but in the case of d > 0.20, which exceeds 0.20, physical reasons must be thoroughly considered.
 - If the value of d is not appropriate (for example, if it is not in the range of 0 to 0.05, as is the case normally), you may be fitting with a large change in other parameters such as rho0, which may reduce the possibility of transfer.
+- From a TB-SMA perspective, the value of p/q tends to decrease as the number of turns in the periodic table increases (i.e., d approaches 0).
 #-------------------------------------------------------------
 ## Note to the author and referees
 - When we create a MEAM using the Rose universal function, the energy, lattice constant, and bulk modulus show fairly good values. However, it is necessary to set Cmin and Cmax appropriately for the elastic constants. Therefore, at the very least, you should compare the elastic constants of the reference structure with DFT or experimental values. 
