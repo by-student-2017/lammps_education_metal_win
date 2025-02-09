@@ -1,0 +1,2 @@
+A modified embedded-atom method interatomic potential for the V-H system
+Jae-Hyeok Shim, Young-Su Lee, Eric Fleury, Young Whan Cho, Won-Seok Ko, Byeong-Joo Lee, CALPHAD 35, 302-307 (2011).
