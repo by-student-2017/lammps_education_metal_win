@@ -1,0 +1,1 @@
+"A comparative study on hydrogen diffusion in amorphous and crystalline metals using a molecular dynamics simulation", Byeong-Moon Lee and Byeong-Joo Lee, Metall. Mater. Trans. A (2014), accepted for publication.
