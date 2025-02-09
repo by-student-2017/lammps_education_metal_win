@@ -3,3 +3,5 @@
 
 # Nb-Fe: The parameters d, Cmin, and Cmax all agree with the calculated values ​​of "Assumption".
 # If they happen to match "Assumption", that's good, but if not, you'll need to refit.
+
+repuls(1,3) =	2.00
