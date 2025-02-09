@@ -5,6 +5,8 @@
 # If they happen to match "Assumption", that's good, but if not, you'll need to refit.
 
 #-------------------------------------------------------------------------------------------------------------
+# original directory
+
 # The replus value related to "d = a3" differs from that described in the paper and is abnormally high.
 # d is related to the shape of the Rose universal curve. It usually takes a value in the range of about 0.0-0.05, 
 # but it is necessary to verify whether large values ​​such as 1.44 or 2.00 are really correct.
