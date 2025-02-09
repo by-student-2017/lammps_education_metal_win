@@ -91,8 +91,7 @@ Note: There are also papers in which only the ibar has been changed using files 
 - If the value of d is not appropriate (for example, if it is not in the range of 0 to 0.05, as is the case normally), you may be fitting with a large change in other parameters such as rho0, which may reduce the possibility of transfer.
 #-------------------------------------------------------------
 ## Note to the author and referees
-- When we create a MEAM using the Rose universal function, the energy, lattice constant, and bulk modulus show fairly good values. However, it is necessary to set Cmin and Cmax appropriately for the elastic constants.
-- Therefore, at the very least, you should compare the elastic constants of the reference structure with DFT or experimental values. 
+- When we create a MEAM using the Rose universal function, the energy, lattice constant, and bulk modulus show fairly good values. However, it is necessary to set Cmin and Cmax appropriately for the elastic constants. Therefore, at the very least, you should compare the elastic constants of the reference structure with DFT or experimental values. 
 - To check parameters such as Ec for alloys, you should also list the bulk modulus and alpha (aster = a*) values.
 - It should be specified whether i, j, or k is used for screening in C(i-k-j). Even though it is written as Lammps format, the Lammps manual on the web does not show the notation for C(i-k-j) (it shows Cmin(I,J,K) and Cmax(I,J,K)).
 #-------------------------------------------------------------
