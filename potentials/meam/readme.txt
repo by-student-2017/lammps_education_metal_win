@@ -90,6 +90,10 @@ Note: There are also papers in which only the ibar has been changed using files 
 - In TB-SMA, it may be possible for p/q = 8 in Li, that is, d = 0.20, but in the case of d > 0.20, which exceeds 0.20, physical reasons must be thoroughly considered.
 - If the value of d is not appropriate (for example, if it is not in the range of 0 to 0.05, as is the case normally), you may be fitting with a large change in other parameters such as rho0, which may reduce the possibility of transfer.
 #-------------------------------------------------------------
+## Note to the author and referees
+- When we create a MEAM using the Rose universal function, the energy, lattice constant, and bulk modulus show fairly good values. However, it is necessary to set Cmin and Cmax appropriately for the elastic constants.
+- Therefore, at the very least, you should compare the elastic constants of the reference structure with DFT or experimental values. 
+#-------------------------------------------------------------
 Conclusion
 1. Publishers, referees, and editors should require that input files used in supplementary materials be made public as a condition of publication. It would be ideal if all conditions could be described in the paper, but this is not currently the case.
 2. Other than NIST, public institutions should be involved in international efforts to verify and develop the potential, and appropriate institutions should be created.
