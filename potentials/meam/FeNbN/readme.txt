@@ -5,3 +5,6 @@
 # If they happen to match "Assumption", that's good, but if not, you'll need to refit.
 
 repuls(1,3) =	2.00
+
+repuls(2,3) =	1.44
+attrac(2,3) =	0.0250
