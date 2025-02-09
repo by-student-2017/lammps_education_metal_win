@@ -93,7 +93,7 @@ Note: There are also papers in which only the ibar has been changed using files 
 ## Note to the author and referees
 - When we create a MEAM using the Rose universal function, the energy, lattice constant, and bulk modulus show fairly good values. However, it is necessary to set Cmin and Cmax appropriately for the elastic constants. Therefore, at the very least, you should compare the elastic constants of the reference structure with DFT or experimental values. 
 - To check parameters such as Ec for alloys, you should also list the bulk modulus and alpha (aster = a*) values.
-- It should be specified whether i, j, or k is used for screening in C(i-k-j). Even though it is written as Lammps format, the Lammps manual on the web does not show the notation for C(i-k-j) (it shows Cmin(I,J,K) and Cmax(I,J,K)).
+- It should be specified whether i, j, or k is used for screening in C(i-k-j). Even though the paper mentions the Lammps format, the Lammps manual on the web does not show any notation for C(i-k-j) (it lists Cmin(I,J,K) and Cmax(I,J,K)).
 #-------------------------------------------------------------
 Conclusion
 1. Publishers, referees, and editors should require that input files used in supplementary materials be made public as a condition of publication. It would be ideal if all conditions could be described in the paper, but this is not currently the case.
