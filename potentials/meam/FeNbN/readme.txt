@@ -1,6 +1,9 @@
 # H.-K. Kim et al., Journal of Materials Research, 25 (2010) 1288-1297.: https://doi.org/10.1557/jmr.2010.0182
 # Home of 2NN MEAM Interatomic Potential: https://cmse.postech.ac.kr/home_2nnmeam
 
+# Fe-N: B.-J. Lee et al., Acta Materialia, 54 (2006) 4597-4607.: https://doi.org/10.1016/j.actamat.2006.06.003
+# 2006--Lee-B-J-Lee-T-H-Kim-S-J--Fe-N (NIST, Interatomic Potentials Repository) 
+
 # Nb-Fe: The parameters d, Cmin, and Cmax all agree with the calculated values ​​of "Assumption".
 # If they happen to match "Assumption", that's good, but if not, you'll need to refit.
 
