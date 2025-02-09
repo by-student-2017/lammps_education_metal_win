@@ -1,2 +1,2 @@
-A Comparative Study on Hydrogen Diffusion in Amorphous and Crystalline Metals Using a Molecular Dynamics Simulation
-Lee B M, Lee B J. Metallurgical and Materials Transactions A, 2014, 45(6):2906-2915.
+# B.-M. Lee et al., Metallurgical and Materials Transactions A, 45 (2014) 2906-2915.: https://doi.org/10.1007/s11661-014-2230-4
+# Home of 2NN MEAM Interatomic Potential: https://cmse.postech.ac.kr/home_2nnmeam
