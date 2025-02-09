@@ -1,2 +1,2 @@
-Related document:
-"H.-K. Kim, W.-S. Jung, B.-J. Lee, Modified embedded-atom method interatomic potentials for the Nb-C, Nb-N, Fe-Nb-C, and Fe-Nb-N systems, J. Mater. Res. 25 (2010) 1288–1297."
+# H.-K. Kim et al., Journal of Materials Research, 25 (2010) 1288-1297.: https://doi.org/10.1557/jmr.2010.0182
+# Home of 2NN MEAM Interatomic Potential: https://cmse.postech.ac.kr/home_2nnmeam
