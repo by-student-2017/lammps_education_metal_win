@@ -95,7 +95,7 @@ Note: There are also papers in which only the ibar has been changed using files 
 - To check parameters such as Ec for alloys, you should also list the bulk modulus and alpha (aster = a*) values.
 - It should be specified whether i, j, or k is used for screening in C(i-k-j). Even though the paper mentions the Lammps format, the Lammps manual on the web does not show any notation for C(i-k-j) (it lists Cmin(I,J,K) and Cmax(I,J,K)).
 - The cutoff rc and other setting conditions should also be clearly stated.
-- So far, even when entering values ​​from papers into Lammps, the results for Cr often do not match those from the papers. We need to continue to investigate why this is the case.
+- So far, even if you enter the values ​​in the paper into Lammps, the results for the MEAM for Cr often do not match those in the paper. We need to continue to investigate why this is the case.
 #-------------------------------------------------------------
 Conclusion
 1. Publishers, referees, and editors should require that input files used in supplementary materials be made public as a condition of publication. It would be ideal if all conditions could be described in the paper, but this is not currently the case.
