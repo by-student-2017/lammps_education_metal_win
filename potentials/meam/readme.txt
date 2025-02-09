@@ -73,17 +73,17 @@ https://matsci.org/t/lammps-users-meam-potentials/5982
 Note: in 1NN-MEAM, d is rarely introduced (Because of this, in many cases "attract = repulsion = a3 = 0"), so erose_form = 0, 1, 2 are the same. Therefore, erose_form = 0 or the default is often used.
 Note: In 2NN-MEAM, d is introduced, and the formula for erose_form = 2 is often specified in papers. Therefore, erose_form = 2 is often used.
 #-------------------------------------------------------------
-- Bulk case
+## Bulk case
 Note: As shown in the example of BTi, when Cmin and Cmax published by NIST are added, or when ibar is changed from 3 to 0 or -5, the difference in lattice constant, cohesive energy, and elastic constant is not clear, so it is difficult to clarify which setting is best.
 Note: There are also papers in which only the ibar has been changed using files and parameters from published previous papers.
 #-------------------------------------------------------------
-- Selecting a reference structure
+## Selecting a reference structure
 - Note: We constructed the zirconium potential using fcc as the reference structure. The use of an hcp reference structure is possible [16] but much more cumbersome. The properties predicted by the MEAM potential are the same whether we start with the hcp or fcc structures. (F. J. Cherne et al., LA-UR-03-0368.: https://www.osti.gov/servlets/purl/976517)
 - Note: The above is written in the literature, and I agree with the idea if Rose's universal curve is considered to be valid without any problems. However, since the data applied to Rose's universal curve has different errors depending on the reference structure, I think that papers that change the reference structure and examine it can be fully supported.
 - FCC base (e.g., Al-base or Ni-base): FCC_B1 (NaCl-type) or L12 reference structure for Alloys (A reference structure close to the symmetric composition ratio to be calculated is often selected.)
 - BCC base (e.g., Fe-base): BCC_B2 (CsCl-type) reference structure for Alloys
 #-------------------------------------------------------------
-- For a3 = d (attrac and repuls)
+## For a3 = d (attrac and repuls)
 - Typically a value between 0 and 0.05.
 - From the viewpoint of TB-SMA (tight binding second moment approximation), the Rose universal function is fitted such that the smaller the value of d, the more likely the molecule is, and the larger the value, the more densely packed the structure is. It is also useful to remember that the condition close to the Morse potential form (p/q = 2) from the viewpoint of TB-SMA is d = 0.02. 
 - Therefore, the condition of d > 0.05 should be carefully checked for any misfit.
