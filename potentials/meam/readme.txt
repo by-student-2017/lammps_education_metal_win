@@ -86,7 +86,8 @@ Note: There are also papers in which only the ibar has been changed using files 
 - For a3 = d (attrac and repuls)
 - Typically a value between 0 and 0.05.
 - From the viewpoint of TB-SMA (tight binding second moment approximation), the Rose universal function is fitted such that the smaller the value of d, the more likely the molecule is, and the larger the value, the more densely packed the structure is. It is also useful to remember that the condition close to the Morse potential form (p/q = 2) from the viewpoint of TB-SMA is d = 0.02. 
-- Therefore, the condition of d > 0.15 should be carefully checked for any misfit.
+- Therefore, the condition of d > 0.05 should be carefully checked for any misfit.
+- In TB-SMA, it may be possible for p/q = 8 in Li, that is, d = 0.20, but in the case of d > 0.20, which exceeds 0.20, physical reasons must be thoroughly considered.
 #-------------------------------------------------------------
 Conclusion
 1. Publishers, referees, and editors should require that input files used in supplementary materials be made public as a condition of publication. It would be ideal if all conditions could be described in the paper, but this is not currently the case.
