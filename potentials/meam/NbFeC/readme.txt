@@ -1,5 +1,8 @@
 # H.-K. Kim et al., Journal of Materials Research, 25 (2010) 1288-1297.: https://doi.org/10.1557/jmr.2010.0182
+#
 # 2010--Kim-H-K-Jung-W-S-Lee-B-J--Fe-Nb-C (NIST, Interatomic Potentials Repository)
+# or
+# Home of 2NN MEAM Interatomic Potential: https://cmse.postech.ac.kr/home_2nnmeam
 
 # Fe-C: B.-J. Lee, Acta Materialia, 54 (2006) 701-711.: https://doi.org/10.1016/j.actamat.2005.09.034
 # 2006--Lee-B-J--Fe-C (NIST, Interatomic Potentials Repository)
