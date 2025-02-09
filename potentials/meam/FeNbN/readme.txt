@@ -4,6 +4,8 @@
 # Nb-Fe: The parameters d, Cmin, and Cmax all agree with the calculated values ​​of "Assumption".
 # If they happen to match "Assumption", that's good, but if not, you'll need to refit.
 
+# Note: n the paper, the Cmax value for Nb-N is 2.00, but it is 2.8. If the Cmax value for Nb-N is set to 2.00 and the Cmax value for Fe-N in other literature is corrected to 1.44, the Cmax value for Nb-Fe-N becomes 1.71. It is likely that the original Cmax value was mistakenly written as replus. Based on these facts, the value for Fe-N in other literature and the value in the paper for Nb-N have been corrected.
+
 #-------------------------------------------------------------------------------------------------------------
 # original directory
 
