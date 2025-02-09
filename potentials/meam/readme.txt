@@ -83,6 +83,11 @@ Note: There are also papers in which only the ibar has been changed using files 
 - FCC base (e.g., Al-base or Ni-base): FCC_B1 (NaCl-type) or L12 reference structure for Alloys (A reference structure close to the symmetric composition ratio to be calculated is often selected.)
 - BCC base (e.g., Fe-base): BCC_B2 (CsCl-type) reference structure for Alloys
 #-------------------------------------------------------------
+- For a3 = d (attrac and repuls)
+- Typically a value between 0 and 0.05.
+- From the viewpoint of TB-SMA (tight binding second moment approximation), the Rose universal function is fitted such that the smaller the value of d, the more likely the molecule is, and the larger the value, the more densely packed the structure is. It is also useful to remember that the condition close to the Morse potential form (p/q = 2) from the viewpoint of TB-SMA is d = 0.02. 
+- Therefore, the condition of d > 0.15 should be carefully checked for any misfit.
+#-------------------------------------------------------------
 Conclusion
 1. Publishers, referees, and editors should require that input files used in supplementary materials be made public as a condition of publication. It would be ideal if all conditions could be described in the paper, but this is not currently the case.
 2. Other than NIST, public institutions should be involved in international efforts to verify and develop the potential, and appropriate institutions should be created.
