@@ -1,1 +1,2 @@
-"A comparative study on hydrogen diffusion in amorphous and crystalline metals using a molecular dynamics simulation", Byeong-Moon Lee and Byeong-Joo Lee, Metall. Mater. Trans. A (2014), accepted for publication.
+# B.-M. Lee et al., Metallurgical and Materials Transactions A, 45 (2014) 2906-2915.: https://doi.org/10.1007/s11661-014-2230-4
+# 2014--Lee-B-M-Lee-B-J--Zr-H (NIST, Interatomic Potentials Repository)
