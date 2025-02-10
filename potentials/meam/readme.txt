@@ -234,6 +234,8 @@ WP
 #-------------------------------------------------------------
 BTi: Results obtained with TiB2 were close to those in the literature. Awesome !
 #-------------------------------------------------------------
+TiV: Results obtained with TiV were close to those in the literature. Awesome !
+#-------------------------------------------------------------
 NiSn: Results similar to those in the literature were obtained with Ni3Sn. Awesome !
 #-------------------------------------------------------------
 NiZr: The results are in reasonable agreement with the values ​​in the paper, so there is still some room for further refinement.
