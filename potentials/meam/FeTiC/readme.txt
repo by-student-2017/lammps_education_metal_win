@@ -6,7 +6,7 @@ atom_style atomic
 #------------------------------------------------------------------------
 # 2NN-MEAM
 pair_style meam
-pair_coeff * * library.meam Fe Ti C FeTiC.meam Fe Ti C
+pair_coeff * * FeTiClibrary.meam Fe Ti C FeTiC.meam Fe Ti C
 #------------------------------------------------------------------------
 # H.-K. Kim et al., Acta Materialia, 57(11), 3140-3147.: https://doi.org/10.1016/j.actamat.2009.03.019
 # 2009--Kim-H-K-Jung-W-S-Lee-B-J--Fe-Ti-C (NIST, Interatomic Potentials Repository) or Home of 2NN MEAM Interatomic Potential
