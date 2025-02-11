@@ -4,7 +4,7 @@ dimension 3
 boundary p p p 
 atom_style atomic
 #------------------------------------------------------------------------
-# 2NN-MEAM
+# 2NN-MEAM (Note: 1NN-MEAM for Pu only)
 pair_style meam
 pair_coeff * * library.meam Pu Fe PuFe.meam Pu Fe
 #------------------------------------------------------------------------
