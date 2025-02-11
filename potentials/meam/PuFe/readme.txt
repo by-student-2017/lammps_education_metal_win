@@ -8,5 +8,5 @@ atom_style atomic
 pair_style meam
 pair_coeff * * library.meam Pu Fe PuFe.meam Pu Fe
 #------------------------------------------------------------------------
-# 
-# 
+# T. ITO et al., ICONE19-43987.: https://doi.org/10.1299/jsmeicone.2011.19._ICONE1943_369
+#------------------------------------------------------------------------
