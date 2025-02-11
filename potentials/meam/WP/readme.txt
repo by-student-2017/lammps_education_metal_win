@@ -6,7 +6,7 @@ atom_style atomic
 #------------------------------------------------------------------------
 # 2NN-MEAM
 pair_style meam
-pair_coeff * * library.meam Al Nb AlNb.meam Al Nb
+pair_coeff * * WP.library.meam W P WP.parameter.meam W P
 #------------------------------------------------------------------------
 # Par A.T. Olsson et al., Comput. Mater. Sci. 219 (2023) 112017.: https://doi.org/10.1016/j.commatsci.2023.112017
 # Home of 2NN MEAM Interatomic Potential: https://cmse.postech.ac.kr/home_2nnmeam
