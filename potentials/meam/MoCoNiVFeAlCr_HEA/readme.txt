@@ -6,7 +6,7 @@ atom_style atomic
 #------------------------------------------------------------------------
 # 2NN-MEAM
 pair_style meam
-pair_coeff * * library.meam Al Nb AlNb.meam Al Nb
+pair_coeff * * library.meam Mo Co Ni V Fe Al Cr MoCoNiVFeAlCr.meam Mo Co Ni V Fe Al Cr
 #------------------------------------------------------------------------
 LAMMPS potential parameter files for Mo-Co-Ni-V-Fe-Al-Cr system
 Jaemin Wang, Hyeonseok Kwon, Hyoung Seop Kim, and Byeong-Joo Lee, A Neural Network Model for High Entropy Alloy Design, npj Computational Materials (2023), accepted.
