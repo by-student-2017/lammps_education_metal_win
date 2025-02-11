@@ -13,5 +13,4 @@ pair_coeff * * library.meam Ni Al V NiAlV.meam Ni Al V
 # NiAlCo: 2015--Kim-Y-K-Jung-W-S-Lee-B-J--Ni-Al-Co
 # W.-P. Dong et al., Met. Mater. Int. 20, 423–429 (2014). https://doi.org/10.1007/s12540-014-3004-7
 # NiV, AlV: J.-H. Shim, et al., (2013) J Memb. Sci. 430, 234-241.
-# The formula for Ec (sign of delta) is incorrect in the literature.
 #------------------------------------------------------------------------
