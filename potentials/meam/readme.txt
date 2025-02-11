@@ -262,7 +262,7 @@ variable maxeval equal 1000 -> 1000000
 Note: Perhaps there is a setting that is closer to the literature value.
 Note: Looking at these results, one can see that there may be hope for calculating thermal conductivity in the Mn-Si system, which has a chimney-ladder structure, an important thermoelectric material.
 #-------------------------------------------------------------
-TM-N(TM=Ti,V,Cr,Fe): he convergence conditions were tightened to calculate the elastic modulus of FeN and TiV..
+TM-N(TM=Ti,V,Cr,Fe): The convergence conditions were tightened to calculate the elastic modulus of FeN and TiV.
 TiVN
 TiCrN
 Note: Perhaps there is a setting that is closer to the literature value. It doesn't go well with Cr.
