@@ -1,3 +1,13 @@
+#------------------------------------------------------------------------
+units metal
+dimension 3
+boundary p p p 
+atom_style atomic
+#------------------------------------------------------------------------
+# 2NN-MEAM
+pair_style meam
+pair_coeff * * library.meam Fe Ti C FeTiC.meam Fe Ti C
+#------------------------------------------------------------------------
 # H.-K. Kim et al., Acta Materialia, 57(11), 3140-3147.: https://doi.org/10.1016/j.actamat.2009.03.019
 # 2009--Kim-H-K-Jung-W-S-Lee-B-J--Fe-Ti-C (NIST, Interatomic Potentials Repository) or Home of 2NN MEAM Interatomic Potential
 # C(i-k-j) = C(i,j,k) and C(i,j,k) = C(j,i,k)
@@ -5,3 +15,4 @@
 # [16] B.-J. Lee, Acta Mater. 54 (2006) 701-711.: https://doi.org/10.1016/j.actamat.2005.09.034
 # [17] Y.-M. Kim et al., Acta Mater. 56 (2008) 3481-3489.: https://doi.org/10.1016/j.actamat.2008.03.027
 # [18] I. Sa et al., Scripta Mater. 59 (2008) 595-598.: https://doi.org/10.1016/j.scriptamat.2008.05.007
+#------------------------------------------------------------------------
