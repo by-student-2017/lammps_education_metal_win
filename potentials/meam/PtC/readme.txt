@@ -10,5 +10,5 @@ pair_coeff * * library.meam Pt C PtC.meam Pt C
 #------------------------------------------------------------------------
 # Interatomic potentials for Pt-C and Pd-C systems and a study of structure-adsorption relationship in large Pt/Graphene system
 # Ga-Un Jeong, Byeong-Joo Lee, Compu. Mater. Sci. (2020).
-# ome of 2NN MEAM Interatomic Potential: https://cmse.postech.ac.kr/home_2nnmeam
+# Home of 2NN MEAM Interatomic Potential: https://cmse.postech.ac.kr/home_2nnmeam
 #------------------------------------------------------------------------
