@@ -1,0 +1,37 @@
+# LAMMPS
+
+# --- Initialize Simulation ---
+clear
+units metal
+dimension 3
+boundary p p p
+atom_style atomic
+atom_modify map array
+
+# --- Create Atoms ---
+read_data Ti3O2.meam
+
+# --- Interatomic Potential ---
+pair_style meam
+pair_coeff * * TiO.meam Ti O TiOpar.meam Ti O
+
+# --- Define Settings ---
+compute eng all pe/atom
+compute eatoms all reduce sum c_eng
+
+# --- Minimize ---
+reset_timestep 0
+fix 1 all box/relax tri 0.0 vmax 0.001
+thermo 1000
+thermo_style custom step pe lx ly lz xy xz yz press c_eatoms
+min_style cg
+dump 1 all atom 50 dump.meam
+minimize 1e-25 1e-25 5000 10000
+
+variable natoms equal "count(all)"
+variable teng equal "c_eatoms"
+variable aleng equal "lx"
+variable yleng equal "ly"
+variable cleng equal "lz"
+variable shear equal "xy"
+variable shear2 equal "xz"
