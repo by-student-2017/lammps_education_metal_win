@@ -1,4 +1,13 @@
-#-------------------------------------------------------------
+#------------------------------------------------------------------------
+units metal
+dimension 3
+boundary p p p 
+atom_style atomic
+#------------------------------------------------------------------------
+# 2NN-MEAM
+pair_style meam
+pair_coeff * * library.meam Nb Ti Zr Mo V NbTiZrMoV.meam Nb Ti Zr Mo V
+#------------------------------------------------------------------------
 High-Entropy alloy (HEA)
 BCC structure (Lattice constant of unit cell: 3.1 [Angstrom])
 20 x 20 x 20 supercell
