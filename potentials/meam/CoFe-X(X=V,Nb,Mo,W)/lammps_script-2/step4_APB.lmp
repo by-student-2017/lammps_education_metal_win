@@ -1,0 +1,92 @@
+# The subsequent script divides the nano system in two sections and following
+#  introduces a displacement size of a/2 in one of the sections,
+#  reproducing a {110} <111> antiphase boundary (APB).
+# The simulation assesses the energy of the ground state for
+#  both the initial system and the system post-displacement,
+#  providing valuable insights into the APB energy.
+
+# --- Initialize Simulation ---
+units metal
+dimension 3
+boundary p p s
+atom_style atomic
+
+# --- Structure Definition ---
+variable a equal 2.8712
+variable x equal 10
+variable y equal 10
+variable z equal 8
+variable zl equal ($z/2)-0.05
+variable zu equal ($z/2)-0.04
+variable x_displace equal ${a}*0.5
+variable y_displace equal ${a}*sqrt(2)*0.5
+
+# --- Fe atoms ---
+lattice custom 1.0 a1 $a 0 0 a2 0 $a 0 a3 0.0 0.0 $a &
+orient x 1 0 0 orient y 0 1 1 orient z 0 -1 1 &
+ basis 0.0 0.0 0.0
+region whole block -0.01 ${x} -0.01 ${y} -0.01 ${z} units lattice
+create_box 3 whole
+region 1 block INF ${x} INF ${y} INF ${zl} units lattice
+create_atoms 1 region 1
+
+# --- Co atoms ---
+lattice custom 1.0 a1 $a 0 0 a2 0 $a 0 a3 0.0 0.0 $a &
+orient x 1 0 0 orient y 0 1 1 orient z 0 -1 1 &
+ basis 0.5 0.5 0.5
+create_atoms 2 region 1
+region 2 block INF ${x} INF ${y} ${zu} INF units lattice
+
+# --- Fe atoms ---
+lattice custom 1.0 a1 $a 0 0 a2 0 $a 0 a3 0.0 0.0 $a &
+orient x 1 0 0 orient y 0 1 1 orient z 0 -1 1 &
+ basis 0 0 0
+create_atoms 1 region 2
+
+# --- Co atoms ---
+lattice custom 1.0 a1 $a 0 0 a2 0 $a 0 a3 0.0 0.0 $a &
+orient x 1 0 0 orient y 0 1 1 orient z 0 -1 1 &
+ basis 0.5 0.5 0.5
+create_atoms 2 region 2
+
+# --- Potential ---
+pair_style meam
+pair_coeff * * library.meam Fe Co V FeCoV.meam Fe Co V
+
+# --- Settings ---
+change_box all triclinic
+
+compute peratom all pe/atom
+compute eatoms all reduce sum c_peratom
+
+thermo 25
+thermo_style custom step pe c_eatoms xlat ylat zlat
+
+# --- 1st Minimization ---
+min_style cg
+minimize 1e-10 1e-10 10000 10000
+
+variable E equal "c_eatoms"
+variable Eo equal $E
+variable boxx equal lx
+variable boxy equal ly
+
+group bot region 1
+group top region 2
+
+displace_atoms top move ${x_displace} ${y_displace} 0.0 units box
+
+# --- 2nd Minimization ---
+fix 1 all setforce 0 0 NULL
+
+min_style cg
+minimize 1e-10 1e-10 1000 1000
+
+variable Ef equal "c_eatoms"
+variable Cf equal 1.60217657e-16 #eV to mJ
+variable A equal (${boxx}*${boxy})*1e-20 #Ang^2 to m^2
+variable Eapb equal ((${Ef}-${Eo})*${Cf})/(${A})
+print "==================="
+print "Result FeCo {110} APB "
+print "==================="
+print "{110} APB Energy = ${Eapb} mJ/m^2
