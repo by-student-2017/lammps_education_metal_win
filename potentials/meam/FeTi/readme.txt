@@ -6,7 +6,7 @@ atom_style atomic
 #------------------------------------------------------------------------
 # 2NN-MEAM
 pair_style meam
-pair_coeff * * library.meam Al H AlH.meam Al H
+pair_coeff * * library.meam Fe Ti FeTi.meam Fe Ti
 #------------------------------------------------------------------------
 # I. Sa et al., Scripta Materialia, 59(6), 595-598.: https://doi.org/10.1016/j.scriptamat.2008.05.007
 # 2008--Sa-I-Lee-B--Fe-Ti (NIST, Interatomic Potentials Repository)
