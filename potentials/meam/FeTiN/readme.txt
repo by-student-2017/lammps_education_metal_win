@@ -1,3 +1,13 @@
+#------------------------------------------------------------------------
+units metal
+dimension 3
+boundary p p p 
+atom_style atomic
+#------------------------------------------------------------------------
+# 2NN-MEAM
+pair_style meam
+pair_coeff * * library.meam Fe Ti N FeTiN.meam Fe Ti N
+#------------------------------------------------------------------------
 # H.-K. Kim et al., Acta Materialia, 57(11), 3140-3147.: https://doi.org/10.1016/j.actamat.2009.03.019
 # Home of 2NN MEAM Interatomic Potential
 # C(i-k-j) = C(i,j,k) and C(i,j,k) = C(j,i,k)
@@ -7,3 +17,4 @@
 # [18] I. Sa et al., Scripta Mater. 59 (2008) 595-598.: https://doi.org/10.1016/j.scriptamat.2008.05.007
 
 # Note: Cmin and Cmax were opposite to those in the paper (Assumption calculations), so they were corrected.
+#------------------------------------------------------------------------
