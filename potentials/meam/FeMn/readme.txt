@@ -6,5 +6,5 @@ atom_style atomic
 #------------------------------------------------------------------------
 # 2NN-MEAM
 pair_style meam
-pair_coeff * * library.meam Co Mn CoMn.meam Co Mn
+pair_coeff * * library.meam Fe Mn FeMn-para.meam Fe Mn
 #------------------------------------------------------------------------
