@@ -6,7 +6,7 @@ atom_style atomic
 #------------------------------------------------------------------------
 # 2NN-MEAM
 pair_style meam
-pair_coeff * * library.meam Ti Al N TiAlN.meam Ti Al N
+pair_coeff * * library.NAlTi Ti Al N meam.NAlTi Ti Al N
 #------------------------------------------------------------------------
 # Semi-Empirical Force-Field Model for the Ti1-xAlxN (0 =< x =< 1) System (Open Access)
 # G. A. Almyras et al., Materials 2019, 12(2), 215; https://doi.org/10.3390/ma12020215
