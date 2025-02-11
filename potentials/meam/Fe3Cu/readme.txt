@@ -4,6 +4,7 @@ dimension 3
 boundary p p p 
 atom_style atomic
 #------------------------------------------------------------------------
+# 2NN-MEAM
 pair_style	meam
 pair_coeff	* * library2.meam Fe Cu Fe3Cu_param.meam Fe Cu
 #------------------------------------------------------------------------
