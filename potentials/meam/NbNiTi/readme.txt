@@ -8,5 +8,5 @@ atom_style atomic
 pair_style meam
 pair_coeff * * library.meam Nb Ni Ti NbNiTi.meam Nb Ni Ti
 #------------------------------------------------------------------------
-# Nb-Ni-Ti: J. S. Lee et al., arXiv:2202.09586 (2022).
+# Nb-Ni-Ti: J. S. Lee et al., arXiv:2202.09586 (2022).: https://doi.org/10.1016/j.actamat.2022.117764
 #------------------------------------------------------------------------
