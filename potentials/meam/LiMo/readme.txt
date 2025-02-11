@@ -8,4 +8,5 @@ atom_style atomic
 pair_style meam
 pair_coeff * * library.meam Li Mo LiMo.meam Li Mo
 #------------------------------------------------------------------------
-# 
+# Joseph R. Vella et al 2017 Nucl. Fusion 57 116036.: DOI 10.1088/1741-4326/aa7e0d
+#------------------------------------------------------------------------
