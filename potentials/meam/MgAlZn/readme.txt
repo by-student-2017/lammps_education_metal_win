@@ -6,7 +6,7 @@ atom_style atomic
 #------------------------------------------------------------------------
 # 2NN-MEAM
 pair_style meam
-pair_coeff * * library.meam Mg Al Zn MgAlZn.meam Mg Al Zn
+pair_coeff * * library.meam Mg Al Zn MgAlZn.parameter.meam Mg Al Zn
 #------------------------------------------------------------------------
 # Modified embedded-atom method interatomic potentials for Mg-Al-Ca and Mg-Al-Zn ternary systems
 # Hyo-Sun Jang, Donghyuk Seol and Byeong-Joo Lee, J. Magnesium and Alloys (2021)
