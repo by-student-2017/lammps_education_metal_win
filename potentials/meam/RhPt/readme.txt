@@ -8,3 +8,5 @@ atom_style atomic
 pair_style meam
 pair_coeff * * library.meam Rh Pt RhPt.meam Rh Pt
 #------------------------------------------------------------------------
+# J. Luyten et al., Surf. Sci. 601 (2007) 1668-1676.: https://doi.org/10.1016/j.susc.2007.01.023
+#------------------------------------------------------------------------
