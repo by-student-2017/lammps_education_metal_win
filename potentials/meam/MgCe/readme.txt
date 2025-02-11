@@ -1,1 +1,1 @@
-The origin of activation of non-basal slip in Mg-Ce dilute alloy - An atomistic simulation study, Jong-Kwan Lee and Byeong-Joo Lee, Metal. Mater. Trans. A (2020)
+The origin of activation of non-basal slip in Mg-Ce dilute alloy - An atomistic simulation study, Jong-Kwan Lee and Byeong-Joo Lee, Metal. Mater. Trans. A (2020).: https://doi.org/10.1007/s11661-020-06128-x
