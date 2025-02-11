@@ -8,6 +8,8 @@ atom_style atomic
 pair_style meam
 pair_coeff * * library.meam Fe Cr Si FeCrSi.meam Fe Cr Si
 #------------------------------------------------------------------------
+# S. Paul et al., J. Phys. Chem. C 2021, 125, 41, 22863-22871.: https://doi.org/10.1021/acs.jpcc.1c07021
+#------------------------------------------------------------------------
 # Compiled by Mario Muralles
 # 1-MEAM CoCrFeMnNi alloy potential, npj Computational Materials vol 4, 1 (2018)
 # https://doi.org/10.1038/s41524-017-0060-9
