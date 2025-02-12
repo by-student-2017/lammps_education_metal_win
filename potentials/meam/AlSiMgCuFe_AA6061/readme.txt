@@ -8,3 +8,7 @@ atom_style atomic
 pair_style meam
 pair_coeff * * library.meam Al Hf AlHf.meam Al Hf
 #------------------------------------------------------------------------
+# MEAM Al, Si, Mg, Cu, Fe alloy potential, Phys. Rev. B 85, 245102 (2012)
+# http://dx.doi.org/10.1103/PhysRevB.85.245102
+# to be used with "meamf" file providing single element parameters
+#------------------------------------------------------------------------
