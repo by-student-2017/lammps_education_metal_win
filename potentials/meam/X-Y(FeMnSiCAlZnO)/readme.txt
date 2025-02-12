@@ -4,7 +4,7 @@ dimension 3
 boundary p p p 
 atom_style atomic
 #------------------------------------------------------------------------
-# 2NN-MEAM
+# 2NN-MEAM (X-Y(FeMnSiCAlZnO))
 pair_style meam
 pair_coeff * * library.meam Fe Cr Ni N FeCrNiN.meam Fe Ni
 #------------------------------------------------------------------------
