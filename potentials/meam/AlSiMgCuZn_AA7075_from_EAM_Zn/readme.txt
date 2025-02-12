@@ -1,5 +1,9 @@
-Usage in lammps input
-#-------------------------------------------------------------
+#------------------------------------------------------------------------
+units metal
+dimension 3
+boundary p p p 
+atom_style atomic
+#------------------------------------------------------------------------
 # 1NN-MEAM
 # Note: Zn (b1=b2=b3=t1=t2=t3=0) from EAM
 # Note that the value of "rozero" is not mentioned in the paper !
