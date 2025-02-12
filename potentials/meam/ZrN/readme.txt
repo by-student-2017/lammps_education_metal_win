@@ -8,7 +8,8 @@ atom_style atomic
 pair_style meam
 pair_coeff * * library.meam Zr N ZrN.meam Zr N
 #------------------------------------------------------------------------
-
+# N. Dhariwal et al., Mater. Des. 210 (2021) 110120.: https://pubs.acs.org/doi/pdf/10.1021/acs.jpcc.6b05296
+#------------------------------------------------------------------------
 
 #------------------------------------------------------------------------
 Test: check_lammps_script
