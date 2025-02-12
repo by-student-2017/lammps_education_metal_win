@@ -8,7 +8,8 @@ atom_style atomic
 pair_style meam
 pair_coeff * * library.meam B Ti BTi.meam B Ti
 #------------------------------------------------------------------------
-
+# S. Attarian et al., Comput. Mater. 201 (2022) 110875.: https://doi.org/10.1016/j.commatsci.2021.110875
+#------------------------------------------------------------------------
 
 #------------------------------------------------------------------------
 Test: check_lammps_script
