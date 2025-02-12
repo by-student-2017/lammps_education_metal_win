@@ -65,3 +65,47 @@ Materials with Ni (nickel) added to Sn (tin) are mainly used and researched for 
 - High-purity ferritic stainless steel: Research is also being conducted on the addition of trace amounts of Sn to reduce the amount of rare metals (e.g. Cr) used, thereby reducing costs and reducing the environmental impact.
 - Due to these applications, materials with Ni added to Sn are widely studied in the fields of electronics and metal processing. 
 #-------------------------------------------------------------
+
+
+# alpha(1,2) = 5.377472608 case
+#-------------------------------------------------------------
+#Show results of 1st step (Running Minimization)
+#The number of atoms = 4;
+#The lattice constant, x (Angstoms) = 3.97283661106867;
+#The lattice constant, y (Angstoms) = 3.97283661106867;
+#The lattice constant, z (Angstoms) = 3.97283661106867;
+#The volume (Angstoms^3) = 62.7049914851769;
+#The total energy (eV) = -15.7665357492556;
+#The cohesive energy (eV/atom) = -3.9416339373139;
+#-------------------------------------------------------------
+#C tensor [GPa] (elastic stiffness constants)
+#          1                 2                 3                 4                 5                 6
+#1       235.55853         125.69372         125.69372    -3.0674258e-09    -1.5784796e-09    -1.7483246e-09
+#2       125.69372         235.55853         125.69372    -4.9203052e-09     -1.040756e-09    -2.0264278e-09
+#3       125.69372         125.69372         235.55853    -5.6337417e-09    -6.9443618e-11      5.367192e-10
+#4  -3.0674258e-09    -4.9203052e-09    -5.6337417e-09         103.93952    -1.4580025e-10     3.2830906e-10
+#5  -1.5784796e-09     -1.040756e-09    -6.9443618e-11    -1.4580025e-10         103.93952    -5.5652813e-10
+#6  -1.7483246e-09    -2.0264278e-09      5.367192e-10     3.2830906e-10    -5.5652813e-10         103.93952
+#-------------------------------------------------------------
+
+# Note: alpha = 5.2566 in above paper.
+# alpha(1,2) = 5.2566 case
+#-------------------------------------------------------------
+#Show results of 1st step (Running Minimization)
+#The number of atoms = 4;
+#The lattice constant, x (Angstoms) = 3.97282329673286;
+#The lattice constant, y (Angstoms) = 3.97282329673286;
+#The lattice constant, z (Angstoms) = 3.97282329673286;
+#The volume (Angstoms^3) = 62.7043610495981;
+#The total energy (eV) = -15.795855067885;
+#The cohesive energy (eV/atom) = -3.94896376697124;
+#-------------------------------------------------------------
+#C tensor [GPa] (elastic stiffness constants)
+#          1                 2                 3                 4                 5                 6        
+#1       229.77196         117.78144         117.78144     1.8730021e-09     7.2056054e-10    -4.0741431e-10   
+#2       117.78144         229.77196         117.78144     9.2952678e-10     2.1313832e-09      1.686344e-09   
+#3       117.78144         117.78144         229.77196     1.2300515e-09    -2.2176197e-09     1.4489796e-09   
+#4   1.8730021e-09     9.2952678e-10     1.2300515e-09         98.544157     8.2002289e-10     1.2812816e-09   
+#5   7.2056054e-10     2.1313832e-09    -2.2176197e-09     8.2002289e-10         98.544157     -1.732629e-09   
+#6  -4.0741431e-10      1.686344e-09     1.4489796e-09     1.2812816e-09     -1.732629e-09         98.544157   
+#-------------------------------------------------------------
