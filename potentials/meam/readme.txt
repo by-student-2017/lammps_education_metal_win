@@ -311,3 +311,43 @@ NiSi: It could not be considered as literature.
   https://github.com/jushinpon/PtPdRhCo_HEA
   https://github.com/jushinpon/CoCrFeMnNi-HfNbTaTiZr-DP-HEA
 #-------------------------------------------------------------
+
+
+#-------------------------------------------------------------
+Mg: Al, Zn, Zr, Y, Gd
+Mg: (impurity) Fe, Ni, Cu
+#-------------------------------------------------------------
+Al: Cu, Mg, Si, Zn, Mn, Ti, Cr, Sr
+Al: (impurity) Fe, Cu, Si
+---
+Al: B, Zr
+#-------------------------------------------------------------
+Ti: Al, V, Mo, Zr, Sn
+Ti: (impurity) O, N, H
+#-------------------------------------------------------------
+V: Ti, Al, Cr, Ni, Mo
+V: (impurity) O, N, C
+#-------------------------------------------------------------
+Fe: Cr, Ni, Mo, Mn, V, Ti, Nb, W, Co
+Fe: (impurity) S, O, P
+---
+Fe: Cr, Ni, Mo, Mn, V, Nb, W, Co
+Fe: (impurity) S, O, P
+Fe: B
+Fe: Be
+Fe: Si
+#-------------------------------------------------------------
+Ni: Cr, Mo, Al, Ti, W, Co, Ru
+Ni: (impurity) S, O, C
+---
+Ni: S, O, C
+Ni: Cr, Mo, Fe, Ti Al, V, Zr
+Ni: Be
+Ni: Si
+#-------------------------------------------------------------
+Cu: Zn, Sn, Ni, Al, P
+Cu: (impurity) Pb, Fe, Bi
+---
+Cu: As, Sb, Bi, Pb, Ni
+Cu: O, Fe, Sn
+#-------------------------------------------------------------
