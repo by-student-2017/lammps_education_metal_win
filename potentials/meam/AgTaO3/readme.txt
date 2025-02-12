@@ -4,7 +4,7 @@ dimension 3
 boundary p p p 
 atom_style atomic
 #------------------------------------------------------------------------
-# 2NN-MEAM
+# 2NN-MEAM (for AgTaO3)
 pair_style meam
 pair_coeff * * library_AgTaO3.meam Ag Ta O AgTaO3.meam Ag Ta O
 #------------------------------------------------------------------------
