@@ -1,7 +1,4 @@
 #------------------------------------------------------------------------
-# J.-W. Hong, CE-Theses_Ph.D. (2021).: https://koasas.kaist.ac.kr/handle/10203/307792
-Al(AA7075)(Al,Si,Mg,Cu,Zn): https://koasas.kaist.ac.kr/handle/10203/307792
-#------------------------------------------------------------------------
 units metal
 dimension 3
 boundary p p p 
@@ -24,10 +21,13 @@ For windows
 4. click "run_msmpi.bat"
 5. open cfg on Ovito
 #------------------------------------------------------------------------
-Note
+Note:
   It will also work if the second potential file you specify is NULL. However, 
 if you want to improve accuracy, please remember that it is important to 
 use a parameter file that is fitted (optimized) to the system, rather than NULL.
   If you really want to try out the second potential file you specify when 
 there are no parameters, it is a good idea to use NULL. It may not be so bad for transition metals.
+#------------------------------------------------------------------------
+# J.-W. Hong, CE-Theses_Ph.D. (2021).: https://koasas.kaist.ac.kr/handle/10203/307792
+Al(AA7075)(Al,Si,Mg,Cu,Zn): https://koasas.kaist.ac.kr/handle/10203/307792
 #------------------------------------------------------------------------
