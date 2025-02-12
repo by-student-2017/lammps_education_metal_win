@@ -1,7 +1,22 @@
+#------------------------------------------------------------------------
+units metal
+dimension 3
+boundary p p p 
+atom_style atomic
+#------------------------------------------------------------------------
+# 2NN-MEAM
+pair_style meam
+pair_coeff * * library.meam Ni Sn NiSn.meam Ni Sn
+#------------------------------------------------------------------------
+
+
+#------------------------------------------------------------------------
+Test: check_lammps_script
+#------------------------------------------------------------------------
 Usage in lammps input
 #-------------------------------------------------------------
 pair_style meam
-pair_coeff * * library.meam Ni Sn NiSn.meam Ni Sn
+pair_coeff * * ./../../library.meam Ni Sn ./../../NiSn.meam Ni Sn
 #-------------------------------------------------------------
 
 Results [cP4-Ni3Sn (L12-Cu3Au type)]
