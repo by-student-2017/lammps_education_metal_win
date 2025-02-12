@@ -8,7 +8,8 @@ atom_style atomic
 pair_style meam
 pair_coeff * * library.meam Ni Si NiSi.meam Ni Si
 #------------------------------------------------------------------------
-
+# M. I. Baskes et al 1994 Modelling Simul. Mater. Sci. Eng. 2 505.: DOI 10.1088/0965-0393/2/3A/006
+#------------------------------------------------------------------------
 
 #------------------------------------------------------------------------
 Test: check_lammps_script
