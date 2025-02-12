@@ -8,3 +8,5 @@ atom_style atomic
 pair_style meam
 pair_coeff * * library.meam Ag Ti AgTi.meam Ag Ti
 #------------------------------------------------------------------------
+# M. Muralles et al., Comput. Mater. Sci. 241 (2024) 113030.: https://doi.org/10.1016/j.commatsci.2024.113030
+#------------------------------------------------------------------------
