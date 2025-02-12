@@ -13,6 +13,8 @@ atom_style atomic
 pair_style meam
 pair_coeff * * library.meam Al Zr Cu Cr Ti AlZrCuCrTi.meam Al Zr Cu Cr Ti 
 #------------------------------------------------------------------------
+# Note: Calculations that take into account additive elements in Al-based alloys. When the concentration of additive elements is high and different additive elements are adjacent to each other, it is necessary to optimize the parameters between the additive elements in order to handle the interactions between the different additive elements (especially the elastic constants) more accurately.
+#------------------------------------------------------------------------
 # J.-R. C.-Sanchez et al., Phys. Chem. Chem. Phys., 2022,24, 22605-22623.: https://doi.org/10.1039/D2CP02746A
 #------------------------------------------------------------------------
 # all-data
