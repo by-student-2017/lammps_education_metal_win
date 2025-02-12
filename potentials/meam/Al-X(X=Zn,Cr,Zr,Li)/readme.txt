@@ -18,6 +18,8 @@ pair_coeff * * library.meam Al Zn Cr ZrLT Li AlZnCrZrLTZrHTLi.meam Al Zn Cr ZrLT
 pair_style meam
 pair_coeff * * library.meam Al Zn Cr ZrHT Li AlZnCrZrLTZrHTLi.meam Al Zn Cr ZrHT Li 
 #------------------------------------------------------------------------
+# Note: Calculations that take into account additive elements in Al-based alloys. When the concentration of additive elements is high and different additive elements are adjacent to each other, it is necessary to optimize the parameters between the additive elements in order to handle the interactions between the different additive elements (especially the elastic constants) more accurately.
+#------------------------------------------------------------------------
 # C. rincent et al., Phys. Chem. Chem. Phys., 2023,25, 10866-10884.: https://doi.org/10.1039/D3CP00912B
 # Note: Not all parameters are listed in the paper. (e.g., augt1, delr, and ialloy, etc)
 # Cmin,max(i-k-j) (with the ij pair screened by k)
