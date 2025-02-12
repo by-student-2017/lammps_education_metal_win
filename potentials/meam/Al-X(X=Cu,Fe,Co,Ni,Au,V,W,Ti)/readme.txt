@@ -10,6 +10,8 @@ pair_coeff * * library.meam Al Ni Cu Au V Fe W Ti Co AlNiCuAuVFeWTiCo.meam Al Ni
 #------------------------------------------------------------------------
 # According to the paper, if the parameters are set appropriately, the difference between the experimental and calculated values ​​of Young's modulus (E) and thermal expansion coefficient (alpha) is approximately 15%.
 #------------------------------------------------------------------------
+# Note: Calculation taking into account the additive elements in the Al-based alloy. In order to handle the interactions between different additive elements more accurately, it is necessary to optimize the parameters between the additive elements.
+#------------------------------------------------------------------------
 # In the paper, d, Cmin and Cmax are all calculated using the "Assumption" formula. (A-M (M=Cu,Fe,Co))
 # For "Al-M (M = Ni, Au, V, W, Ti)", only Ec, re, and B are provided. There is no mention of d, Cmin, or Cmax in the paper. I don't know if I need to apply the "Assumption" formula. This is because the paper only shows Cu, Fe, and Co being deposited on the Al surface. 
 #------------------------------------------------------------------------
