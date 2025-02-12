@@ -6,7 +6,7 @@ atom_style atomic
 #------------------------------------------------------------------------
 # 2NN-MEAM
 pair_style meam
-pair_coeff * * library.meam B Ti BTi.meam B Ti
+pair_coeff * * library.meam Ti V TiV.meam Ti V
 #------------------------------------------------------------------------
 
 
