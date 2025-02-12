@@ -29,5 +29,5 @@ use a parameter file that is fitted (optimized) to the system, rather than NULL.
 there are no parameters, it is a good idea to use NULL. It may not be so bad for transition metals.
 #------------------------------------------------------------------------
 # J.-W. Hong, CE-Theses_Ph.D. (2021).: https://koasas.kaist.ac.kr/handle/10203/307792
-Al(AA7075)(Al,Si,Mg,Cu,Zn): https://koasas.kaist.ac.kr/handle/10203/307792
+# Al(AA7075)(Al,Si,Mg,Cu,Zn): https://koasas.kaist.ac.kr/handle/10203/307792
 #------------------------------------------------------------------------
