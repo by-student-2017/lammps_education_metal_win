@@ -13,7 +13,7 @@ atom_style atomic
 pair_style meam
 pair_coeff * * library.meam Al Zr Cu Cr Ti AlZrCuCrTi.meam Al Zr Cu Cr Ti 
 #------------------------------------------------------------------------
-
+# J.-R. C.-Sanchez et al., Phys. Chem. Chem. Phys., 2022,24, 22605-22623.: https://doi.org/10.1039/D2CP02746A
 #------------------------------------------------------------------------
 # all-data
 
