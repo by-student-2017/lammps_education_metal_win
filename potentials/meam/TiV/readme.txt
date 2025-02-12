@@ -8,7 +8,8 @@ atom_style atomic
 pair_style meam
 pair_coeff * * library.meam Ti V TiV.meam Ti V
 #------------------------------------------------------------------------
-
+# C. Feng et al., Physica E Low Dimens. Syst. Nanostruct.: https://doi.org/10.1016/j.physe.2016.10.019
+#------------------------------------------------------------------------
 
 #------------------------------------------------------------------------
 Test: check_lammps_script
