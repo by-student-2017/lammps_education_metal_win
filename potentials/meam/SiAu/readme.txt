@@ -1,8 +1,7 @@
 Usage in lammps input
 #-------------------------------------------------------------
 pair_style meam
-#pair_coeff * * ./../../library.meam Si Au ./../../SiAu.meam Si
-pair_coeff * * ./../../library.meam Si Au ./../../SiAu.meam Au
+pair_coeff * * ./../../library.meam Si Au ./../../SiAu.meam Si Au
 #-------------------------------------------------------------
 
 The thermal conductivity results in the literature are calculated using the BCC reference interatomic potential for the interface Si-Al alloy.
