@@ -1,3 +1,14 @@
+#------------------------------------------------------------------------
+units metal
+dimension 3
+boundary p p p 
+atom_style atomic
+#------------------------------------------------------------------------
+# 2NN-MEAM
+pair_style meam
+pair_coeff * * library.meam Ni Zr NiZr.meam Ni Zr
+#------------------------------------------------------------------------
+
 #-------------------------------------------------------------
 # There is no mention of d in NiZr in the paper.
 # There is no specific statement in the paper as to whether it is C(i-k-j).
@@ -9,6 +20,9 @@
 # we start with the hcp or fcc structures.
 #-------------------------------------------------------------
 
+#------------------------------------------------------------------------
+Test: check_lammps_script
+#------------------------------------------------------------------------
 Usage in lammps input
 #-------------------------------------------------------------
 pair_style meam
