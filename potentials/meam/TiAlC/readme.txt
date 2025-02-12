@@ -8,7 +8,8 @@ atom_style atomic
 pair_style meam
 pair_coeff * * library.meam Ti Al C TiAlC.meam Ti Al C
 #------------------------------------------------------------------------
-
+# P. Liu et al., Comput. Mater. Sci. 182 (2020) 109757.: https://doi.org/10.1016/j.commatsci.2020.109757
+#------------------------------------------------------------------------
 
 #------------------------------------------------------------------------
 Test: check_lammps_script
