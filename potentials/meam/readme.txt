@@ -298,8 +298,6 @@ SiAu: Si and Au are generally good, but I haven't tried Si-Au.
 #-------------------------------------------------------------
 
 #-------------------------------------------------------------
-TaSi: It could not be considered as literature.
-#-------------------------------------------------------------
 NiSi: It could not be considered as literature.
 #-------------------------------------------------------------
 
