@@ -16,5 +16,4 @@ pair_coeff * * library.meam Al Si Mg Cu Zn NULL Al Si Mg Cu Zn
 # Related paper: H. W. Jang et al., Materials 2020, 13(9), 2062; https://doi.org/10.3390/ma13092062 (Open Access)
 # Note that the value of "rozero" is not mentioned in the paper !
 # rozero data get from J.-W. Hong, CE-Theses_Ph.D. (2021).: https://koasas.kaist.ac.kr/handle/10203/307792
-# Note: ibar = 0 -> -5 for t(h) < 0 and Gamma < -1
 #-------------------------------------------------------------
