@@ -1,3 +1,5 @@
+Note: please use "VNbTaTiZr_HEA_Nitol2024"
+
 Usage in lammps input
 #-------------------------------------------------------------
 pair_style meam
