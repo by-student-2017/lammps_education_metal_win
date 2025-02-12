@@ -3,8 +3,8 @@ units metal
 dimension 3
 boundary p p p 
 atom_style atomic
-
-# 2NN-MEAM, Al-M(M=Cu,Fe,Co,Ni,Au,V,W,Ti)
+#------------------------------------------------------------------------
+# 2NN-MEAM, Al-M(M=Cu,Fe,Co,Ni,Au,V,W,Ti) in Al-base alloys
 pair_style meam
 pair_coeff * * library.meam Al Ni Cu Au V Fe W Ti Co AlNiCuAuVFeWTiCo.meam Al Ni Cu Au V Fe W Ti Co
 #------------------------------------------------------------------------
