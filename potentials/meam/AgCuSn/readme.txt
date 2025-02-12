@@ -8,5 +8,5 @@ atom_style atomic
 pair_style meam
 pair_coeff * * library.meam Ag Cu Sn AgCuSn.meam Ag Cu Sn
 #------------------------------------------------------------------------
-# W.-S. Ko et al., J. Mater. Res. 37 (2022) 145-161.: https://doi.org/10.1557/s43578-021-00395-z
+# W.-S. Ko et al., J. Mater. Res. 37 (2022) 145-161.: https://doi.org/10.1557/s43578-021-00395-z (Open Access)
 #------------------------------------------------------------------------
