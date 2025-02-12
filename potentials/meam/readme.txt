@@ -331,19 +331,13 @@ V: (impurity) O, N, C
 Fe: Cr, Ni, Mo, Mn, V, Ti, Nb, W, Co
 Fe: (impurity) S, O, P
 ---
-Fe: Cr, Ni, Mo, Mn, V, Nb, W, Co
-Fe: (impurity) S, O, P
-Fe: B
-Fe: Be
-Fe: Si
+Fe: B, Be, Si
 #-------------------------------------------------------------
 Ni: Cr, Mo, Al, Ti, W, Co, Ru
 Ni: (impurity) S, O, C
 ---
-Ni: S, O, C
-Ni: Cr, Mo, Fe, Ti Al, V, Zr
-Ni: Be
-Ni: Si
+Ni: Fe, V, Zr
+Ni: Be, Si
 #-------------------------------------------------------------
 Cu: Zn, Sn, Ni, Al, P
 Cu: (impurity) Pb, Fe, Bi
