@@ -16,6 +16,7 @@ pair_coeff * * Jelinek_2012_meamf Al Si Mg Cu Fe Jelinek_2012_meam.alsimgcufe Al
 # 2NN-MEAM (from NIST)
 pair_style meam
 pair_coeff * * Jelinek_2012_meamf AlS SiS MgS CuS FeS Jelinek_2012_meam.alsimgcufe AlS SiS MgS CuS FeS
+#------------------------------------------------------------------------
 # The S may not be necessary when specifying the element name in the second half (I have not tried this).
 pair_coeff * * Jelinek_2012_meamf AlS SiS MgS CuS FeS Jelinek_2012_meam.alsimgcufe Al Si Mg Cu Fe
 #------------------------------------------------------------------------
