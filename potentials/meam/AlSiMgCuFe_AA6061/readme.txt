@@ -6,7 +6,7 @@ atom_style atomic
 #------------------------------------------------------------------------
 # 2NN-MEAM
 pair_style meam
-pair_coeff * * Jelinek_2012_meamf Al Hf Jelinek_2012_meam.alsimgcufe Al Hf
+pair_coeff * * Jelinek_2012_meamf Al Si Mg Cu Fe Jelinek_2012_meam.alsimgcufe Al Si Mg Cu Fe
 #------------------------------------------------------------------------
 # MEAM Al, Si, Mg, Cu, Fe alloy potential, Phys. Rev. B 85, 245102 (2012)
 # http://dx.doi.org/10.1103/PhysRevB.85.245102
