@@ -28,3 +28,5 @@ pair_coeff * * library.meam Fe W FeW.meam Fe W
 # https://dr.ntu.edu.sg/handle/10356/175396
 # https://dr.ntu.edu.sg/bitstream/10356/175396/2/MarioHernandez_Thesis_PhD_Final.pdf
 #------------------------------------------------------------------------
+# For Fe-Nb, the values ​​of Cmin(A-B-A) and Cmin(B-A-B) are different between the paper and the supplementary data. Here, the supplementary data was used.
+#------------------------------------------------------------------------
