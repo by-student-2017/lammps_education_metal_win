@@ -25,6 +25,6 @@ pair_style meam
 pair_coeff * * library.meam Ni Mn NiMn.meam Ni Mn
 #------------------------------------------------------------------------
 # "Modified embedded-atom method interatomic potentials for the Co-Cr, Co-Fe, Co-Mn, Cr-Mn and Mn-Ni binary systems"
-# Won-Mi Choi, Yongmin Kim, Donghyuk Seol and Byeong-Joo Lee, Compu. Mater. Sci. 130 (2017) 121-129.
+# Won-Mi Choi, Yongmin Kim, Donghyuk Seol and Byeong-Joo Lee, Compu. Mater. Sci. 130 (2017) 121-129.: https://doi.org/10.1016/j.commatsci.2017.01.002
 # Home of 2NN MEAM Interatomic Potential: https://cmse.postech.ac.kr/home_2nnmeam
 #------------------------------------------------------------------------
