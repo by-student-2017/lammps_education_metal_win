@@ -230,7 +230,8 @@ TiNAg
 LiMo (LiMo.meam only. "library.meam" does not exist. The publisher may have listed it incorrectly. Here, we have constructed library.meam from previously published data.)
 LiSi
 WP
-Mn-X(Al,Cu,Ti)
+Mn-X(X=Al,Cu,Ti)
+Zr-X(X=Co,Fe,Ni)
 #-------------------------------------------------------------
 
 
