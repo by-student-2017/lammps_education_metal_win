@@ -1,3 +1,4 @@
+# A. O. Moghaddam et al., Mater. Lett. 359 (2024) 135968.: https://doi.org/10.1016/j.matlet.2024.135968
 # (FeCoNiMnCu)-(AlTi)-based high entropy intermetallic compound.
 # Co-Mn, Mn-Ni, Cr-Mn and Fe-Mn [2,3]
 # [2] W.-M. Choi et al., Comput. Mater. Sci. 130 (2017) 121-129.: https://doi.org/10.1016/j.commatsci.2017.01.002
