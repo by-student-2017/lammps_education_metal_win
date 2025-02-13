@@ -108,3 +108,7 @@ Won-Mi Choi, Yongmin Kim, Donghyuk Seol and Byeong-Joo Lee, Compu. Mater. Sci. 1
 23.       U
 "On the accurate description of uranium metallic phases: a MEAM interatomic potential approach"
 J.R. Fernández, and M.I. Pascuet, Modelling and Simulation in Materials Science and Engineering, 22(5), 055019. DOI: 10.1088/0965-0393/22/5/055019.
+
+24.       Sn
+"Atomistic Simulations of Pure Tin Based on a New Modified Embedded-Atom Method Interatomic Potential"
+W.-S. Ko, D.-H. Kim, Y.-J. Kwon, and M. Lee (2018),, Metals, 8(11), 900. DOI: 10.3390/met8110900.
