@@ -111,4 +111,4 @@ J.R. Fernández, and M.I. Pascuet, Modelling and Simulation in Materials Science
 
 24.       Sn
 "Atomistic Simulations of Pure Tin Based on a New Modified Embedded-Atom Method Interatomic Potential"
-W.-S. Ko, D.-H. Kim, Y.-J. Kwon, and M. Lee (2018),, Metals, 8(11), 900. DOI: 10.3390/met8110900.
+W.-S. Ko, D.-H. Kim, Y.-J. Kwon, and M. Lee, Metals, 8 (2018) 900.: https://doi.org/10.3390/met8110900
