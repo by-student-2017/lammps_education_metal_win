@@ -139,9 +139,6 @@ BV  204 [GPa]
 -------------------------------------------------------------
 
 
-The parameters are as described in the paper, but the results are not correct.
-Am I doing something wrong ?
-
 FeCr2O4 (mp-1192780)
 -------------------------------------------------------------
 Show results of 1st step (Running Minimization)
@@ -153,8 +150,8 @@ The volume (Angstoms^3) = 358.587071243451;
 The total energy (eV) = -174.028437696269;
 The cohesive energy (eV/atom) = 6.21530134629533;
 -------------------------------------------------------------
-function used for fitting: f(x)
-	f(x) = (a*x/(b*(b-1)))*(b*(1-c/x)+(c/x)**b-1)+d
+# Murnaghan equation of state
+f(x) = (a*x/(b*(b-1)))*(b*(1-c/x)+(c/x)**b-1)+d
 
 Final set of parameters            Asymptotic Standard Error
 =======================            ==========================
@@ -164,6 +161,9 @@ c               = 299.111          +/- 0.01892      (0.006325%)
 d               = -179.474         +/- 0.001495     (0.0008327%)
 
 B = 1.22521*160.2 = 196.2 [GPa] (Exp. 140-170 [GPa])
+The "Murnaghan equation of state" is an overestimate, but it's not too bad.
+-------------------------------------------------------------
+The ELASTIC in Lammps does not work well as shown below. 
 -------------------------------------------------------------
 C tensor [GPa] (elastic stiffness constants)
           1                 2                 3                 4                 5                 6
