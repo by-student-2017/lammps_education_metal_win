@@ -124,17 +124,21 @@ K.-H. Kim et al., Calphad, 57 (2017) 55-61.: https://doi.org/10.1016/j.calphad.2
 "Atomistic Simulations of Pure Tin Based on a New Modified Embedded-Atom Method Interatomic Potential"
 W.-S. Ko, D.-H. Kim, Y.-J. Kwon, and M. Lee, Metals, 8 (2018) 900.: https://doi.org/10.3390/met8110900
 
-28.      N
+28.      O
+"A modified embedded atom method potential for the titanium-oxygen system"
+W.J. Joost, S. Ankem, M.M. Kuklja, Modelling and Simulation in Materials Science and Engineering, Vol. 23, pp. 015006 (2015).: doi:10.1088/0965-0393/23/1/015006
+
+29.      N
 B.-J. Lee et al., Acta Materialia, 54(17), 4597-4607.: https://doi.org/10.1016/j.actamat.2006.06.003
 Note: In N2, nn2(1,1)=0 is treated as 1NN-MEAM. In combination with other elements, for example, nn2(1,2)=1, it is treated as 2NN-MEAM.
 
-29.      H
+30.      H
 W.-S. Ko et al., J. Mater. Res. 26 (2011) 1552-1560.: https://doi.org/10.1557/jmr.2011.95
 Note: In H2, nn2(1,1)=0 is treated as 1NN-MEAM. In combination with other elements, for example, nn2(1,2)=1, it is treated as 2NN-MEAM.
 
-30.      Rh
+31.      Rh
 S.-P. Ju et al., Phys. Status Solidi B 260 (2023) 2200366.: https://doi.org/10.1002/pssb.202200366
 
-31.      Re
+32.      Re
 # Masud Alam et al., 2022 Modelling Simul. Mater. Sci. Eng. 30 015002.: DOI 10.1088/1361-651X/ac3a15 (Open Access)
 
