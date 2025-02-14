@@ -150,3 +150,6 @@ B. Beeler et al.,  Manuscript_634730ece4c910565cad35c486f1b55f.: https://www.sci
 
 35.      Hf
 R. Fereidonnejad et al., Computational Materials Science, 213 (2022) 111685.: https://doi.org/10.1016/j.commatsci.2022.111685
+
+36.      Sr
+Sun, SJ., Ju, SP., Yang, CC. et al., Sci. Rep. 10, 2515 (2020).: https://doi.org/10.1038/s41598-020-58789-8
