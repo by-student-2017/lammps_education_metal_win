@@ -4,7 +4,7 @@ dimension 3
 boundary p p p 
 atom_style atomic
 #------------------------------------------------------------------------
-# 2NN-MEAM
+# 1NN-MEAM
 pair_style meam
 pair_coeff * * library.meam Pu Ga He PuGaHe.meam Pu Ga He
 #------------------------------------------------------------------------
