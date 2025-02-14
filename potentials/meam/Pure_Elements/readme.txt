@@ -142,6 +142,8 @@ S.-P. Ju et al., Phys. Status Solidi B 260 (2023) 2200366.: https://doi.org/10.1
 32.      Re
 Masud Alam et al., 2022 Modelling Simul. Mater. Sci. Eng. 30 015002.: DOI 10.1088/1361-651X/ac3a15 (Open Access)
 
-32.      He
+33.      He
 M. A. Tschopp et al., Journal of Nuclear Materials 425 (2012) 22-32.: https://doi.org/10.1016/j.jnucmat.2011.08.003
 
+34.      Xe
+B. Beeler et al.,  Manuscript_634730ece4c910565cad35c486f1b55f.: https://www.sciencedirect.com/science/article/pii/S0022311519302806
