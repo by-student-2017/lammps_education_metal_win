@@ -105,32 +105,30 @@ J. Wei et al., ACS Omega 2019, 4, 4, 6339-6346.: https://pubs.acs.org/doi/full/1
 "Modified embedded-atom method interatomic potentials for the Co-Cr, Co-Fe, Co-Mn, Cr-Mn and Mn-Ni binary systems"
 Won-Mi Choi, Yongmin Kim, Donghyuk Seol and Byeong-Joo Lee, Compu. Mater. Sci. 130 (2017) 121-129.: https://doi.org/10.1016/j.commatsci.2017.01.002
 
-23.       U
+23.      U
 "On the accurate description of uranium metallic phases: a MEAM interatomic potential approach"
 J.R. Fernández, and M.I. Pascuet, Modelling and Simulation in Materials Science and Engineering, 22(5), 055019. DOI: 10.1088/0965-0393/22/5/055019.
 
-24.       Pu
+24.      Pu
 T. ITO et al., ICONE19-43987.: https://doi.org/10.1299/jsmeicone.2011.19._ICONE1943_369
 Note: In P, nn2(1,1)=0 is treated as 1NN-MEAM. In combination with other elements, for example, nn2(1,2)=1, it is treated as 2NN-MEAM.
 
-25.       Ce
+25.      Ce
 "The origin of activation of non-basal slip in Mg-Ce dilute alloy - An atomistic simulation study"
 Jong-Kwan Lee and Byeong-Joo Lee, Metal. Mater. Trans. A (2020).: https://doi.org/10.1007/s11661-020-06128-x
 
-26.       Nd
+26.      Nd
 K.-H. Kim et al., Calphad, 57 (2017) 55-61.: https://doi.org/10.1016/j.calphad.2017.03.003
 
-27.       Sn
+27.      Sn
 "Atomistic Simulations of Pure Tin Based on a New Modified Embedded-Atom Method Interatomic Potential"
 W.-S. Ko, D.-H. Kim, Y.-J. Kwon, and M. Lee, Metals, 8 (2018) 900.: https://doi.org/10.3390/met8110900
 
-28.       N
+28.      N
 B.-J. Lee et al., Acta Materialia, 54(17), 4597-4607.: https://doi.org/10.1016/j.actamat.2006.06.003
 Note: In N2, nn2(1,1)=0 is treated as 1NN-MEAM. In combination with other elements, for example, nn2(1,2)=1, it is treated as 2NN-MEAM.
 
-29.       H
+29.      H
 W.-S. Ko et al., J. Mater. Res. 26 (2011) 1552-1560.: https://doi.org/10.1557/jmr.2011.95
 Note: In H2, nn2(1,1)=0 is treated as 1NN-MEAM. In combination with other elements, for example, nn2(1,2)=1, it is treated as 2NN-MEAM.
 
-30.       P
-Par A.T. Olsson et al., Comput. Mater. Sci. 219 (2023) 112017.: https://doi.org/10.1016/j.commatsci.2023.112017
