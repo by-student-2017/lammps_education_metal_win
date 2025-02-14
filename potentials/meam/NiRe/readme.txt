@@ -8,7 +8,8 @@ atom_style atomic
 pair_style meam
 pair_coeff * * library.meam Ni Re NiRe.meam Ni Re
 #------------------------------------------------------------------------
-
+# Masud Alam et al., 2022 Modelling Simul. Mater. Sci. Eng. 30 015002.: DOI 10.1088/1361-651X/ac3a15 (Open Access)
+#------------------------------------------------------------------------
 
 #------------------------------------------------------------------------
 Test
