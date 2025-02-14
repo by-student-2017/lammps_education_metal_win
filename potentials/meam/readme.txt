@@ -91,6 +91,7 @@ Note: There are also papers in which only the ibar has been changed using files 
 - If the value of d is not appropriate (for example, if it is not in the range of 0 to 0.05, as is the case normally), you may be fitting with a large change in other parameters such as rho0, which may reduce the possibility of transfer.
 - From a TB-SMA perspective, the value of p/q tends to decrease as the number of turns in the periodic table increases (i.e., d approaches 0).
 - In the Rose universal curve ("erose = -Ec*(1 +astar + a3*(astar**3))*exp(-astar)"), when d becomes a negative value, a repulsive force occurs on the long-distance side (energy unstable). (Specifically, if we explain that negative energy is stable, when the interatomic distance is moved away from the most stable equilibrium state interatomic distance, it should gradually converge from negative values ​​to 0, but instead it converges to 0 after passing through positive values.) Introducing a cutoff can avoid the problem (where such energy becomes positive), but please understand that making d negative creates such a potential shape.
+- There is a method to calculate d in the Rose universal curve, but in many cases the value of d cannot be calculated due to lack of data. It would be reasonable to calculate the energy when the lattice constant is changed using DFT and then find the value of d that matches it.
 #-------------------------------------------------------------
 ## Note to the author and referees
 - When we create a MEAM using the Rose universal function, the energy, lattice constant, and bulk modulus show fairly good values. However, it is necessary to set Cmin and Cmax appropriately for the elastic constants. Therefore, at the very least, you should compare the elastic constants of the reference structure with DFT or experimental values. 
@@ -290,10 +291,6 @@ NiTiC: For NiTi, values ​​close to those in the literature were obtained. B2
 Note: Perhaps there is a setting that is closer to the literature value.
 #-------------------------------------------------------------
 TiCrN: It could not be considered as literature.
-#-------------------------------------------------------------
-
-#-------------------------------------------------------------
-FeXO(X=Ni,Cr): Overall, the values ​​do not match those in the paper perfectly. In particular, Fe-Cr (FeCr2O4) does not work well.
 #-------------------------------------------------------------
 
 #-------------------------------------------------------------
