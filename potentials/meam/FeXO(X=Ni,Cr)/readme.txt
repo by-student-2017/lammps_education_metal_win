@@ -163,7 +163,7 @@ d               = -179.474         +/- 0.001495     (0.0008327%)
 B = 1.22521*160.2 = 196.2 [GPa] (Exp. 140-170 [GPa])
 The "Murnaghan equation of state" is an overestimate, but it's not too bad.
 -------------------------------------------------------------
-The ELASTIC in Lammps does not work well as shown below. 
+The ELASTIC in Lammps does not work well as shown below. Did I manage to create the most stable structure ?
 -------------------------------------------------------------
 C tensor [GPa] (elastic stiffness constants)
           1                 2                 3                 4                 5                 6
