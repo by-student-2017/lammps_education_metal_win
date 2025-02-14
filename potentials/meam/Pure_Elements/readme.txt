@@ -135,3 +135,6 @@ Note: In H2, nn2(1,1)=0 is treated as 1NN-MEAM. In combination with other elemen
 30.      Rh
 S.-P. Ju et al., Phys. Status Solidi B 260 (2023) 2200366.: https://doi.org/10.1002/pssb.202200366
 
+31.      Re
+# Masud Alam et al., 2022 Modelling Simul. Mater. Sci. Eng. 30 015002.: DOI 10.1088/1361-651X/ac3a15 (Open Access)
+
