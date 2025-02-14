@@ -6,7 +6,7 @@ atom_style atomic
 #------------------------------------------------------------------------
 # 2NN-MEAM
 pair_style meam
-pair_coeff * * library.meam Si U Xe SiUXe.meam Si U Xe
+pair_coeff * * library.meam U Si Xe USiXe.meam U Si Xe
 #------------------------------------------------------------------------
 The reference structures for Si, U, and Xe are not given in the paper. Since the cited paper is not readily available, the most likely structure for Xe is FCC.
 
