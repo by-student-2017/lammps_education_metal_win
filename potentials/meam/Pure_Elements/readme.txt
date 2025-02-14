@@ -114,7 +114,8 @@ J.R. Fernández, and M.I. Pascuet, Modelling and Simulation in Materials Science
 W.-S. Ko, D.-H. Kim, Y.-J. Kwon, and M. Lee, Metals, 8 (2018) 900.: https://doi.org/10.3390/met8110900
 
 25.       N
-H.-K. Kim et al., Journal of Materials Research, 25 (2010) 1288-1297.: https://doi.org/10.1557/jmr.2010.0182
+B.-J. Lee et al., Acta Materialia, 54(17), 4597-4607.: https://doi.org/10.1016/j.actamat.2006.06.003
+Note: In N2, nn2(1,1)=0 is treated as 1NN-MEAM. In combination with other elements, for example, nn2(1,2)=1, it is treated as 2NN-MEAM.
 
 26.       H
 W.-S. Ko et al., J. Mater. Res. 26 (2011) 1552-1560.: https://doi.org/10.1557/jmr.2011.95
