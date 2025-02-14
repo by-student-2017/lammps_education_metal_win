@@ -132,3 +132,6 @@ Note: In N2, nn2(1,1)=0 is treated as 1NN-MEAM. In combination with other elemen
 W.-S. Ko et al., J. Mater. Res. 26 (2011) 1552-1560.: https://doi.org/10.1557/jmr.2011.95
 Note: In H2, nn2(1,1)=0 is treated as 1NN-MEAM. In combination with other elements, for example, nn2(1,2)=1, it is treated as 2NN-MEAM.
 
+30.      Rh
+S.-P. Ju et al., Phys. Status Solidi B 260 (2023) 2200366.: https://doi.org/10.1002/pssb.202200366
+
