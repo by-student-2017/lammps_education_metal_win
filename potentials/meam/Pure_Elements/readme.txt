@@ -113,14 +113,17 @@ J.R. Fernández, and M.I. Pascuet, Modelling and Simulation in Materials Science
 "The origin of activation of non-basal slip in Mg-Ce dilute alloy - An atomistic simulation study"
 Jong-Kwan Lee and Byeong-Joo Lee, Metal. Mater. Trans. A (2020).: https://doi.org/10.1007/s11661-020-06128-x
 
-25.       Sn
+25.       Nd
+K.-H. Kim et al., Calphad, 57 (2017) 55-61.: https://doi.org/10.1016/j.calphad.2017.03.003
+
+26.       Sn
 "Atomistic Simulations of Pure Tin Based on a New Modified Embedded-Atom Method Interatomic Potential"
 W.-S. Ko, D.-H. Kim, Y.-J. Kwon, and M. Lee, Metals, 8 (2018) 900.: https://doi.org/10.3390/met8110900
 
-26.       N
+27.       N
 B.-J. Lee et al., Acta Materialia, 54(17), 4597-4607.: https://doi.org/10.1016/j.actamat.2006.06.003
 Note: In N2, nn2(1,1)=0 is treated as 1NN-MEAM. In combination with other elements, for example, nn2(1,2)=1, it is treated as 2NN-MEAM.
 
-27.       H
+28.       H
 W.-S. Ko et al., J. Mater. Res. 26 (2011) 1552-1560.: https://doi.org/10.1557/jmr.2011.95
 Note: In H2, nn2(1,1)=0 is treated as 1NN-MEAM. In combination with other elements, for example, nn2(1,2)=1, it is treated as 2NN-MEAM.
