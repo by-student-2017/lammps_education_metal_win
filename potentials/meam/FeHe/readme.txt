@@ -8,6 +8,7 @@ atom_style atomic
 pair_style meam
 pair_coeff * * library.meam Fe He FeHe.meam Fe He
 #------------------------------------------------------------------------
+# M. A. Tschopp et al., Journal of Nuclear Materials 425 (2012) 22-32.: https://doi.org/10.1016/j.jnucmat.2011.08.003
 #------------------------------------------------------------------------
 
 
