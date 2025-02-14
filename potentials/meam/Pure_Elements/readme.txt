@@ -109,14 +109,18 @@ Won-Mi Choi, Yongmin Kim, Donghyuk Seol and Byeong-Joo Lee, Compu. Mater. Sci. 1
 "On the accurate description of uranium metallic phases: a MEAM interatomic potential approach"
 J.R. Fernández, and M.I. Pascuet, Modelling and Simulation in Materials Science and Engineering, 22(5), 055019. DOI: 10.1088/0965-0393/22/5/055019.
 
-24.       Sn
+24.       Ce
+"The origin of activation of non-basal slip in Mg-Ce dilute alloy - An atomistic simulation study"
+Jong-Kwan Lee and Byeong-Joo Lee, Metal. Mater. Trans. A (2020).: https://doi.org/10.1007/s11661-020-06128-x
+
+25.       Sn
 "Atomistic Simulations of Pure Tin Based on a New Modified Embedded-Atom Method Interatomic Potential"
 W.-S. Ko, D.-H. Kim, Y.-J. Kwon, and M. Lee, Metals, 8 (2018) 900.: https://doi.org/10.3390/met8110900
 
-25.       N
+26.       N
 B.-J. Lee et al., Acta Materialia, 54(17), 4597-4607.: https://doi.org/10.1016/j.actamat.2006.06.003
 Note: In N2, nn2(1,1)=0 is treated as 1NN-MEAM. In combination with other elements, for example, nn2(1,2)=1, it is treated as 2NN-MEAM.
 
-26.       H
+27.       H
 W.-S. Ko et al., J. Mater. Res. 26 (2011) 1552-1560.: https://doi.org/10.1557/jmr.2011.95
 Note: In H2, nn2(1,1)=0 is treated as 1NN-MEAM. In combination with other elements, for example, nn2(1,2)=1, it is treated as 2NN-MEAM.
