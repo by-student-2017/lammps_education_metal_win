@@ -147,3 +147,6 @@ M. A. Tschopp et al., Journal of Nuclear Materials 425 (2012) 22-32.: https://do
 
 34.      Xe
 B. Beeler et al.,  Manuscript_634730ece4c910565cad35c486f1b55f.: https://www.sciencedirect.com/science/article/pii/S0022311519302806
+
+35.      Hf
+R. Fereidonnejad et al., Computational Materials Science, 213 (2022) 111685.: https://doi.org/10.1016/j.commatsci.2022.111685
