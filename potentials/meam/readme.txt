@@ -132,6 +132,8 @@ Cmin(i,j,k) = [0.5*Cmin(i,j,i)^0.5 + 0.5*Cmin(k,j,k)^0.5]^2 = Cmin(j,k,i)
 Cmax(i,j,k) = [0.5*Cmax(i,j,i)^0.5 + 0.5*Cmax(k,j,k)^0.5]^2 = Cmin(j,k,i)
 #----------
 #-------------------------------------------------------------
+see https://github.com/by-student-2017/lammps_education_metal_win/blob/master/potentials/meam/Mn-X(X%3DAl%2CCu%2CTi)/ternary_Cmin_Cmax_data.txt
+#-------------------------------------------------------------
 
 #-------------------------------------------------------------
 # Relationship between EAM and MEAM when "b1=b2=b3=t1=t2=t3=O" (e.g., He of FeHe, or Zn of CuZn and AA7075)
