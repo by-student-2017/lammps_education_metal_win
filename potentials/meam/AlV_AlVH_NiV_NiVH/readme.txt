@@ -10,7 +10,7 @@ pair_coeff * * library.meam Al V H AlVH.meam Al V H
 #------------------------------------------------------------------------
 # 2NN-MEAM
 pair_style meam
-pair_coeff * * library.meam Al V AlV.meam Al V
+pair_coeff * * library.meam V Al VAl.meam V Al
 #------------------------------------------------------------------------
 # 2NN-MEAM
 pair_style meam
