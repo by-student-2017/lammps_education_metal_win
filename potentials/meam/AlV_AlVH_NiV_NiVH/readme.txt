@@ -30,4 +30,7 @@ pair_coeff * * library.meam Ni V H NiVH.meam Ni V H
 # Al, Ni: [18] B.-J. Lee et al., Phys. Rev. B 68 (2003) 144112.: https://doi.org/10.1103/PhysRevB.68.144112
 # H: [19] B.-J. Lee et al., Acta Mater. 55 (2007) 6779-6788.: https://doi.org/10.1016/j.actamat.2007.08.041
 # H: Bulk modulus B is not defined for a gaseous element.
+#
+# V-H: [20] J.-H. Shim et al., CALPHAD 35 (2011) 302-307.: https://doi.org/10.1016/j.calphad.2011.04.007
+# Al-H, Ni-H: [21] W. S. Ko et al., J. Mater. Res. 26 (2011) 1552-1560.: https://doi.org/10.1557/jmr.2011.95
 #------------------------------------------------------------------------
