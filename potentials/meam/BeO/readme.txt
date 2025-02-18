@@ -8,6 +8,10 @@ atom_style atomic
 pair_style meam
 pair_coeff * * library.meam Be O BeO.meam Be O
 #------------------------------------------------------------------------
+# J. Wei et al., ACS Omega 2019, 4, 4, 6339-6346.: https://doi.org/10.1021/acsomega.9b00174
+# Note: not all parameters are detailed in the paper.
+# CABC denotes the screening parameter of the type A element to the type B and type C elements.
+#------------------------------------------------------------------------
 
 
 #------------------------------------------------------------------------
