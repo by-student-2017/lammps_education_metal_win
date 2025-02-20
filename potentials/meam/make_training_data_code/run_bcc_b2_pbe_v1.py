@@ -50,6 +50,7 @@ vdw_radii = {
 }
 
 # Get all combinations of elements
+#elements = list(pseudopotentials.keys())
 elements = ['H', 'Sc']
 element_combinations = list(combinations(elements, 2))
 
