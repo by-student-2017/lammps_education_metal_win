@@ -181,7 +181,9 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
         radius1 = atomic_radii[element1]
         radius2 = atomic_radii[element2]
 
-    a = (radius1 + radius2) * (2/3**0.5) * scaling_factor
+    re = (radius1 + radius2)
+    re2a = 2.0
+    a = re * re2a * scaling_factor
 
     # Create the FCC B1 (NaCl-type) structure
     atoms = Atoms(f'{element1}4{element2}4', 
@@ -226,12 +228,15 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
     calc = Espresso(pseudopotentials=pseudopotentials_dict, input_data=input_data, kpts=(6, 6, 6), omp_num_threads=omp_num_threads, mpi_num_procs=mpi_num_procs)
     atoms.set_calculator(calc)
 
+    '''
+    # search optimized structure with scf
     input_data['control']['calculation'] = 'scf'
     scaling_factor = 0.99
     best_energy = float('inf')
     best_atoms = None
     retries = 0
     flag = 0
+    print("search optimized structure with scf")
     while retries < max_retries:
         scaling_factor += 0.01
         print("a =", a," [A], v =", a**3," [A^3]")
@@ -253,17 +258,50 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
             else:
                 pass
         print(retries,"/",max_retries,": scaling factor = ", scaling_factor)
-        a = (radius1 + radius2) * (2 / 3**0.5) * scaling_factor
+        a = re * re2a * scaling_factor
         atoms.set_cell([a, a, a], scale_atoms=True)
         retries += 1
 
     scaling_factor -= 0.01
     print(retries,"/",max_retries,": scaling factor = ", scaling_factor)
-    a = (radius1 + radius2) * (2 / 3**0.5)  * scaling_factor
+    a = re * re2a * scaling_factor
     atoms.set_cell([a, a, a], scale_atoms=True)
     input_data['control']['calculation'] = 'vc-relax'
     opt = BFGS(atoms)
     opt.run(fmax=0.02)
+
+    optimized_a = atoms.get_cell()[0, 0]
+    total_energy = atoms.get_total_energy()
+
+    print("Check: vc-relax a=",optimized_a," [A] vs. input a=",a," [A]")
+    '''
+    
+    # search optimized structure with vc-relax
+    input_data['control']['calculation'] = 'vc-relax'
+    scaling_factor = 0.99
+    best_energy = float('inf')
+    best_atoms = None
+    retries = 0
+    print("search optimized structure with vc-relax")
+    while retries < max_retries:
+        scaling_factor += 0.01
+        print("a =", a," [A], v =", a**3," [A^3]")
+        try:
+            opt = BFGS(atoms)
+            opt.run(fmax=0.02)
+            energy = atoms.get_total_energy()
+            print("E =",atoms.get_total_energy()," [eV]")
+            break
+        except Exception as e:
+            print(f"Optimization failed for {element1}-{element2} with error: {e}")
+            if retries >= max_retries:
+                print("Max retries reached. Skipping this combination.")
+            else:
+                pass
+        print(retries,"/",max_retries,": scaling factor = ", scaling_factor)
+        a = re * re2a * scaling_factor
+        atoms.set_cell([a, a, a], scale_atoms=True)
+        retries += 1
 
     optimized_a = atoms.get_cell()[0, 0]
     total_energy = atoms.get_total_energy()
@@ -293,7 +331,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
         volumes.append(atoms.get_volume())
         energies.append(atoms.get_total_energy())
 
-        cohesive_energy = -(atoms.get_total_energy() - isolated_atom_energy1*4 - isolated_atom_energy2*4) / len(atoms)
+        cohesive_energy = -(atoms.get_total_energy() - isolated_atom_energy1*4 - isolated_atom_energy2*4)
         cohesive_energies.append(cohesive_energy)
         
         volumes_per_atom.append(atoms.get_volume()/len(atoms))
@@ -304,10 +342,10 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
         #elastic_constants.append(calculate_elastic_constants(atoms, calc, [0.01, 0.02, 0.03], [0.01, 0.02, 0.03]))
         stress_tensor.append((calc.get_stress() * 160.21766208).tolist())
 
-    #eos = EquationOfState(volumes, [energy * -1.0 for energy in cohesive_energies], eos='murnaghan')
     #eos = EquationOfState(volumes, energies, eos='murnaghan')
     #eos = EquationOfState(volumes_per_atom, energies_per_atom, eos='murnaghan')
-    eos = EquationOfState(volumes_per_atom, [energy * -1.0 for energy in cohesive_energies_per_atom], eos='murnaghan')
+    eos = EquationOfState(volumes, [energy * -1.0 for energy in cohesive_energies], eos='murnaghan')
+    #eos = EquationOfState(volumes_per_atom, [energy * -1.0 for energy in cohesive_energies_per_atom], eos='murnaghan')
     try:
         v0, e0, B = eos.fit()
         print(B / kJ * 1.0e24, 'GPa')
@@ -326,8 +364,9 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
 
     print("EOS ",e0,"[eV] vs. SCF",total_energy," [eV]")
 
-    cohesive_energy = -(atoms.get_total_energy() - isolated_atom_energy1*4 - isolated_atom_energy2*4) / len(atoms)
-    nearest_neighbor_distance = optimized_a / 3**0.5
+    cohesive_energy = -(atoms.get_total_energy() - isolated_atom_energy1*4 - isolated_atom_energy2*4)
+    cohesive_energy_per_atom = -(atoms.get_total_energy() - isolated_atom_energy1*4 - isolated_atom_energy2*4) / len(atoms)
+    nearest_neighbor_distance = optimized_a / re2a
 
     input_data['control']['calculation'] = 'scf'
     elastic_constants_final = calculate_elastic_constants(atoms, calc, [0.01, 0.02, 0.03], [0.01, 0.02, 0.03])
@@ -336,16 +375,18 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
     return {
         'Element1': element1,
         'Element2': element2,
-        'Cohesive Energy (eV/atom)': cohesive_energy,
+        'Cohesive Energy (eV)': cohesive_energy,
         'Nearest Neighbor Distance (A)': nearest_neighbor_distance,
         'Bulk Modulus (GPa)': B / kJ * 1.0e24,
         'Elastic Constants (GPa)': elastic_constants_final,
+        'Atoms': len(atoms),
+        'Lattice Type': 'FCC_B1 (NaCl-type)',
         'Lattice Constant (A)': optimized_a,
         'Volume (A^3)': optimized_a**3,
         'Total Energy (eV)': total_energy,
         'Volumes (A^3)': volumes,
         'Energies (eV)': energies,
-        'Cohesive Energies (eV/atom)': cohesive_energies,
+        'Cohesive Energies (eV)': cohesive_energies,
         'Stress Tensor per Volume (GPa)': stress_tensor
     }
 
@@ -368,6 +409,7 @@ for i, combination in enumerate(element_combinations):
         fieldnames = ['Element1', 'Element2', 
                       'Cohesive Energy (eV/atom)', 'Nearest Neighbor Distance (A)', 'Bulk Modulus (GPa)', 
                       'C11', 'C12', 'C22', 'C33', 'C23', 'C13', 'C44', 'C55', 'C66', 
+                      'Atoms', 'Lattice Type',
                       'Lattice Constant (A)', 'Volumes (A^3)', 'Energies (eV)', 'Total Energy (eV)', 
                       'Cohesive Energies (eV/atom)', 'Stress Tensor per Volume (GPa)']
 
@@ -379,7 +421,7 @@ for i, combination in enumerate(element_combinations):
         writer.writerow({
             'Element1': result['Element1'],
             'Element2': result['Element2'],
-            'Cohesive Energy (eV/atom)': result['Cohesive Energy (eV/atom)'],
+            'Cohesive Energy (eV)': result['Cohesive Energy (eV)'],
             'Nearest Neighbor Distance (A)': result['Nearest Neighbor Distance (A)'],
             'Bulk Modulus (GPa)': result['Bulk Modulus (GPa)'],
             'C11': result['Elastic Constants (GPa)']['C11'],
@@ -391,11 +433,13 @@ for i, combination in enumerate(element_combinations):
             'C44': result['Elastic Constants (GPa)']['C44'],
             'C55': result['Elastic Constants (GPa)']['C55'],
             'C66': result['Elastic Constants (GPa)']['C66'],
+            'Atoms': result['Atoms'],
+            'Lattice Type': result['Lattice Type'],
             'Lattice Constant (A)': result['Lattice Constant (A)'],
             'Total Energy (eV)': result['Total Energy (eV)'],
             'Volumes (A^3)': result['Volumes (A^3)'],
             'Energies (eV)': result['Energies (eV)'],
-            'Cohesive Energies (eV/atom)': result['Cohesive Energies (eV/atom)'],
+            'Cohesive Energies (eV)': result['Cohesive Energies (eV)'],
             'Stress Tensor per Volume (GPa)': result['Stress Tensor per Volume (GPa)']
         })
 
