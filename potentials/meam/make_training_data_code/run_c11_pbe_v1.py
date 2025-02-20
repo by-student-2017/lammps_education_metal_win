@@ -15,7 +15,7 @@ omp_num_threads = 1
 mpi_num_procs = 1
 
 # Explicitly set OMP_NUM_THREADS
-os.environ['OMP_NUM_THREADS'] = '8'
+os.environ['OMP_NUM_THREADS'] = '4'
 
 # Load the pseudopotential data from the JSON file
 with open('PBE/PSlibrary_PBE.json', 'r') as f:
@@ -51,16 +51,64 @@ vdw_radii = {
 
 # Get all combinations of elements
 #elements = list(pseudopotentials.keys())
-elements = ['Ti', 'Fe']
+elements = ['H', 'Sc']
 element_combinations = list(combinations(elements, 2))
 
-# Define a function to calculate properties for a given combination of elements
+def calculate_elastic_constants(atoms, calc, shear_strains):
+    stress_tensor = calc.get_stress()
+    C11 = stress_tensor[0] * 160.21766208
+    C22 = stress_tensor[1] * 160.21766208
+    C33 = stress_tensor[2] * 160.21766208
+    C23 = stress_tensor[3] * 160.21766208
+    C13 = stress_tensor[4] * 160.21766208
+    C12 = stress_tensor[5] * 160.21766208
+
+    shear_stresses = {'C44': [], 'C55': [], 'C66': []}
+    for strain in shear_strains:
+        shear_atoms = atoms.copy()
+        shear_atoms.set_cell(shear_atoms.get_cell() * [[1, 0, 0], [0, 1, strain], [0, 0, 1]], scale_atoms=True)
+        shear_atoms.set_calculator(calc)
+        opt = BFGS(shear_atoms)
+        opt.run(fmax=0.02)
+        shear_stress = shear_atoms.get_stress()
+        shear_stresses['C44'].append(shear_stress[3] / strain)
+
+        shear_atoms = atoms.copy()
+        shear_atoms.set_cell(shear_atoms.get_cell() * [[1, 0, strain], [0, 1, 0], [0, 0, 1]], scale_atoms=True)
+        shear_atoms.set_calculator(calc)
+        opt = BFGS(shear_atoms)
+        opt.run(fmax=0.02)
+        shear_stress = shear_atoms.get_stress()
+        shear_stresses['C55'].append(shear_stress[4] / strain)
+
+        shear_atoms = atoms.copy()
+        shear_atoms.set_cell(shear_atoms.get_cell() * [[1, strain, 0], [0, 1, 0], [0, 0, 1]], scale_atoms=True)
+        shear_atoms.set_calculator(calc)
+        opt = BFGS(shear_atoms)
+        opt.run(fmax=0.02)
+        shear_stress = shear_atoms.get_stress()
+        shear_stresses['C66'].append(shear_stress[5] / strain)
+
+    C44 = np.mean(shear_stresses['C44']) * 160.21766208
+    C55 = np.mean(shear_stresses['C55']) * 160.21766208
+    C66 = np.mean(shear_stresses['C66']) * 160.21766208
+
+    return {
+        'C11': C11,
+        'C12': C12,
+        'C22': C22,
+        'C33': C33,
+        'C23': C23,
+        'C13': C13,
+        'C44': C44,
+        'C55': C55,
+        'C66': C66
+    }
+
 def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, max_retries=200):
     element1, element2 = elements_combination
-    
     scaling_factor = 0.94
-    
-    # Use vdW radii for noble gases
+
     vdw_elements = ["H", "He", "Li", "B", "N", "P", "S", "Ne", "Ar", "Kr", "Xe", "Rn"]
     if element1 in vdw_elements and element2 in vdw_elements:
         radius1 = vdw_radii[element1]
@@ -68,17 +116,15 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
     else:
         radius1 = atomic_radii[element1]
         radius2 = atomic_radii[element2]
-    
-    # Estimate lattice constant using atomic radii
+
     a = (radius1 + radius2) * (2/3**0.5) * scaling_factor
-    
+
     # Create the C11 MoSi2 structure
     atoms = Atoms(f'{element1}{element2}', 
               positions=[(0, 0, 0), (0.5*a, 0.5*a, 0.5*a), (0.25*a, 0.25*a, 0.75*a), (0.75*a, 0.75*a, 0.25*a)], 
               cell=[a, a, a], 
               pbc=True)
-    
-    # Set up Quantum Espresso calculator
+
     pseudopotentials_dict = {
         element1: pseudopotentials[element1]['filename'],
         element2: pseudopotentials[element2]['filename']
@@ -98,27 +144,23 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
             'ecutwfc': max(pseudopotentials[element1]['cutoff_wfc'], pseudopotentials[element2]['cutoff_wfc']),
             'ecutrho': max(pseudopotentials[element1]['cutoff_rho'], pseudopotentials[element2]['cutoff_rho']),
             'occupations': 'smearing',
-            'smearing': 'gaussian',  # or 'fermi-dirac'
+            'smearing': 'gaussian',
             'degauss': 0.01,
-            #'smearing': 'mp',  # or 'fermi-dirac'
-            #'degauss': 0.02,
-            #'vdw_corr': 'DFT-D'  # Add this line to include van der Waals interactions, 'DFT-D' or 'DFT-D3'
         },
         'electrons': {
-            'conv_thr': 1.0e-6  # Updated convergence threshold
+            'conv_thr': 1.0e-6
         },
         'ions': {
-            #'ion_dynamics': 'bfgs'
             'ion_dynamics': 'cg'
         },
         'cell': {
             'cell_dynamics': 'bfgs'
         }
     }
-    
-    calc = Espresso(pseudopotentials=pseudopotentials_dict, input_data=input_data, kpts=(5, 5, 5), omp_num_threads=omp_num_threads, mpi_num_procs=mpi_num_procs)
+
+    calc = Espresso(pseudopotentials=pseudopotentials_dict, input_data=input_data, kpts=(4, 4, 4), omp_num_threads=omp_num_threads, mpi_num_procs=mpi_num_procs)
     atoms.set_calculator(calc)
-    
+
     input_data['control']['calculation'] = 'scf'
     scaling_factor = 0.99
     best_energy = float('inf')
@@ -149,7 +191,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
         a = (radius1 + radius2) * (2 / 3**0.5) * scaling_factor
         atoms.set_cell([a, a, a], scale_atoms=True)
         retries += 1
-    
+
     scaling_factor -= 0.01
     print(retries,"/",max_retries,": scaling factor = ", scaling_factor)
     a = (radius1 + radius2) * (2 / 3**0.5)  * scaling_factor
@@ -157,203 +199,66 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
     input_data['control']['calculation'] = 'vc-relax'
     opt = BFGS(atoms)
     opt.run(fmax=0.02)
-    
-    # Get optimized lattice constant and total energy
+
     optimized_a = atoms.get_cell()[0, 0]
     total_energy = atoms.get_total_energy()
-    
-    # check
+
     print("Check: vc-relax a=",optimized_a," [A] vs. input a=",a," [A]")
-    
-    # Calculate volumes, energies, and elastic constants for EOS fitting
+
     volumes = []
     energies = []
     cohesive_energies = []
     elastic_constants = []
-    isolated_atom_energy1 = pseudopotentials[element1]['total_psenergy'] * 13.605693  # Convert to eV
-    isolated_atom_energy2 = pseudopotentials[element2]['total_psenergy'] * 13.605693  # Convert to eV
-    
+    isolated_atom_energy1 = pseudopotentials[element1]['total_psenergy'] * 13.605693
+    isolated_atom_energy2 = pseudopotentials[element2]['total_psenergy'] * 13.605693
+
     input_data['control']['calculation'] = 'scf'
     for scale in np.linspace((1.0-0.12)**(1/3), (1.0+0.12)**(1/3), 25):
         atoms.set_cell([scale * optimized_a] * 3, scale_atoms=True)
-        
-        # Perform SCF calculation at each volume step
+
         input_data['control']['calculation'] = 'scf'
-        calc = Espresso(pseudopotentials=pseudopotentials_dict, input_data=input_data, kpts=(5, 5, 5), omp_num_threads=omp_num_threads, mpi_num_procs=mpi_num_procs)
+        calc = Espresso(pseudopotentials=pseudopotentials_dict, input_data=input_data, kpts=(4, 4, 4), omp_num_threads=omp_num_threads, mpi_num_procs=mpi_num_procs)
         atoms.set_calculator(calc)
-        
-        volumes.append(atoms.get_volume()) # Convert each volume to Angstrom^3
+
+        volumes.append(atoms.get_volume())
         energies.append(atoms.get_total_energy())
-        
-        # Calculate cohesive energy
+
         cohesive_energy = -(atoms.get_total_energy() - isolated_atom_energy1 - isolated_atom_energy2) / len(atoms)
         cohesive_energies.append(cohesive_energy)
-        
-        # Extract stress tensor from the calculator
-        stress_tensor = calc.get_stress() # QE([Ry/Bohr^3] -- ASE --> -[eV/A^3]
-        
-        # Calculate elastic constants (C11, C12, C44) from the stress tensor
-        C11 = stress_tensor[0] * 160.21766208 # 1 [eV/A^3] = 160.21766208 [GPa]
-        C22 = stress_tensor[1] * 160.21766208 # 1 [eV/A^3] = 160.21766208 [GPa]
-        C33 = stress_tensor[2] * 160.21766208 # 1 [eV/A^3] = 160.21766208 [GPa]
-        C23 = stress_tensor[3] * 160.21766208 # 1 [eV/A^3] = 160.21766208 [GPa]
-        C13 = stress_tensor[4] * 160.21766208 # 1 [eV/A^3] = 160.21766208 [GPa]
-        C12 = stress_tensor[5] * 160.21766208 # 1 [eV/A^3] = 160.21766208 [GPa]
-        print("C11, C22, C33, C23, C13, C12: ",C11, C22, C33, C23, C13, C12)
-        
-        # Apply shear strains and calculate C44, C55, C66
-        shear_strains = [0.01, 0.02, 0.03]
-        shear_stresses = {'C44': [], 'C55': [], 'C66': []}
-        
-        for strain in shear_strains:
-            # Apply shear strain in yz-plane for C44
-            shear_atoms = atoms.copy()
-            shear_atoms.set_cell(shear_atoms.get_cell() * [[1, 0, 0], [0, 1, strain], [0, 0, 1]], scale_atoms=True)
-            shear_atoms.set_calculator(calc)
-            opt = BFGS(shear_atoms)
-            opt.run(fmax=0.02)
-            shear_stress = shear_atoms.get_stress()
-            shear_stresses['C44'].append(shear_stress[3] / strain)
-            
-            # Apply shear strain in xz-plane for C55
-            shear_atoms = atoms.copy()
-            shear_atoms.set_cell(shear_atoms.get_cell() * [[1, 0, strain], [0, 1, 0], [0, 0, 1]], scale_atoms=True)
-            shear_atoms.set_calculator(calc)
-            opt = BFGS(shear_atoms)
-            opt.run(fmax=0.02)
-            shear_stress = shear_atoms.get_stress()
-            shear_stresses['C55'].append(shear_stress[4] / strain)
-            
-            # Apply shear strain in xy-plane for C66
-            shear_atoms = atoms.copy()
-            shear_atoms.set_cell(shear_atoms.get_cell() * [[1, strain, 0], [0, 1, 0], [0, 0, 1]], scale_atoms=True)
-            shear_atoms.set_calculator(calc)
-            opt = BFGS(shear_atoms)
-            opt.run(fmax=0.02)
-            shear_stress = shear_atoms.get_stress()
-            shear_stresses['C66'].append(shear_stress[5] / strain)
-        
-        C44 = np.mean(shear_stresses['C44']) * 160.21766208 # 1 [eV/A^3] = 160.21766208 [GPa]
-        C55 = np.mean(shear_stresses['C55']) * 160.21766208 # 1 [eV/A^3] = 160.21766208 [GPa]
-        C66 = np.mean(shear_stresses['C66']) * 160.21766208 # 1 [eV/A^3] = 160.21766208 [GPa]
-        
-        elastic_constants.append({
-            'C11': C11,
-            'C12': C12,
-            'C22': C22,
-            'C33': C33,
-            'C23': C23,
-            'C13': C13,
-            'C44': C44,
-            'C55': C55,
-            'C66': C66
-        })
-    
-    # Calculate bulk modulus using Equation of State (EOS)
-    eos = EquationOfState(volumes, energies, eos='murnaghan')  # Try different EOS models (volumes [A^3], energies [eV])
+
+        elastic_constants.append(calculate_elastic_constants(atoms, calc, [0.01, 0.02, 0.03]))
+
+    eos = EquationOfState(volumes, energies, eos='murnaghan')
     try:
         v0, e0, B = eos.fit()
-        print(B / kJ * 1.0e24, 'GPa') # 1 [eV/A^3] -> 160.21766208 [GPa]
+        print(B / kJ * 1.0e24, 'GPa')
         eos.plot('C11_'+element1+'-'+element2+'_eos.png')
     except ValueError as e:
         print(f"Error fitting EOS: {e}")
-    
+
     a = v0**(1/3)
     atoms.set_cell([a, a, a], scale_atoms=True)
     input_data['control']['calculation'] = 'scf'
     opt = BFGS(atoms)
     opt.run(fmax=0.02)
-    
-    # Get optimized lattice constant and total energy
+
     optimized_a = atoms.get_cell()[0, 0]
     total_energy = atoms.get_total_energy()
-    
-    # check results
+
     print("EOS ",e0,"[eV] vs. SCF",total_energy," [eV]")
-    
+
     cohesive_energy = -(atoms.get_total_energy() - isolated_atom_energy1 - isolated_atom_energy2) / len(atoms)
-    
-    # Calculate nearest neighbor distance
     nearest_neighbor_distance = optimized_a / 3**0.5
-    
-    # Extract stress tensor from the calculator
-    stress_tensor = calc.get_stress() # QE([Ry/Bohr^3] -- ASE --> -[eV/A^3]
-    
-    # Calculate elastic constants (C11, C12, C44) from the stress tensor
-    C11 = stress_tensor[0] * 160.21766208 # 1 [eV/A^3] = 160.21766208 [GPa]
-    C22 = stress_tensor[1] * 160.21766208 # 1 [eV/A^3] = 160.21766208 [GPa]
-    C33 = stress_tensor[2] * 160.21766208 # 1 [eV/A^3] = 160.21766208 [GPa]
-    C23 = stress_tensor[3] * 160.21766208 # 1 [eV/A^3] = 160.21766208 [GPa]
-    C13 = stress_tensor[4] * 160.21766208 # 1 [eV/A^3] = 160.21766208 [GPa]
-    C12 = stress_tensor[5] * 160.21766208 # 1 [eV/A^3] = 160.21766208 [GPa]
-    print("C11, C22, C33, C23, C13, C12: ",C11, C22, C33, C23, C13, C12)
-    
-    # Apply shear strains and calculate C44, C55, C66
-    shear_strains = [0.01, 0.02, 0.03]
-    shear_stresses = {'C44': [], 'C55': [], 'C66': []}
-    
-    input_data['control']['calculation'] = 'scf'
-    for strain in shear_strains:
-        # Apply shear strain in yz-plane for C44
-        shear_atoms = atoms.copy()
-        shear_atoms.set_cell(shear_atoms.get_cell() * [[1, 0, 0], [0, 1, strain], [0, 0, 1]], scale_atoms=True)
-        shear_atoms.set_calculator(calc)
-        opt = BFGS(shear_atoms)
-        opt.run(fmax=0.02)
-        shear_stress = shear_atoms.get_stress()
-        shear_stresses['C44'].append(shear_stress[3] / strain)
-        
-        # Apply shear strain in xz-plane for C55
-        shear_atoms = atoms.copy()
-        shear_atoms.set_cell(shear_atoms.get_cell() * [[1, 0, strain], [0, 1, 0], [0, 0, 1]], scale_atoms=True)
-        shear_atoms.set_calculator(calc)
-        opt = BFGS(shear_atoms)
-        opt.run(fmax=0.02)
-        shear_stress = shear_atoms.get_stress()
-        shear_stresses['C55'].append(shear_stress[4] / strain)
-        
-        # Apply shear strain in xy-plane for C66
-        shear_atoms = atoms.copy()
-        shear_atoms.set_cell(shear_atoms.get_cell() * [[1, strain, 0], [0, 1, 0], [0, 0, 1]], scale_atoms=True)
-        shear_atoms.set_calculator(calc)
-        opt = BFGS(shear_atoms)
-        opt.run(fmax=0.02)
-        shear_stress = shear_atoms.get_stress()
-        shear_stresses['C66'].append(shear_stress[5] / strain)
-    
-    C44 = np.mean(shear_stresses['C44']) * 160.21766208 # 1 [eV/A^3] = 160.21766208 [GPa]
-    C55 = np.mean(shear_stresses['C55']) * 160.21766208 # 1 [eV/A^3] = 160.21766208 [GPa]
-    C66 = np.mean(shear_stresses['C66']) * 160.21766208 # 1 [eV/A^3] = 160.21766208 [GPa]
-    
-    elastic_constants.append({
-        'C11': C11,
-        'C12': C12,
-        'C22': C22,
-        'C33': C33,
-        'C23': C23,
-        'C13': C13,
-        'C44': C44,
-        'C55': C55,
-        'C66': C66
-    })
-    
+
+    elastic_constants_final = calculate_elastic_constants(atoms, calc, [0.01, 0.02, 0.03])
+
     return {
         'Element1': element1,
         'Element2': element2,
         'Cohesive Energy (eV/atom)': cohesive_energy,
         'Nearest Neighbor Distance (A)': nearest_neighbor_distance,
-        'Bulk Modulus (GPa)': B / kJ * 1.0e24 , # 1 [eV/A^3] = 1/ ase.units.kJ * 1.0e24 = 160.21766208 = [GPa]
-        'Elastic Constants (GPa)': {
-            'C11': C11,
-            'C12': C12,
-            'C22': C22,
-            'C33': C33,
-            'C23': C23,
-            'C13': C13,
-            'C44': C44,
-            'C55': C55,
-            'C66': C66
-        },
+        'Bulk Modulus (GPa)': B / kJ * 1.0e24,
+        'Elastic Constants (GPa)': elastic_constants_final,
         'Lattice Constant (A)': optimized_a,
         'Volume (A^3)': optimized_a**3,
         'Total Energy (eV)': total_energy,
@@ -369,32 +274,27 @@ for i, combination in enumerate(element_combinations):
     result = calculate_properties(combination, omp_num_threads, mpi_num_procs)
     results.append(result)
     element1, element2 = combination
-    
-    # Create the directory if it doesn't exist
+
     directory = f'C11_{element1}-{element2}'
     if not os.path.exists(directory):
         os.makedirs(directory)
-    
-    # Save intermediate results to a JSON file
-    #with open('C11_'+element1+'-'+element2+'/results_C11_'+element1+'-'+element2+'.json', 'a') as jsonfile:
+
     with open(f'{directory}/results_C11_{element1}-{element2}.json', 'a') as jsonfile:
         json.dump(result, jsonfile, indent=4)
         jsonfile.write('\n')
-    
-    # Save intermediate results to a CSV file
-    #with open('C11_'+element1+'-'+element2+'/results_C11_'+element1+'-'+element2+'.csv', 'a', newline='') as csvfile:
+
     with open(f'{directory}/results_C11_{element1}-{element2}.csv', 'a', newline='') as csvfile:
         fieldnames = ['Element1', 'Element2', 
                       'Cohesive Energy (eV/atom)', 'Nearest Neighbor Distance (A)', 'Bulk Modulus (GPa)', 
                       'C11', 'C12', 'C22', 'C33', 'C23', 'C13', 'C44', 'C55', 'C66', 
-                      'Lattice Constant (A)', 'Volumes (A^3)', 'Energies (eV)', 'Total Energy (eV)', 'Cohesive Energies (eV/atom)', 
-                      'Elastic Constants per Volume']
-        
+                      'Lattice Constant (A)', 'Volumes (A^3)', 'Energies (eV)', 'Total Energy (eV)', 
+                      'Cohesive Energies (eV/atom)', 'Elastic Constants per Volume']
+
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
-        
+
         if i == 0:
-            writer.writeheader()  # Write header only once
-        
+            writer.writeheader()
+
         writer.writerow({
             'Element1': result['Element1'],
             'Element2': result['Element2'],
@@ -417,7 +317,7 @@ for i, combination in enumerate(element_combinations):
             'Cohesive Energies (eV/atom)': result['Cohesive Energies (eV/atom)'],
             'Elastic Constants per Volume': result['Elastic Constants per Volume']
         })
-    
+
     print(f"Processed combination {i+1}/{len(element_combinations)}: {combination}")
 
 print("Calculations are complete and results are saved to results_C11.json and results_C11.csv.")
