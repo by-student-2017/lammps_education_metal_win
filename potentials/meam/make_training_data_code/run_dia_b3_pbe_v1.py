@@ -294,7 +294,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
         volumes.append(atoms.get_volume())
         energies.append(atoms.get_total_energy())
 
-        cohesive_energy = -(atoms.get_total_energy() - isolated_atom_energy1 - isolated_atom_energy2) / len(atoms)
+        cohesive_energy = -(atoms.get_total_energy() - isolated_atom_energy1*4 - isolated_atom_energy2*4) / len(atoms)
         cohesive_energies.append(cohesive_energy)
         
         volumes_per_atom.append(atoms.get_volume()/len(atoms))
@@ -327,7 +327,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
 
     print("EOS ",e0,"[eV] vs. SCF",total_energy," [eV]")
 
-    cohesive_energy = -(atoms.get_total_energy() - isolated_atom_energy1 - isolated_atom_energy2) / len(atoms)
+    cohesive_energy = -(atoms.get_total_energy() - isolated_atom_energy1*4 - isolated_atom_energy2*4) / len(atoms)
     nearest_neighbor_distance = optimized_a / 3**0.5
 
     input_data['control']['calculation'] = 'scf'
