@@ -51,7 +51,7 @@ vdw_radii = {
 
 # Get all combinations of elements
 #elements = list(pseudopotentials.keys())
-elements = ['H', 'Sc']
+elements = ['H', 'Zr']
 element_combinations = list(combinations(elements, 2))
 
 def calculate_elastic_constants(atoms, calc, shear_strains, normal_strains):
@@ -185,8 +185,9 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
 
     # Create the Diamond B3 (Zinc Blende) structure
     atoms = Atoms(f'{element1}4{element2}4', 
-              positions=[(0, 0, 0),(0.5*a, 0.5*a, 0),(0.5*a, 0, 0.5*a),(0, 0.5*a, 0.5*a), (0.25*a, 0.75*a, 0.75*a)
-                         (0.25*a, 0.25*a, 0.25*a), (0.75*a, 0.75*a, 0.25*a),(0.75*a, 0.25*a, 0.75*a), (0.25*a, 0.75*a, 0.75*a)], 
+              positions=[(0, 0, 0), (0.5*a, 0.5*a, 0), (0.5*a, 0, 0.5*a), (0, 0.5*a, 0.5*a), 
+                         (0.25*a, 0.75*a, 0.75*a), (0.25*a, 0.25*a, 0.25*a), (0.75*a, 0.75*a, 0.25*a), 
+                         (0.75*a, 0.25*a, 0.75*a)], 
               cell=[a, a, a], 
               pbc=True)
 
