@@ -54,44 +54,107 @@ vdw_radii = {
 elements = ['H', 'Sc']
 element_combinations = list(combinations(elements, 2))
 
-def calculate_elastic_constants(atoms, calc, shear_strains):
-    stress_tensor = calc.get_stress()
-    C11 = stress_tensor[0] * 160.21766208
-    C22 = stress_tensor[1] * 160.21766208
-    C33 = stress_tensor[2] * 160.21766208
-    C23 = stress_tensor[3] * 160.21766208
-    C13 = stress_tensor[4] * 160.21766208
-    C12 = stress_tensor[5] * 160.21766208
+def calculate_elastic_constants(atoms, calc, shear_strains, normal_strains):
+    initial_stress_tensor = calc.get_stress()
+    
+    # Normal strains for C11, C12, etc.
+    normal_stresses = {'C11': [], 'C12': [], 'C22': [], 'C33': [], 'C23': [], 'C13': []}
+    for strain in normal_strains:
+        # Apply strain in x direction for C11
+        normal_atoms = atoms.copy()
+        normal_atoms.set_cell(normal_atoms.get_cell() * [[1 + strain, 0, 0], [0, 1, 0], [0, 0, 1]], scale_atoms=True)
+        normal_atoms.set_calculator(calc)
+        opt = BFGS(normal_atoms)
+        opt.run(fmax=0.02)
+        normal_stress = normal_atoms.get_stress()
+        normal_stresses['C11'].append((normal_stress[0] - initial_stress_tensor[0]) / strain)
+
+        # Apply strain in y direction for C22
+        normal_atoms = atoms.copy()
+        normal_atoms.set_cell(normal_atoms.get_cell() * [[1, 0, 0], [0, 1 + strain, 0], [0, 0, 1]], scale_atoms=True)
+        normal_atoms.set_calculator(calc)
+        opt = BFGS(normal_atoms)
+        opt.run(fmax=0.02)
+        normal_stress = normal_atoms.get_stress()
+        normal_stresses['C22'].append((normal_stress[1] - initial_stress_tensor[1]) / strain)
+
+        # Apply strain in z direction for C33
+        normal_atoms = atoms.copy()
+        normal_atoms.set_cell(normal_atoms.get_cell() * [[1, 0, 0], [0, 1, 0], [0, 0, 1 + strain]], scale_atoms=True)
+        normal_atoms.set_calculator(calc)
+        opt = BFGS(normal_atoms)
+        opt.run(fmax=0.02)
+        normal_stress = normal_atoms.get_stress()
+        normal_stresses['C33'].append((normal_stress[2] - initial_stress_tensor[2]) / strain)
+
+        # Apply strain in xy direction for C12
+        normal_atoms = atoms.copy()
+        normal_atoms.set_cell(normal_atoms.get_cell() * [[1 + strain, 0, 0], [0, 1 + strain, 0], [0, 0, 1]], scale_atoms=True)
+        normal_atoms.set_calculator(calc)
+        opt = BFGS(normal_atoms)
+        opt.run(fmax=0.02)
+        normal_stress = normal_atoms.get_stress()
+        normal_stresses['C12'].append((normal_stress[0] - initial_stress_tensor[0]) / strain)
+
+        # Apply strain in yz direction for C23
+        normal_atoms = atoms.copy()
+        normal_atoms.set_cell(normal_atoms.get_cell() * [[1, 0, 0], [0, 1 + strain, 0], [0, 0, 1 + strain]], scale_atoms=True)
+        normal_atoms.set_calculator(calc)
+        opt = BFGS(normal_atoms)
+        opt.run(fmax=0.02)
+        normal_stress = normal_atoms.get_stress()
+        normal_stresses['C23'].append((normal_stress[1] - initial_stress_tensor[1]) / strain)
+
+        # Apply strain in xz direction for C13
+        normal_atoms = atoms.copy()
+        normal_atoms.set_cell(normal_atoms.get_cell() * [[1 + strain, 0, 0], [0, 1, 0], [0, 0, 1 + strain]], scale_atoms=True)
+        normal_atoms.set_calculator(calc)
+        opt = BFGS(normal_atoms)
+        opt.run(fmax=0.02)
+        normal_stress = normal_atoms.get_stress()
+        normal_stresses['C13'].append((normal_stress[0] - initial_stress_tensor[0]) / strain)
+
+    C11 = np.mean(normal_stresses['C11']) * 160.21766208
+    C12 = np.mean(normal_stresses['C12']) * 160.21766208
+    C22 = np.mean(normal_stresses['C22']) * 160.21766208
+    C33 = np.mean(normal_stresses['C33']) * 160.21766208
+    C23 = np.mean(normal_stresses['C23']) * 160.21766208
+    C13 = np.mean(normal_stresses['C13']) * 160.21766208
 
     shear_stresses = {'C44': [], 'C55': [], 'C66': []}
     for strain in shear_strains:
+        # Apply shear strain in xy direction for C44
         shear_atoms = atoms.copy()
         shear_atoms.set_cell(shear_atoms.get_cell() * [[1, 0, 0], [0, 1, strain], [0, 0, 1]], scale_atoms=True)
         shear_atoms.set_calculator(calc)
         opt = BFGS(shear_atoms)
         opt.run(fmax=0.02)
         shear_stress = shear_atoms.get_stress()
-        shear_stresses['C44'].append(shear_stress[3] / strain)
+        shear_stresses['C44'].append((shear_stress[3] - initial_stress_tensor[3]) / strain)
 
+        # Apply shear strain in xz direction for C55
         shear_atoms = atoms.copy()
         shear_atoms.set_cell(shear_atoms.get_cell() * [[1, 0, strain], [0, 1, 0], [0, 0, 1]], scale_atoms=True)
         shear_atoms.set_calculator(calc)
         opt = BFGS(shear_atoms)
         opt.run(fmax=0.02)
         shear_stress = shear_atoms.get_stress()
-        shear_stresses['C55'].append(shear_stress[4] / strain)
+        shear_stresses['C55'].append((shear_stress[4] - initial_stress_tensor[4]) / strain)
 
+        # Apply shear strain in yz direction for C66
         shear_atoms = atoms.copy()
         shear_atoms.set_cell(shear_atoms.get_cell() * [[1, strain, 0], [0, 1, 0], [0, 0, 1]], scale_atoms=True)
         shear_atoms.set_calculator(calc)
         opt = BFGS(shear_atoms)
         opt.run(fmax=0.02)
         shear_stress = shear_atoms.get_stress()
-        shear_stresses['C66'].append(shear_stress[5] / strain)
+        shear_stresses['C66'].append((shear_stress[5] - initial_stress_tensor[5]) / strain)
 
     C44 = np.mean(shear_stresses['C44']) * 160.21766208
     C55 = np.mean(shear_stresses['C55']) * 160.21766208
     C66 = np.mean(shear_stresses['C66']) * 160.21766208
+    
+    Bv = ((C11 + C22 + C33) + 2 * (C12 + C13 + C23)) / 9
 
     return {
         'C11': C11,
@@ -102,7 +165,8 @@ def calculate_elastic_constants(atoms, calc, shear_strains):
         'C13': C13,
         'C44': C44,
         'C55': C55,
-        'C66': C66
+        'C66': C66,
+        'Bv': Bv
     }
 
 def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, max_retries=200):
@@ -211,6 +275,10 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
     elastic_constants = []
     isolated_atom_energy1 = pseudopotentials[element1]['total_psenergy'] * 13.605693
     isolated_atom_energy2 = pseudopotentials[element2]['total_psenergy'] * 13.605693
+    
+    volumes_per_atom = []
+    energies_per_atom = []
+    cohesive_energies_per_atom = []
 
     input_data['control']['calculation'] = 'scf'
     for scale in np.linspace((1.0-0.12)**(1/3), (1.0+0.12)**(1/3), 25):
@@ -226,9 +294,18 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
         cohesive_energy = -(atoms.get_total_energy() - isolated_atom_energy1 - isolated_atom_energy2) / len(atoms)
         cohesive_energies.append(cohesive_energy)
 
-        elastic_constants.append(calculate_elastic_constants(atoms, calc, [0.01, 0.02, 0.03]))
+        volumes_per_atom.append(atoms.get_volume()/len(atoms))
+        energies_per_atom.append(atoms.get_total_energy()/len(atoms))
+        cohesive_energies_per_atom.append(cohesive_energy/len(atoms))
 
-    eos = EquationOfState(volumes, energies, eos='murnaghan')
+        input_data['control']['calculation'] = 'scf'
+        #elastic_constants.append(calculate_elastic_constants(atoms, calc, [0.01, 0.02, 0.03], [0.01, 0.02, 0.03]))
+        stress_tensor.append((calc.get_stress() * 160.21766208).tolist())
+
+    #eos = EquationOfState(volumes, [energy * -1.0 for energy in cohesive_energies], eos='murnaghan')
+    #eos = EquationOfState(volumes, energies, eos='murnaghan')
+    #eos = EquationOfState(volumes_per_atom, energies_per_atom, eos='murnaghan')
+    eos = EquationOfState(volumes_per_atom, [energy * -1.0 for energy in cohesive_energies_per_atom], eos='murnaghan')
     try:
         v0, e0, B = eos.fit()
         print(B / kJ * 1.0e24, 'GPa')
@@ -250,7 +327,9 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
     cohesive_energy = -(atoms.get_total_energy() - isolated_atom_energy1 - isolated_atom_energy2) / len(atoms)
     nearest_neighbor_distance = optimized_a / 3**0.5
 
-    elastic_constants_final = calculate_elastic_constants(atoms, calc, [0.01, 0.02, 0.03])
+    input_data['control']['calculation'] = 'scf'
+    elastic_constants_final = calculate_elastic_constants(atoms, calc, [0.01, 0.02, 0.03], [0.01, 0.02, 0.03])
+    #elastic_constants_final = calculate_elastic_constants(atoms, calc, [0.001, 0.002, 0.003], [0.001, 0.002, 0.003])
 
     return {
         'Element1': element1,
@@ -265,7 +344,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
         'Volumes (A^3)': volumes,
         'Energies (eV)': energies,
         'Cohesive Energies (eV/atom)': cohesive_energies,
-        'Elastic Constants per Volume': elastic_constants
+        'Stress Tensor per Volume (GPa)': stress_tensor
     }
 
 # Process the combinations sequentially and store results
@@ -288,7 +367,7 @@ for i, combination in enumerate(element_combinations):
                       'Cohesive Energy (eV/atom)', 'Nearest Neighbor Distance (A)', 'Bulk Modulus (GPa)', 
                       'C11', 'C12', 'C22', 'C33', 'C23', 'C13', 'C44', 'C55', 'C66', 
                       'Lattice Constant (A)', 'Volumes (A^3)', 'Energies (eV)', 'Total Energy (eV)', 
-                      'Cohesive Energies (eV/atom)', 'Elastic Constants per Volume']
+                      'Cohesive Energies (eV/atom)', 'Stress Tensor per Volume (GPa)']
 
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
 
@@ -315,7 +394,7 @@ for i, combination in enumerate(element_combinations):
             'Volumes (A^3)': result['Volumes (A^3)'],
             'Energies (eV)': result['Energies (eV)'],
             'Cohesive Energies (eV/atom)': result['Cohesive Energies (eV/atom)'],
-            'Elastic Constants per Volume': result['Elastic Constants per Volume']
+            'Stress Tensor per Volume (GPa)': result['Stress Tensor per Volume (GPa)']
         })
 
     print(f"Processed combination {i+1}/{len(element_combinations)}: {combination}")
