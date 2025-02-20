@@ -223,7 +223,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
         }
     }
 
-    calc = Espresso(pseudopotentials=pseudopotentials_dict, input_data=input_data, kpts=(4, 4, 4), omp_num_threads=omp_num_threads, mpi_num_procs=mpi_num_procs)
+    calc = Espresso(pseudopotentials=pseudopotentials_dict, input_data=input_data, kpts=(6, 6, 6), omp_num_threads=omp_num_threads, mpi_num_procs=mpi_num_procs)
     atoms.set_calculator(calc)
 
     input_data['control']['calculation'] = 'scf'
@@ -287,7 +287,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
         atoms.set_cell([scale * optimized_a] * 3, scale_atoms=True)
 
         input_data['control']['calculation'] = 'scf'
-        calc = Espresso(pseudopotentials=pseudopotentials_dict, input_data=input_data, kpts=(4, 4, 4), omp_num_threads=omp_num_threads, mpi_num_procs=mpi_num_procs)
+        calc = Espresso(pseudopotentials=pseudopotentials_dict, input_data=input_data, kpts=(6, 6, 6), omp_num_threads=omp_num_threads, mpi_num_procs=mpi_num_procs)
         atoms.set_calculator(calc)
 
         volumes.append(atoms.get_volume())
