@@ -51,7 +51,7 @@ vdw_radii = {
 
 # Get all combinations of elements
 #elements = list(pseudopotentials.keys())
-elements = ['H', 'Sc']
+elements = ['Cu', 'Pt']
 element_combinations = list(combinations(elements, 2))
 
 def calculate_elastic_constants(atoms, calc, shear_strains, normal_strains):
