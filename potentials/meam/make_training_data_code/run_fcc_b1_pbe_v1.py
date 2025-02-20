@@ -184,7 +184,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
     a = (radius1 + radius2) * (2/3**0.5) * scaling_factor
 
     # Create the FCC B1 (NaCl-type) structure
-    atoms = Atoms(f'{element1}{element2}', 
+    atoms = Atoms(f'{element1}4{element2}4', 
               positions=[(0, 0, 0), (0.5*a, 0.5*a, 0), (0.5*a, 0, 0.5*a), (0, 0.5*a, 0.5*a), 
                          (0.5*a, 0.5*a, 0.5*a), (0, 0.5*a, 0), (0.5*a, 0, 0), (0, 0, 0.5*a)], 
               cell=[a, a, a], 
