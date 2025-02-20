@@ -184,9 +184,9 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
     a = (radius1 + radius2) * (2/3**0.5) * scaling_factor
 
     # Create the Diamond B3 (Zinc Blende) structure
-    atoms = Atoms(f'{element1}{element2}', 
-              positions=[(0, 0, 0),         (0.25*a, 0.25*a, 0.25*a), (0.5*a, 0.5*a, 0), (0.75*a, 0.75*a, 0.25*a),
-                         (0.5*a, 0, 0.5*a), (0.75*a, 0.25*a, 0.75*a), (0, 0.5*a, 0.5*a), (0.25*a, 0.75*a, 0.75*a)], 
+    atoms = Atoms(f'{element1}4{element2}4', 
+              positions=[(0, 0, 0),(0.5*a, 0.5*a, 0),(0.5*a, 0, 0.5*a),(0, 0.5*a, 0.5*a), (0.25*a, 0.75*a, 0.75*a)
+                         (0.25*a, 0.25*a, 0.25*a), (0.75*a, 0.75*a, 0.25*a),(0.75*a, 0.25*a, 0.75*a), (0.25*a, 0.75*a, 0.75*a)], 
               cell=[a, a, a], 
               pbc=True)
 
