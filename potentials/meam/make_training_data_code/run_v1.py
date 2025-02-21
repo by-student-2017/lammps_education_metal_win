@@ -523,7 +523,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
 
         stress_tensor.append((calc.get_stress() * 160.21766208).tolist())
         
-        forces.append(atoms.get_forces().tolist())
+        forces.append(calc.get_forces().tolist())
         
         print(f"{tries}/{npoints}, Volume = {volume/len(atoms)} [A^3/atom], Cohesive_energy = {cohesive_energy/len(atoms)} [eV/atom]")
         print("-------------------------------------------------------------------------------------")
