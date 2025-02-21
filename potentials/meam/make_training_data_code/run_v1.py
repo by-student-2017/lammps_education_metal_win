@@ -5,10 +5,13 @@ from ase import Atoms
 from ase.calculators.espresso import Espresso
 from ase.optimize import BFGS
 from ase.eos import EquationOfState
+from ase.units import Bohr, Rydberg, kJ, kB, fs, Hartree, mol, kcal
 import numpy as np
 import os
 
-from ase.units import Bohr, Rydberg, kJ, kB, fs, Hartree, mol, kcal
+# For Rose universal function
+from scipy.optimize import curve_fit
+import matplotlib.pyplot as plt
 
 #------------------------------------------------------------------
 # b1: FCC_B1 (NaCl-type), b2:BCC_B2 (CsCl-type), dia:Diamond_B3 (Zinc Blende), l12: L12 (Cu3Au-type)
@@ -45,6 +48,7 @@ omp_num_threads = 1
 mpi_num_procs = 1
 #------------------------------------------------------------------
 
+
 # Define atomic radii for elements (in angstroms)
 atomic_radii = {
      "H": 0.53, "He": 1.40, "Li": 1.67, "Be": 1.12,  "B": 0.87,  "C": 0.67,  "N": 0.56,  "O": 0.48,  "F": 0.42, "Ne": 1.54,
@@ -73,6 +77,7 @@ vdw_radii = {
     "Pa": 2.00,  "U": 1.96, "Np": 1.90, "Pu": 1.87
 }
 
+
 def binary_search(re, re2a, atoms, scaling_factor, dsfactor, best_energy):
     scaling_factor += dsfactor/2.0
     a = re * re2a * scaling_factor
@@ -97,6 +102,54 @@ def binary_search(re, re2a, atoms, scaling_factor, dsfactor, best_energy):
     new_scaling_factor = scaling_factor
     new_dsfactor = dsfactor/2
     return new_scaling_factor, new_dsfactor, new_best_energy
+
+
+
+def fit_rose_curve(volumes_per_atom, cohesive_energies_per_atom, alpha, V0, Ec):
+    """
+    Fit the Rose's universal curve to DFT data to find the parameter a3.
+
+    Parameters:
+    volumes_per_atom (array): Array of volumes per atom from DFT calculations.
+    cohesive_energies_per_atom (array): Array of cohesive energies per atom from DFT calculations.
+    alpha (float): Constant alpha.
+    V0 (float): Equilibrium volume per atom.
+    Ec (float): Cohesive energy per atom.
+
+    Returns:
+    float: Fitted parameter a3.
+    """
+    
+    # Convert cohesive energies to the form needed for fitting
+    E_data = np.array([-energy for energy in cohesive_energies_per_atom])
+    
+    # Rose's universal curve function
+    def rose_curve(V, a3):
+        #astar = alpha * ((V**(1/3)/re2a) / (V0**(1/3)/re2a) - 1.0)
+        astar = alpha * ((V/V0)**(1/3) - 1.0)
+        return -Ec * (1 + astar + a3 * (astar**3)) * np.exp(-astar)
+    
+    # Fitting the parameter a_3
+    popt, _ = curve_fit(rose_curve, volumes_per_atom, E_data, p0=[0.0])  # Initial guess for a3 is 0.0
+    
+    # Fitted parameter
+    a3_fit = popt[0]
+    
+    # Plotting the fit
+    plt.figure()
+    plt.scatter(volumes_per_atom, E_data, label='DFT Data')
+    plt.plot(volumes_per_atom, rose_curve(volumes_per_atom, a3_fit), label=f'Rose Curve Fit (a3={a3_fit:.4f})', color='red')
+    plt.xlabel('Volume, V/atom')
+    plt.ylabel('Cohesive Energy, -Ec/atom')
+    plt.legend()
+    plt.title('Rose Curve Fit to DFT Data')
+    
+    # Save the plot as PNG
+    #plt.savefig('rose_curve_fit.png')
+    
+    return a3_fit
+
+
 
 def calculate_elastic_constants(atoms, calc, shear_strains, normal_strains):
     initial_stress_tensor = calc.get_stress()
@@ -213,6 +266,8 @@ def calculate_elastic_constants(atoms, calc, shear_strains, normal_strains):
         #'Bv': Bv
     }
 
+
+
 def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, max_retries=200, lattce='', lat=''):
     element1, element2 = elements_combination
     
@@ -324,12 +379,16 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
             'occupations': 'smearing',
             'smearing': 'gaussian',
             'degauss': 0.01,
+            #'vdw_corr': 'dft-d', # DFT-D2 (Semiempirical Grimme's DFT-D2. Optional variables)
+            #'vdw_corr': 'dft-d3',
+            #'dftd3_version': 2,
+            #'dftd3_threebody': False, # If it is set to True, the calculation will hardly proceed at all.
         },
         'electrons': {
             'conv_thr': 1.0e-6
         },
         'ions': {
-            'ion_dynamics': 'cg'
+            'ion_dynamics': 'bfgs'
         },
         'cell': {
             'cell_dynamics': 'bfgs'
@@ -438,9 +497,9 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
     energies_per_atom = []
     cohesive_energies_per_atom = []
 
-    input_data['control']['calculation'] = 'scf'
     tries = 0
-    for scale in np.linspace((1.0-0.24)**(1/3), (1.0+0.32)**(1/3), 29):
+    npoints = 11 # >= 5, 11, 25, or 31, etc
+    for scale in np.linspace((1.0-0.24)**(1/3), (1.0+0.24)**(1/3), npoints):
         tries += 1
         atoms.set_cell([scale * optimized_a] * 3, scale_atoms=True)
 
@@ -461,17 +520,20 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
         energies_per_atom.append(atoms.get_total_energy()/len(atoms))
         cohesive_energies_per_atom.append(cohesive_energy/len(atoms))
 
-        input_data['control']['calculation'] = 'scf'
-        #elastic_constants.append(calculate_elastic_constants(atoms, calc, [0.01, 0.02, 0.03], [0.01, 0.02, 0.03]))
+        #input_data['control']['calculation'] = 'relax'
+        #elastic_constants.append(calculate_elastic_constants(atoms, calc, [-1.0e-6, 1.0e-6], [-1.0e-6, 1.0e-6])
         stress_tensor.append((calc.get_stress() * 160.21766208).tolist())
         
-        print(f"{tries}/29, Volume = {volume/len(atoms)} [A^3/atom], Cohesive_energy = {cohesive_energy/len(atoms)} [eV/atom]")
+        print(f"{tries}/{npoints}, Volume = {volume/len(atoms)} [A^3/atom], Cohesive_energy = {cohesive_energy/len(atoms)} [eV/atom]")
         print("-------------------------------------------------------------------------------------")
 
+    # eos: sjeos, taylor, murnaghan, birch, birchmurnaghan, pouriertarantola, vinet, antonschmidt, p3
     eos = EquationOfState(volumes_per_atom, [energy * -1.0 for energy in cohesive_energies_per_atom], eos='murnaghan')
     try:
         v0, e0, B = eos.fit()
         print(B / kJ * 1.0e24, 'GPa')
+        # Clear the previous plot
+        plt.clf()
         eos.plot(lattce+'-'+element1+'-'+element2+'_eos.png')
     except ValueError as e:
         print(f"Error fitting EOS: {e}")
@@ -483,8 +545,14 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
     #alpha = (9.0*B*((nearest_neighbor_distance*re2a)**3/len(atoms))/cohesive_energy_per_atom)**0.5
     alpha = (9.0*B*v0/(e0*-1.0))**0.5
     
-    input_data['control']['calculation'] = 'scf'
-    elastic_constants_final = calculate_elastic_constants(atoms, calc, [0.01, 0.02, 0.03], [0.01, 0.02, 0.03])
+    # d = a3 = attrac = repuls
+    a3_fit = fit_rose_curve(volumes_per_atom, cohesive_energies_per_atom, alpha, v0, (e0*-1.0))
+    print(f"Fitted parameter: a3 = {a3_fit}")
+    # Save the plot as PNG
+    plt.savefig(lattce+'-'+element1+'-'+element2+'_rose_curve_fit.png')
+    
+    input_data['control']['calculation'] = 'relax'
+    elastic_constants_final = calculate_elastic_constants(atoms, calc, [-1.0e-6, 1.0e-6], [-1.0e-6, 1.0e-6])
     
     return {
         'Element1': element1,
@@ -493,6 +561,8 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
         'Cohesive Energy (eV/atom)': cohesive_energy_per_atom,
         'Nearest Neighbor Distance (A)': nearest_neighbor_distance,
         'alpha': alpha,
+        'attrac': a3_fit, # d = a3
+        'repuls': a3_fit, # d = a3
         #----------------------------------------------------------
         'Bulk Modulus (GPa)': B / kJ * 1.0e24,
         'Elastic Constants (GPa)': elastic_constants_final,
@@ -505,6 +575,8 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
         'Stress Tensor per Volume (GPa)': stress_tensor
     }
 
+
+
 # Process the combinations sequentially and store results
 for i, combination in enumerate(element_combinations):
     results = []
@@ -512,18 +584,19 @@ for i, combination in enumerate(element_combinations):
     results.append(result)
     element1, element2 = combination
 
-    directory = f'{lattce}_{element1}-{element2}'
+    directory = f'results'
     if not os.path.exists(directory):
         os.makedirs(directory)
 
-    with open(f'{directory}/results_{lattce}_{element1}-{element2}.json', 'a') as jsonfile:
+    with open(f'{directory}/{lattce}_{element1}-{element2}.json', 'a') as jsonfile:
         json.dump(result, jsonfile, indent=4)
         jsonfile.write('\n')
 
-    with open(f'{directory}/results_{lattce}_{element1}-{element2}.csv', 'a', newline='') as csvfile:
+    with open(f'results_{lattce}.csv', 'a', newline='') as csvfile:
         fieldnames = ['Element1', 'Element2', 
                       'Lattice Type',
                       'Cohesive Energy (eV/atom)', 'Nearest Neighbor Distance (A)', 'alpha',
+                      'attrac', 'repuls',
                       'Bulk Modulus (GPa)', 
                       'C11', 'C12', 'C22', 'C33', 'C23', 'C13', 'C44', 'C55', 'C66', 
                       'Atoms', 
@@ -539,9 +612,11 @@ for i, combination in enumerate(element_combinations):
             'Element1': result['Element1'],
             'Element2': result['Element2'],
             'Lattice Type': result['Lattice Type'],
-            'Cohesive Energy (eV/atom)': result['Cohesive Energy (eV/atom)'],
-            'Nearest Neighbor Distance (A)': result['Nearest Neighbor Distance (A)'],
+            'Cohesive Energy, Ec (eV/atom)': result['Cohesive Energy (eV/atom)'],
+            'Nearest Neighbor Distance, re (A)': result['Nearest Neighbor Distance (A)'],
             'alpha': result['alpha'],
+            'attrac': result['attrac'],
+            'repuls': result['repuls'],
             #-----------------------------------------------
             'Bulk Modulus (GPa)': result['Bulk Modulus (GPa)'],
             'C11': result['Elastic Constants (GPa)']['C11'],
