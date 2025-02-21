@@ -365,21 +365,12 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
                 print("step, scaling_factor, dsfactor, best_energy")
                 print("0/5: ", scaling_factor, dsfactor, best_energy)
                 print("--------------------------------------------")
-                scaling_factor, dsfactor, best_energy = binary_search(re, re2a, atoms, scaling_factor, dsfactor, best_energy)
-                print("1/5: ", scaling_factor, dsfactor, best_energy)
-                print("--------------------------------------------")
-                scaling_factor, dsfactor, best_energy = binary_search(re, re2a, atoms, scaling_factor, dsfactor, best_energy)
-                print("2/5: ", scaling_factor, dsfactor, best_energy)
-                print("--------------------------------------------")
-                scaling_factor, dsfactor, best_energy = binary_search(re, re2a, atoms, scaling_factor, dsfactor, best_energy)
-                print("3/5: ", scaling_factor, dsfactor, best_energy)
-                print("--------------------------------------------")
-                scaling_factor, dsfactor, best_energy = binary_search(re, re2a, atoms, scaling_factor, dsfactor, best_energy)
-                print("4/5: ", scaling_factor, dsfactor, best_energy)
-                print("--------------------------------------------")
-                scaling_factor, dsfactor, best_energy = binary_search(re, re2a, atoms, scaling_factor, dsfactor, best_energy)
-                print("5/5: ", scaling_factor, dsfactor, best_energy)
-                print("--------------------------------------------")
+                step = 1
+                while step <= 5:
+                    scaling_factor, dsfactor, best_energy = binary_search(re, re2a, atoms, scaling_factor, dsfactor, best_energy)
+                    print(f"{step}/5: ", scaling_factor, dsfactor, best_energy)
+                    print("--------------------------------------------")
+                    step += 1
                 break
                 #---------------------------------
         except Exception as e:
