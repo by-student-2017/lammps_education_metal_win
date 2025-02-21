@@ -187,7 +187,7 @@ def calculate_elastic_constants(atoms, calc, shear_strains, normal_strains):
 
 def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, max_retries=200, lattce='', lat=''):
     element1, element2 = elements_combination
-    scaling_factor = 0.95
+    scaling_factor = 0.88
     
     print(f"{element1}-{element2} pair, lattce = {lattce}")
 
@@ -299,18 +299,18 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
     calc = Espresso(pseudopotentials=pseudopotentials_dict, input_data=input_data, kpts=(kpt, kpt, kpt), omp_num_threads=omp_num_threads, mpi_num_procs=mpi_num_procs)
     atoms.set_calculator(calc)
 
-    '''
+    #-----------------------------------------------------------------------------
     # search optimized structure with scf
     input_data['control']['calculation'] = 'scf'
-    scaling_factor = 0.99
     best_energy = float('inf')
     best_atoms = None
     retries = 0
     flag = 0
     print("search optimized structure with scf")
     while retries < max_retries:
-        scaling_factor += 0.01
-        print("a =", a," [A], v =", a**3," [A^3]")
+        scaling_factor += 0.04
+        print("---------------------------------")
+        print(retries+1,"/",max_retries,", a = ", a," [A], v =", a**3," [A^3]")
         try:
             opt = BFGS(atoms)
             opt.run(fmax=0.02)
@@ -333,29 +333,20 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
         atoms.set_cell([a, a, a], scale_atoms=True)
         retries += 1
 
-    scaling_factor -= 0.01
+    scaling_factor -= 0.04/2
     print(retries,"/",max_retries,": scaling factor = ", scaling_factor)
     a = re * re2a * scaling_factor
     atoms.set_cell([a, a, a], scale_atoms=True)
-    input_data['control']['calculation'] = 'vc-relax'
-    opt = BFGS(atoms)
-    opt.run(fmax=0.02)
-
-    optimized_a = atoms.get_cell()[0, 0]
-    total_energy = atoms.get_total_energy()
-
-    print("Check: vc-relax a=",optimized_a," [A] vs. input a=",a," [A]")
-    '''
+    #-----------------------------------------------------------------------------
     
+    '''
+    #-----------------------------------------------------------------------------
     # search optimized structure with vc-relax
     input_data['control']['calculation'] = 'vc-relax'
-    scaling_factor = 0.99
-    best_energy = float('inf')
-    best_atoms = None
     retries = 0
     print("search optimized structure with vc-relax")
     while retries < max_retries:
-        scaling_factor += 0.01
+        scaling_factor += 0.04
         print("a =", a," [A], v =", a**3," [A^3]")
         try:
             opt = BFGS(atoms)
@@ -373,11 +364,11 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
         a = re * re2a * scaling_factor
         atoms.set_cell([a, a, a], scale_atoms=True)
         retries += 1
+    #-----------------------------------------------------------------------------
+    '''
 
     optimized_a = atoms.get_cell()[0, 0]
     total_energy = atoms.get_total_energy()
-
-    print("Check: vc-relax a=",optimized_a," [A] vs. input a=",a," [A]")
 
     volumes = []
     energies = []
@@ -393,7 +384,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
 
     input_data['control']['calculation'] = 'scf'
     tries = 0
-    for scale in np.linspace((1.0-0.12)**(1/3), (1.0+0.12)**(1/3), 25):
+    for scale in np.linspace((1.0-0.24)**(1/3), (1.0+0.24)**(1/3), 25):
         tries += 1
         atoms.set_cell([scale * optimized_a] * 3, scale_atoms=True)
 
