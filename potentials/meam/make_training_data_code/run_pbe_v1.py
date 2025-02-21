@@ -338,8 +338,6 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
     print("using scaling factor = ", scaling_factor)
     a = re * re2a * scaling_factor
     atoms.set_cell([a, a, a], scale_atoms=True)
-    opt = BFGS(atoms)
-    opt.run(fmax=0.02)
     optimized_a = a
     #-----------------------------------------------------------------------------
     
