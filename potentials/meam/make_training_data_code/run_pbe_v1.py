@@ -210,6 +210,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
                          (0.5*a, 0.5*a, 0.5*a), (0, 0.5*a, 0), (0.5*a, 0, 0), (0, 0, 0.5*a)], 
               cell=[a, a, a], 
               pbc=True)
+        kpt = 4
     elif lattce == 'b2':
         print("Create the BCC B2 (CsCl-type) structure")
         lattice_type = 'BCC_B2 (CsCl-type)'
@@ -221,6 +222,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
                   positions=[(0, 0, 0), (0.5*a, 0.5*a, 0.5*a)], 
                   cell=[a, a, a], 
                   pbc=True)
+        kpt = 7
     elif lattce == 'dia':
         print("Create the Diamond B3 (Zinc Blende) structure")
         lattice_type = 'DIA_B3 (Zinc Blende)'
@@ -242,6 +244,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
               positions=[(0, 0, 0), (0.25*a, 0.25*a, 0.25*a)],
               cell=[[0.5*a, 0.5*a, 0], [0.5*a, 0, 0.5*a], [0, 0.5*a, 0.5*a]],
               pbc=True)
+        kpt = 5
     elif lattce == 'l12':
         print("Create the L12 (Cu3Au-type) structure")
         lattice_type = 'L12 (Cu3Au-type)'
@@ -254,6 +257,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
                          (0, 0, 0)], 
               cell=[a, a, a], 
               pbc=True)
+        kpt = 5
     else:
         print("This code does not provide other structures. (Possible structures: b1, b2, dia, l12)")
 
@@ -386,7 +390,10 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
     cohesive_energies_per_atom = []
 
     input_data['control']['calculation'] = 'scf'
+    tries = 0
     for scale in np.linspace((1.0-0.12)**(1/3), (1.0+0.12)**(1/3), 25):
+        retries += 1
+        print(retries,'/25, Lattice constant [A]: ', scale * optimized_a)
         atoms.set_cell([scale * optimized_a] * 3, scale_atoms=True)
 
         input_data['control']['calculation'] = 'scf'
