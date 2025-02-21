@@ -341,7 +341,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
                 print("Max retries reached. Skipping this combination.")
             else:
                 pass
-        print("scaling factor = ", scaling_factor)
+        print("scaling factor = ", scaling_factor, "energy = ",energy)
         a = re * re2a * scaling_factor
         atoms.set_cell([a, a, a], scale_atoms=True)
         retries += 1
@@ -362,7 +362,8 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
     print("search optimized structure with vc-relax")
     while retries < max_retries:
         scaling_factor += 0.04
-        print("a =", a," [A], v =", a**3," [A^3]")
+        print("---------------------------------")
+        print(retries+1,"/",max_retries,", a = ", a," [A], v =", a**3," [A^3]")
         try:
             opt = BFGS(atoms)
             opt.run(fmax=0.02)
@@ -375,7 +376,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
                 print("Max retries reached. Skipping this combination.")
             else:
                 pass
-        print(retries,"/",max_retries,": scaling factor = ", scaling_factor)
+        print("scaling factor = ", scaling_factor, "energy = ",energy)
         a = re * re2a * scaling_factor
         atoms.set_cell([a, a, a], scale_atoms=True)
         retries += 1
