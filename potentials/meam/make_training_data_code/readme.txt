@@ -18,6 +18,7 @@ I tried to add pseudopotentials, but github said it was full and wouldn't let me
 
 #---------------------------------------------------------------------
 https://www.potfit.net/wiki/doku.php?id=config:main
+Note: potfit fits the stress tensor, not the elastic constants. I also have a very hard time calculating the elastic constants correctly, so I've decided to comment out the calculation and output of the elastic constants.
 #---------------------------------------------------------------------
 potfit format
 
