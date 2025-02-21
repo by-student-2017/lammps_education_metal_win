@@ -78,19 +78,18 @@ vdw_radii = {
 }
 
 
-def binary_search(re, re2a, atoms, scaling_factor, dsfactor, best_energy):
+def binary_search(re, re2a, atoms, calc, scaling_factor, dsfactor, best_energy):
     scaling_factor += dsfactor/2.0
     a = re * re2a * scaling_factor
     atoms.set_cell([a, a, a], scale_atoms=True)
-    opt = BFGS(atoms)
-    opt.run(fmax=0.02)
+    
+    atoms.set_calculator(calc)
     energy = atoms.get_total_energy()
     if best_energy < energy:
         scaling_factor -= dsfactor
         a = re * re2a * scaling_factor
         atoms.set_cell([a, a, a], scale_atoms=True)
-        opt = BFGS(atoms)
-        opt.run(fmax=0.02)
+        atoms.set_calculator(calc)
         energy = atoms.get_total_energy()
         if best_energy < energy:
             scaling_factor += dsfactor/2.0
@@ -157,7 +156,7 @@ def calculate_elastic_constants(atoms, calc, shear_strains, normal_strains):
     # Normal strains for C11, C12, etc.
     normal_stresses = {'C11': [], 'C12': [], 'C22': [], 'C33': [], 'C23': [], 'C13': []}
     for strain in normal_strains:
-        # Apply strain in x direction for C11
+        print("# Apply strain in x direction for C11")
         normal_atoms = atoms.copy()
         normal_atoms.set_cell(normal_atoms.get_cell() * [[1 + strain, 0, 0], [0, 1, 0], [0, 0, 1]], scale_atoms=True)
         normal_atoms.set_calculator(calc)
@@ -166,7 +165,7 @@ def calculate_elastic_constants(atoms, calc, shear_strains, normal_strains):
         normal_stress = normal_atoms.get_stress()
         normal_stresses['C11'].append((normal_stress[0] - initial_stress_tensor[0]) / strain)
 
-        # Apply strain in y direction for C22
+        print("# Apply strain in y direction for C22")
         normal_atoms = atoms.copy()
         normal_atoms.set_cell(normal_atoms.get_cell() * [[1, 0, 0], [0, 1 + strain, 0], [0, 0, 1]], scale_atoms=True)
         normal_atoms.set_calculator(calc)
@@ -175,7 +174,7 @@ def calculate_elastic_constants(atoms, calc, shear_strains, normal_strains):
         normal_stress = normal_atoms.get_stress()
         normal_stresses['C22'].append((normal_stress[1] - initial_stress_tensor[1]) / strain)
 
-        # Apply strain in z direction for C33
+        print("# Apply strain in z direction for C33")
         normal_atoms = atoms.copy()
         normal_atoms.set_cell(normal_atoms.get_cell() * [[1, 0, 0], [0, 1, 0], [0, 0, 1 + strain]], scale_atoms=True)
         normal_atoms.set_calculator(calc)
@@ -184,7 +183,7 @@ def calculate_elastic_constants(atoms, calc, shear_strains, normal_strains):
         normal_stress = normal_atoms.get_stress()
         normal_stresses['C33'].append((normal_stress[2] - initial_stress_tensor[2]) / strain)
 
-        # Apply strain in xy direction for C12
+        print("# Apply strain in xy direction for C12")
         normal_atoms = atoms.copy()
         normal_atoms.set_cell(normal_atoms.get_cell() * [[1 + strain, 0, 0], [0, 1 + strain, 0], [0, 0, 1]], scale_atoms=True)
         normal_atoms.set_calculator(calc)
@@ -193,7 +192,7 @@ def calculate_elastic_constants(atoms, calc, shear_strains, normal_strains):
         normal_stress = normal_atoms.get_stress()
         normal_stresses['C12'].append((normal_stress[0] - initial_stress_tensor[0]) / strain)
 
-        # Apply strain in yz direction for C23
+        print("# Apply strain in yz direction for C23")
         normal_atoms = atoms.copy()
         normal_atoms.set_cell(normal_atoms.get_cell() * [[1, 0, 0], [0, 1 + strain, 0], [0, 0, 1 + strain]], scale_atoms=True)
         normal_atoms.set_calculator(calc)
@@ -202,7 +201,7 @@ def calculate_elastic_constants(atoms, calc, shear_strains, normal_strains):
         normal_stress = normal_atoms.get_stress()
         normal_stresses['C23'].append((normal_stress[1] - initial_stress_tensor[1]) / strain)
 
-        # Apply strain in xz direction for C13
+        print("# Apply strain in xz direction for C13")
         normal_atoms = atoms.copy()
         normal_atoms.set_cell(normal_atoms.get_cell() * [[1 + strain, 0, 0], [0, 1, 0], [0, 0, 1 + strain]], scale_atoms=True)
         normal_atoms.set_calculator(calc)
@@ -220,7 +219,7 @@ def calculate_elastic_constants(atoms, calc, shear_strains, normal_strains):
 
     shear_stresses = {'C44': [], 'C55': [], 'C66': []}
     for strain in shear_strains:
-        # Apply shear strain in xy direction for C44
+        print("# Apply shear strain in xy direction for C44")
         shear_atoms = atoms.copy()
         shear_atoms.set_cell(shear_atoms.get_cell() * [[1, 0, 0], [0, 1, strain], [0, 0, 1]], scale_atoms=True)
         shear_atoms.set_calculator(calc)
@@ -229,7 +228,7 @@ def calculate_elastic_constants(atoms, calc, shear_strains, normal_strains):
         shear_stress = shear_atoms.get_stress()
         shear_stresses['C44'].append((shear_stress[3] - initial_stress_tensor[3]) / strain)
 
-        # Apply shear strain in xz direction for C55
+        print("# Apply shear strain in xz direction for C55")
         shear_atoms = atoms.copy()
         shear_atoms.set_cell(shear_atoms.get_cell() * [[1, 0, strain], [0, 1, 0], [0, 0, 1]], scale_atoms=True)
         shear_atoms.set_calculator(calc)
@@ -238,7 +237,7 @@ def calculate_elastic_constants(atoms, calc, shear_strains, normal_strains):
         shear_stress = shear_atoms.get_stress()
         shear_stresses['C55'].append((shear_stress[4] - initial_stress_tensor[4]) / strain)
 
-        # Apply shear strain in yz direction for C66
+        print("# Apply shear strain in yz direction for C66")
         shear_atoms = atoms.copy()
         shear_atoms.set_cell(shear_atoms.get_cell() * [[1, strain, 0], [0, 1, 0], [0, 0, 1]], scale_atoms=True)
         shear_atoms.set_calculator(calc)
@@ -409,8 +408,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
         print("---------------------------------")
         print(retries+1,"/",max_retries,", a = ", a," [A], v =", a**3," [A^3]")
         try:
-            opt = BFGS(atoms)
-            opt.run(fmax=0.02)
+            atoms.set_calculator(calc)
             energy = atoms.get_total_energy()
             print("E =",atoms.get_total_energy()," [eV]")
             if energy < best_energy:
@@ -426,7 +424,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
                 print("--------------------------------------------")
                 step = 1
                 while step <= 5:
-                    scaling_factor, dsfactor, best_energy = binary_search(re, re2a, atoms, scaling_factor, dsfactor, best_energy)
+                    scaling_factor, dsfactor, best_energy = binary_search(re, re2a, atoms, calc, scaling_factor, dsfactor, best_energy)
                     print(f"{step}/5: ", scaling_factor, dsfactor, best_energy)
                     print("--------------------------------------------")
                     step += 1
@@ -498,7 +496,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
     cohesive_energies_per_atom = []
 
     tries = 0
-    npoints = 11 # >= 5, 11, 25, or 31, etc
+    npoints = 11 # >= 5, 11, 17, 25, or 31, etc
     for scale in np.linspace((1.0-0.24)**(1/3), (1.0+0.24)**(1/3), npoints):
         tries += 1
         atoms.set_cell([scale * optimized_a] * 3, scale_atoms=True)
@@ -520,8 +518,6 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
         energies_per_atom.append(atoms.get_total_energy()/len(atoms))
         cohesive_energies_per_atom.append(cohesive_energy/len(atoms))
 
-        #input_data['control']['calculation'] = 'relax'
-        #elastic_constants.append(calculate_elastic_constants(atoms, calc, [-1.0e-6, 1.0e-6], [-1.0e-6, 1.0e-6])
         stress_tensor.append((calc.get_stress() * 160.21766208).tolist())
         
         print(f"{tries}/{npoints}, Volume = {volume/len(atoms)} [A^3/atom], Cohesive_energy = {cohesive_energy/len(atoms)} [eV/atom]")
@@ -534,7 +530,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
         print(B / kJ * 1.0e24, 'GPa')
         # Clear the previous plot
         plt.clf()
-        eos.plot(lattce+'-'+element1+'-'+element2+'_eos.png')
+        eos.plot('results/'+lattce+'-'+element1+'-'+element2+'_eos.png')
     except ValueError as e:
         print(f"Error fitting EOS: {e}")
     
@@ -549,10 +545,17 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
     a3_fit = fit_rose_curve(volumes_per_atom, cohesive_energies_per_atom, alpha, v0, (e0*-1.0))
     print(f"Fitted parameter: a3 = {a3_fit}")
     # Save the plot as PNG
-    plt.savefig(lattce+'-'+element1+'-'+element2+'_rose_curve_fit.png')
+    plt.savefig('results/'+lattce+'-'+element1+'-'+element2+'_rose_curve_fit.png')
     
+    print("---------------------------------")
+    print("initial stress tensor calculation")
+    input_data['control']['calculation'] = 'scf'
+    a = optimized_a
+    atoms.set_cell([a, a, a], scale_atoms=True)
+    atoms.set_calculator(calc)
     input_data['control']['calculation'] = 'relax'
-    elastic_constants_final = calculate_elastic_constants(atoms, calc, [-1.0e-6, 1.0e-6], [-1.0e-6, 1.0e-6])
+    elastic_constants_final = calculate_elastic_constants(atoms, calc, [-0.01, 0.01], [-0.01, 0.01])
+    #elastic_constants_final = calculate_elastic_constants(atoms, calc, [-0.005, 0.005], [-0.005, 0.005])
     
     return {
         'Element1': element1,
@@ -579,14 +582,15 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
 
 # Process the combinations sequentially and store results
 for i, combination in enumerate(element_combinations):
-    results = []
-    result = calculate_properties(combination, omp_num_threads, mpi_num_procs, max_retries, lattce, lat)
-    results.append(result)
-    element1, element2 = combination
 
     directory = f'results'
     if not os.path.exists(directory):
         os.makedirs(directory)
+
+    results = []
+    result = calculate_properties(combination, omp_num_threads, mpi_num_procs, max_retries, lattce, lat)
+    results.append(result)
+    element1, element2 = combination
 
     with open(f'{directory}/{lattce}_{element1}-{element2}.json', 'a') as jsonfile:
         json.dump(result, jsonfile, indent=4)
@@ -595,7 +599,7 @@ for i, combination in enumerate(element_combinations):
     with open(f'results_{lattce}.csv', 'a', newline='') as csvfile:
         fieldnames = ['Element1', 'Element2', 
                       'Lattice Type',
-                      'Cohesive Energy (eV/atom)', 'Nearest Neighbor Distance (A)', 'alpha',
+                      'Cohesive Energy, Ec (eV/atom)', 'Nearest Neighbor Distance, re (A)', 'alpha',
                       'attrac', 'repuls',
                       'Bulk Modulus (GPa)', 
                       'C11', 'C12', 'C22', 'C33', 'C23', 'C13', 'C44', 'C55', 'C66', 
