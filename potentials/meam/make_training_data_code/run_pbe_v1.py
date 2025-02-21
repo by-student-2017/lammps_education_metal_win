@@ -328,15 +328,19 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
                 print("Max retries reached. Skipping this combination.")
             else:
                 pass
-        print(retries,"/",max_retries,": scaling factor = ", scaling_factor)
+        print("scaling factor = ", scaling_factor)
         a = re * re2a * scaling_factor
         atoms.set_cell([a, a, a], scale_atoms=True)
         retries += 1
 
+    print("---------------------------------------")
     scaling_factor -= 0.04/2
-    print(retries,"/",max_retries,": scaling factor = ", scaling_factor)
+    print("using scaling factor = ", scaling_factor)
     a = re * re2a * scaling_factor
     atoms.set_cell([a, a, a], scale_atoms=True)
+    opt = BFGS(atoms)
+    opt.run(fmax=0.02)
+    optimized_a = a
     #-----------------------------------------------------------------------------
     
     '''
@@ -364,11 +368,9 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
         a = re * re2a * scaling_factor
         atoms.set_cell([a, a, a], scale_atoms=True)
         retries += 1
+    optimized_a = atoms.get_cell()[0, 0]
     #-----------------------------------------------------------------------------
     '''
-
-    optimized_a = atoms.get_cell()[0, 0]
-    total_energy = atoms.get_total_energy()
 
     volumes = []
     energies = []
