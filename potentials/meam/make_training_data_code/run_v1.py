@@ -216,6 +216,8 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
               cell=[a, a, a], 
               pbc=True)
         kpt = 4
+        Nelem1 = 4
+        Nelem2 = 4
     elif lattce == 'b2':
         print("Create the BCC B2 (CsCl-type) structure")
         lattice_type = 'BCC_B2 (CsCl-type)'
@@ -228,6 +230,8 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
                   cell=[a, a, a], 
                   pbc=True)
         kpt = 7
+        Nelem1 = 1
+        Nelem2 = 1
     elif lattce == 'dia':
         print("Create the Diamond B3 (Zinc Blende) structure")
         lattice_type = 'DIA_B3 (Zinc Blende)'
@@ -243,6 +247,8 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
                          (0.75*a, 0.25*a, 0.75*a)], 
               cell=[a, a, a], 
               pbc=True)
+        Nelem1 = 4
+        Nelem2 = 4
         '''
         # primitive cell
         atoms = Atoms(f'{element1}{element2}',
@@ -250,6 +256,8 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
               cell=[[0.5*a, 0.5*a, 0], [0.5*a, 0, 0.5*a], [0, 0.5*a, 0.5*a]],
               pbc=True)
         kpt = 3
+        Nelem1 = 1
+        Nelem2 = 1
     elif lattce == 'l12':
         print("Create the L12 (Cu3Au-type) structure")
         lattice_type = 'L12 (Cu3Au-type)'
@@ -263,6 +271,8 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
               cell=[a, a, a], 
               pbc=True)
         kpt = 6
+        Nelem1 = 3
+        Nelem2 = 1
     else:
         print("This code does not provide other structures. (Possible structures: b1, b2, dia, l12)")
 
@@ -398,7 +408,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
         volumes.append(atoms.get_volume())
         energies.append(atoms.get_total_energy())
 
-        cohesive_energy = -(atoms.get_total_energy() - isolated_atom_energy1*4 - isolated_atom_energy2*4)
+        cohesive_energy = -(atoms.get_total_energy() - isolated_atom_energy1*Nelem1 - isolated_atom_energy2*Nelem2)
         cohesive_energies.append(cohesive_energy)
         
         volume = atoms.get_volume()
@@ -437,7 +447,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
 
     print("EOS ",e0,"[eV] vs. SCF",total_energy," [eV]")
 
-    cohesive_energy = -(atoms.get_total_energy() - isolated_atom_energy1*4 - isolated_atom_energy2*4)
+    cohesive_energy = -(atoms.get_total_energy() - isolated_atom_energy1*Nelem1 - isolated_atom_energy2*Nelem2)
     cohesive_energy_per_atom = cohesive_energy / len(atoms)
     nearest_neighbor_distance = optimized_a / re2a
 
