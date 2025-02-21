@@ -2,6 +2,7 @@
 This is a test version.
 
 pip install ase
+sudo apt install quantum-espresso
 
 gedit run_fcc_b1_pbe_v1.py
    (elements = ['Fe', 'Cr', 'Al'] # <- Enter the element you want to calculate)
