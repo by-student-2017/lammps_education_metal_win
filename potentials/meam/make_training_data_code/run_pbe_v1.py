@@ -189,22 +189,21 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
     element1, element2 = elements_combination
     scaling_factor = 0.94
 
-    if lat == '':
-        vdw_elements = ["H", "He", "Li", "B", "N", "P", "S", "Ne", "Ar", "Kr", "Xe", "Rn"]
-        if element1 in vdw_elements and element2 in vdw_elements:
-            radius1 = vdw_radii[element1]
-            radius2 = vdw_radii[element2]
-        else:
-            radius1 = atomic_radii[element1]
-            radius2 = atomic_radii[element2]
-        re = (radius1 + radius2)
+    vdw_elements = ["H", "He", "Li", "B", "N", "P", "S", "Ne", "Ar", "Kr", "Xe", "Rn"]
+    if element1 in vdw_elements and element2 in vdw_elements:
+        radius1 = vdw_radii[element1]
+        radius2 = vdw_radii[element2]
     else:
-        re = lat
+        radius1 = atomic_radii[element1]
+        radius2 = atomic_radii[element2]
+    re = (radius1 + radius2)
 
     if lattce == 'b1':
         print("Create the FCC B1 (NaCl-type) structure")
         lattice_type = 'FCC_B1 (NaCl-type)'
         re2a = 2.0
+        if not lat == '':
+            re = lat / re2a
         a = re * re2a * scaling_factor
         atoms = Atoms(f'{element1}4{element2}4', 
               positions=[(0, 0, 0), (0.5*a, 0.5*a, 0), (0.5*a, 0, 0.5*a), (0, 0.5*a, 0.5*a), 
@@ -215,6 +214,8 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
         print("Create the BCC B2 (CsCl-type) structure")
         lattice_type = 'BCC_B2 (CsCl-type)'
         re2a = 2.0/3.0**0.5
+        if not lat == '':
+            re = lat / re2a
         a = re * re2a * scaling_factor
         atoms = Atoms(f'{element1}{element2}', 
                   positions=[(0, 0, 0), (0.5*a, 0.5*a, 0.5*a)], 
@@ -224,6 +225,8 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
         print("Create the Diamond B3 (Zinc Blende) structure")
         lattice_type = 'DIA_B3 (Zinc Blende)'
         re2a = 4.0/2.0**0.5
+        if not lat == '':
+            re = lat / re2a
         a = re * re2a * scaling_factor
         '''
         # conventional cell
@@ -243,6 +246,8 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
         print("Create the L12 (Cu3Au-type) structure")
         lattice_type = 'L12 (Cu3Au-type)'
         re2a = 2.0/2.0**0.5
+        if not lat == '':
+            re = lat / re2a
         a = re * re2a * scaling_factor
         atoms = Atoms(f'{element1}3{element2}', 
               positions=[(0, 0.5*a, 0.5*a), (0.5*a, 0, 0.5*a), (0.5*a, 0.5*a, 0), 
