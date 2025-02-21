@@ -190,7 +190,7 @@ def calculate_elastic_constants(atoms, calc, shear_strains, normal_strains):
 
 def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, max_retries=200, lattce='', lat=''):
     element1, element2 = elements_combination
-    scaling_factor = 0.85
+    scaling_factor = 0.73
     
     print(f"{element1}-{element2} pair, lattce = {lattce}")
 
@@ -321,7 +321,6 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
     flag = 0
     print("search optimized structure with scf")
     while retries < max_retries:
-        scaling_factor += 0.03
         print("---------------------------------")
         print(retries+1,"/",max_retries,", a = ", a," [A], v =", a**3," [A^3]")
         try:
@@ -344,10 +343,12 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
         print("scaling factor = ", scaling_factor, "energy = ",energy)
         a = re * re2a * scaling_factor
         atoms.set_cell([a, a, a], scale_atoms=True)
+        scaling_factor += 0.03
         retries += 1
 
     print("---------------------------------------")
-    scaling_factor -= 0.03/2
+    #scaling_factor -= 0.03/2
+    scaling_factor -= 0.03
     print("using scaling factor = ", scaling_factor)
     a = re * re2a * scaling_factor
     atoms.set_cell([a, a, a], scale_atoms=True)
@@ -361,7 +362,6 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
     retries = 0
     print("search optimized structure with vc-relax")
     while retries < max_retries:
-        scaling_factor += 0.03
         print("---------------------------------")
         print(retries+1,"/",max_retries,", a = ", a," [A], v =", a**3," [A^3]")
         try:
@@ -379,6 +379,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
         print("scaling factor = ", scaling_factor, "energy = ",energy)
         a = re * re2a * scaling_factor
         atoms.set_cell([a, a, a], scale_atoms=True)
+        scaling_factor += 0.03
         retries += 1
     optimized_a = atoms.get_cell()[0, 0]
     #-----------------------------------------------------------------------------
