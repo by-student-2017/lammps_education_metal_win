@@ -49,6 +49,7 @@ https://www.potfit.net/wiki/doku.php?id=examples:configurations
 #Z    0.00000000    0.00000000    4.04836934
 #W 1.000000
 #E -3.6884100000
+## type x y z f_x f_y f_z
 #F
 0           0           0           0           0           0           0
 0           0     2.02418     2.02418           0           0           0
@@ -63,6 +64,7 @@ https://www.potfit.net/wiki/doku.php?id=examples:configurations
 #W 1.000000
 #E -3.0536245000
 #S   0.0954432   0.1134831   0.1081461  0.02513733  0.04822722 -0.001235955
+## type x y z f_x f_y f_z
 #F
 0     0.40484     0.60726      0.4858   -3.544691   -5.412783   -4.538642
 0           0     2.02418     2.02418   -1.035276    3.504476    3.673407
