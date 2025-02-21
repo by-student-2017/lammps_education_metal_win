@@ -39,12 +39,33 @@ potfit format
 
 The lines starting with #N, #X, #Y, #Z, #E and #F are mandatory, while the lines starting with #C, #W, #B and #S are optional. All other lines are ignored. #N must head the first line specifying the number of atoms in the configuration and an integer flag to control whether to use or to ignore force and stress information in this configuration. #F signifies the last header line. All parameters except the type_i are numbers and have the following meaning:
 #---------------------------------------------------------------------
-potfit old format
+https://www.potfit.net/wiki/doku.php?id=examples:configurations
 
- natoms
- boxx.x boxx.y boxx.z
- boxy.x boxy.y boxy.z
- boxz.x boxz.y boxz.z
- coh_eng
- stress_xx stress_yy stress_zz stress_yz stress_zx stress_xy
+#N 4 1
+#C Al
+## force file generated from file OUTCAR
+#X    4.04836934    0.00000000    0.00000000
+#Y    0.00000000    4.04836934    0.00000000
+#Z    0.00000000    0.00000000    4.04836934
+#W 1.000000
+#E -3.6884100000
+#F
+0           0           0           0           0           0           0
+0           0     2.02418     2.02418           0           0           0
+0     2.02418           0     2.02418           0           0           0
+0     2.02418     2.02418           0           0           0           0
+#N 4 1
+#C Al
+## force file generated from file OUTCAR
+#X    4.04836934    0.00000000    0.00000000
+#Y    0.00000000    4.04836934    0.00000000
+#Z    0.00000000    0.00000000    4.04836934
+#W 1.000000
+#E -3.0536245000
+#S   0.0954432   0.1134831   0.1081461  0.02513733  0.04822722 -0.001235955
+#F
+0     0.40484     0.60726      0.4858   -3.544691   -5.412783   -4.538642
+0           0     2.02418     2.02418   -1.035276    3.504476    3.673407
+0     2.02418           0     2.02418    1.799793   -0.736215    1.791375
+0     2.02418     2.02418           0    2.780173    2.644523   -0.926139
 #---------------------------------------------------------------------
