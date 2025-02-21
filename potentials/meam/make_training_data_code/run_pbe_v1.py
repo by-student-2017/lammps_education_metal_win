@@ -188,6 +188,8 @@ def calculate_elastic_constants(atoms, calc, shear_strains, normal_strains):
 def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, max_retries=200, lattce='', lat=''):
     element1, element2 = elements_combination
     scaling_factor = 0.95
+    
+    print(f"{element1}-{element2} pair, lattce = {lattce}")
 
     vdw_elements = ["H", "He", "Li", "B", "N", "P", "S", "Ne", "Ar", "Kr", "Xe", "Rn"]
     if element1 in vdw_elements and element2 in vdw_elements:
@@ -392,8 +394,8 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
     input_data['control']['calculation'] = 'scf'
     tries = 0
     for scale in np.linspace((1.0-0.12)**(1/3), (1.0+0.12)**(1/3), 25):
-        retries += 1
-        print(retries,'/25, Lattice constant [A]: ', scale * optimized_a)
+        tries += 1
+        print(f"{tries}/25, Lattice constant = {scale * optimized_a} [A]")
         atoms.set_cell([scale * optimized_a] * 3, scale_atoms=True)
 
         input_data['control']['calculation'] = 'scf'
@@ -470,15 +472,15 @@ for i, combination in enumerate(element_combinations):
     results.append(result)
     element1, element2 = combination
 
-    directory = f'FCC_B1_{element1}-{element2}'
+    directory = f'{lattce}_{element1}-{element2}'
     if not os.path.exists(directory):
         os.makedirs(directory)
 
-    with open(f'{directory}/results_FCC_B1_{element1}-{element2}.json', 'a') as jsonfile:
+    with open(f'{directory}/results_{lattce}_{element1}-{element2}.json', 'a') as jsonfile:
         json.dump(result, jsonfile, indent=4)
         jsonfile.write('\n')
 
-    with open(f'{directory}/results_FCC_B1_{element1}-{element2}.csv', 'a', newline='') as csvfile:
+    with open(f'{directory}/results_{lattce}_{element1}-{element2}.csv', 'a', newline='') as csvfile:
         fieldnames = ['Element1', 'Element2', 
                       'Lattice Type',
                       'Cohesive Energy (eV/atom)', 'Nearest Neighbor Distance (A)', 'Bulk Modulus (GPa)', 
@@ -520,4 +522,4 @@ for i, combination in enumerate(element_combinations):
 
     print(f"Processed combination {i+1}/{len(element_combinations)}: {combination}")
 
-print("Calculations are complete and results are saved to results_FCC_B1.json and results_FCC_B1.csv.")
+print(f"Calculations are complete and results are saved to results_{lattce}.json and results_{lattce}.csv.")
