@@ -33,6 +33,9 @@ max_retries = 200
 # Load the pseudopotential data from the JSON file
 with open('PBE/PSlibrary_PBE.json', 'r') as f:
     pseudopotentials = json.load(f)
+#
+#with open('PBEsol/PSlibrary_PBEsol.json', 'r') as f:
+#    pseudopotentials = json.load(f)
 #------------------------------------------------------------------
 # Explicitly set OMP_NUM_THREADS
 os.environ['OMP_NUM_THREADS'] = '4'
