@@ -20,7 +20,7 @@ lattce = 'b2'
 # lattice structure of reference configuration [Angstrom]
 lat = 3.502
 #------------------------------------------------------------------
-elements = ['Fe', 'Cr', 'Al'] # <- Enter the element you want to calculate
+elements = ['Fe', 'Cr', 'Al', 'Ru', 'Rh', 'Re', 'Os', 'Ir', 'Hf'] # <- Enter the element you want to calculate
 fixed_element = 'Fe'
 element_combinations = [(fixed_element, element) for element in elements if element != fixed_element]
 #print(element_combinations)
