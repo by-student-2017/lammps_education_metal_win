@@ -370,8 +370,8 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
             'prefix': f'b2_{element1}_{element2}',
             'pseudo_dir': './PBE',
             'outdir': './out',
-            'tprnfor': True,
-            'tstress': True,
+            'tprnfor': True, # Forces will be printed
+            'tstress': True, # Stress will be printed
             'nstep': 1000
         },
         'system': {
@@ -490,6 +490,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
     cohesive_energies = []
     elastic_constants = []
     stress_tensor = []
+    forces = []
     isolated_atom_energy1 = pseudopotentials[element1]['total_psenergy'] * 13.605693
     isolated_atom_energy2 = pseudopotentials[element2]['total_psenergy'] * 13.605693
     
@@ -521,6 +522,8 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
         cohesive_energies_per_atom.append(cohesive_energy/len(atoms))
 
         stress_tensor.append((calc.get_stress() * 160.21766208).tolist())
+        
+        forces.append(atoms.get_forces().tolist())
         
         print(f"{tries}/{npoints}, Volume = {volume/len(atoms)} [A^3/atom], Cohesive_energy = {cohesive_energy/len(atoms)} [eV/atom]")
         print("-------------------------------------------------------------------------------------")
@@ -578,7 +581,8 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
         'Bulk Modulus (GPa)': B / kJ * 1.0e24,
         #'Elastic Constants (GPa)': elastic_constants_final,
         #----------------------------------------------------------
-        'Stress Tensor per Volume (GPa)': stress_tensor
+        'Stress Tensor per Volume (GPa)': stress_tensor,
+        'Forces (eV/A)': forces
     }
 
 
@@ -612,7 +616,8 @@ for i, combination in enumerate(element_combinations):
                       'Energies (eV)', 'Cohesive Energies (eV)', 
                       'Bulk Modulus (GPa)', 
                       #'C11', 'C12', 'C22', 'C33', 'C23', 'C13', 'C44', 'C55', 'C66', 
-                      'Stress Tensor per Volume (GPa)']
+                      'Stress Tensor per Volume (GPa)',
+                      'Forces (eV/A)']
 
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
 
@@ -646,9 +651,11 @@ for i, combination in enumerate(element_combinations):
             #'C55': result['Elastic Constants (GPa)']['C55'],
             #'C66': result['Elastic Constants (GPa)']['C66'],
             #-----------------------------------------------
-            'Stress Tensor per Volume (GPa)': result['Stress Tensor per Volume (GPa)']
+            'Stress Tensor per Volume (GPa)': result['Stress Tensor per Volume (GPa)'],
+            'Forces (eV/A)': result['Forces (eV/A)']
         })
 
+    print(f"----------------------------------------------------------------------")
     print(f"Processed combination {i+1}/{len(element_combinations)}: {combination}")
 
 print(f"Calculations are complete and results are saved to results_{lattce}.json and results_{lattce}.csv.")
