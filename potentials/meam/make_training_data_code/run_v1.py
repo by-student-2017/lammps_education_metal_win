@@ -465,7 +465,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
         #elastic_constants.append(calculate_elastic_constants(atoms, calc, [0.01, 0.02, 0.03], [0.01, 0.02, 0.03]))
         stress_tensor.append((calc.get_stress() * 160.21766208).tolist())
         
-        print(f"{tries}/25, Volume = {volume/len(atoms)} [A^3/atom], Cohesive_energy = {cohesive_energy/len(atoms)} [eV/atom]")
+        print(f"{tries}/29, Volume = {volume/len(atoms)} [A^3/atom], Cohesive_energy = {cohesive_energy/len(atoms)} [eV/atom]")
         print("-------------------------------------------------------------------------------------")
 
     eos = EquationOfState(volumes_per_atom, [energy * -1.0 for energy in cohesive_energies_per_atom], eos='murnaghan')
