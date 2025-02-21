@@ -341,10 +341,10 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
             else:
                 pass
         print("scaling factor = ", scaling_factor, "energy = ",energy)
+        retries += 1
+        scaling_factor += 0.03
         a = re * re2a * scaling_factor
         atoms.set_cell([a, a, a], scale_atoms=True)
-        scaling_factor += 0.03
-        retries += 1
 
     print("---------------------------------------")
     #scaling_factor -= 0.03/2
@@ -377,10 +377,10 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
             else:
                 pass
         print("scaling factor = ", scaling_factor, "energy = ",energy)
+        retries += 1
+        scaling_factor += 0.03
         a = re * re2a * scaling_factor
         atoms.set_cell([a, a, a], scale_atoms=True)
-        scaling_factor += 0.03
-        retries += 1
     optimized_a = atoms.get_cell()[0, 0]
     #-----------------------------------------------------------------------------
     '''
