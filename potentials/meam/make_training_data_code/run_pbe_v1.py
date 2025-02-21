@@ -244,7 +244,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
               positions=[(0, 0, 0), (0.25*a, 0.25*a, 0.25*a)],
               cell=[[0.5*a, 0.5*a, 0], [0.5*a, 0, 0.5*a], [0, 0.5*a, 0.5*a]],
               pbc=True)
-        kpt = 5
+        kpt = 6
     elif lattce == 'l12':
         print("Create the L12 (Cu3Au-type) structure")
         lattice_type = 'L12 (Cu3Au-type)'
@@ -257,7 +257,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
                          (0, 0, 0)], 
               cell=[a, a, a], 
               pbc=True)
-        kpt = 5
+        kpt = 6
     else:
         print("This code does not provide other structures. (Possible structures: b1, b2, dia, l12)")
 
@@ -294,7 +294,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
         }
     }
 
-    calc = Espresso(pseudopotentials=pseudopotentials_dict, input_data=input_data, kpts=(6, 6, 6), omp_num_threads=omp_num_threads, mpi_num_procs=mpi_num_procs)
+    calc = Espresso(pseudopotentials=pseudopotentials_dict, input_data=input_data, kpts=(kpt, kpt, kpt), omp_num_threads=omp_num_threads, mpi_num_procs=mpi_num_procs)
     atoms.set_calculator(calc)
 
     '''
@@ -397,7 +397,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
         atoms.set_cell([scale * optimized_a] * 3, scale_atoms=True)
 
         input_data['control']['calculation'] = 'scf'
-        calc = Espresso(pseudopotentials=pseudopotentials_dict, input_data=input_data, kpts=(6, 6, 6), omp_num_threads=omp_num_threads, mpi_num_procs=mpi_num_procs)
+        calc = Espresso(pseudopotentials=pseudopotentials_dict, input_data=input_data, kpts=(kpt, kpt, kpt), omp_num_threads=omp_num_threads, mpi_num_procs=mpi_num_procs)
         atoms.set_calculator(calc)
 
         volumes.append(atoms.get_volume())
