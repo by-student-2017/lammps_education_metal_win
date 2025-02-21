@@ -74,7 +74,7 @@ vdw_radii = {
 }
 
 def binary_search(re, re2a, atoms, scaling_factor, dsfactor, best_energy):
-    scaling_factor -= dsfactor/2.0
+    scaling_factor += dsfactor/2.0
     a = re * re2a * scaling_factor
     atoms.set_cell([a, a, a], scale_atoms=True)
     opt = BFGS(atoms)
@@ -360,6 +360,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
             if flag == 1 and energy > best_energy:
                 #---------------------------------
                 print("--------------------------------------------")
+                scaling_factor -= dsfactor
                 print("# binary search")
                 print("step, scaling_factor, dsfactor, best_energy")
                 print("0/5: ", scaling_factor, dsfactor, best_energy)
