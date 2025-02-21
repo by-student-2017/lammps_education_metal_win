@@ -401,6 +401,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
     #-----------------------------------------------------------------------------
     
     '''
+    # The following was useless because vc-relax didn't work properly.
     #-----------------------------------------------------------------------------
     # search optimized structure with vc-relax
     input_data['control']['calculation'] = 'vc-relax'
@@ -448,7 +449,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
 
     input_data['control']['calculation'] = 'scf'
     tries = 0
-    for scale in np.linspace((1.0-0.24)**(1/3), (1.0+0.24)**(1/3), 25):
+    for scale in np.linspace((1.0-0.24)**(1/3), (1.0+0.32)**(1/3), 29):
         tries += 1
         atoms.set_cell([scale * optimized_a] * 3, scale_atoms=True)
 
@@ -476,49 +477,37 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
         print(f"{tries}/25, Volume = {volume/len(atoms)} [A^3/atom], Cohesive_energy = {cohesive_energy/len(atoms)} [eV/atom]")
         print("-------------------------------------------------------------------------------------")
 
-    #eos = EquationOfState(volumes, energies, eos='murnaghan')
-    #eos = EquationOfState(volumes_per_atom, energies_per_atom, eos='murnaghan')
-    #eos = EquationOfState(volumes, [energy * -1.0 for energy in cohesive_energies], eos='murnaghan')
     eos = EquationOfState(volumes_per_atom, [energy * -1.0 for energy in cohesive_energies_per_atom], eos='murnaghan')
     try:
         v0, e0, B = eos.fit()
         print(B / kJ * 1.0e24, 'GPa')
-        eos.plot('FCC_B1_'+element1+'-'+element2+'_eos.png')
+        eos.plot(lattce+'-'+element1+'-'+element2+'_eos.png')
     except ValueError as e:
         print(f"Error fitting EOS: {e}")
-
-    a = v0**(1/3)
-    atoms.set_cell([a, a, a], scale_atoms=True)
-    input_data['control']['calculation'] = 'scf'
-    opt = BFGS(atoms)
-    opt.run(fmax=0.02)
-
-    optimized_a = atoms.get_cell()[0, 0]
-    total_energy = atoms.get_total_energy()
-
-    print("EOS ",e0,"[eV] vs. SCF",total_energy," [eV]")
-
-    cohesive_energy = -(atoms.get_total_energy() - isolated_atom_energy1*Nelem1 - isolated_atom_energy2*Nelem2)
-    cohesive_energy_per_atom = cohesive_energy / len(atoms)
+    
+    cohesive_energy_per_atom = e0 * -1.0
+    optimized_a = v0**(1/3) * len(atoms)
     nearest_neighbor_distance = optimized_a / re2a
-
+    
+    #alpha = (9.0*B*((nearest_neighbor_distance*re2a)**3/len(atoms))/cohesive_energy_per_atom)**0.5
+    alpha = (9.0*B*v0/(e0*-1.0))**0.5
+    
     input_data['control']['calculation'] = 'scf'
     elastic_constants_final = calculate_elastic_constants(atoms, calc, [0.01, 0.02, 0.03], [0.01, 0.02, 0.03])
-    #elastic_constants_final = calculate_elastic_constants(atoms, calc, [0.001, 0.002, 0.003], [0.001, 0.002, 0.003])
-
+    
     return {
         'Element1': element1,
         'Element2': element2,
         'Lattice Type': lattice_type,
         'Cohesive Energy (eV/atom)': cohesive_energy_per_atom,
         'Nearest Neighbor Distance (A)': nearest_neighbor_distance,
+        'alpha': alpha,
+        #----------------------------------------------------------
         'Bulk Modulus (GPa)': B / kJ * 1.0e24,
         'Elastic Constants (GPa)': elastic_constants_final,
         #----------------------------------------------------------
         'Atoms': len(atoms),
         'Lattice Constant (A)': optimized_a,
-        'Volume (A^3)': optimized_a**3,
-        'Total Energy (eV)': total_energy,
         'Volumes (A^3)': volumes,
         'Energies (eV)': energies,
         'Cohesive Energies (eV)': cohesive_energies,
@@ -543,10 +532,11 @@ for i, combination in enumerate(element_combinations):
     with open(f'{directory}/results_{lattce}_{element1}-{element2}.csv', 'a', newline='') as csvfile:
         fieldnames = ['Element1', 'Element2', 
                       'Lattice Type',
-                      'Cohesive Energy (eV/atom)', 'Nearest Neighbor Distance (A)', 'Bulk Modulus (GPa)', 
+                      'Cohesive Energy (eV/atom)', 'Nearest Neighbor Distance (A)', 'alpha',
+                      'Bulk Modulus (GPa)', 
                       'C11', 'C12', 'C22', 'C33', 'C23', 'C13', 'C44', 'C55', 'C66', 
                       'Atoms', 
-                      'Lattice Constant (A)', 'Volumes (A^3)', 'Energies (eV)', 'Total Energy (eV)', 
+                      'Lattice Constant (A)', 'Volumes (A^3)', 'Energies (eV)',
                       'Cohesive Energies (eV)', 'Stress Tensor per Volume (GPa)']
 
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
@@ -560,6 +550,8 @@ for i, combination in enumerate(element_combinations):
             'Lattice Type': result['Lattice Type'],
             'Cohesive Energy (eV/atom)': result['Cohesive Energy (eV/atom)'],
             'Nearest Neighbor Distance (A)': result['Nearest Neighbor Distance (A)'],
+            'alpha': result['alpha'],
+            #-----------------------------------------------
             'Bulk Modulus (GPa)': result['Bulk Modulus (GPa)'],
             'C11': result['Elastic Constants (GPa)']['C11'],
             'C12': result['Elastic Constants (GPa)']['C12'],
@@ -573,7 +565,6 @@ for i, combination in enumerate(element_combinations):
             #-----------------------------------------------
             'Atoms': result['Atoms'],
             'Lattice Constant (A)': result['Lattice Constant (A)'],
-            'Total Energy (eV)': result['Total Energy (eV)'],
             'Volumes (A^3)': result['Volumes (A^3)'],
             'Energies (eV)': result['Energies (eV)'],
             'Cohesive Energies (eV)': result['Cohesive Energies (eV)'],
