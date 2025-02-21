@@ -187,7 +187,7 @@ def calculate_elastic_constants(atoms, calc, shear_strains, normal_strains):
 
 def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, max_retries=200, lattce='', lat=''):
     element1, element2 = elements_combination
-    scaling_factor = 0.88
+    scaling_factor = 0.80
     
     print(f"{element1}-{element2} pair, lattce = {lattce}")
 
