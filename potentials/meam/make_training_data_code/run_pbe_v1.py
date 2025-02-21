@@ -409,7 +409,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
         
         volume = atoms.get_volume()
         volumes_per_atom.append(volume/len(atoms))
-        print(f"check volume: QE {volume/len(atoms)} vs. input {(scale * optimized_a)**3/len(atoms)}")
+        print(f"       check volume: QE {volume/len(atoms)} vs. input {(scale * optimized_a)**3/len(atoms)}")
         
         energies_per_atom.append(atoms.get_total_energy()/len(atoms))
         cohesive_energies_per_atom.append(cohesive_energy/len(atoms))
@@ -419,6 +419,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
         stress_tensor.append((calc.get_stress() * 160.21766208).tolist())
         
         print(f"{tries}/25, Volume = {volume/len(atoms)} [A^3/atom], Cohesive_energy = {cohesive_energy/len(atoms)} [eV/atom]")
+        print("-------------------------------------------------------------------------------------")
 
     #eos = EquationOfState(volumes, energies, eos='murnaghan')
     #eos = EquationOfState(volumes_per_atom, energies_per_atom, eos='murnaghan')
