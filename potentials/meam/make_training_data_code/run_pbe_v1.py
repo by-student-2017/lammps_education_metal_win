@@ -10,22 +10,37 @@ import os
 
 from ase.units import Bohr, Rydberg, kJ, kB, fs, Hartree, mol, kcal
 
+#------------------------------------------------------------------
 # b1: FCC_B1 (NaCl-type), b2:BCC_B2 (CsCl-type), dia:Diamond_B3 (Zinc Blende), l12: L12 (Cu3Au-type)
-lattce = 'l12'
-
-# Set the number of OpenMP/MPI settings
-omp_num_threads = 1
-mpi_num_procs = 1
-
+lattce = 'b2'
+#------------------------------------------------------------------
+# lattice structure of reference configuration [Angstrom]
+lat = 3.502
+#------------------------------------------------------------------
+elements = ['Fe', 'Cr', 'Al']
+fixed_element = 'Fe'
+element_combinations = [(fixed_element, element) for element in elements if element != fixed_element]
+#print(element_combinations)
+#----------------------------
+# Get all combinations of elements
+#elements = list(pseudopotentials.keys())
+#elements = ['Fe', 'Cr']
+#element_combinations = list(combinations(elements, 2))
+#------------------------------------------------------------------
 # max number of cycles for search optimized structure
 max_retries = 200
-
-# Explicitly set OMP_NUM_THREADS
-os.environ['OMP_NUM_THREADS'] = '4'
-
+#------------------------------------------------------------------
 # Load the pseudopotential data from the JSON file
 with open('PBE/PSlibrary_PBE.json', 'r') as f:
     pseudopotentials = json.load(f)
+#------------------------------------------------------------------
+# Explicitly set OMP_NUM_THREADS
+os.environ['OMP_NUM_THREADS'] = '4'
+#------------------------------------------------------------------
+# Set the number of OpenMP/MPI settings (This is not working.)
+omp_num_threads = 1
+mpi_num_procs = 1
+#------------------------------------------------------------------
 
 # Define atomic radii for elements (in angstroms)
 atomic_radii = {
@@ -54,11 +69,6 @@ vdw_radii = {
     "Tl": 1.96, "Pb": 2.02, "Bi": 2.07, "Po": 2.00, "At": 2.00, "Rn": 2.20, "Fr": 2.00, "Ra": 2.00, "Ac": 2.00, "Th": 2.00,
     "Pa": 2.00,  "U": 1.96, "Np": 1.90, "Pu": 1.87
 }
-
-# Get all combinations of elements
-#elements = list(pseudopotentials.keys())
-elements = ['Fe', 'Cr']
-element_combinations = list(combinations(elements, 2))
 
 def calculate_elastic_constants(atoms, calc, shear_strains, normal_strains):
     initial_stress_tensor = calc.get_stress()
@@ -175,19 +185,21 @@ def calculate_elastic_constants(atoms, calc, shear_strains, normal_strains):
         #'Bv': Bv
     }
 
-def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, max_retries=200, lattce=''):
+def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, max_retries=200, lattce='', lat=''):
     element1, element2 = elements_combination
     scaling_factor = 0.94
 
-    vdw_elements = ["H", "He", "Li", "B", "N", "P", "S", "Ne", "Ar", "Kr", "Xe", "Rn"]
-    if element1 in vdw_elements and element2 in vdw_elements:
-        radius1 = vdw_radii[element1]
-        radius2 = vdw_radii[element2]
+    if lat == '':
+        vdw_elements = ["H", "He", "Li", "B", "N", "P", "S", "Ne", "Ar", "Kr", "Xe", "Rn"]
+        if element1 in vdw_elements and element2 in vdw_elements:
+            radius1 = vdw_radii[element1]
+            radius2 = vdw_radii[element2]
+        else:
+            radius1 = atomic_radii[element1]
+            radius2 = atomic_radii[element2]
+        re = (radius1 + radius2)
     else:
-        radius1 = atomic_radii[element1]
-        radius2 = atomic_radii[element2]
-
-    re = (radius1 + radius2)
+        re = lat
 
     if lattce == 'b1':
         print("Create the FCC B1 (NaCl-type) structure")
@@ -213,11 +225,19 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
         lattice_type = 'DIA_B3 (Zinc Blende)'
         re2a = 4.0/2.0**0.5
         a = re * re2a * scaling_factor
+        '''
+        # conventional cell
         atoms = Atoms(f'{element1}4{element2}4', 
               positions=[(0, 0, 0), (0.5*a, 0.5*a, 0), (0.5*a, 0, 0.5*a), (0, 0.5*a, 0.5*a), 
                          (0.25*a, 0.75*a, 0.75*a), (0.25*a, 0.25*a, 0.25*a), (0.75*a, 0.75*a, 0.25*a), 
                          (0.75*a, 0.25*a, 0.75*a)], 
               cell=[a, a, a], 
+              pbc=True)
+        '''
+        # primitive cell
+        atoms = Atoms(f'{element1}{element2}',
+              positions=[(0, 0, 0), (0.25*a, 0.25*a, 0.25*a)],
+              cell=[[0.5*a, 0.5*a, 0], [0.5*a, 0, 0.5*a], [0, 0.5*a, 0.5*a]],
               pbc=True)
     elif lattce == 'l12':
         print("Create the L12 (Cu3Au-type) structure")
@@ -434,7 +454,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
 # Process the combinations sequentially and store results
 results = []
 for i, combination in enumerate(element_combinations):
-    result = calculate_properties(combination, omp_num_threads, mpi_num_procs, max_retries, lattce)
+    result = calculate_properties(combination, omp_num_threads, mpi_num_procs, max_retries, lattce, lat)
     results.append(result)
     element1, element2 = combination
 
