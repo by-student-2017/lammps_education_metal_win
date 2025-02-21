@@ -244,7 +244,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
               positions=[(0, 0, 0), (0.25*a, 0.25*a, 0.25*a)],
               cell=[[0.5*a, 0.5*a, 0], [0.5*a, 0, 0.5*a], [0, 0.5*a, 0.5*a]],
               pbc=True)
-        kpt = 6
+        kpt = 3
     elif lattce == 'l12':
         print("Create the L12 (Cu3Au-type) structure")
         lattice_type = 'L12 (Cu3Au-type)'
