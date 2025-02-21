@@ -116,28 +116,30 @@ def fit_rose_curve(volumes_per_atom, cohesive_energies_per_atom, alpha, V0, Ec):
     Ec (float): Cohesive energy per atom.
 
     Returns:
-    float: Fitted parameter a3.
+    tuple: Fitted parameters repuls and attrac.
     """
     
     # Convert cohesive energies to the form needed for fitting
     E_data = np.array([-energy for energy in cohesive_energies_per_atom])
     
     # Rose's universal curve function
-    def rose_curve(V, a3):
-        #astar = alpha * ((V**(1/3)/re2a) / (V0**(1/3)/re2a) - 1.0)
+    def rose_curve(V, alpha, V0, Ec, repuls, attrac):
         astar = alpha * ((V/V0)**(1/3) - 1.0)
+        a3 = np.where(astar < 0, repuls, attrac)
         return -Ec * (1 + astar + a3 * (astar**3)) * np.exp(-astar)
     
-    # Fitting the parameter a_3
-    popt, _ = curve_fit(rose_curve, volumes_per_atom, E_data, p0=[0.0])  # Initial guess for a3 is 0.0
+    # Fitting the parameters repuls and attrac
+    popt, _ = curve_fit(lambda V, repuls, attrac: rose_curve(V, alpha, V0, Ec, repuls, attrac), 
+                        volumes_per_atom, E_data, p0=[0.0, 0.0])  # Initial guesses for repuls and attrac
     
-    # Fitted parameter
-    a3_fit = popt[0]
+    # Fitted parameters
+    repuls_fit, attrac_fit = popt
     
     # Plotting the fit
     plt.figure()
     plt.scatter(volumes_per_atom, E_data, label='DFT Data')
-    plt.plot(volumes_per_atom, rose_curve(volumes_per_atom, a3_fit), label=f'Rose Curve Fit (a3={a3_fit:.4f})', color='red')
+    plt.plot(volumes_per_atom, rose_curve(volumes_per_atom, alpha, V0, Ec, repuls_fit, attrac_fit), 
+             label=f'Rose Curve Fit (repuls={repuls_fit:.4f}, attrac={attrac_fit:.4f})', color='red')
     plt.xlabel('Volume, V/atom')
     plt.ylabel('Cohesive Energy, -Ec/atom')
     plt.legend()
@@ -146,7 +148,7 @@ def fit_rose_curve(volumes_per_atom, cohesive_energies_per_atom, alpha, V0, Ec):
     # Save the plot as PNG
     #plt.savefig('rose_curve_fit.png')
     
-    return a3_fit
+    return repuls_fit, attrac_fit
 
 
 
@@ -542,20 +544,20 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
     alpha = (9.0*B*v0/(e0*-1.0))**0.5
     
     # d = a3 = attrac = repuls
-    a3_fit = fit_rose_curve(volumes_per_atom, cohesive_energies_per_atom, alpha, v0, (e0*-1.0))
-    print(f"Fitted parameter: a3 = {a3_fit}")
+    repuls_fit, attrac_fit = fit_rose_curve(volumes_per_atom, cohesive_energies_per_atom, alpha, v0, (e0*-1.0))
+    print(f"Fitted parameter: repuls = {repuls_fit}, attrac = {attrac_fit}")
     # Save the plot as PNG
     plt.savefig('results/'+lattce+'-'+element1+'-'+element2+'_rose_curve_fit.png')
     
-    print("---------------------------------")
-    print("initial stress tensor calculation")
-    input_data['control']['calculation'] = 'scf'
-    a = optimized_a
-    atoms.set_cell([a, a, a], scale_atoms=True)
-    atoms.set_calculator(calc)
-    input_data['control']['calculation'] = 'relax'
-    elastic_constants_final = calculate_elastic_constants(atoms, calc, [-0.01, 0.01], [-0.01, 0.01])
-    #elastic_constants_final = calculate_elastic_constants(atoms, calc, [-0.005, 0.005], [-0.005, 0.005])
+    #print("---------------------------------")
+    #print("initial stress tensor calculation")
+    #input_data['control']['calculation'] = 'scf'
+    #a = optimized_a
+    #atoms.set_cell([a, a, a], scale_atoms=True)
+    #atoms.set_calculator(calc)
+    #input_data['control']['calculation'] = 'relax'
+    #elastic_constants_final = calculate_elastic_constants(atoms, calc, [-0.01, 0.01], [-0.01, 0.01])
+    ##elastic_constants_final = calculate_elastic_constants(atoms, calc, [-0.005, 0.005], [-0.005, 0.005])
     
     return {
         'Element1': element1,
@@ -564,17 +566,18 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
         'Cohesive Energy (eV/atom)': cohesive_energy_per_atom,
         'Nearest Neighbor Distance (A)': nearest_neighbor_distance,
         'alpha': alpha,
-        'attrac': a3_fit, # d = a3
-        'repuls': a3_fit, # d = a3
-        #----------------------------------------------------------
-        'Bulk Modulus (GPa)': B / kJ * 1.0e24,
-        'Elastic Constants (GPa)': elastic_constants_final,
+        'repuls': repuls_fit, # d = a3 = repuls, astar <  0
+        'attrac': attrac_fit, # d = a3 = attrac, astar >= 0
         #----------------------------------------------------------
         'Atoms': len(atoms),
         'Lattice Constant (A)': optimized_a,
         'Volumes (A^3)': volumes,
         'Energies (eV)': energies,
         'Cohesive Energies (eV)': cohesive_energies,
+        #----------------------------------------------------------
+        'Bulk Modulus (GPa)': B / kJ * 1.0e24,
+        #'Elastic Constants (GPa)': elastic_constants_final,
+        #----------------------------------------------------------
         'Stress Tensor per Volume (GPa)': stress_tensor
     }
 
@@ -599,13 +602,17 @@ for i, combination in enumerate(element_combinations):
     with open(f'results_{lattce}.csv', 'a', newline='') as csvfile:
         fieldnames = ['Element1', 'Element2', 
                       'Lattice Type',
-                      'Cohesive Energy, Ec (eV/atom)', 'Nearest Neighbor Distance, re (A)', 'alpha',
-                      'attrac', 'repuls',
-                      'Bulk Modulus (GPa)', 
-                      'C11', 'C12', 'C22', 'C33', 'C23', 'C13', 'C44', 'C55', 'C66', 
+                      'Cohesive Energy, Ec (eV/atom)', 
+                      'Nearest Neighbor Distance, re (A)', 
+                      'alpha',
+                      'repuls', 'attrac', 
+                      #----------------------------------------------------------
                       'Atoms', 
-                      'Lattice Constant (A)', 'Volumes (A^3)', 'Energies (eV)',
-                      'Cohesive Energies (eV)', 'Stress Tensor per Volume (GPa)']
+                      'Lattice Constant (A)', 'Volumes (A^3)', 
+                      'Energies (eV)', 'Cohesive Energies (eV)', 
+                      'Bulk Modulus (GPa)', 
+                      #'C11', 'C12', 'C22', 'C33', 'C23', 'C13', 'C44', 'C55', 'C66', 
+                      'Stress Tensor per Volume (GPa)']
 
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
 
@@ -619,25 +626,26 @@ for i, combination in enumerate(element_combinations):
             'Cohesive Energy, Ec (eV/atom)': result['Cohesive Energy (eV/atom)'],
             'Nearest Neighbor Distance, re (A)': result['Nearest Neighbor Distance (A)'],
             'alpha': result['alpha'],
-            'attrac': result['attrac'],
             'repuls': result['repuls'],
-            #-----------------------------------------------
-            'Bulk Modulus (GPa)': result['Bulk Modulus (GPa)'],
-            'C11': result['Elastic Constants (GPa)']['C11'],
-            'C12': result['Elastic Constants (GPa)']['C12'],
-            'C22': result['Elastic Constants (GPa)']['C22'],
-            'C33': result['Elastic Constants (GPa)']['C33'],
-            'C23': result['Elastic Constants (GPa)']['C23'],
-            'C13': result['Elastic Constants (GPa)']['C13'],
-            'C44': result['Elastic Constants (GPa)']['C44'],
-            'C55': result['Elastic Constants (GPa)']['C55'],
-            'C66': result['Elastic Constants (GPa)']['C66'],
-            #-----------------------------------------------
+            'attrac': result['attrac'],
+            #----------------------------------------------------------
             'Atoms': result['Atoms'],
             'Lattice Constant (A)': result['Lattice Constant (A)'],
             'Volumes (A^3)': result['Volumes (A^3)'],
             'Energies (eV)': result['Energies (eV)'],
             'Cohesive Energies (eV)': result['Cohesive Energies (eV)'],
+            #-----------------------------------------------
+            'Bulk Modulus (GPa)': result['Bulk Modulus (GPa)'],
+            #'C11': result['Elastic Constants (GPa)']['C11'],
+            #'C12': result['Elastic Constants (GPa)']['C12'],
+            #'C22': result['Elastic Constants (GPa)']['C22'],
+            #'C33': result['Elastic Constants (GPa)']['C33'],
+            #'C23': result['Elastic Constants (GPa)']['C23'],
+            #'C13': result['Elastic Constants (GPa)']['C13'],
+            #'C44': result['Elastic Constants (GPa)']['C44'],
+            #'C55': result['Elastic Constants (GPa)']['C55'],
+            #'C66': result['Elastic Constants (GPa)']['C66'],
+            #-----------------------------------------------
             'Stress Tensor per Volume (GPa)': result['Stress Tensor per Volume (GPa)']
         })
 
