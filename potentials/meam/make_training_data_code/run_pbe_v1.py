@@ -187,7 +187,7 @@ def calculate_elastic_constants(atoms, calc, shear_strains, normal_strains):
 
 def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, max_retries=200, lattce='', lat=''):
     element1, element2 = elements_combination
-    scaling_factor = 0.94
+    scaling_factor = 0.95
 
     vdw_elements = ["H", "He", "Li", "B", "N", "P", "S", "Ne", "Ar", "Kr", "Xe", "Rn"]
     if element1 in vdw_elements and element2 in vdw_elements:
