@@ -6,7 +6,7 @@ pip install ase
 gedit run_fcc_b1_pbe_v1.py
    (elements = ['Fe', 'Cr', 'Al'] # <- Enter the element you want to calculate)
 
-python3 run_pbe_v1.py
+python3 run_v1.py
 #---------------------------------------------------------------------
 
 #---------------------------------------------------------------------
