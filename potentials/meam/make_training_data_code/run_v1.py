@@ -73,6 +73,31 @@ vdw_radii = {
     "Pa": 2.00,  "U": 1.96, "Np": 1.90, "Pu": 1.87
 }
 
+def binary_search(re, re2a, atoms, scaling_factor, dsfactor, best_energy):
+    scaling_factor -= dsfactor/2.0
+    a = re * re2a * scaling_factor
+    atoms.set_cell([a, a, a], scale_atoms=True)
+    opt = BFGS(atoms)
+    opt.run(fmax=0.02)
+    energy = atoms.get_total_energy()
+    if best_energy < energy:
+        scaling_factor -= dsfactor
+        a = re * re2a * scaling_factor
+        atoms.set_cell([a, a, a], scale_atoms=True)
+        opt = BFGS(atoms)
+        opt.run(fmax=0.02)
+        energy = atoms.get_total_energy()
+        if best_energy < energy:
+            scaling_factor += dsfactor/2.0
+            new_best_energy = best_energy
+        else:
+            new_best_energy = energy
+    else:
+        new_best_energy = energy
+    new_scaling_factor = scaling_factor
+    new_dsfactor = dsfactor/2
+    return new_scaling_factor, new_dsfactor, new_best_energy
+
 def calculate_elastic_constants(atoms, calc, shear_strains, normal_strains):
     initial_stress_tensor = calc.get_stress()
     
@@ -190,7 +215,9 @@ def calculate_elastic_constants(atoms, calc, shear_strains, normal_strains):
 
 def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, max_retries=200, lattce='', lat=''):
     element1, element2 = elements_combination
-    scaling_factor = 0.76
+    
+    dsfactor = 0.1
+    scaling_factor = 1.0 - dsfactor*5.0
     
     print(f"{element1}-{element2} pair, lattce = {lattce}")
 
@@ -316,7 +343,6 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
     # search optimized structure with scf
     input_data['control']['calculation'] = 'scf'
     best_energy = float('inf')
-    best_atoms = None
     retries = 0
     flag = 0
     print("search optimized structure with scf")
@@ -330,10 +356,31 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
             print("E =",atoms.get_total_energy()," [eV]")
             if energy < best_energy:
                 best_energy = energy
-                best_atoms = atoms.copy()
                 flag = 1
             if flag == 1 and energy > best_energy:
+                #---------------------------------
+                print("--------------------------------------------")
+                print("# binary search")
+                print("step, scaling_factor, dsfactor, best_energy")
+                print("0/5: ", scaling_factor, dsfactor, best_energy)
+                print("--------------------------------------------")
+                scaling_factor, dsfactor, best_energy = binary_search(re, re2a, atoms, scaling_factor, dsfactor, best_energy)
+                print("1/5: ", scaling_factor, dsfactor, best_energy)
+                print("--------------------------------------------")
+                scaling_factor, dsfactor, best_energy = binary_search(re, re2a, atoms, scaling_factor, dsfactor, best_energy)
+                print("2/5: ", scaling_factor, dsfactor, best_energy)
+                print("--------------------------------------------")
+                scaling_factor, dsfactor, best_energy = binary_search(re, re2a, atoms, scaling_factor, dsfactor, best_energy)
+                print("3/5: ", scaling_factor, dsfactor, best_energy)
+                print("--------------------------------------------")
+                scaling_factor, dsfactor, best_energy = binary_search(re, re2a, atoms, scaling_factor, dsfactor, best_energy)
+                print("4/5: ", scaling_factor, dsfactor, best_energy)
+                print("--------------------------------------------")
+                scaling_factor, dsfactor, best_energy = binary_search(re, re2a, atoms, scaling_factor, dsfactor, best_energy)
+                print("5/5: ", scaling_factor, dsfactor, best_energy)
+                print("--------------------------------------------")
                 break
+                #---------------------------------
         except Exception as e:
             print(f"Optimization failed for {element1}-{element2} with error: {e}")
             if retries >= max_retries:
@@ -342,15 +389,13 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
                 pass
         print("scaling factor = ", scaling_factor, "energy = ",energy)
         retries += 1
-        scaling_factor += 0.03
+        scaling_factor += dsfactor
         a = re * re2a * scaling_factor
         atoms.set_cell([a, a, a], scale_atoms=True)
 
     print("---------------------------------------")
-    scaling_factor -= 0.03/2
     print("using scaling factor = ", scaling_factor)
     a = re * re2a * scaling_factor
-    atoms.set_cell([a, a, a], scale_atoms=True)
     optimized_a = a
     #-----------------------------------------------------------------------------
     
@@ -480,8 +525,8 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
     }
 
 # Process the combinations sequentially and store results
-results = []
 for i, combination in enumerate(element_combinations):
+    results = []
     result = calculate_properties(combination, omp_num_threads, mpi_num_procs, max_retries, lattce, lat)
     results.append(result)
     element1, element2 = combination
