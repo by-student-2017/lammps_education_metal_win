@@ -395,7 +395,6 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
     tries = 0
     for scale in np.linspace((1.0-0.12)**(1/3), (1.0+0.12)**(1/3), 25):
         tries += 1
-        print(f"{tries}/25, Lattice constant = {scale * optimized_a} [A]")
         atoms.set_cell([scale * optimized_a] * 3, scale_atoms=True)
 
         input_data['control']['calculation'] = 'scf'
@@ -408,13 +407,18 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
         cohesive_energy = -(atoms.get_total_energy() - isolated_atom_energy1*4 - isolated_atom_energy2*4)
         cohesive_energies.append(cohesive_energy)
         
-        volumes_per_atom.append(atoms.get_volume()/len(atoms))
+        volume = atoms.get_volume()
+        volumes_per_atom.append(volume/len(atoms))
+        print(f"check volume: QE {volume/len(atoms)} vs. input {(scale * optimized_a)**3/len(atoms)}")
+        
         energies_per_atom.append(atoms.get_total_energy()/len(atoms))
         cohesive_energies_per_atom.append(cohesive_energy/len(atoms))
 
         input_data['control']['calculation'] = 'scf'
         #elastic_constants.append(calculate_elastic_constants(atoms, calc, [0.01, 0.02, 0.03], [0.01, 0.02, 0.03]))
         stress_tensor.append((calc.get_stress() * 160.21766208).tolist())
+        
+        print(f"{tries}/25, Volume = {volume/len(atoms)} [A^3/atom], Cohesive_energy = {cohesive_energy/len(atoms)} [eV/atom]")
 
     #eos = EquationOfState(volumes, energies, eos='murnaghan')
     #eos = EquationOfState(volumes_per_atom, energies_per_atom, eos='murnaghan')
