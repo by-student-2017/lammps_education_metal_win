@@ -26,8 +26,10 @@ lat = 4.046 # Al FCC (e.g., for L12 calculation of Al-base)
 # making number of data
 npoints = 25 # >= 5, 11, 17, 25, or 31, etc (Recommend >= 11)
 #------------------------------------------------------------------
-elements = ['Al', 'Fe', 'Ru', 'Rh', 'Re', 'Os', 'Ir', 'Hf', 'B', 'Be', 'S', 'O', 'P'] # <- Enter the element you want to calculate
-fixed_element = 'Fe'
+elements = ['Al', 'Fe', 'Cr', 'Ru', 'Rh', 'Re', 'Os', 'Ir', 'Si', 'B', 'Be', 'S', 'O', 'P'] # <- Enter the element you want to calculate
+fixed_element = 'Al'
+#elements = ['Fe', 'Cr', 'Al', 'Ru', 'Rh', 'Re', 'Os', 'Ir', 'Hf', 'B', 'Be', 'S', 'O', 'P'] # <- Enter the element you want to calculate
+#fixed_element = 'Fe'
 element_combinations = [(fixed_element, element) for element in elements if element != fixed_element]
 #print(element_combinations)
 #----------------------------
