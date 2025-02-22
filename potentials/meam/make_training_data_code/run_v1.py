@@ -15,15 +15,18 @@ import matplotlib.pyplot as plt
 
 #------------------------------------------------------------------
 # b1: FCC_B1 (NaCl-type), b2:BCC_B2 (CsCl-type), dia:Diamond_B3 (Zinc Blende), l12: L12 (Cu3Au-type)
-lattce = 'b2'
+lattce = 'l12'
 #------------------------------------------------------------------
-# lattice structure of reference configuration [Angstrom]
-lat = 3.502
+# lattice structure of reference configuration [Angstrom] (https://en.wikipedia.org/wiki/Lattice_constant)
+lat = 4.046 # Al FCC (e.g., for L12 calculation of Al-base)
+#lat = 3.502 # Fe BCC (e.g., for BCC_B2 calculation of Fe-base)
+#lat = 5.431 # Si Diamond (e.g., for dia calculation)
+#lat = 5.640 # NaCl (e.g., FCC_B1 calculation)
 #----------------------------
 # making number of data
 npoints = 25 # >= 5, 11, 17, 25, or 31, etc (Recommend >= 11)
 #------------------------------------------------------------------
-elements = ['Fe', 'Cr', 'Al', 'Ru', 'Rh', 'Re', 'Os', 'Ir', 'Hf', 'B', 'Be', 'S', 'O', 'P'] # <- Enter the element you want to calculate
+elements = ['Al', 'Fe', 'Ru', 'Rh', 'Re', 'Os', 'Ir', 'Hf', 'B', 'Be', 'S', 'O', 'P'] # <- Enter the element you want to calculate
 fixed_element = 'Fe'
 element_combinations = [(fixed_element, element) for element in elements if element != fixed_element]
 #print(element_combinations)
