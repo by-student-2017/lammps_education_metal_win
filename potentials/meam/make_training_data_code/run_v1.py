@@ -540,7 +540,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
         print(f"Error fitting EOS: {e}")
     
     cohesive_energy_per_atom = e0 * -1.0
-    optimized_a = v0**(1/3) * len(atoms)
+    optimized_a = (v0 * len(atoms))**(1/3)
     nearest_neighbor_distance = optimized_a / re2a
     
     #alpha = (9.0*B*((nearest_neighbor_distance*re2a)**3/len(atoms))/cohesive_energy_per_atom)**0.5
