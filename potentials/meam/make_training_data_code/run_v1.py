@@ -148,8 +148,8 @@ def fit_rose_curve(volumes_per_atom, cohesive_energies_per_atom, alpha, V0, Ec):
     plt.scatter(volumes_per_atom, E_data, label='DFT Data')
     plt.plot(volumes_per_atom, rose_curve(volumes_per_atom, alpha, V0, Ec, repuls_fit, attrac_fit), 
              label=f'Rose Curve Fit (repuls={repuls_fit:.4f}, attrac={attrac_fit:.4f})', color='red')
-    plt.xlabel('Volume, V/atom')
-    plt.ylabel('Cohesive Energy, -Ec/atom')
+    plt.xlabel('Volume, V (A^3/atom)')
+    plt.ylabel('Cohesive Energy, -Ec (eV/atom)')
     plt.legend()
     plt.title('Rose Curve Fit to DFT Data')
     
