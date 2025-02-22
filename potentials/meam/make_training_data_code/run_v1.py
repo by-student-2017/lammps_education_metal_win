@@ -42,11 +42,11 @@ element_combinations = [(fixed_element, element) for element in elements if elem
 max_retries = 200
 #------------------------------------------------------------------
 # Load the pseudopotential data from the JSON file
-with open('PBE/PSlibrary_PBE.json', 'r') as f:
-    pseudopotentials = json.load(f)
-#
-#with open('PBEsol/PSlibrary_PBEsol.json', 'r') as f:
+#with open('PBE/PSlibrary_PBE.json', 'r') as f:
 #    pseudopotentials = json.load(f)
+#
+with open('PBEsol/PSlibrary_PBEsol.json', 'r') as f:
+    pseudopotentials = json.load(f)
 #------------------------------------------------------------------
 # Explicitly set OMP_NUM_THREADS
 os.environ['OMP_NUM_THREADS'] = '4'
@@ -376,8 +376,8 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
             'calculation': 'scf',
             'restart_mode': 'from_scratch',
             'prefix': f'b2_{element1}_{element2}',
-            'pseudo_dir': './PBE',
-            #'pseudo_dir': './PBEsol',
+            #'pseudo_dir': './PBE',
+            'pseudo_dir': './PBEsol',
             'outdir': './out',
             'tprnfor': True, # Forces will be printed
             'tstress': True, # Stress will be printed
@@ -391,9 +391,9 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
             'degauss': 0.01,
             #
             #'vdw_corr': 'dft-d', # DFT-D2 (Semiempirical Grimme's DFT-D2. Optional variables)
-            #'vdw_corr': 'dft-d3',
-            #'dftd3_version': 2,
-            #'dftd3_threebody': False, # If it is set to True, the calculation will hardly proceed at all.
+            'vdw_corr': 'dft-d3',
+            'dftd3_version': 3,
+            'dftd3_threebody': False, # If it is set to True, the calculation will hardly proceed at all.
             #
             ## pseudo-potential: rel-DFT (e.g., rel-pbe or rel-pbesol, etc)
             #'noncolin': True,
