@@ -377,6 +377,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
             'restart_mode': 'from_scratch',
             'prefix': f'b2_{element1}_{element2}',
             'pseudo_dir': './PBE',
+            #'pseudo_dir': './PBEsol',
             'outdir': './out',
             'tprnfor': True, # Forces will be printed
             'tstress': True, # Stress will be printed
