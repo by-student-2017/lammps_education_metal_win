@@ -621,7 +621,7 @@ for i, combination in enumerate(element_combinations):
         json.dump(result, jsonfile, indent=4)
         jsonfile.write('\n')
 
-    with open(f'results_{lattce}.csv', 'a', newline='') as csvfile:
+    with open(f'results_PBE_{lattce}.csv', 'a', newline='') as csvfile:
         fieldnames = ['Element1', 'Element2', 
                       #----------------------------------------------------------
                       'lattce',
