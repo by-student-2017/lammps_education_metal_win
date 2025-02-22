@@ -19,6 +19,9 @@ lattce = 'b2'
 #------------------------------------------------------------------
 # lattice structure of reference configuration [Angstrom]
 lat = 3.502
+#----------------------------
+# making number of data
+npoints = 25 # >= 5, 11, 17, 25, or 31, etc (Recommend >= 11)
 #------------------------------------------------------------------
 elements = ['Fe', 'Cr', 'Al', 'Ru', 'Rh', 'Re', 'Os', 'Ir', 'Hf', 'B', 'Be', 'S', 'O', 'P'] # <- Enter the element you want to calculate
 fixed_element = 'Fe'
@@ -269,7 +272,7 @@ def calculate_elastic_constants(atoms, calc, shear_strains, normal_strains):
 
 
 
-def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, max_retries=200, lattce='', lat=''):
+def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, max_retries=200, lattce='', lat='', npoints=11):
     element1, element2 = elements_combination
     
     dsfactor = 0.1
@@ -499,7 +502,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
     cohesive_energies_per_atom = []
 
     tries = 0
-    npoints = 11 # >= 5, 11, 17, 25, or 31, etc
+    #npoints = 11 # >= 5, 11, 17, 25, or 31, etc (Recommend >= 11)
     for scale in np.linspace((1.0-0.24)**(1/3), (1.0+0.24)**(1/3), npoints):
         tries += 1
         atoms.set_cell([scale * optimized_a] * 3, scale_atoms=True)
@@ -595,7 +598,7 @@ for i, combination in enumerate(element_combinations):
         os.makedirs(directory)
 
     results = []
-    result = calculate_properties(combination, omp_num_threads, mpi_num_procs, max_retries, lattce, lat)
+    result = calculate_properties(combination, omp_num_threads, mpi_num_procs, max_retries, lattce, lat, npoints)
     results.append(result)
     element1, element2 = combination
 
@@ -605,13 +608,15 @@ for i, combination in enumerate(element_combinations):
 
     with open(f'results_{lattce}.csv', 'a', newline='') as csvfile:
         fieldnames = ['Element1', 'Element2', 
-                      'Lattice Type',
-                      'Cohesive Energy, Ec (eV/atom)', 
-                      'Nearest Neighbor Distance, re (A)', 
+                      #----------------------------------------------------------
+                      'lattce',
+                      'Ec', 
+                      're', 
                       'alpha',
                       'repuls', 'attrac', 
                       #----------------------------------------------------------
                       'Atoms', 
+                      'Lattice Type',
                       'Lattice Constant (A)', 'Volumes (A^3)', 
                       'Energies (eV)', 'Cohesive Energies (eV)', 
                       'Bulk Modulus (GPa)', 
@@ -627,14 +632,16 @@ for i, combination in enumerate(element_combinations):
         writer.writerow({
             'Element1': result['Element1'],
             'Element2': result['Element2'],
-            'Lattice Type': result['Lattice Type'],
-            'Cohesive Energy, Ec (eV/atom)': result['Cohesive Energy (eV/atom)'],
-            'Nearest Neighbor Distance, re (A)': result['Nearest Neighbor Distance (A)'],
+            #----------------------------------------------------------
+            'lattce': lattce,
+            'Ec': result['Cohesive Energy (eV/atom)'],
+            're': result['Nearest Neighbor Distance (A)'],
             'alpha': result['alpha'],
             'repuls': result['repuls'],
             'attrac': result['attrac'],
             #----------------------------------------------------------
             'Atoms': result['Atoms'],
+            'Lattice Type': result['Lattice Type'],
             'Lattice Constant (A)': result['Lattice Constant (A)'],
             'Volumes (A^3)': result['Volumes (A^3)'],
             'Energies (eV)': result['Energies (eV)'],
@@ -654,6 +661,65 @@ for i, combination in enumerate(element_combinations):
             'Stress Tensor per Volume (GPa)': result['Stress Tensor per Volume (GPa)'],
             'Forces (eV/A)': result['Forces (eV/A)']
         })
+    
+    # Generate the potfit text file output for each volume and cohesive energy
+    natoms = result['Atoms']
+    for idx, (volume, cohesive_energy, stress, force) in enumerate(zip(result['Volumes (A^3)'], result['Cohesive Energies (eV)'], result['Stress Tensor per Volume (GPa)'], result['Forces (eV/A)'])):
+        # Calculate the lattice constant 'a' from the volume for BCC structure
+        a = (volume) ** (1/3)
+        
+        if lattce == 'b1':
+           print("Create the FCC B1 (NaCl-type) structure")
+           positions=[(0, 0, 0), (0.5*a, 0.5*a, 0), (0.5*a, 0, 0.5*a), (0, 0.5*a, 0.5*a), 
+                      (0.5*a, 0.5*a, 0.5*a), (0, 0.5*a, 0), (0.5*a, 0, 0), (0, 0, 0.5*a)]
+           types=[0,0,0,0,1,1,1,1]
+        elif lattce == 'b2':
+           print("Create the BCC B2 (CsCl-type) structure")
+           positions=[(0, 0, 0), (0.5*a, 0.5*a, 0.5*a)]
+           types=[0,1]
+        elif lattce == 'dia':
+           print("Create the Diamond B3 (Zinc Blende) structure")
+           '''
+           # conventional cell
+           positions=[(0, 0, 0), (0.5*a, 0.5*a, 0), (0.5*a, 0, 0.5*a), (0, 0.5*a, 0.5*a), 
+                      (0.25*a, 0.75*a, 0.75*a), (0.25*a, 0.25*a, 0.25*a), (0.75*a, 0.75*a, 0.25*a), 
+                      (0.75*a, 0.25*a, 0.75*a)]
+           types=[0,0,0,0,1,1,1,1]
+           '''
+           # primitive cell
+           positions=[(0, 0, 0), (0.25*a, 0.25*a, 0.25*a)]
+           types=[0,1]
+        elif lattce == 'l12':
+           print("Create the L12 (Cu3Au-type) structure")
+           positions=[(0, 0.5*a, 0.5*a), (0.5*a, 0, 0.5*a), (0.5*a, 0.5*a, 0), 
+                      (0, 0, 0)]
+           types=[0,0,0,1]
+        else:
+           print("This code does not provide other structures. (Possible structures: b1, b2, dia, l12)")
+        
+        # xyz_array = [[pos[0], pos[1], pos[2]] for pos in positions]
+        x_coords = [pos[0] for pos in positions]
+        y_coords = [pos[1] for pos in positions]
+        z_coords = [pos[2] for pos in positions]
+        
+        with open(f'{directory}/potfit_{lattce}_{element1}-{element2}.config', 'a') as txtfile:
+            txtfile.write(f"#N {natoms} 1\n")
+            txtfile.write(f"#C {element1} {element2}\n")
+            txtfile.write(f"## force file generated from file espresso.pwo\n")
+            txtfile.write(f"#X {a}  0.000000000000000  0.000000000000000\n")
+            txtfile.write(f"#Y 0.000000000000000  {a}  0.000000000000000\n")
+            txtfile.write(f"#Z 0.000000000000000  0.000000000000000  {a}\n")
+            txtfile.write(f"#W 1.000000\n")
+            txtfile.write(f"#E {cohesive_energy*-1.0}\n")
+            # https://databases.fysik.dtu.dk/ase/_modules/ase/io/espresso.html
+            # stress = np.array([sxx, syy, szz, syz, sxz, sxy], dtype=float)
+            txtfile.write(f"## stress_xx stress_yy stress_zz stress_xy stress_yz stress_xz\n")
+            txtfile.write(f"#S {stress[0]}  {stress[1]}  {stress[2]}  {stress[5]}  {stress[3]}  {stress[4]}\n")
+            txtfile.write(f"## type x y z f_x f_y f_z\n")
+            txtfile.write(f"#F\n")
+            for i in range(natoms):
+                #txtfile.write(f"{types[i]}  {xyz_array[i][0]}  {xyz_array[i][1]}  {xyz_array[i][2]}  {force[i][0]}  {force[i][1]}  {force[i][2]}\n")
+                txtfile.write(f"{types[i]}  {x_coords[i]}  {y_coords[i]}  {z_coords[i]}  {force[i][0]}  {force[i][1]}  {force[i][2]}\n")
 
     print(f"----------------------------------------------------------------------")
     print(f"Processed combination {i+1}/{len(element_combinations)}: {combination}")
