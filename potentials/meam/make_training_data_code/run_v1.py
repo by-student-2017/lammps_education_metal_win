@@ -24,7 +24,7 @@ lat = 4.046 # Al FCC (e.g., for L12 calculation of Al-base)
 #lat = 5.640 # NaCl (e.g., FCC_B1 calculation)
 #----------------------------
 # making number of data
-npoints = 45 # >= 5, 11, 17, 25, or 31, etc (Recommend >= 11)
+npoints = 11 # >= 5, 11, 17, 25, or 31, etc (Recommend >= 11)
 #------------------------------------------------------------------
 elements = ['Al', 'Fe', 'Cr', 'Ru', 'Rh', 'Re', 'Os', 'Ir', 'Si', 'B', 'Be', 'S', 'O', 'P'] # <- Enter the element you want to calculate
 fixed_element = 'Al'
@@ -388,10 +388,15 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
             'occupations': 'smearing',
             'smearing': 'gaussian',
             'degauss': 0.01,
+            #
             #'vdw_corr': 'dft-d', # DFT-D2 (Semiempirical Grimme's DFT-D2. Optional variables)
             #'vdw_corr': 'dft-d3',
             #'dftd3_version': 2,
             #'dftd3_threebody': False, # If it is set to True, the calculation will hardly proceed at all.
+            #
+            ## pseudo-potential: rel-DFT (e.g., rel-pbe or rel-pbesol, etc)
+            #'noncolin': True,
+            #'lspinorb': True,
         },
         'electrons': {
             'conv_thr': 1.0e-6
@@ -508,10 +513,11 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
 
     tries = 0
     #npoints = 11 # >= 5, 11, 17, 25, or 31, etc (Recommend >= 11)
+    for scale in np.linspace((1.0-0.24)**(1/3), (1.0+0.24)**(1/3), npoints):
     #for scale in np.linspace((1.0-0.24)**(1/3), (1.0+0.24)**(1/3), 25):
     #for scale in np.linspace((1.0-0.30)**(1/3), (1.0+0.42)**(1/3), 37):
     #for scale in np.linspace((1.0-0.40)**(1/3), (1.0+0.56)**(1/3), 45):
-    for scale in np.linspace((1.0-0.40)**(1/3), (1.0+0.56)**(1/3), npoints):
+    #for scale in np.linspace((1.0-0.40)**(1/3), (1.0+0.56)**(1/3), npoints):
         tries += 1
         atoms.set_cell([scale * optimized_a] * 3, scale_atoms=True)
 
