@@ -27,7 +27,9 @@ lat = ''     # In the case of '', the sum of covalent_radii (sum of concentratio
 # making number of data
 npoints = 11 # >= 5, 11, 17, 25, or 31, etc (Recommend >= 11), (default = 11)
 #------------------------------------------------------------------
-fixed_element = 'Al'
+fixed_element = 'Si'
+elements = [fixed_element,'Ge']
+#fixed_element = 'Al'
 elements = [fixed_element,
              'H', 'He', 'Li', 'Be',  'B',  'C',  'N',  'O',  'F', 'Ne', 'Na', 'Mg', 'Al', 'Si',  'P',  'S', 'Cl', 'Ar', 
              'K', 'Ca', 'Sc', 'Ti',  'V', 'Cr', 'Mn', 'Fe', 'Co', 'Ni', 'Cu', 'Zn', 'Ga', 'Ge', 'As', 'Se', 'Br', 'Kr', 
@@ -111,7 +113,6 @@ def binary_search(original_cell, atoms, calc, scaling_factor, dsfactor, best_ene
     scaling_factor += dsfactor/2.0
     scaled_cell = original_cell * scaling_factor
     atoms.set_cell(scaled_cell, scale_atoms=True)
-    
     atoms.set_calculator(calc)
     energy = atoms.get_total_energy()
     if best_energy < energy:
@@ -336,7 +337,6 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
               Nelem2 = 4
         else:
               print("# primitive cell")
-              primitive_flag == 1
               atoms = Atoms(f'{element1}2{element2}2',
                     positions=[(0, 0, 0), (0.5*a, 0.5*a, 0.5*a),
                                (0.25*a, 0.25*a, 0.25*a), (0.75*a, 0.75*a, 0.75*a)],
@@ -379,7 +379,6 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
               Nelem2 = 4
         else:
               print("# primitive cell")
-              primitive_flag == 1
               atoms = Atoms(f'{element1}{element2}',
                     positions=[(0, 0, 0), (0.25*a, 0.25*a, 0.25*a)],
                     cell=[[0, 0.5*a, 0.5*a], [0.5*a, 0, 0.5*a], [0.5*a, 0.5*a, 0]],
@@ -615,13 +614,13 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
         # Clear the previous plot
         plt.clf()
         eos.plot(f'{directory}/{lattce}-{element1}-{element2}_eos.png')
-        print("The notation of the ASE plot has not been changed. Note that the calculations are done with -Ec [eV/atom] and V [A^3/atom] (the volumes of b1 and dia are the volume of the primitive cell = the volume of the conventional cell / 2).")
+        print("The notation of the ASE plot has not been changed. Note that the calculations are done with -Ec [eV/atom] and V [A^3/atom] (the volumes of b1 and dia are the volume of the primitive cell = the volume of the conventional cell / 4).")
     except ValueError as e:
         print(f"Error fitting EOS: {e}")
     
     cohesive_energy_per_atom = e0 * -1.0
     if primitive_flag == 1:
-        optimized_a = (v0 * len(atoms) * 2)**(1/3)
+        optimized_a = (v0 * len(atoms) * 4)**(1/3)
     else:
         optimized_a = (v0 * len(atoms))**(1/3)
     nearest_neighbor_distance = optimized_a / re2a
