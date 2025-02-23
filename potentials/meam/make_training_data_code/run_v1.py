@@ -15,7 +15,7 @@ import matplotlib.pyplot as plt
 
 #------------------------------------------------------------------
 # b1: FCC_B1 (NaCl-type), b2:BCC_B2 (CsCl-type), dia:Diamond_B3 (Zinc Blende), l12: L12 (Cu3Au-type)
-lattce = 'l12'
+lattce = 'dia'
 #------------------------------------------------------------------
 # lattice structure of reference configuration [Angstrom] (https://en.wikipedia.org/wiki/Lattice_constant)
 lat = 4.046 # Al FCC (e.g., for L12 calculation of Al-base)
@@ -26,7 +26,7 @@ lat = 4.046 # Al FCC (e.g., for L12 calculation of Al-base)
 primitive_flag = 1 # 0:conventional cell, 1:primitive cell, (default = 1)
 #----------------------------
 # making number of data
-npoints = 25 # >= 5, 11, 17, 25, or 31, etc (Recommend >= 11), (default = 11)
+npoints = 11 # >= 5, 11, 17, 25, or 31, etc (Recommend >= 11), (default = 11)
 #------------------------------------------------------------------
 fixed_element = 'Al'
 elements = [fixed_element,
@@ -296,7 +296,10 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
     else:
         radius1 = atomic_radii[element1]
         radius2 = atomic_radii[element2]
+    
     re = (radius1 + radius2)
+    if lattce == 'l12':
+        re = (radius1*3 + radius2)/4
 
     #primitive_flag == 1 # 0:conventional cell, 1:primitive cell
     if lattce == 'b1':
