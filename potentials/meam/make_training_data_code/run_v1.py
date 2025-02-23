@@ -15,7 +15,7 @@ import matplotlib.pyplot as plt
 
 #------------------------------------------------------------------
 # b1: FCC_B1 (NaCl-type), b2:BCC_B2 (CsCl-type), dia:Diamond_B3 (Zinc Blende), l12: L12 (Cu3Au-type)
-lattce = 'dia'
+lattce = 'b1'
 #------------------------------------------------------------------
 # lattice structure of reference configuration [Angstrom] (https://en.wikipedia.org/wiki/Lattice_constant)
 lat = ''     # In the case of '', the sum of covalent_radii (sum of concentration ratio in L12)
@@ -474,14 +474,15 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
     print("search optimized structure with scf")
     while retries < max_retries:
         retries += 1
+        print("---------------------------------")
+        print(f'{retries}/max_retries:')
         scaling_factor += dsfactor
         scaled_cell = original_cell * scaling_factor
         atoms.set_cell(scaled_cell, scale_atoms=True)
         try:
             atoms.set_calculator(calc)
             energy = atoms.get_total_energy()
-            print("---------------------------------")
-            print(f'scaling factor = {scaling_factor}')
+            print(f'    scaling factor = {scaling_factor}')
             print(f'    Total energy = {energy} [eV]')
             print("cell = ", scaled_cell)
             if energy < best_energy:
@@ -492,13 +493,15 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
                 print("--------------------------------------------")
                 scaling_factor -= dsfactor
                 print("# binary search")
-                print(f'0/5: scaling_factor = {scaling_factor}, dsfactor = {dsfactor}')
+                print(f'0/5:')
+                print(f'    scaling_factor = {scaling_factor}, dsfactor = {dsfactor}')
                 print(f'    Total energy = {best_energy} [eV]')
                 print("--------------------------------------------")
                 step = 1
                 while step <= 5:
                     scaling_factor, dsfactor, best_energy = binary_search(original_cell, atoms, calc, scaling_factor, dsfactor, best_energy)
-                    print(f'{step}/5: scaling_factor = {scaling_factor}, dsfactor = {dsfactor}')
+                    print(f'{step}/5:')
+                    print(f'    scaling_factor = {scaling_factor}, dsfactor = {dsfactor}')
                     print(f'    Total energy = {best_energy} [eV]')
                     print("--------------------------------------------")
                     step += 1
@@ -575,6 +578,8 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
     #for scale in np.linspace((1.0-0.30)**(1/3), (1.0+0.42)**(1/3), 37):
     #for scale in np.linspace((1.0-0.40)**(1/3), (1.0+0.56)**(1/3), 45):
     #for scale in np.linspace((1.0-0.40)**(1/3), (1.0+0.56)**(1/3), npoints):
+        print(f'{tries}/{npoints}:')
+        
         tries += 1
         scaled_cell = original_cell * scaling_factor * scale
         atoms.set_cell(scaled_cell, scale_atoms=True)
@@ -603,7 +608,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
         
         energy = atoms.get_total_energy()
         
-        print(f'{tries}/{npoints}, Volume = {volume/len(atoms)} [A^3/atom], Cohesive_energy = {cohesive_energy/len(atoms)} [eV/atom]')
+        print(f'    Volume = {volume/len(atoms)} [A^3/atom], Cohesive_energy = {cohesive_energy/len(atoms)} [eV/atom]')
         print(f'    Total energy = {energy} [eV]')
         print("-------------------------------------------------------------------------------------")
 
