@@ -737,7 +737,7 @@ for i, combination in enumerate(element_combinations):
            mpcfile.write(f"{volume}  {cohesive_energy*-1.0}\n")
         
         if lattce == 'b1':
-           print(f"{idx}: Create the FCC B1 (NaCl-type) structure")
+           #print(f"{idx}: Create the FCC B1 (NaCl-type) structure")
            if primitive_flag == 0:
                print("# conventional cell")
                types=[0,0,0,0,1,1,1,1]
@@ -747,7 +747,7 @@ for i, combination in enumerate(element_combinations):
                Y = [0,  ac, 0 ]
                Z = [0,  0,  ac]
            else:
-               print("# primitive cell")
+               #print("# primitive cell")
                types=[0,0,1,1]
                positions=[(0, 0, 0), (0.5*ap, 0.5*ap, 0.5*ap),
                           (0.25*ap, 0.25*ap, 0.25*ap), (0.75*ap, 0.75*ap, 0.75*ap)]
@@ -755,14 +755,14 @@ for i, combination in enumerate(element_combinations):
                Y = [0.5*ap, 0,      0.5*ap]
                Z = [0.5*ap, 0.5*ap, 0     ]
         elif lattce == 'b2':
-           print(f"{idx}: Create the BCC B2 (CsCl-type) structure")
+           #print(f"{idx}: Create the BCC B2 (CsCl-type) structure")
            types=[0,1]
            positions=[(0, 0, 0), (0.5*ac, 0.5*ac, 0.5*ac)]
            X = [ac, 0,  0]
            Y = [0,  ac, 0]
            Z = [0,  0,  ac]
         elif lattce == 'dia':
-           print(f"{idx}: Create the Diamond B3 (Zinc Blende) structure")
+           #print(f"{idx}: Create the Diamond B3 (Zinc Blende) structure")
            if primitive_flag == 0:
                print("# conventional cell")
                types=[0,0,0,0,1,1,1,1]
@@ -773,14 +773,14 @@ for i, combination in enumerate(element_combinations):
                Y = [0,  ac, 0]
                Z = [0,  0,  ac]
            else:
-               print("# primitive cell")
+               #print("# primitive cell")
                types=[0,1]
                positions=[(0, 0, 0), (0.25*ap, 0.25*ap, 0.25*ap)]
                X = [0, 0.5*ap, 0.5*ap]
                Y = [0.5*ap, 0, 0.5*ap]
                Z = [0.5*ap, 0.5*ap, 0]
         elif lattce == 'l12':
-           print(f"{idx}: Create the L12 (Cu3Au-type) structure")
+           #print(f"{idx}: Create the L12 (Cu3Au-type) structure")
            types=[0,0,0,1]
            positions=[(0, 0.5*ac, 0.5*ac), (0.5*ac, 0, 0.5*ac), (0.5*ac, 0.5*ac, 0), 
                       (0, 0, 0)]
@@ -795,7 +795,7 @@ for i, combination in enumerate(element_combinations):
         y_coords = [pos[1] for pos in positions]
         z_coords = [pos[2] for pos in positions]
         
-        print(f"## check {natoms} vs. {len(types)}")
+        #print(f"## check {natoms} vs. {len(types)}")
         
         with open(f'{directory}/potfit_{lattce}_{element1}-{element2}.config', 'a') as txtfile:
             txtfile.write(f"#N {natoms} 1\n")
