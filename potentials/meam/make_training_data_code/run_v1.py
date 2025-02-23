@@ -23,8 +23,6 @@ lat = 4.046 # Al FCC (e.g., for L12 calculation of Al-base)
 #lat = 5.431 # Si Diamond (e.g., for dia calculation)
 #lat = 5.640 # NaCl (e.g., FCC_B1 calculation)
 #----------------------------
-primitive_flag = 1 # 0:conventional cell, 1:primitive cell, (default = 1)
-#----------------------------
 # making number of data
 npoints = 11 # >= 5, 11, 17, 25, or 31, etc (Recommend >= 11), (default = 11)
 #------------------------------------------------------------------
@@ -43,9 +41,6 @@ element_combinations = [(fixed_element, element) for element in elements if elem
 #elements = ['Fe', 'Cr']
 #element_combinations = list(combinations(elements, 2))
 #------------------------------------------------------------------
-# max number of cycles for search optimized structure
-max_retries = 50 # default = 50
-#------------------------------------------------------------------
 PBEsol_flag = 1 # 0:PBE, 1:PBEsol, (default = 0)
 # Load the pseudopotential data from the JSON file
 if PBEsol_flag == 0:
@@ -61,20 +56,38 @@ os.environ['OMP_NUM_THREADS'] = '4'
 # Set the number of OpenMP/MPI settings (This is not working.)
 omp_num_threads = 1
 mpi_num_procs = 1
+#----------------------------
+primitive_flag = 1 # 0:conventional cell, 1:primitive cell, (default = 1)
+#------------------------------------------------------------------
+# max number of cycles for search optimized structure
+max_retries = 100 # default = 100
 #------------------------------------------------------------------
 
+# Define covalent radii for elements (in angstroms)
+covalent_radii = {
+     "H": 0.31, "He": 0.28, "Li": 1.28, "Be": 0.96,  "B": 0.84,  "C": 0.76,  "N": 0.71,  "O": 0.66,  "F": 0.57, "Ne": 0.58,
+    "Na": 1.66, "Mg": 1.41, "Al": 1.21, "Si": 1.11,  "P": 1.07,  "S": 1.05, "Cl": 1.02, "Ar": 1.06,  "K": 2.03, "Ca": 1.76,
+    "Sc": 1.70, "Ti": 1.60,  "V": 1.53, "Cr": 1.39, "Mn": 1.39, "Fe": 1.32, "Co": 1.26, "Ni": 1.24, "Cu": 1.32, "Zn": 1.22,
+    "Ga": 1.22, "Ge": 1.20, "As": 1.19, "Se": 1.20, "Br": 1.20, "Kr": 1.16, "Rb": 2.20, "Sr": 1.95,  "Y": 1.90, "Zr": 1.75,
+    "Nb": 1.64, "Mo": 1.54, "Tc": 1.47, "Ru": 1.46, "Rh": 1.42, "Pd": 1.39, "Ag": 1.45, "Cd": 1.44, "In": 1.42, "Sn": 1.39,
+    "Sb": 1.39, "Te": 1.38,  "I": 1.39, "Xe": 1.40, "Cs": 2.44, "Ba": 2.15, "La": 2.07, "Ce": 2.04, "Pr": 2.03, "Nd": 2.01,
+    "Pm": 1.99, "Sm": 1.98, "Eu": 1.98, "Gd": 1.96, "Tb": 1.94, "Dy": 1.92, "Ho": 1.92, "Er": 1.89, "Tm": 1.90, "Yb": 1.87,
+    "Lu": 1.87, "Hf": 1.75, "Ta": 1.70,  "W": 1.62, "Re": 1.51, "Os": 1.44, "Ir": 1.41, "Pt": 1.36, "Au": 1.36, "Hg": 1.32,
+    "Tl": 1.45, "Pb": 1.46, "Bi": 1.48, "Po": 1.40, "At": 1.50, "Rn": 1.50, "Fr": 2.60, "Ra": 2.21, "Ac": 2.15, "Th": 2.06,
+    "Pa": 2.00,  "U": 1.96, "Np": 1.90, "Pu": 1.87
+}
 
 # Define atomic radii for elements (in angstroms)
 atomic_radii = {
-     "H": 0.53, "He": 1.40, "Li": 1.67, "Be": 1.12,  "B": 0.87,  "C": 0.67,  "N": 0.56,  "O": 0.48,  "F": 0.42, "Ne": 1.54,
-    "Na": 1.90, "Mg": 1.45, "Al": 1.18, "Si": 1.11,  "P": 0.98,  "S": 0.88, "Cl": 0.79, "Ar": 1.88,  "K": 2.43, "Ca": 1.94,
+     "H": 0.53, "He": 0.31, "Li": 1.67, "Be": 1.12,  "B": 0.87,  "C": 0.67,  "N": 0.56,  "O": 0.48,  "F": 0.42, "Ne": 0.38,
+    "Na": 1.90, "Mg": 1.45, "Al": 1.18, "Si": 1.11,  "P": 0.98,  "S": 0.88, "Cl": 0.79, "Ar": 0.71,  "K": 2.43, "Ca": 1.94,
     "Sc": 1.84, "Ti": 1.76,  "V": 1.71, "Cr": 1.66, "Mn": 1.61, "Fe": 1.56, "Co": 1.52, "Ni": 1.49, "Cu": 1.45, "Zn": 1.42,
-    "Ga": 1.36, "Ge": 1.25, "As": 1.14, "Se": 1.03, "Br": 0.94, "Kr": 2.02, "Rb": 2.65, "Sr": 2.19,  "Y": 2.12, "Zr": 2.06,
+    "Ga": 1.36, "Ge": 1.25, "As": 1.14, "Se": 1.03, "Br": 0.94, "Kr": 0.88, "Rb": 2.65, "Sr": 2.19,  "Y": 2.12, "Zr": 2.06,
     "Nb": 1.98, "Mo": 1.90, "Tc": 1.83, "Ru": 1.78, "Rh": 1.73, "Pd": 1.69, "Ag": 1.65, "Cd": 1.61, "In": 1.56, "Sn": 1.45,
-    "Sb": 1.33, "Te": 1.23,  "I": 1.15, "Xe": 2.16, "Cs": 2.98, "Ba": 2.53, "La": 2.26, "Ce": 2.26, "Pr": 2.26, "Nd": 2.26,
-    "Pm": 2.26, "Sm": 2.26, "Eu": 2.26, "Gd": 2.26, "Tb": 2.26, "Dy": 2.26, "Ho": 2.26, "Er": 2.26, "Tm": 2.26, "Yb": 2.26,
-    "Lu": 2.26, "Hf": 2.08, "Ta": 2.00,  "W": 1.93, "Re": 1.88, "Os": 1.85, "Ir": 1.80, "Pt": 1.77, "Au": 1.74, "Hg": 1.71,
-    "Tl": 1.56, "Pb": 1.54, "Bi": 1.43, "Po": 1.35, "At": 1.27, "Rn": 2.20, "Fr": 2.94, "Ra": 2.62, "Ac": 2.00, "Th": 2.06,
+    "Sb": 1.33, "Te": 1.23,  "I": 1.15, "Xe": 1.08, "Cs": 2.98, "Ba": 2.53, "La": 2.15, "Ce": 2.04, "Pr": 2.03, "Nd": 2.01,
+    "Pm": 2.00, "Sm": 1.98, "Eu": 1.98, "Gd": 1.96, "Tb": 1.94, "Dy": 1.92, "Ho": 1.92, "Er": 1.89, "Tm": 1.90, "Yb": 1.87,
+    "Lu": 1.87, "Hf": 1.75, "Ta": 1.70,  "W": 1.62, "Re": 1.51, "Os": 1.44, "Ir": 1.41, "Pt": 1.36, "Au": 1.36, "Hg": 1.32,
+    "Po": 1.40, "At": 1.50, "Rn": 1.50, "Fr": 2.60, "Ra": 2.21, "Ac": 2.15, "Th": 2.06,
     "Pa": 2.00,  "U": 1.96, "Np": 1.90, "Pu": 1.87
 }
 
@@ -284,18 +297,19 @@ def calculate_elastic_constants(atoms, calc, shear_strains, normal_strains):
 
 
 
-def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, max_retries=50, lattce='', lat='', npoints=11, primitive_flag=1, PBEsol_flag=0):
+def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, max_retries=100, lattce='', lat='', npoints=11, primitive_flag=1, PBEsol_flag=0):
     element1, element2 = elements_combination
     
     print(f"{element1}-{element2} pair, lattce = {lattce}")
 
-    vdw_elements = ["H", "He", "Li", "B", "N", "P", "S", "Ne", "Ar", "Kr", "Xe", "Rn"]
-    if element1 in vdw_elements and element2 in vdw_elements:
-        radius1 = vdw_radii[element1]
-        radius2 = vdw_radii[element2]
-    else:
-        radius1 = atomic_radii[element1]
-        radius2 = atomic_radii[element2]
+    radius1 = covalent_radii[element1]
+    radius2 = covalent_radii[element2]
+    #
+    #radius1 = vdw_radii[element1]
+    #radius2 = vdw_radii[element2]
+    #
+    #radius1 = atomic_radii[element1]
+    #radius2 = atomic_radii[element2]
     
     re = (radius1 + radius2)
     if lattce == 'l12':
