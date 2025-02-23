@@ -15,7 +15,7 @@ import matplotlib.pyplot as plt
 
 #------------------------------------------------------------------
 # b1: FCC_B1 (NaCl-type), b2:BCC_B2 (CsCl-type), dia:Diamond_B3 (Zinc Blende), l12: L12 (Cu3Au-type)
-lattce = 'b1'
+lattce = 'l12'
 #------------------------------------------------------------------
 # lattice structure of reference configuration [Angstrom] (https://en.wikipedia.org/wiki/Lattice_constant)
 lat = 4.046 # Al FCC (e.g., for L12 calculation of Al-base)
@@ -26,16 +26,17 @@ lat = 4.046 # Al FCC (e.g., for L12 calculation of Al-base)
 primitive_flag = 1 # 0:conventional cell, 1:primitive cell, (default = 1)
 #----------------------------
 # making number of data
-npoints = 11 # >= 5, 11, 17, 25, or 31, etc (Recommend >= 11), (default = 11)
+npoints = 25 # >= 5, 11, 17, 25, or 31, etc (Recommend >= 11), (default = 11)
 #------------------------------------------------------------------
-#elements = ['Al', 'Fe', 'Cr', 'Ru', 'Rh', 'Re', 'Os', 'Ir', 'Si', 'B', 'Be', 'S', 'O', 'P', 'N', 'C', 'H', 
-#                  'He', 'Ar', 'Sn', 'Bi', 'Sr', 'La', 'Nd', 'Dy', 'Th', 'Na', 'F', 'Y', 'Br', 'Tc'] # <- Enter the element you want to calculate
-elements = ['Al', 'Bi', 'Fe']
 fixed_element = 'Al'
-#elements = ['Fe', 'Cr', 'Al', 'Ru', 'Rh', 'Re', 'Os', 'Ir', 'Hf', 'B', 'Be', 'S', 'O', 'P', 'N', 'C', 'H'] # <- Enter the element you want to calculate
-#fixed_element = 'Fe'
+elements = [fixed_element,
+            'H', 'He', 'Li', 'Be', 'B', 'C', 'N', 'O', 'F', 'Ne', 'Na', 'Mg', 'Al', 'Si', 'P', 'S', 'Cl', 'Ar', 
+            'K', 'Ca', 'Sc', 'Ti', 'V', 'Cr', 'Mn', 'Fe', 'Co', 'Ni', 'Cu', 'Zn', 'Ga', 'Ge', 'As', 'Se', 'Br', 'Kr', 
+            'Rb', 'Sr', 'Y', 'Zr', 'Nb', 'Mo', 'Tc', 'Ru', 'Rh', 'Pd', 'Ag', 'Cd', 'In', 'Sn', 'Sb', 'Te', 'I', 'Xe', 
+            'Cs', 'Ba', 'La', 'Ce', 'Pr', 'Nd', 'Pm', 'Sm', 'Eu', 'Gd', 'Tb', 'Dy', 'Ho', 'Er', 'Tm', 'Yb', 'Lu', 
+            'Hf', 'Ta', 'W', 'Re', 'Os', 'Ir', 'Pt', 'Au', 'Hg', 'Tl', 'Pb', 'Bi', 'Po', 'At', 'Rn', 'Fr', 'Ra', 
+            'Ac', 'Th', 'Pa', 'U', 'Np', 'Pu'] # <- Enter the element you want to calculate
 element_combinations = [(fixed_element, element) for element in elements if element != fixed_element]
-#print(element_combinations)
 #----------------------------
 # Get all combinations of elements
 #elements = list(pseudopotentials.keys())
