@@ -18,6 +18,9 @@ PBEsol: generate on q-e-qe-6.3 with pslibrary.1.0.0.tar.gz (https://dalcorso.git
 Note: https://dalcorso.github.io/pslibrary/PP_list.html <- The potential version was selected based on the description on this page.
 
 I tried to add pseudopotentials, but github said it was full and wouldn't let me.
+
+STUDENT, B. (2025). SUGGESTED PSEUDOPOTENTIALS for PBE [Data set]. Zenodo. https://doi.org/10.5281/zenodo.14912231
+STUDENT, B. (2025). SUGGESTED PSEUDOPOTENTIALS for PBEsol [Data set]. Zenodo. https://doi.org/10.5281/zenodo.14912249
 #---------------------------------------------------------------------
 
 #---------------------------------------------------------------------
