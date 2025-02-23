@@ -15,7 +15,7 @@ import matplotlib.pyplot as plt
 
 #------------------------------------------------------------------
 # b1: FCC_B1 (NaCl-type), b2:BCC_B2 (CsCl-type), dia:Diamond_B3 (Zinc Blende), l12: L12 (Cu3Au-type)
-lattce = 'l12'
+lattce = 'b1'
 #------------------------------------------------------------------
 # lattice structure of reference configuration [Angstrom] (https://en.wikipedia.org/wiki/Lattice_constant)
 lat = 4.046 # Al FCC (e.g., for L12 calculation of Al-base)
@@ -686,7 +686,8 @@ for i, combination in enumerate(element_combinations):
                       'Bulk Modulus (GPa)', 
                       #'C11', 'C12', 'C22', 'C33', 'C23', 'C13', 'C44', 'C55', 'C66', 
                       'Stress Tensor per Volume (GPa)',
-                      'Forces (eV/A)']
+                      'Forces (eV/A)'
+                      ]
 
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
 
@@ -749,7 +750,7 @@ for i, combination in enumerate(element_combinations):
                print("# primitive cell")
                types=[0,0,1,1]
                positions=[(0, 0, 0), (0.5*ap, 0.5*ap, 0.5*ap),
-                          (0.25*ap, 0.25*ap, 0.25*ap), (0.75*ap, 0.75*ap, 0.75*ap)],
+                          (0.25*ap, 0.25*ap, 0.25*ap), (0.75*ap, 0.75*ap, 0.75*ap)]
                X = [0,      0.5*ap, 0.5*ap]
                Y = [0.5*ap, 0,      0.5*ap]
                Z = [0.5*ap, 0.5*ap, 0     ]
@@ -793,6 +794,8 @@ for i, combination in enumerate(element_combinations):
         x_coords = [pos[0] for pos in positions]
         y_coords = [pos[1] for pos in positions]
         z_coords = [pos[2] for pos in positions]
+        
+        print(f"## check {natoms} vs. {len(types)}")
         
         with open(f'{directory}/potfit_{lattce}_{element1}-{element2}.config', 'a') as txtfile:
             txtfile.write(f"#N {natoms} 1\n")
