@@ -653,7 +653,6 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
 # Process the combinations sequentially and store results
 for i, combination in enumerate(element_combinations):
 
-    
     if PBEsol_flag == 0:
         directory = f'results_PBE'
     else:
@@ -812,11 +811,11 @@ for i, combination in enumerate(element_combinations):
             txtfile.write(f"#S {stress[0]}  {stress[1]}  {stress[2]}  {stress[5]}  {stress[3]}  {stress[4]}\n")
             txtfile.write(f"## type x y z f_x f_y f_z\n")
             txtfile.write(f"#F\n")
-            for i in range(natoms):
-                #txtfile.write(f"{types[i]}  {xyz_array[i][0]}  {xyz_array[i][1]}  {xyz_array[i][2]}  {force[i][0]}  {force[i][1]}  {force[i][2]}\n")
-                txtfile.write(f"{types[i]}  {x_coords[i]}  {y_coords[i]}  {z_coords[i]}  {force[i][0]}  {force[i][1]}  {force[i][2]}\n")
+            for atom_index in range(natoms):
+                #txtfile.write(f"{types[atom_index]}  {xyz_array[atom_index][0]}  {xyz_array[atom_index][1]}  {xyz_array[atom_index][2]}  {force[atom_index][0]}  {force[atom_index][1]}  {force[atom_index][2]}\n")
+                txtfile.write(f"{types[atom_index]}  {x_coords[atom_index]}  {y_coords[atom_index]}  {z_coords[atom_index]}  {force[atom_index][0]}  {force[atom_index][1]}  {force[atom_index][2]}\n")
 
     print(f"----------------------------------------------------------------------")
     print(f"Processed combination {i+1}/{len(element_combinations)}: {combination}")
 
-print(f"Calculations are complete and results are saved to results_{lattce}.json and results_{lattce}.csv.")
+print(f"Calculations are complete and results are saved to json MPCv4 and csv file.")
