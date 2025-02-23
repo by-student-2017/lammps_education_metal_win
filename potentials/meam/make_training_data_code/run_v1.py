@@ -29,12 +29,12 @@ npoints = 11 # >= 5, 11, 17, 25, or 31, etc (Recommend >= 11), (default = 11)
 #------------------------------------------------------------------
 fixed_element = 'Al'
 elements = [fixed_element,
-            'H', 'He', 'Li', 'Be', 'B', 'C', 'N', 'O', 'F', 'Ne', 'Na', 'Mg', 'Al', 'Si', 'P', 'S', 'Cl', 'Ar', 
-            'K', 'Ca', 'Sc', 'Ti', 'V', 'Cr', 'Mn', 'Fe', 'Co', 'Ni', 'Cu', 'Zn', 'Ga', 'Ge', 'As', 'Se', 'Br', 'Kr', 
-            'Rb', 'Sr', 'Y', 'Zr', 'Nb', 'Mo', 'Tc', 'Ru', 'Rh', 'Pd', 'Ag', 'Cd', 'In', 'Sn', 'Sb', 'Te', 'I', 'Xe', 
+             'H', 'He', 'Li', 'Be',  'B',  'C',  'N',  'O',  'F', 'Ne', 'Na', 'Mg', 'Al', 'Si',  'P',  'S', 'Cl', 'Ar', 
+             'K', 'Ca', 'Sc', 'Ti',  'V', 'Cr', 'Mn', 'Fe', 'Co', 'Ni', 'Cu', 'Zn', 'Ga', 'Ge', 'As', 'Se', 'Br', 'Kr', 
+            'Rb', 'Sr',  'Y', 'Zr', 'Nb', 'Mo', 'Tc', 'Ru', 'Rh', 'Pd', 'Ag', 'Cd', 'In', 'Sn', 'Sb', 'Te',  'I', 'Xe', 
             'Cs', 'Ba', 'La', 'Ce', 'Pr', 'Nd', 'Pm', 'Sm', 'Eu', 'Gd', 'Tb', 'Dy', 'Ho', 'Er', 'Tm', 'Yb', 'Lu', 
-            'Hf', 'Ta', 'W', 'Re', 'Os', 'Ir', 'Pt', 'Au', 'Hg', 'Tl', 'Pb', 'Bi', 'Po', 'At', 'Rn', 'Fr', 'Ra', 
-            'Ac', 'Th', 'Pa', 'U', 'Np', 'Pu'] # <- Enter the element you want to calculate
+            'Hf', 'Ta',  'W', 'Re', 'Os', 'Ir', 'Pt', 'Au', 'Hg', 'Tl', 'Pb', 'Bi', 'Po', 'At', 'Rn', 'Fr', 'Ra', 
+            'Ac', 'Th', 'Pa',  'U', 'Np', 'Pu'] # <- Enter the element you want to calculate
 element_combinations = [(fixed_element, element) for element in elements if element != fixed_element]
 #----------------------------
 # Get all combinations of elements
@@ -52,7 +52,7 @@ else:
         pseudopotentials = json.load(f)
 #------------------------------------------------------------------
 # Explicitly set OMP_NUM_THREADS
-os.environ['OMP_NUM_THREADS'] = '4'
+os.environ['OMP_NUM_THREADS'] = '4' # Test CPU: 12th Gen Intel(R) Core(TM) i7-12700
 #------------------------------------------------------------------
 # Set the number of OpenMP/MPI settings (This is not working.)
 omp_num_threads = 1
@@ -441,7 +441,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
             #
             #'vdw_corr': 'dft-d', # DFT-D2 (Semiempirical Grimme's DFT-D2. Optional variables)
             'vdw_corr': 'dft-d3',
-            'dftd3_version': 3,
+            'dftd3_version': 4, # 4:Grimme-D3 (BJ damping) or 3:Grimme-D3 (zero damping) (default = 3)
             'dftd3_threebody': False, # If it is set to True, the calculation will hardly proceed at all.
             #
             ## pseudo-potential: rel-DFT (e.g., rel-pbe or rel-pbesol, etc)
