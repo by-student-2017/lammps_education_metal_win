@@ -27,14 +27,16 @@ lat = ''     # In the case of '', the sum of covalent_radii (sum of concentratio
 # making number of data
 npoints = 11 # >= 5, 11, 17, 25, or 31, etc (Recommend >= 11), (default = 11)
 #------------------------------------------------------------------
-fixed_element = 'Al'
-elements = [fixed_element,
-             'H', 'He', 'Li', 'Be',  'B',  'C',  'N',  'O',  'F', 'Ne', 'Na', 'Mg', 'Al', 'Si',  'P',  'S', 'Cl', 'Ar', 
-             'K', 'Ca', 'Sc', 'Ti',  'V', 'Cr', 'Mn', 'Fe', 'Co', 'Ni', 'Cu', 'Zn', 'Ga', 'Ge', 'As', 'Se', 'Br', 'Kr', 
-            'Rb', 'Sr',  'Y', 'Zr', 'Nb', 'Mo', 'Tc', 'Ru', 'Rh', 'Pd', 'Ag', 'Cd', 'In', 'Sn', 'Sb', 'Te',  'I', 'Xe', 
-            'Cs', 'Ba', 'La', 'Ce', 'Pr', 'Nd', 'Pm', 'Sm', 'Eu', 'Gd', 'Tb', 'Dy', 'Ho', 'Er', 'Tm', 'Yb', 'Lu', 
-            'Hf', 'Ta',  'W', 'Re', 'Os', 'Ir', 'Pt', 'Au', 'Hg', 'Tl', 'Pb', 'Bi', 'Po', 'At', 'Rn', 'Fr', 'Ra', 
-            'Ac', 'Th', 'Pa',  'U', 'Np', 'Pu'] # <- Enter the element you want to calculate
+fixed_element = 'Si'
+elements = [fixed_element, 'Ge']
+#fixed_element = 'Al'
+#elements = [fixed_element,
+#             'H', 'He', 'Li', 'Be',  'B',  'C',  'N',  'O',  'F', 'Ne', 'Na', 'Mg', 'Al', 'Si',  'P',  'S', 'Cl', 'Ar', 
+#             'K', 'Ca', 'Sc', 'Ti',  'V', 'Cr', 'Mn', 'Fe', 'Co', 'Ni', 'Cu', 'Zn', 'Ga', 'Ge', 'As', 'Se', 'Br', 'Kr', 
+#            'Rb', 'Sr',  'Y', 'Zr', 'Nb', 'Mo', 'Tc', 'Ru', 'Rh', 'Pd', 'Ag', 'Cd', 'In', 'Sn', 'Sb', 'Te',  'I', 'Xe', 
+#            'Cs', 'Ba', 'La', 'Ce', 'Pr', 'Nd', 'Pm', 'Sm', 'Eu', 'Gd', 'Tb', 'Dy', 'Ho', 'Er', 'Tm', 'Yb', 'Lu', 
+#            'Hf', 'Ta',  'W', 'Re', 'Os', 'Ir', 'Pt', 'Au', 'Hg', 'Tl', 'Pb', 'Bi', 'Po', 'At', 'Rn', 'Fr', 'Ra', 
+#            'Ac', 'Th', 'Pa',  'U', 'Np', 'Pu'] # <- Enter the element you want to calculate
 element_combinations = [(fixed_element, element) for element in elements if element != fixed_element]
 #----------------------------
 # Get all combinations of elements
@@ -314,6 +316,8 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
     re = (radius1 + radius2)
     if lattce == 'l12':
         re = (radius1*3 + radius2)/4
+    if lat == '':
+        print(f'Start Nearest Neighbor Distance, re = (radius1 + radius2) = {re} [A]')
 
     #primitive_flag == 1 # 0:conventional cell, 1:primitive cell
     if lattce == 'b1':
@@ -476,9 +480,9 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
         try:
             atoms.set_calculator(calc)
             energy = atoms.get_total_energy()
-            print("E =",atoms.get_total_energy()," [eV]")
             print("---------------------------------")
-            print("scaling factor = ", scaling_factor, "total energy = ", energy)
+            print(f'scaling factor = {scaling_factor}')
+            print(f'    Total energy = {energy} [eV]')
             print("cell = ", scaled_cell)
             if energy < best_energy:
                 best_energy = energy
@@ -488,13 +492,14 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
                 print("--------------------------------------------")
                 scaling_factor -= dsfactor
                 print("# binary search")
-                print("step, scaling_factor, dsfactor, best_energy")
-                print("0/5: ", scaling_factor, dsfactor, best_energy)
+                print(f'0/5: scaling_factor = {scaling_factor}, dsfactor = {dsfactor}')
+                print(f'    Total energy = {best_energy} [eV]')
                 print("--------------------------------------------")
                 step = 1
                 while step <= 5:
                     scaling_factor, dsfactor, best_energy = binary_search(original_cell, atoms, calc, scaling_factor, dsfactor, best_energy)
-                    print(f"{step}/5: ", scaling_factor, dsfactor, best_energy)
+                    print(f'{step}/5: scaling_factor = {scaling_factor}, dsfactor = {dsfactor}')
+                    print(f'    Total energy = {best_energy} [eV]')
                     print("--------------------------------------------")
                     step += 1
                 break
@@ -598,7 +603,8 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
         
         energy = atoms.get_total_energy()
         
-        print(f"{tries}/{npoints}, Volume = {volume/len(atoms)} [A^3/atom], Cohesive_energy = {cohesive_energy/len(atoms)} [eV/atom], total energy = {energy} [eV]")
+        print(f'{tries}/{npoints}, Volume = {volume/len(atoms)} [A^3/atom], Cohesive_energy = {cohesive_energy/len(atoms)} [eV/atom]')
+        print(f'    Total energy = {energy} [eV]')
         print("-------------------------------------------------------------------------------------")
 
     if PBEsol_flag == 0:
@@ -644,6 +650,8 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
     #elastic_constants_final = calculate_elastic_constants(atoms, calc, [-0.01, 0.01], [-0.01, 0.01])
     ##elastic_constants_final = calculate_elastic_constants(atoms, calc, [-0.005, 0.005], [-0.005, 0.005])
     
+    print("Note: [Lattice Constant (A)] is the [lattice constant, a (A)] of a conventional cell.")
+    
     return {
         'Element1': element1,
         'Element2': element2,
@@ -655,7 +663,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
         'attrac': attrac_fit, # d = a3 = attrac, astar >= 0
         #----------------------------------------------------------
         'Atoms': len(atoms),
-        'Lattice Constant (A)': optimized_a,
+        'Lattice Constant (A)': optimized_a, # Values ​​in conventional cells.
         'Volumes (A^3)': volumes,
         'Energies (eV)': energies,
         'Cohesive Energies (eV)': cohesive_energies,
@@ -725,7 +733,7 @@ for i, combination in enumerate(element_combinations):
             #----------------------------------------------------------
             'Atoms': result['Atoms'],
             'Lattice Type': result['Lattice Type'],
-            'Lattice Constant (A)': result['Lattice Constant (A)'],
+            'Lattice Constant (A)': result['Lattice Constant (A)'], # Values ​​in conventional cells.
             'Volumes (A^3)': result['Volumes (A^3)'],
             'Energies (eV)': result['Energies (eV)'],
             'Cohesive Energies (eV)': result['Cohesive Energies (eV)'],
