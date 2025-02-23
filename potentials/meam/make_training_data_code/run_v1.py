@@ -615,6 +615,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
         # Clear the previous plot
         plt.clf()
         eos.plot(f'{directory}/{lattce}-{element1}-{element2}_eos.png')
+        print("The notation of the ASE plot has not been changed. Note that the calculations are done with -Ec [eV/atom] and V [A^3/atom] (the volumes of b1 and dia are the volume of the primitive cell = the volume of the conventional cell / 2).")
     except ValueError as e:
         print(f"Error fitting EOS: {e}")
     
