@@ -27,9 +27,7 @@ lat = ''     # In the case of '', the sum of covalent_radii (sum of concentratio
 # making number of data
 npoints = 11 # >= 5, 11, 17, 25, or 31, etc (Recommend >= 11), (default = 11)
 #------------------------------------------------------------------
-fixed_element = 'Si'
-elements = [fixed_element,'Ge']
-#fixed_element = 'Al'
+fixed_element = 'Al'
 elements = [fixed_element,
              'H', 'He', 'Li', 'Be',  'B',  'C',  'N',  'O',  'F', 'Ne', 'Na', 'Mg', 'Al', 'Si',  'P',  'S', 'Cl', 'Ar', 
              'K', 'Ca', 'Sc', 'Ti',  'V', 'Cr', 'Mn', 'Fe', 'Co', 'Ni', 'Cu', 'Zn', 'Ga', 'Ge', 'As', 'Se', 'Br', 'Kr', 
@@ -475,13 +473,13 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
         scaling_factor += dsfactor
         scaled_cell = original_cell * scaling_factor
         atoms.set_cell(scaled_cell, scale_atoms=True)
-        print("---------------------------------")
-        print("scaling factor = ", scaling_factor, "energy = ", energy)
-        print("cell = ", scaled_cell)
         try:
             atoms.set_calculator(calc)
             energy = atoms.get_total_energy()
             print("E =",atoms.get_total_energy()," [eV]")
+            print("---------------------------------")
+            print("scaling factor = ", scaling_factor, "total energy = ", energy)
+            print("cell = ", scaled_cell)
             if energy < best_energy:
                 best_energy = energy
                 flag = 1
@@ -598,7 +596,9 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
         
         forces.append(calc.get_forces().tolist())
         
-        print(f"{tries}/{npoints}, Volume = {volume/len(atoms)} [A^3/atom], Cohesive_energy = {cohesive_energy/len(atoms)} [eV/atom]")
+        energy = atoms.get_total_energy()
+        
+        print(f"{tries}/{npoints}, Volume = {volume/len(atoms)} [A^3/atom], Cohesive_energy = {cohesive_energy/len(atoms)} [eV/atom], total energy = {energy} [eV]")
         print("-------------------------------------------------------------------------------------")
 
     if PBEsol_flag == 0:
