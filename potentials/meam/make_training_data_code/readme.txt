@@ -80,3 +80,10 @@ Potfit: https://www.potfit.net/wiki/doku.php?id=examples:configurations
 #---------------------------------------------------------------------
 MPC v4: https://www.cavs.msstate.edu/icme/code/lammps/tutorials/MEAM/MPC.php
 #---------------------------------------------------------------------
+
+
+#---------------------------------------------------------------------
+Zenodo
+Figshare
+OSF (Open Science Framework)
+#---------------------------------------------------------------------
