@@ -23,10 +23,10 @@ lat = 4.046 # Al FCC (e.g., for L12 calculation of Al-base)
 #lat = 5.431 # Si Diamond (e.g., for dia calculation)
 #lat = 5.640 # NaCl (e.g., FCC_B1 calculation)
 #----------------------------
-primitive_flag = 1 # 0:conventional cell, 1:primitive cell
+primitive_flag = 1 # 0:conventional cell, 1:primitive cell, (default = 1)
 #----------------------------
 # making number of data
-npoints = 11 # >= 5, 11, 17, 25, or 31, etc (Recommend >= 11)
+npoints = 11 # >= 5, 11, 17, 25, or 31, etc (Recommend >= 11), (default = 11)
 #------------------------------------------------------------------
 #elements = ['Al', 'Fe', 'Cr', 'Ru', 'Rh', 'Re', 'Os', 'Ir', 'Si', 'B', 'Be', 'S', 'O', 'P', 'N', 'C', 'H', 
 #                  'He', 'Ar', 'Sn', 'Bi', 'Sr', 'La', 'Nd', 'Dy', 'Th', 'Na', 'F', 'Y', 'Br', 'Tc'] # <- Enter the element you want to calculate
@@ -43,9 +43,9 @@ element_combinations = [(fixed_element, element) for element in elements if elem
 #element_combinations = list(combinations(elements, 2))
 #------------------------------------------------------------------
 # max number of cycles for search optimized structure
-max_retries = 200
+max_retries = 50 # default = 50
 #------------------------------------------------------------------
-PBEsol_flag = 1 # 0:PBE, 1:PBEsol
+PBEsol_flag = 1 # 0:PBE, 1:PBEsol, (default = 0)
 # Load the pseudopotential data from the JSON file
 if PBEsol_flag == 0:
     with open('PBE/PSlibrary_PBE.json', 'r') as f:
