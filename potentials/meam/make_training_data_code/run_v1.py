@@ -313,11 +313,13 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
     radius1 = covalent_radii[element1]
     radius2 = covalent_radii[element2]
     
-    re = (radius1 + radius2)
-    if lattce == 'l12':
-        re = (radius1*3 + radius2)/4 * 2
     if lat == '':
-        print(f'Start Nearest Neighbor Distance, re = (radius1 + radius2) = {re} [A]')
+        if lattce == 'l12':
+            re = (radius1*3/2 + radius2/2)
+            print(f'Start Nearest Neighbor Distance, re = (radius1*3/2 + radius2/2) = {re} [A]')
+        else:
+            re = (radius1 + radius2)
+            print(f'Start Nearest Neighbor Distance, re = (radius1 + radius2) = {re} [A]')
 
     #primitive_flag == 1 # 0:conventional cell, 1:primitive cell
     if lattce == 'b1':
