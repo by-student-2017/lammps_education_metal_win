@@ -20,7 +20,7 @@ I tried to add pseudopotentials, but github said it was full and wouldn't let me
 #---------------------------------------------------------------------
 
 #---------------------------------------------------------------------
-https://www.potfit.net/wiki/doku.php?id=config:main
+Potfit: https://www.potfit.net/wiki/doku.php?id=config:main
 Note: potfit fits the stress tensor, not the elastic constants. I also have a very hard time calculating the elastic constants correctly, so I've decided to comment out the calculation and output of the elastic constants.
 #---------------------------------------------------------------------
 potfit format
@@ -42,7 +42,7 @@ potfit format
 
 The lines starting with #N, #X, #Y, #Z, #E and #F are mandatory, while the lines starting with #C, #W, #B and #S are optional. All other lines are ignored. #N must head the first line specifying the number of atoms in the configuration and an integer flag to control whether to use or to ignore force and stress information in this configuration. #F signifies the last header line. All parameters except the type_i are numbers and have the following meaning:
 #---------------------------------------------------------------------
-https://www.potfit.net/wiki/doku.php?id=examples:configurations
+Potfit: https://www.potfit.net/wiki/doku.php?id=examples:configurations
 
 #N 4 1
 #C Al
