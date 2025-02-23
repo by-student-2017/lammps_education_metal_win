@@ -52,7 +52,7 @@ else:
         pseudopotentials = json.load(f)
 #------------------------------------------------------------------
 # Explicitly set OMP_NUM_THREADS
-os.environ['OMP_NUM_THREADS'] = '4' # Test CPU: 12th Gen Intel(R) Core(TM) i7-12700
+os.environ['OMP_NUM_THREADS'] = '8' # Test CPU: 12th Gen Intel(R) Core(TM) i7-12700
 #------------------------------------------------------------------
 # Set the number of OpenMP/MPI settings (This is not working.)
 omp_num_threads = 1
@@ -334,7 +334,8 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
                                (0.5*a, 0.5*a, 0.5*a), (0, 0.5*a, 0), (0.5*a, 0, 0), (0, 0, 0.5*a)], 
                     cell=[a, a, a], 
                     pbc=True)
-              kpt = 3
+              #kpt = 3
+              kpt = 4
               Nelem1 = 4
               Nelem2 = 4
         else:
@@ -344,7 +345,8 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
                                (0.5*a, 0.5*a, 0.5*a)],
                     cell=[[0, 0.5*a, 0.5*a], [0.5*a, 0, 0.5*a], [0.5*a, 0.5*a, 0]],
                     pbc=True)
-              kpt = 4
+              #kpt = 4
+              kpt = 6
               Nelem1 = 1
               Nelem2 = 1
     elif lattce == 'b2':
@@ -358,7 +360,8 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
                   positions=[(0, 0, 0), (0.5*a, 0.5*a, 0.5*a)], 
                   cell=[a, a, a], 
                   pbc=True)
-        kpt = 7
+        #kpt = 7
+        kpt = 8
         Nelem1 = 1
         Nelem2 = 1
     elif lattce == 'dia':
@@ -376,7 +379,8 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
                                (0.75*a, 0.25*a, 0.75*a)], 
                     cell=[a, a, a], 
                     pbc=True)
-              kpt = 3
+              #kpt = 3
+              kpt = 4
               Nelem1 = 4
               Nelem2 = 4
         else:
@@ -386,7 +390,8 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
                                (0.25*a, 0.25*a, 0.25*a)],
                     cell=[[0, 0.5*a, 0.5*a], [0.5*a, 0, 0.5*a], [0.5*a, 0.5*a, 0]],
                     pbc=True)
-              kpt = 4
+              #kpt = 4
+              kpt = 6
               Nelem1 = 1
               Nelem2 = 1
     elif lattce == 'l12':
@@ -401,7 +406,8 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
                          (0, 0, 0)], 
               cell=[a, a, a], 
               pbc=True)
-        kpt = 6
+        #kpt = 6
+        kpt = 7
         Nelem1 = 3
         Nelem2 = 1
     else:
