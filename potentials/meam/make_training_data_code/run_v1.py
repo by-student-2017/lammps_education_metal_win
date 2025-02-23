@@ -18,7 +18,8 @@ import matplotlib.pyplot as plt
 lattce = 'dia'
 #------------------------------------------------------------------
 # lattice structure of reference configuration [Angstrom] (https://en.wikipedia.org/wiki/Lattice_constant)
-lat = 4.046 # Al FCC (e.g., for L12 calculation of Al-base)
+lat = ''     # In the case of '', the sum of covalent_radii (sum of concentration ratio in L12)
+#lat = 4.046 # Al FCC (e.g., for L12 calculation of Al-base)
 #lat = 3.502 # Fe BCC (e.g., for BCC_B2 calculation of Fe-base)
 #lat = 5.431 # Si Diamond (e.g., for dia calculation)
 #lat = 5.640 # NaCl (e.g., FCC_B1 calculation)
@@ -301,15 +302,15 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
     element1, element2 = elements_combination
     
     print(f"{element1}-{element2} pair, lattce = {lattce}")
-
-    radius1 = covalent_radii[element1]
-    radius2 = covalent_radii[element2]
+    
+    #radius1 = atomic_radii[element1]
+    #radius2 = atomic_radii[element2]
     #
     #radius1 = vdw_radii[element1]
     #radius2 = vdw_radii[element2]
     #
-    #radius1 = atomic_radii[element1]
-    #radius2 = atomic_radii[element2]
+    radius1 = covalent_radii[element1]
+    radius2 = covalent_radii[element2]
     
     re = (radius1 + radius2)
     if lattce == 'l12':
@@ -404,8 +405,8 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
     else:
         print("This code does not provide other structures. (Possible structures: b1, b2, dia, l12)")
     
-    dsfactor = 0.1
-    scaling_factor = 1.0 - dsfactor*5.0
+    dsfactor = 0.15
+    scaling_factor = 1.0 - dsfactor*3.0 # The minimum setting for a downward convex search is "scaling_factor = 1.0 - dsfactor*1.0".
     
     original_cell = atoms.get_cell()
     scaled_cell = original_cell * scaling_factor
