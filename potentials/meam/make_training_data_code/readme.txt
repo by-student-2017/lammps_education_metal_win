@@ -19,8 +19,8 @@ Note: https://dalcorso.github.io/pslibrary/PP_list.html <- The potential version
 
 I tried to add pseudopotentials, but github said it was full and wouldn't let me.
 
-STUDENT, B. (2025). SUGGESTED PSEUDOPOTENTIALS for PBE [Data set]. Zenodo. https://doi.org/10.5281/zenodo.14912231
-STUDENT, B. (2025). SUGGESTED PSEUDOPOTENTIALS for PBEsol [Data set]. Zenodo. https://doi.org/10.5281/zenodo.14912249
+STUDENT, B. (2025). SUGGESTED PSEUDOPOTENTIALS for PBEsol v.1.0.0 [Data set]. Zenodo. https://doi.org/10.5281/zenodo.14912249
+STUDENT, B. (2025). SUGGESTED PSEUDOPOTENTIALS for PBE v.1.0.0 [Data set]. Zenodo. https://doi.org/10.5281/zenodo.14912283
 #---------------------------------------------------------------------
 
 #---------------------------------------------------------------------
