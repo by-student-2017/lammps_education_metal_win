@@ -11,7 +11,8 @@ python3 run_v1.py
 #---------------------------------------------------------------------
 
 #---------------------------------------------------------------------
-Enter the pseudopotentials of the "pslibrary" here. The list is in PSlibrary_PBE.json.
+## pseudopotentials
+Enter the pseudopotentials of the "pslibrary" to PBE or PBEsol directory. The list is in PSlibrary_PBE.json.
 PBE: https://pseudopotentials.quantum-espresso.org/legacy_tables/ps-library
 PBEsol: generate on q-e-qe-6.3 with pslibrary.1.0.0.tar.gz (https://dalcorso.github.io/pslibrary/)
 Note: https://dalcorso.github.io/pslibrary/PP_list.html <- The potential version was selected based on the description on this page.
