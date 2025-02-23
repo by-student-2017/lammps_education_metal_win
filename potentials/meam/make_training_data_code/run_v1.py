@@ -15,7 +15,7 @@ import matplotlib.pyplot as plt
 
 #------------------------------------------------------------------
 # b1: FCC_B1 (NaCl-type), b2:BCC_B2 (CsCl-type), dia:Diamond_B3 (Zinc Blende), l12: L12 (Cu3Au-type)
-lattce = 'b2'
+lattce = 'l12'
 #------------------------------------------------------------------
 # lattice structure of reference configuration [Angstrom] (https://en.wikipedia.org/wiki/Lattice_constant)
 lat = ''     # In the case of '', the sum of covalent_radii (sum of concentration ratio in L12)
@@ -315,7 +315,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
     
     re = (radius1 + radius2)
     if lattce == 'l12':
-        re = (radius1*3 + radius2)/4
+        re = (radius1*3 + radius2)/4 * 2
     if lat == '':
         print(f'Start Nearest Neighbor Distance, re = (radius1 + radius2) = {re} [A]')
 
