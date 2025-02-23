@@ -15,7 +15,7 @@ import matplotlib.pyplot as plt
 
 #------------------------------------------------------------------
 # b1: FCC_B1 (NaCl-type), b2:BCC_B2 (CsCl-type), dia:Diamond_B3 (Zinc Blende), l12: L12 (Cu3Au-type)
-lattce = 'b1'
+lattce = 'b2'
 #------------------------------------------------------------------
 # lattice structure of reference configuration [Angstrom] (https://en.wikipedia.org/wiki/Lattice_constant)
 lat = ''     # In the case of '', the sum of covalent_radii (sum of concentration ratio in L12)
@@ -630,7 +630,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
         print(f"Error fitting EOS: {e}")
     
     cohesive_energy_per_atom = e0 * -1.0
-    if primitive_flag == 1:
+    if primitive_flag == 1 and (lattce == 'b1' or lattce == 'dia'):
         optimized_a = (v0 * len(atoms) * 4)**(1/3)
     else:
         optimized_a = (v0 * len(atoms))**(1/3)
