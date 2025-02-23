@@ -320,7 +320,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
         else:
             re = (radius1 + radius2)
             print(f'Start Nearest Neighbor Distance, re = (radius1 + radius2) = {re} [A]')
-
+    
     #primitive_flag == 1 # 0:conventional cell, 1:primitive cell
     if lattce == 'b1':
         print("Create the FCC B1 (NaCl-type) structure")
@@ -477,7 +477,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
     while retries < max_retries:
         retries += 1
         print("---------------------------------")
-        print(f'{retries}/max_retries:')
+        print(f'{retries}/{max_retries}:')
         scaling_factor += dsfactor
         scaled_cell = original_cell * scaling_factor
         atoms.set_cell(scaled_cell, scale_atoms=True)
