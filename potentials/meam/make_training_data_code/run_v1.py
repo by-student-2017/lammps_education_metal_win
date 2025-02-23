@@ -15,7 +15,7 @@ import matplotlib.pyplot as plt
 
 #------------------------------------------------------------------
 # b1: FCC_B1 (NaCl-type), b2:BCC_B2 (CsCl-type), dia:Diamond_B3 (Zinc Blende), l12: L12 (Cu3Au-type)
-lattce = 'l12'
+lattce = 'dia'
 #------------------------------------------------------------------
 # lattice structure of reference configuration [Angstrom] (https://en.wikipedia.org/wiki/Lattice_constant)
 lat = ''     # In the case of '', the sum of covalent_radii (sum of concentration ratio in L12)
@@ -384,7 +384,8 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
         else:
               print("# primitive cell")
               atoms = Atoms(f'{element1}{element2}',
-                    positions=[(0, 0, 0), (0.25*a, 0.25*a, 0.25*a)],
+                    positions=[(0, 0, 0), 
+                               (0.25*a, 0.25*a, 0.25*a)],
                     cell=[[0, 0.5*a, 0.5*a], [0.5*a, 0, 0.5*a], [0.5*a, 0.5*a, 0]],
                     pbc=True)
               kpt = 4
