@@ -339,14 +339,14 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
               Nelem2 = 4
         else:
               print("# primitive cell")
-              atoms = Atoms(f'{element1}2{element2}2',
-                    positions=[(0, 0, 0), (0.5*a, 0.5*a, 0.5*a),
-                               (0.25*a, 0.25*a, 0.25*a), (0.75*a, 0.75*a, 0.75*a)],
+              atoms = Atoms(f'{element1}{element2}',
+                    positions=[(0, 0, 0), 
+                               (0.5*a, 0.5*a, 0.5*a)],
                     cell=[[0, 0.5*a, 0.5*a], [0.5*a, 0, 0.5*a], [0.5*a, 0.5*a, 0]],
                     pbc=True)
               kpt = 4
-              Nelem1 = 2
-              Nelem2 = 2
+              Nelem1 = 1
+              Nelem2 = 1
     elif lattce == 'b2':
         print("Create the BCC B2 (CsCl-type) structure")
         lattice_type = 'BCC_B2 (CsCl-type)'
@@ -779,16 +779,17 @@ for i, combination in enumerate(element_combinations):
                Z = [0,  0,  ac]
            else:
                #print("# primitive cell")
-               types=[0,0,1,1]
-               positions=[(0, 0, 0), (0.5*ap, 0.5*ap, 0.5*ap),
-                          (0.25*ap, 0.25*ap, 0.25*ap), (0.75*ap, 0.75*ap, 0.75*ap)]
+               types=[0,1]
+               positions=[(0, 0, 0), 
+                          (0.5*ap, 0.5*ap, 0.5*ap)]
                X = [0,      0.5*ap, 0.5*ap]
                Y = [0.5*ap, 0,      0.5*ap]
                Z = [0.5*ap, 0.5*ap, 0     ]
         elif lattce == 'b2':
            #print(f"{idx}: Create the BCC B2 (CsCl-type) structure")
            types=[0,1]
-           positions=[(0, 0, 0), (0.5*ac, 0.5*ac, 0.5*ac)]
+           positions=[(0, 0, 0), 
+                      (0.5*ac, 0.5*ac, 0.5*ac)]
            X = [ac, 0,  0]
            Y = [0,  ac, 0]
            Z = [0,  0,  ac]
@@ -806,7 +807,8 @@ for i, combination in enumerate(element_combinations):
            else:
                #print("# primitive cell")
                types=[0,1]
-               positions=[(0, 0, 0), (0.25*ap, 0.25*ap, 0.25*ap)]
+               positions=[(0, 0, 0), 
+                          (0.25*ap, 0.25*ap, 0.25*ap)]
                X = [0, 0.5*ap, 0.5*ap]
                Y = [0.5*ap, 0, 0.5*ap]
                Z = [0.5*ap, 0.5*ap, 0]
