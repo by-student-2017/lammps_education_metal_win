@@ -38,6 +38,14 @@ elements = [fixed_element,
             'Cs', 'Ba', 'La', 'Ce', 'Pr', 'Nd', 'Pm', 'Sm', 'Eu', 'Gd', 'Tb', 'Dy', 'Ho', 'Er', 'Tm', 'Yb', 'Lu', 
             'Hf', 'Ta',  'W', 'Re', 'Os', 'Ir', 'Pt', 'Au', 'Hg', 'Tl', 'Pb', 'Bi', 'Po', 'At', 'Rn', 'Fr',
             'Ac', 'Th', 'Pa',  'U', 'Np', 'Pu'] # <- Enter the element you want to calculate (Note: Time Consumption: Approx. 4 elements/hour)
+#elements = [fixed_element,
+#             'H', 
+#            'Li', 'Be',  'B',  'C',  'N',  'O',  'F', 'Ne', 'Na', 'Mg', 'Al', 'Si',  'P',  'S', 'Cl', 
+#             'K', 'Ca', 'Sc', 'Ti',  'V', 'Cr', 'Mn', 'Fe', 'Co', 'Ni', 'Cu', 'Zn', 'Ga', 'Ge', 'As', 'Se', 'Br', 
+#            'Rb', 'Sr',  'Y', 'Zr', 'Nb', 'Mo', 'Tc', 'Ru', 'Rh', 'Pd', 'Ag', 'Cd', 'In', 'Sn', 'Sb', 'Te',  'I', 
+#            'Cs', 'Ba', 'La', 'Ce', 'Pr', 'Nd', 'Pm', 'Sm', 'Eu', 'Gd', 'Tb', 'Dy', 'Ho', 'Er', 'Tm', 'Yb', 'Lu', 
+#            'Hf', 'Ta',  'W', 'Re', 'Os', 'Ir', 'Pt', 'Au', 'Hg', 'Tl', 'Pb', 'Bi', 'Po', 'At', 'Rn', 'Fr',
+#            'Ac', 'Th', 'Pa',  'U', 'Np', 'Pu'] # <- Enter the element you want to calculate (Note: Time Consumption: Approx. 4 elements/hour)
 #elements = [fixed_element, 'He', 'Ar', 'Kr', 'Xe', 'Ra'] # Pairs with noble gases require careful calculations and must be calculated separately.
 element_combinations = [(fixed_element, element) for element in elements if element != fixed_element]
 #----------------------------
@@ -476,8 +484,8 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
         }
     }
     
-    #calc = Espresso(pseudopotentials=pseudopotentials_dict, input_data=input_data, kpts=(kpt, kpt, kpt), koffset=True, omp_num_threads=omp_num_threads, mpi_num_procs=mpi_num_procs)
-    calc = Espresso(pseudopotentials=pseudopotentials_dict, input_data=input_data, kpts=(kpt, kpt, kpt), omp_num_threads=omp_num_threads, mpi_num_procs=mpi_num_procs)
+    calc = Espresso(pseudopotentials=pseudopotentials_dict, input_data=input_data, kpts=(kpt, kpt, kpt), koffset=True, omp_num_threads=omp_num_threads, mpi_num_procs=mpi_num_procs)
+    #calc = Espresso(pseudopotentials=pseudopotentials_dict, input_data=input_data, kpts=(kpt, kpt, kpt), omp_num_threads=omp_num_threads, mpi_num_procs=mpi_num_procs)
     atoms.set_calculator(calc)
 
     #-----------------------------------------------------------------------------
@@ -595,9 +603,9 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
     tries = 0
     vrange = 0.01*(npoints-1)/2
     for scale in np.linspace((1.0-vrange)**(1/3), (1.0+vrange)**(1/3), npoints):
+        tries += 1
         print(f'{tries}/{npoints}:')
         
-        tries += 1
         scaled_cell = original_cell * optimized_scaling_factor * scale
         atoms.set_cell(scaled_cell, scale_atoms=True)
         print("input cell = ", scaled_cell)
