@@ -17,7 +17,7 @@ from ase.dft.kpoints import monkhorst_pack
 
 #------------------------------------------------------------------
 # b1: FCC_B1 (NaCl-type), b2:BCC_B2 (CsCl-type), dia:Diamond_B3 (Zinc Blende), l12: L12 (Cu3Au-type)
-lattce = 'b2'
+lattce = 'l12'
 #------------------------------------------------------------------
 # lattice structure of reference configuration [Angstrom] (https://en.wikipedia.org/wiki/Lattice_constant)
 lat = ''     # In the case of '', the sum of covalent_radii (sum of concentration ratio in L12)
@@ -26,24 +26,19 @@ lat = ''     # In the case of '', the sum of covalent_radii (sum of concentratio
 #lat = 5.431 # Si Diamond (e.g., for dia calculation)
 #lat = 5.640 # NaCl (e.g., FCC_B1 calculation)
 #----------------------------
-# making number of data (If the bulk modulus is approximately +/- 0.5 GPa or less, 11 points will suffice. However, for a3, 17 points or more is recommended.)
-npoints = 21 # >= 11 e.g., 11, 17, 21, or 25, etc (Recommend >= 17), (default = 17)
+# making number of data (If the bulk modulus is approximately +/- 0.5 GPa or less, 11 points will suffice. However, for a3, 25 points or more is recommended to keep the accuracy at around +/- 0.005 or less.)
+npoints = 25 # >= 11 e.g., 11, 17, 21, or 25, etc (Recommend >= 25), (default = 25)
 #------------------------------------------------------------------
-fixed_element = 'Fe'
+fixed_element = 'Al'
 elements = [fixed_element,
-             'H', 'He', 'Li', 'Be',  'B',  'C',  'N',  'O',  'F', 'Ne', 'Na', 'Mg', 'Al', 'Si',  'P',  'S', 'Cl', 'Ar', 
-             'K', 'Ca', 'Sc', 'Ti',  'V', 'Cr', 'Mn', 'Fe', 'Co', 'Ni', 'Cu', 'Zn', 'Ga', 'Ge', 'As', 'Se', 'Br', 'Kr', 
-            'Rb', 'Sr',  'Y', 'Zr', 'Nb', 'Mo', 'Tc', 'Ru', 'Rh', 'Pd', 'Ag', 'Cd', 'In', 'Sn', 'Sb', 'Te',  'I', 'Xe', 
+             'H', 
+            'Li', 'Be',  'B',  'C',  'N',  'O',  'F', 'Ne', 'Na', 'Mg', 'Al', 'Si',  'P',  'S', 'Cl', 
+             'K', 'Ca', 'Sc', 'Ti',  'V', 'Cr', 'Mn', 'Fe', 'Co', 'Ni', 'Cu', 'Zn', 'Ga', 'Ge', 'As', 'Se', 'Br', 
+            'Rb', 'Sr',  'Y', 'Zr', 'Nb', 'Mo', 'Tc', 'Ru', 'Rh', 'Pd', 'Ag', 'Cd', 'In', 'Sn', 'Sb', 'Te',  'I', 
             'Cs', 'Ba', 'La', 'Ce', 'Pr', 'Nd', 'Pm', 'Sm', 'Eu', 'Gd', 'Tb', 'Dy', 'Ho', 'Er', 'Tm', 'Yb', 'Lu', 
-            'Hf', 'Ta',  'W', 'Re', 'Os', 'Ir', 'Pt', 'Au', 'Hg', 'Tl', 'Pb', 'Bi', 'Po', 'At', 'Rn', 'Fr', 'Ra', 
-            'Ac', 'Th', 'Pa',  'U', 'Np', 'Pu'] # <- Enter the element you want to calculate
-#elements = [fixed_element,
-#             'H', 'He', 'Li', 'Be',  'B',  'C',  'N',  'O',  'F', 'Ne', 'Na', 'Mg', 'Al', 'Si',  'P',  'S', 'Cl', 'Ar', 
-#             'K', 'Ca', 'Sc', 'Ti',  'V', 'Cr', 'Mn', 'Fe', 'Co', 'Ni', 'Cu', 'Zn', 'Ga', 'Ge', 'As', 'Se', 'Br', 'Kr', 
-#            'Rb', 'Sr',  'Y', 'Zr', 'Nb', 'Mo', 'Tc', 'Ru', 'Rh', 'Pd', 'Ag', 'Cd', 'In', 'Sn', 'Sb', 'Te',  'I', 'Xe', 
-#            'Cs', 'Ba', 'La', 'Ce', 'Pr', 'Nd', 'Pm', 'Sm', 'Eu', 'Gd', 'Tb', 'Dy', 'Ho', 'Er', 'Tm', 'Yb', 'Lu', 
-#            'Hf', 'Ta',  'W', 'Re', 'Os', 'Ir', 'Pt', 'Au', 'Hg', 'Tl', 'Pb', 'Bi', 'Po', 'At', 'Rn', 'Fr', 'Ra', 
-#            'Ac', 'Th', 'Pa',  'U', 'Np', 'Pu'] # <- Enter the element you want to calculate (Note: Time Consumption: Approx. 8 elements/hour)
+            'Hf', 'Ta',  'W', 'Re', 'Os', 'Ir', 'Pt', 'Au', 'Hg', 'Tl', 'Pb', 'Bi', 'Po', 'At', 'Rn', 'Fr',
+            'Ac', 'Th', 'Pa',  'U', 'Np', 'Pu'] # <- Enter the element you want to calculate (Note: Time Consumption: Approx. 4 elements/hour)
+#elements = [fixed_element, 'He', 'Ar', 'Kr', 'Xe', 'Ra'] # Pairs with noble gases require careful calculations and must be calculated separately.
 element_combinations = [(fixed_element, element) for element in elements if element != fixed_element]
 #----------------------------
 # Get all combinations of elements
@@ -51,6 +46,8 @@ element_combinations = [(fixed_element, element) for element in elements if elem
 #elements = ['Fe', 'Cr']
 #element_combinations = list(combinations(elements, 2))
 #------------------------------------------------------------------
+# Note: In the field of phonons, the accuracy of lattice constant prediction is important, so PBEsol is generally used. 
+# However, since there are elements for which calculations do not go well, we recommend using PBE, which has been extensively verified as a database.
 PBEsol_flag = 0 # 0:PBE, 1:PBEsol, (default = 0)
 # Load the pseudopotential data from the JSON file
 if PBEsol_flag == 0:
@@ -306,7 +303,7 @@ def calculate_elastic_constants(atoms, calc, shear_strains, normal_strains):
 
 
 
-def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, max_retries=100, lattce='', lat='', npoints=17, primitive_flag=1, PBEsol_flag=0):
+def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, max_retries=100, lattce='', lat='', npoints=25, primitive_flag=1, PBEsol_flag=0):
     element1, element2 = elements_combination
     
     print(f"{element1}-{element2} pair, lattce = {lattce}")
@@ -354,7 +351,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
                                (0.5*a, 0.5*a, 0.5*a)],
                     cell=[[0, 0.5*a, 0.5*a], [0.5*a, 0, 0.5*a], [0.5*a, 0.5*a, 0]],
                     pbc=True)
-              kpt = 4
+              kpt = 6 # 4 or 6
               Nelem1 = 1
               Nelem2 = 1
     elif lattce == 'b2':
@@ -365,10 +362,11 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
             re = lat / re2a
         a = re * re2a
         atoms = Atoms(f'{element1}{element2}', 
-                  positions=[(0, 0, 0), (0.5*a, 0.5*a, 0.5*a)], 
+                  positions=[(0, 0, 0), 
+                             (0.5*a, 0.5*a, 0.5*a)], 
                   cell=[a, a, a], 
                   pbc=True)
-        kpt = 6
+        kpt = 8 # 6 or 8
         Nelem1 = 1
         Nelem2 = 1
     elif lattce == 'dia':
@@ -387,7 +385,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
                     cell=[a, a, a], 
                     pbc=True)
               #kpt = 3
-              kpt = 4 # monkhorst-pack method
+              kpt = 4
               Nelem1 = 4
               Nelem2 = 4
         else:
@@ -397,7 +395,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
                                (0.25*a, 0.25*a, 0.25*a)],
                     cell=[[0, 0.5*a, 0.5*a], [0.5*a, 0, 0.5*a], [0.5*a, 0.5*a, 0]],
                     pbc=True)
-              kpt = 4
+              kpt = 6 # 4 or 6
               Nelem1 = 1
               Nelem2 = 1
     elif lattce == 'l12':
@@ -413,7 +411,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
               cell=[a, a, a], 
               pbc=True)
         #kpt = 5
-        kpt = 4 # monkhorst-pack method
+        kpt = 6 # 4 or 6
         Nelem1 = 3
         Nelem2 = 1
     else:
