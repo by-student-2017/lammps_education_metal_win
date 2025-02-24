@@ -450,7 +450,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
             'outdir': './out',
             'tprnfor': True, # Forces will be printed
             'tstress': True, # Stress will be printed
-            'nstep': 1000,
+            'nstep': 1000,   # for MD or structure optimization
             'etot_conv_thr': 1.0e-4/2*len(atoms), # 1.36 meV/atom = about 1 meV/atom
             #'forc_conv_thr': 1.0e-3 # dafault value
             
@@ -458,10 +458,10 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
         'system': {
             'ecutwfc': max(pseudopotentials[element1]['cutoff_wfc'], pseudopotentials[element2]['cutoff_wfc']),
             'ecutrho': max(pseudopotentials[element1]['cutoff_rho'], pseudopotentials[element2]['cutoff_rho']),
-            'occupations': 'tetrahedra_opt',
-            #'occupations': 'smearing',
-            #'smearing': 'gaussian',
-            #'degauss': 0.01,
+            #'occupations': 'tetrahedra_opt', # L12 A-N is failed
+            'occupations': 'smearing',
+            'smearing': 'mp',
+            'degauss': 0.02,
             #
             #'vdw_corr': 'dft-d', # DFT-D2 (Semiempirical Grimme's DFT-D2. Optional variables)
             'vdw_corr': 'dft-d3',
@@ -473,7 +473,8 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
             #'lspinorb': True,
         },
         'electrons': {
-            'conv_thr': 1.0e-6/2*len(atoms)
+            'conv_thr': 1.0e-6/2*len(atoms),
+            'electron_maxstep': 1000
         },
         'ions': {
             'ion_dynamics': 'bfgs'
@@ -527,7 +528,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
                     try:
                         scaling_factor, dsfactor, best_energy = binary_search(original_cell, atoms, calc, scaling_factor, dsfactor, best_energy)
                     except Exception as e:
-                        print(f"Binary search failed with error: {e}")
+                        print("It probably hasn't converged. You should try increasing electron_maxstep or changing occupations or smearing.")
                     print(f'{step}/5:')
                     print(f'    scaling_factor = {scaling_factor}, dsfactor = {dsfactor}')
                     print(f'    Total energy = {best_energy} [eV]')
