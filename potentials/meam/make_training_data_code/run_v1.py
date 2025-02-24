@@ -31,7 +31,8 @@ npoints = 25 # >= 11 e.g., 11, 17, 21, or 25, etc (Recommend >= 25), (default = 
 #------------------------------------------------------------------
 fixed_element = 'Al'
 elements = [fixed_element,
-             'N',  'O',  'F', 'Ne', 'Na', 'Mg', 'Al', 'Si',  'P',  'S', 'Cl', 
+             'H', 
+            'Li', 'Be',  'B',  'C',  'N',  'O',  'F', 'Ne', 'Na', 'Mg', 'Al', 'Si',  'P',  'S', 'Cl', 
              'K', 'Ca', 'Sc', 'Ti',  'V', 'Cr', 'Mn', 'Fe', 'Co', 'Ni', 'Cu', 'Zn', 'Ga', 'Ge', 'As', 'Se', 'Br', 
             'Rb', 'Sr',  'Y', 'Zr', 'Nb', 'Mo', 'Tc', 'Ru', 'Rh', 'Pd', 'Ag', 'Cd', 'In', 'Sn', 'Sb', 'Te',  'I', 
             'Cs', 'Ba', 'La', 'Ce', 'Pr', 'Nd', 'Pm', 'Sm', 'Eu', 'Gd', 'Tb', 'Dy', 'Ho', 'Er', 'Tm', 'Yb', 'Lu', 
@@ -145,7 +146,103 @@ def binary_search(original_cell, atoms, calc, scaling_factor, dsfactor, best_ene
 
 
 
-def fit_rose_curve(volumes_per_atom, cohesive_energies_per_atom, alpha, V0, Ec):
+def fit_rose_curve_erose_form_0(volumes_per_atom, cohesive_energies_per_atom, alpha, V0, Ec):
+    """
+    Fit the Rose's universal curve to DFT data to find the parameter a3.
+
+    Parameters:
+    volumes_per_atom (array): Array of volumes per atom from DFT calculations.
+    cohesive_energies_per_atom (array): Array of cohesive energies per atom from DFT calculations.
+    alpha (float): Constant alpha.
+    V0 (float): Equilibrium volume per atom.
+    Ec (float): Cohesive energy per atom.
+
+    Returns:
+    tuple: Fitted parameters repuls and attrac.
+    """
+    
+    # Convert cohesive energies to the form needed for fitting
+    E_data = np.array([-energy for energy in cohesive_energies_per_atom])
+    
+    # Rose's universal curve function
+    def rose_curve(V, alpha, V0, Ec, repuls, attrac):
+        astar = alpha * ((V/V0)**(1/3) - 1.0)
+        a3 = np.where(astar < 0, repuls, attrac)
+        return -Ec * (1 + astar + a3 * (astar**3)/(V/V0)**(1/3)) * np.exp(-astar)
+    
+    # Fitting the parameters repuls and attrac
+    popt, _ = curve_fit(lambda V, repuls, attrac: rose_curve(V, alpha, V0, Ec, repuls, attrac), 
+                        volumes_per_atom, E_data, p0=[0.0, 0.0])  # Initial guesses for repuls and attrac
+    
+    # Fitted parameters
+    repuls_fit, attrac_fit = popt
+    
+    # Plotting the fit
+    plt.figure()
+    plt.scatter(volumes_per_atom, E_data, label='DFT Data (QE, PAW(pslibrary))')
+    plt.plot(volumes_per_atom, rose_curve(volumes_per_atom, alpha, V0, Ec, repuls_fit, attrac_fit), 
+             label=f'Rose Curve Fit (repuls={repuls_fit:.4f}, attrac={attrac_fit:.4f})', color='red')
+    plt.xlabel('Volume, V (A^3/atom)')
+    plt.ylabel('Cohesive Energy, -Ec (eV/atom)')
+    plt.legend()
+    plt.title('Modified Rose energy function (erose_form = 0) Fit to DFT Data')
+    
+    # Save the plot as PNG
+    #plt.savefig('rose_curve_fit.png')
+    
+    return repuls_fit, attrac_fit
+
+
+
+def fit_rose_curve_erose_form_1(volumes_per_atom, cohesive_energies_per_atom, alpha, V0, Ec, nearest_neighbor_distance):
+    """
+    Fit the Rose's universal curve to DFT data to find the parameter a3.
+
+    Parameters:
+    volumes_per_atom (array): Array of volumes per atom from DFT calculations.
+    cohesive_energies_per_atom (array): Array of cohesive energies per atom from DFT calculations.
+    alpha (float): Constant alpha.
+    V0 (float): Equilibrium volume per atom.
+    Ec (float): Cohesive energy per atom.
+
+    Returns:
+    tuple: Fitted parameters repuls and attrac.
+    """
+    
+    # Convert cohesive energies to the form needed for fitting
+    E_data = np.array([-energy for energy in cohesive_energies_per_atom])
+    
+    # Rose's universal curve function
+    def rose_curve(V, alpha, V0, Ec, repuls, attrac, nearest_neighbor_distance):
+        astar = alpha * ((V/V0)**(1/3) - 1.0)
+        r = nearest_neighbor_distance * (V/V0)**(1/3)
+        return -Ec * (1 + astar + (-attrac+repuls/r)*(astar**3)) * np.exp(-astar)
+    
+    # Fitting the parameters repuls and attrac
+    popt, _ = curve_fit(lambda V, repuls, attrac: rose_curve(V, alpha, V0, Ec, repuls, attrac, nearest_neighbor_distance), 
+                        volumes_per_atom, E_data, p0=[0.0, 0.0])  # Initial guesses for repuls and attrac
+    
+    # Fitted parameters
+    repuls_fit, attrac_fit = popt
+    
+    # Plotting the fit
+    plt.figure()
+    plt.scatter(volumes_per_atom, E_data, label='DFT Data (QE, PAW(pslibrary))')
+    plt.plot(volumes_per_atom, rose_curve(volumes_per_atom, alpha, V0, Ec, repuls_fit, attrac_fit, nearest_neighbor_distance), 
+             label=f'Rose Curve Fit (repuls={repuls_fit:.4f}, attrac={attrac_fit:.4f})', color='red')
+    plt.xlabel('Volume, V (A^3/atom)')
+    plt.ylabel('Cohesive Energy, -Ec (eV/atom)')
+    plt.legend()
+    plt.title('Modified Rose energy function (erose_form = 1) Fit to DFT Data')
+    
+    # Save the plot as PNG
+    #plt.savefig('rose_curve_fit.png')
+    
+    return repuls_fit, attrac_fit
+
+
+
+def fit_rose_curve_erose_form_2(volumes_per_atom, cohesive_energies_per_atom, alpha, V0, Ec):
     """
     Fit the Rose's universal curve to DFT data to find the parameter a3.
 
@@ -178,13 +275,13 @@ def fit_rose_curve(volumes_per_atom, cohesive_energies_per_atom, alpha, V0, Ec):
     
     # Plotting the fit
     plt.figure()
-    plt.scatter(volumes_per_atom, E_data, label='DFT Data')
+    plt.scatter(volumes_per_atom, E_data, label='DFT Data (QE, PAW(pslibrary))')
     plt.plot(volumes_per_atom, rose_curve(volumes_per_atom, alpha, V0, Ec, repuls_fit, attrac_fit), 
              label=f'Rose Curve Fit (repuls={repuls_fit:.4f}, attrac={attrac_fit:.4f})', color='red')
     plt.xlabel('Volume, V (A^3/atom)')
     plt.ylabel('Cohesive Energy, -Ec (eV/atom)')
     plt.legend()
-    plt.title('Rose Curve Fit to DFT Data')
+    plt.title('Modified Rose energy function (erose_form = 2) Fit to DFT Data')
     
     # Save the plot as PNG
     #plt.savefig('rose_curve_fit.png')
@@ -665,11 +762,28 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
     #alpha = (9.0*B*((nearest_neighbor_distance*re2a)**3/len(atoms))/cohesive_energy_per_atom)**0.5
     alpha = (9.0*B*v0/(e0*-1.0))**0.5
     
+    #-----------------------------------------------------------------
     # d = a3 = attrac = repuls
-    repuls_fit, attrac_fit = fit_rose_curve(volumes_per_atom, cohesive_energies_per_atom, alpha, v0, (e0*-1.0))
-    print(f"Fitted parameter: repuls = {repuls_fit}, attrac = {attrac_fit}")
+    plt.clf()
+    repuls_fit_erose_form_0, attrac_fit_erose_form_0 = fit_rose_curve_erose_form_0(volumes_per_atom, cohesive_energies_per_atom, alpha, v0, (e0*-1.0))
+    print(f"Fitted parameter: repuls = {repuls_fit_erose_form_0}, attrac = {attrac_fit_erose_form_0} for erose_form=0")
     # Save the plot as PNG
-    plt.savefig(f'{directory}/{lattce}-{element1}-{element2}_rose_curve_fit.png')
+    plt.savefig(f'{directory}/{lattce}-{element1}-{element2}_rose_curve_fit_erose_form_0.png')
+    #-------------------------
+    # d = a3 = attrac = repuls
+    plt.clf()
+    repuls_fit_erose_form_1, attrac_fit_erose_form_1 = fit_rose_curve_erose_form_1(volumes_per_atom, cohesive_energies_per_atom, alpha, v0, (e0*-1.0), nearest_neighbor_distance)
+    print(f"Fitted parameter: repuls = {repuls_fit_erose_form_1}, attrac = {attrac_fit_erose_form_1} for erose_form=1")
+    # Save the plot as PNG
+    plt.savefig(f'{directory}/{lattce}-{element1}-{element2}_rose_curve_fit_erose_form_1.png')
+    #-------------------------
+    # d = a3 = attrac = repuls
+    plt.clf()
+    repuls_fit_erose_form_2, attrac_fit_erose_form_2 = fit_rose_curve_erose_form_2(volumes_per_atom, cohesive_energies_per_atom, alpha, v0, (e0*-1.0))
+    print(f"Fitted parameter: repuls = {repuls_fit_erose_form_2}, attrac = {attrac_fit_erose_form_2} for erose_form=2")
+    # Save the plot as PNG
+    plt.savefig(f'{directory}/{lattce}-{element1}-{element2}_rose_curve_fit_erose_form_2.png')
+    #-----------------------------------------------------------------
     
     #print("---------------------------------")
     #print("initial stress tensor calculation")
@@ -690,8 +804,16 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
         'Cohesive Energy (eV/atom)': cohesive_energy_per_atom,
         'Nearest Neighbor Distance (A)': nearest_neighbor_distance,
         'alpha': alpha,
-        'repuls': repuls_fit, # d = a3 = repuls, astar <  0
-        'attrac': attrac_fit, # d = a3 = attrac, astar >= 0
+        #-------------------------
+        'repuls_erose_form_0': repuls_fit_erose_form_0, # d = a3 = repuls, astar <  0
+        'attrac_erose_form_0': attrac_fit_erose_form_0, # d = a3 = attrac, astar >= 0
+        #-------------------------
+        'repuls_erose_form_1': repuls_fit_erose_form_1, # d = a3 = repuls, astar <  0
+        'attrac_erose_form_1': attrac_fit_erose_form_1, # d = a3 = attrac, astar >= 0
+        #-------------------------
+        'repuls_erose_form_2': repuls_fit_erose_form_2, # d = a3 = repuls, astar <  0
+        'attrac_erose_form_2': attrac_fit_erose_form_2, # d = a3 = attrac, astar >= 0
+        #-------------------------
         #----------------------------------------------------------
         'optimized_scaling_factor': optimized_scaling_factor,
         'Atoms': len(atoms),
@@ -735,9 +857,18 @@ for i, combination in enumerate(element_combinations):
                       'Ec', 
                       're', 
                       'alpha',
-                      'repuls', 'attrac', 
+                      #-------------------------
+                      'repuls (erose_form=0)', 
+                      'attrac (erose_form=0)', 
+                      #-------------------------
+                      'repuls (erose_form=1)', 
+                      'attrac (erose_form=1)', 
+                      #-------------------------
+                      'repuls (erose_form=2)', 
+                      'attrac (erose_form=2)', 
+                      #-------------------------
                       #----------------------------------------------------------
-                      'optimized_scaling_factor',
+                      're_opt/re_init',
                       'Atoms', 
                       'Lattice Type',
                       'Lattice Constant (A)', 'Volumes (A^3)', 
@@ -761,10 +892,18 @@ for i, combination in enumerate(element_combinations):
             'Ec': result['Cohesive Energy (eV/atom)'],
             're': result['Nearest Neighbor Distance (A)'],
             'alpha': result['alpha'],
-            'repuls': result['repuls'],
-            'attrac': result['attrac'],
+            #-------------------------
+            'repuls (erose_form=0)': result['repuls_erose_form_0'],
+            'attrac (erose_form=0)': result['attrac_erose_form_0'],
+            #-------------------------
+            'repuls (erose_form=1)': result['repuls_erose_form_1'],
+            'attrac (erose_form=1)': result['attrac_erose_form_1'],
+            #-------------------------
+            'repuls (erose_form=2)': result['repuls_erose_form_2'],
+            'attrac (erose_form=2)': result['attrac_erose_form_2'],
+            #-------------------------
             #----------------------------------------------------------
-            'optimized_scaling_factor': result['optimized_scaling_factor'],
+            're_opt/re_init': result['optimized_scaling_factor'],
             'Atoms': result['Atoms'],
             'Lattice Type': result['Lattice Type'],
             'Lattice Constant (A)': result['Lattice Constant (A)'], # Values ​​in conventional cells.
