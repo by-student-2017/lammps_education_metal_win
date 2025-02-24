@@ -31,8 +31,7 @@ npoints = 25 # >= 11 e.g., 11, 17, 21, or 25, etc (Recommend >= 25), (default = 
 #------------------------------------------------------------------
 fixed_element = 'Al'
 elements = [fixed_element,
-             'H', 
-            'Li', 'Be',  'B',  'C',  'N',  'O',  'F', 'Ne', 'Na', 'Mg', 'Al', 'Si',  'P',  'S', 'Cl', 
+             'N',  'O',  'F', 'Ne', 'Na', 'Mg', 'Al', 'Si',  'P',  'S', 'Cl', 
              'K', 'Ca', 'Sc', 'Ti',  'V', 'Cr', 'Mn', 'Fe', 'Co', 'Ni', 'Cu', 'Zn', 'Ga', 'Ge', 'As', 'Se', 'Br', 
             'Rb', 'Sr',  'Y', 'Zr', 'Nb', 'Mo', 'Tc', 'Ru', 'Rh', 'Pd', 'Ag', 'Cd', 'In', 'Sn', 'Sb', 'Te',  'I', 
             'Cs', 'Ba', 'La', 'Ce', 'Pr', 'Nd', 'Pm', 'Sm', 'Eu', 'Gd', 'Tb', 'Dy', 'Ho', 'Er', 'Tm', 'Yb', 'Lu', 
@@ -525,7 +524,11 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
                 print("--------------------------------------------")
                 step = 1
                 while step <= 5:
-                    scaling_factor, dsfactor, best_energy = binary_search(original_cell, atoms, calc, scaling_factor, dsfactor, best_energy)
+                    try:
+                        scaling_factor, dsfactor, best_energy = binary_search(original_cell, atoms, calc, scaling_factor, dsfactor, best_energy)
+                    except Exception as e:
+                        print(f"Binary search failed with error: {e}")
+                        calc.stop()
                     print(f'{step}/5:')
                     print(f'    scaling_factor = {scaling_factor}, dsfactor = {dsfactor}')
                     print(f'    Total energy = {best_energy} [eV]')
@@ -541,6 +544,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
                 break
             else:
                 good_flag = 0
+                calc.stop()
                 continue
 
     print("---------------------------------------")
