@@ -13,6 +13,8 @@ import os
 from scipy.optimize import curve_fit
 import matplotlib.pyplot as plt
 
+from ase.dft.kpoints import monkhorst_pack
+
 #------------------------------------------------------------------
 # b1: FCC_B1 (NaCl-type), b2:BCC_B2 (CsCl-type), dia:Diamond_B3 (Zinc Blende), l12: L12 (Cu3Au-type)
 lattce = 'b2'
@@ -24,17 +26,24 @@ lat = ''     # In the case of '', the sum of covalent_radii (sum of concentratio
 #lat = 5.431 # Si Diamond (e.g., for dia calculation)
 #lat = 5.640 # NaCl (e.g., FCC_B1 calculation)
 #----------------------------
-# making number of data
-npoints = 25 # >= 5, 11, 17, 25, or 31, etc (Recommend >= 11), (default = 11)
+# making number of data (If the bulk modulus is approximately +/- 0.5 GPa or less, 11 points will suffice. However, for a3, 17 points or more is recommended.)
+npoints = 21 # >= 11 e.g., 11, 17, 21, or 25, etc (Recommend >= 17), (default = 17)
 #------------------------------------------------------------------
 fixed_element = 'Fe'
 elements = [fixed_element,
-             'H', 'He', 'Li', 'Be',  'B',  'C',  'N',  'O',  'F', 'Ne', 'Na', 'Mg', 'Al', 'Si',  'P',  'S', 'Cl', 'Ar', 
+             'F', 'Ne', 'Na', 'Mg', 'Al', 'Si',  'P',  'S', 'Cl', 'Ar', 
              'K', 'Ca', 'Sc', 'Ti',  'V', 'Cr', 'Mn', 'Fe', 'Co', 'Ni', 'Cu', 'Zn', 'Ga', 'Ge', 'As', 'Se', 'Br', 'Kr', 
             'Rb', 'Sr',  'Y', 'Zr', 'Nb', 'Mo', 'Tc', 'Ru', 'Rh', 'Pd', 'Ag', 'Cd', 'In', 'Sn', 'Sb', 'Te',  'I', 'Xe', 
             'Cs', 'Ba', 'La', 'Ce', 'Pr', 'Nd', 'Pm', 'Sm', 'Eu', 'Gd', 'Tb', 'Dy', 'Ho', 'Er', 'Tm', 'Yb', 'Lu', 
             'Hf', 'Ta',  'W', 'Re', 'Os', 'Ir', 'Pt', 'Au', 'Hg', 'Tl', 'Pb', 'Bi', 'Po', 'At', 'Rn', 'Fr', 'Ra', 
             'Ac', 'Th', 'Pa',  'U', 'Np', 'Pu'] # <- Enter the element you want to calculate
+#elements = [fixed_element,
+#             'H', 'He', 'Li', 'Be',  'B',  'C',  'N',  'O',  'F', 'Ne', 'Na', 'Mg', 'Al', 'Si',  'P',  'S', 'Cl', 'Ar', 
+#             'K', 'Ca', 'Sc', 'Ti',  'V', 'Cr', 'Mn', 'Fe', 'Co', 'Ni', 'Cu', 'Zn', 'Ga', 'Ge', 'As', 'Se', 'Br', 'Kr', 
+#            'Rb', 'Sr',  'Y', 'Zr', 'Nb', 'Mo', 'Tc', 'Ru', 'Rh', 'Pd', 'Ag', 'Cd', 'In', 'Sn', 'Sb', 'Te',  'I', 'Xe', 
+#            'Cs', 'Ba', 'La', 'Ce', 'Pr', 'Nd', 'Pm', 'Sm', 'Eu', 'Gd', 'Tb', 'Dy', 'Ho', 'Er', 'Tm', 'Yb', 'Lu', 
+#            'Hf', 'Ta',  'W', 'Re', 'Os', 'Ir', 'Pt', 'Au', 'Hg', 'Tl', 'Pb', 'Bi', 'Po', 'At', 'Rn', 'Fr', 'Ra', 
+#            'Ac', 'Th', 'Pa',  'U', 'Np', 'Pu'] # <- Enter the element you want to calculate (Note: Time Consumption: Approx. 8 elements/hour)
 element_combinations = [(fixed_element, element) for element in elements if element != fixed_element]
 #----------------------------
 # Get all combinations of elements
@@ -42,7 +51,7 @@ element_combinations = [(fixed_element, element) for element in elements if elem
 #elements = ['Fe', 'Cr']
 #element_combinations = list(combinations(elements, 2))
 #------------------------------------------------------------------
-PBEsol_flag = 1 # 0:PBE, 1:PBEsol, (default = 0)
+PBEsol_flag = 0 # 0:PBE, 1:PBEsol, (default = 0)
 # Load the pseudopotential data from the JSON file
 if PBEsol_flag == 0:
     with open('PBE/PSlibrary_PBE.json', 'r') as f:
@@ -297,7 +306,7 @@ def calculate_elastic_constants(atoms, calc, shear_strains, normal_strains):
 
 
 
-def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, max_retries=100, lattce='', lat='', npoints=11, primitive_flag=1, PBEsol_flag=0):
+def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, max_retries=100, lattce='', lat='', npoints=17, primitive_flag=1, PBEsol_flag=0):
     element1, element2 = elements_combination
     
     print(f"{element1}-{element2} pair, lattce = {lattce}")
@@ -313,7 +322,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
     
     if lat == '':
         if lattce == 'l12':
-            re = (radius1*3/2 + radius2/2)
+            re = (radius1*3/2 + radius2/2) # The reason for this is based on Vegard's law.
             print(f'Start Nearest Neighbor Distance, re = (radius1*3/2 + radius2/2) = {re} [A]')
         else:
             re = (radius1 + radius2)
@@ -345,8 +354,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
                                (0.5*a, 0.5*a, 0.5*a)],
                     cell=[[0, 0.5*a, 0.5*a], [0.5*a, 0, 0.5*a], [0.5*a, 0.5*a, 0]],
                     pbc=True)
-              #kpt = 4
-              kpt = 6
+              kpt = 4
               Nelem1 = 1
               Nelem2 = 1
     elif lattce == 'b2':
@@ -360,8 +368,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
                   positions=[(0, 0, 0), (0.5*a, 0.5*a, 0.5*a)], 
                   cell=[a, a, a], 
                   pbc=True)
-        #kpt = 7
-        kpt = 8
+        kpt = 6
         Nelem1 = 1
         Nelem2 = 1
     elif lattce == 'dia':
@@ -380,7 +387,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
                     cell=[a, a, a], 
                     pbc=True)
               #kpt = 3
-              kpt = 4
+              kpt = 4 # monkhorst-pack method
               Nelem1 = 4
               Nelem2 = 4
         else:
@@ -390,8 +397,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
                                (0.25*a, 0.25*a, 0.25*a)],
                     cell=[[0, 0.5*a, 0.5*a], [0.5*a, 0, 0.5*a], [0.5*a, 0.5*a, 0]],
                     pbc=True)
-              #kpt = 4
-              kpt = 6
+              kpt = 4
               Nelem1 = 1
               Nelem2 = 1
     elif lattce == 'l12':
@@ -406,15 +412,16 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
                          (0, 0, 0)], 
               cell=[a, a, a], 
               pbc=True)
-        #kpt = 6
-        kpt = 7
+        #kpt = 5
+        kpt = 4 # monkhorst-pack method
         Nelem1 = 3
         Nelem2 = 1
     else:
         print("This code does not provide other structures. (Possible structures: b1, b2, dia, l12)")
     
     dsfactor = 0.15
-    scaling_factor = 1.0 - dsfactor*3.0 # The minimum setting for a downward convex search is "scaling_factor = 1.0 - dsfactor*1.0".
+    #scaling_factor = 1.0 - dsfactor*3.0 # The minimum setting for a downward convex search is "scaling_factor = 1.0 - dsfactor*1.0".
+    scaling_factor = 1.0 - dsfactor*1.0
     
     original_cell = atoms.get_cell()
     scaled_cell = original_cell * scaling_factor
@@ -438,18 +445,22 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
             'outdir': './out',
             'tprnfor': True, # Forces will be printed
             'tstress': True, # Stress will be printed
-            'nstep': 1000
+            'nstep': 1000,
+            'etot_conv_thr': 1.0e-4/2*len(atoms), # 1.36 meV/atom = about 1 meV/atom
+            #'forc_conv_thr': 1.0e-3 # dafault value
+            
         },
         'system': {
             'ecutwfc': max(pseudopotentials[element1]['cutoff_wfc'], pseudopotentials[element2]['cutoff_wfc']),
             'ecutrho': max(pseudopotentials[element1]['cutoff_rho'], pseudopotentials[element2]['cutoff_rho']),
-            'occupations': 'smearing',
-            'smearing': 'gaussian',
-            'degauss': 0.01,
+            'occupations': 'tetrahedra_opt',
+            #'occupations': 'smearing',
+            #'smearing': 'gaussian',
+            #'degauss': 0.01,
             #
             #'vdw_corr': 'dft-d', # DFT-D2 (Semiempirical Grimme's DFT-D2. Optional variables)
             'vdw_corr': 'dft-d3',
-            'dftd3_version': 3, # 4:Grimme-D3 (BJ damping) or 3:Grimme-D3 (zero damping) (default = 3) (Error: Al-O for 4)
+            'dftd3_version': 2, # 4:Grimme-D3 (BJ damping) or 3:Grimme-D3 (zero damping) (default = 3) (Error: Al-O for 4)
             'dftd3_threebody': False, # If it is set to True, the calculation will hardly proceed at all.
             #
             ## pseudo-potential: rel-DFT (e.g., rel-pbe or rel-pbesol, etc)
@@ -457,7 +468,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
             #'lspinorb': True,
         },
         'electrons': {
-            'conv_thr': 1.0e-6
+            'conv_thr': 1.0e-6/2*len(atoms)
         },
         'ions': {
             'ion_dynamics': 'bfgs'
@@ -466,8 +477,9 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
             'cell_dynamics': 'bfgs'
         }
     }
-
-    calc = Espresso(pseudopotentials=pseudopotentials_dict, input_data=input_data, kpts=(kpt, kpt, kpt), omp_num_threads=omp_num_threads, mpi_num_procs=mpi_num_procs)
+    
+    calc = Espresso(pseudopotentials=pseudopotentials_dict, input_data=input_data, kpts=(kpt, kpt, kpt), koffset=True, omp_num_threads=omp_num_threads, mpi_num_procs=mpi_num_procs)
+    #calc = Espresso(pseudopotentials=pseudopotentials_dict, input_data=input_data, kpts=(kpt, kpt, kpt), omp_num_threads=omp_num_threads, mpi_num_procs=mpi_num_procs)
     atoms.set_calculator(calc)
 
     #-----------------------------------------------------------------------------
@@ -478,6 +490,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
     flag = 0
     energy = 0.0
     scaling_factor -= dsfactor
+    good_flag = 0
     print("search optimized structure with scf")
     while retries < max_retries:
         retries += 1
@@ -495,7 +508,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
             if energy < best_energy:
                 best_energy = energy
                 flag = 1
-            if flag == 1 and energy > best_energy:
+            if flag == 1 and energy > best_energy and good_flag == 1:
                 #---------------------------------
                 print("--------------------------------------------")
                 scaling_factor -= dsfactor
@@ -514,17 +527,20 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
                     step += 1
                 break
                 #---------------------------------
+            good_flag = 1
         except Exception as e:
             print(f"Optimization failed for {element1}-{element2} with error: {e}")
             if retries >= max_retries:
                 print("Max retries reached. Skipping this combination.")
                 break
             else:
+                good_flag = 0
                 continue
 
     print("---------------------------------------")
-    print("using scaling factor = ", scaling_factor)
-    scaled_cell = original_cell * scaling_factor
+    optimized_scaling_factor = scaling_factor
+    print("using optimized_scaling_factor = ", optimized_scaling_factor)
+    scaled_cell = original_cell * optimized_scaling_factor
     atoms.set_cell(scaled_cell, scale_atoms=True)
     print("cell = ", scaled_cell)
     #-----------------------------------------------------------------------------
@@ -579,21 +595,15 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
     cohesive_energies_per_atom = []
 
     tries = 0
-    #npoints = 11 # >= 5, 11, 17, 25, or 31, etc (Recommend >= 11)
-    for scale in np.linspace((1.0-0.24)**(1/3), (1.0+0.24)**(1/3), npoints):
-    #for scale in np.linspace((1.0-0.24)**(1/3), (1.0+0.24)**(1/3), 25):
-    #for scale in np.linspace((1.0-0.30)**(1/3), (1.0+0.42)**(1/3), 37):
-    #for scale in np.linspace((1.0-0.40)**(1/3), (1.0+0.56)**(1/3), 45):
-    #for scale in np.linspace((1.0-0.40)**(1/3), (1.0+0.56)**(1/3), npoints):
+    vrange = 0.01*(npoints-1)/2
+    for scale in np.linspace((1.0-vrange)**(1/3), (1.0+vrange)**(1/3), npoints):
         print(f'{tries}/{npoints}:')
         
         tries += 1
-        scaled_cell = original_cell * scaling_factor * scale
+        scaled_cell = original_cell * optimized_scaling_factor * scale
         atoms.set_cell(scaled_cell, scale_atoms=True)
         print("input cell = ", scaled_cell)
 
-        input_data['control']['calculation'] = 'scf'
-        calc = Espresso(pseudopotentials=pseudopotentials_dict, input_data=input_data, kpts=(kpt, kpt, kpt), omp_num_threads=omp_num_threads, mpi_num_procs=mpi_num_procs)
         atoms.set_calculator(calc)
         print("qe cell = ", atoms.get_cell())
 
@@ -674,6 +684,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
         'repuls': repuls_fit, # d = a3 = repuls, astar <  0
         'attrac': attrac_fit, # d = a3 = attrac, astar >= 0
         #----------------------------------------------------------
+        'optimized_scaling_factor': optimized_scaling_factor,
         'Atoms': len(atoms),
         'Lattice Constant (A)': optimized_a, # Values ​​in conventional cells.
         'Volumes (A^3)': volumes,
@@ -717,6 +728,7 @@ for i, combination in enumerate(element_combinations):
                       'alpha',
                       'repuls', 'attrac', 
                       #----------------------------------------------------------
+                      'optimized_scaling_factor',
                       'Atoms', 
                       'Lattice Type',
                       'Lattice Constant (A)', 'Volumes (A^3)', 
@@ -743,6 +755,7 @@ for i, combination in enumerate(element_combinations):
             'repuls': result['repuls'],
             'attrac': result['attrac'],
             #----------------------------------------------------------
+            'optimized_scaling_factor': result['optimized_scaling_factor'],
             'Atoms': result['Atoms'],
             'Lattice Type': result['Lattice Type'],
             'Lattice Constant (A)': result['Lattice Constant (A)'], # Values ​​in conventional cells.
