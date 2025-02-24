@@ -528,7 +528,6 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
                         scaling_factor, dsfactor, best_energy = binary_search(original_cell, atoms, calc, scaling_factor, dsfactor, best_energy)
                     except Exception as e:
                         print(f"Binary search failed with error: {e}")
-                        calc.stop()
                     print(f'{step}/5:')
                     print(f'    scaling_factor = {scaling_factor}, dsfactor = {dsfactor}')
                     print(f'    Total energy = {best_energy} [eV]')
@@ -544,7 +543,6 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
                 break
             else:
                 good_flag = 0
-                calc.stop()
                 continue
 
     print("---------------------------------------")
