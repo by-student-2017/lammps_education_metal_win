@@ -28,7 +28,7 @@ lat = ''     # In the case of '', the sum of covalent_radii (sum of concentratio
 #lat = 5.640 # NaCl (e.g., FCC_B1 calculation)
 #----------------------------
 # making number of data (If the bulk modulus is approximately +/- 0.5 GPa or less, 11 points will suffice. However, for a3, 25 points or more is recommended to keep the accuracy at around +/- 0.005 or less.)
-npoints = 25 # >= 11 e.g., 11, 17, 21, or 25, etc (Recommend >= 25), (default = 25)
+npoints = 5 # >= 11 e.g., 11, 17, 21, or 25, etc (Recommend >= 25), (default = 25)
 #------------------------------------------------------------------
 fixed_element = 'Al'
 elements = [fixed_element,
@@ -56,8 +56,11 @@ if PBEsol_flag == 0:
     with open('PBE/PSlibrary_PBE_valence_charge.json', 'r') as f:
         pseudopotentials = json.load(f)
 else:
-    with open('PBEsol/PSlibrary_PBEsol.json', 'r') as f:
+    #with open('PBEsol/PSlibrary_PBEsol.json', 'r') as f:
+    with open('PBEsol/PSlibrary_PBEsol_valence_charge.json', 'r') as f:
         pseudopotentials = json.load(f)
+#------------------------------------------------------------------
+spin_flag = 0 # 0:non-spin, 1:spin, (default = 1)
 #------------------------------------------------------------------
 # Explicitly set OMP_NUM_THREADS
 os.environ['OMP_NUM_THREADS'] = '8' # Test CPU: 12th Gen Intel(R) Core(TM) i7-12700
@@ -423,7 +426,7 @@ def calculate_elastic_constants(atoms, calc, shear_strains, normal_strains):
 
 
 
-def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, max_retries=100, lattce='', lat='', npoints=25, primitive_flag=1, PBEsol_flag=0):
+def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, max_retries=100, lattce='', lat='', npoints=25, primitive_flag=1, PBEsol_flag=0, spin_flag=1):
     element1, element2 = elements_combination
     
     print(f"{element1}-{element2} pair, lattce = {lattce}")
@@ -549,6 +552,11 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
         pseudo_dir = './PBE'
     else:
         pseudo_dir = './PBEsol'
+        
+    if spin_flag == 0:
+        nspin = 1
+    else:
+        nspin = 2
 
     pseudopotentials_dict = {
         element1: pseudopotentials[element1]['filename'],
@@ -597,8 +605,8 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
         }
     }
     
-    calc = Espresso(pseudopotentials=pseudopotentials_dict, input_data=input_data, kpts=(kpt, kpt, kpt), koffset=True, omp_num_threads=omp_num_threads, mpi_num_procs=mpi_num_procs)
-    #calc = Espresso(pseudopotentials=pseudopotentials_dict, input_data=input_data, kpts=(kpt, kpt, kpt), omp_num_threads=omp_num_threads, mpi_num_procs=mpi_num_procs)
+    calc = Espresso(pseudopotentials=pseudopotentials_dict, input_data=input_data, kpts=(kpt, kpt, kpt), koffset=True, omp_num_threads=omp_num_threads, mpi_num_procs=mpi_num_procs, nspin=nspin)
+    #calc = Espresso(pseudopotentials=pseudopotentials_dict, input_data=input_data, kpts=(kpt, kpt, kpt), omp_num_threads=omp_num_threads, mpi_num_procs=mpi_num_procs, nspin=nspin)
     atoms.set_calculator(calc)
 
     #-----------------------------------------------------------------------------
@@ -752,7 +760,14 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
         
         print(f'    Volume = {volume/len(atoms)} [A^3/atom], Cohesive_energy = {cohesive_energy/len(atoms)} [eV/atom]')
         print(f'    Total energy = {energy} [eV]')
-        print("-------------------------------------------------------------------------------------")
+        
+        if spin_flag == 0:
+            print("-------------------------------------------------------------------------------------")
+        else:
+            magnetic_moment = atoms.get_magnetic_moments().tolist()
+            magnetic_moments.append(magnetic_moment)
+            print(f'    Magnetic moment = {magnetic_moment}')
+            print("-------------------------------------------------------------------------------------")
         
         new_prefix = f'b2_{element1}_{element2}'
         
@@ -858,7 +873,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
     
     print("Note: [Lattice Constant (A)] is the [lattice constant, a (A)] of a conventional cell.")
     
-    return {
+    return_data = {
         'Element1': element1,
         'Element2': element2,
         'Lattice Type': lattice_type,
@@ -889,8 +904,14 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
         'Stress Tensor per Volume (GPa)': stress_tensor,
         'Forces (eV/A)': forces,
         'Charges (e)': charges
-    }
+        }
 
+    if spin_flag == 0:
+        pass
+    else:
+        return_data['Magnetic Moments (Bohr)'] = magnetic_moments
+
+    return return_data
 
 
 # Process the combinations sequentially and store results
@@ -904,7 +925,7 @@ for i, combination in enumerate(element_combinations):
         os.makedirs(directory)
 
     results = []
-    result = calculate_properties(combination, omp_num_threads, mpi_num_procs, max_retries, lattce, lat, npoints, primitive_flag, PBEsol_flag)
+    result = calculate_properties(combination, omp_num_threads, mpi_num_procs, max_retries, lattce, lat, npoints, primitive_flag, PBEsol_flag, spin_flag)
     results.append(result)
     element1, element2 = combination
 
@@ -938,16 +959,20 @@ for i, combination in enumerate(element_combinations):
                       'Bulk Modulus (GPa)', 
                       #'C11', 'C12', 'C22', 'C33', 'C23', 'C13', 'C44', 'C55', 'C66', 
                       'Stress Tensor per Volume (GPa)',
-                      'Forces (eV/A)',
-                      'Charges (e)'
+                      'Forces (eV/A)'
                       ]
+        if spin_flag == 0:
+            pass
+        else:
+            fieldnames.append('Magnetic Moments (Bohr)')
+        fieldnames.append('Charges (e)')
 
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
 
         if i == 0:
             writer.writeheader()
 
-        writer.writerow({
+        row_data = {
             'Element1': result['Element1'],
             'Element2': result['Element2'],
             #----------------------------------------------------------
@@ -986,9 +1011,14 @@ for i, combination in enumerate(element_combinations):
             #'C66': result['Elastic Constants (GPa)']['C66'],
             #-----------------------------------------------
             'Stress Tensor per Volume (GPa)': result['Stress Tensor per Volume (GPa)'],
-            'Forces (eV/A)': result['Forces (eV/A)'],
-            'Charges (e)': result['Charges (e)']
-        })
+            'Forces (eV/A)': result['Forces (eV/A)']
+        }
+        if spin_flag == 0:
+            pass
+        else:
+            row_data['Magnetic Moments (Bohr)'] = result['Magnetic Moments (Bohr)']
+        row_data['Charges (e)'] = result['Charges (e)']
+        writer.writerow(row_data)
     
     # Generate the potfit text file output for each volume and cohesive energy
     natoms = result['Atoms']
