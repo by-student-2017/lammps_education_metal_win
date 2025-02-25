@@ -44,12 +44,12 @@ dos2unix *.py
 
 #---------------------------------------------------------------------
 spin polarization calculation for QE ver.6.8 or later.
-# 1. find /usr/lib/python3/dist-packages/ase/io/ -name "espresso.py"
-# 2. sudo vim /usr/lib/python3/dist-packages/ase/io/espresso.py
-# 3. /mag_line.split()[5]
-# 4. (Enter i)
-# 5. Change "mag_line.split()[5]" to "mag_line.split()[-1]".
-# 6. ESC -> wq!
+1. find /usr/lib/python3/dist-packages/ase/io/ -name "espresso.py"
+2. sudo vim /usr/lib/python3/dist-packages/ase/io/espresso.py
+3. /mag_line.split()[5]
+4. (Enter i)
+5. Change "mag_line.split()[5]" to "mag_line.split()[-1]".
+6. ESC -> wq!
 #---------------------------------------------------------------------
 
 #---------------------------------------------------------------------
