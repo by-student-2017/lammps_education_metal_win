@@ -811,10 +811,15 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
         print(f'Charges [e]: {charges[tries-1][:]}')
         print("-------------------------------------------------------------------------------------")
 
-    if PBEsol_flag == 0:
-        directory = f'results_PBE'
+    if spin_flag == 0:
+        spin_char = '_non-spin'
     else:
-        directory = f'results_PBEsol'
+        spin_char = '_spin'
+
+    if PBEsol_flag == 0:
+        directory = f'results_PBE{spin_char}'
+    else:
+        directory = f'results_PBEsol{spin_char}'
 
     # eos: sjeos, taylor, murnaghan, birch, birchmurnaghan, pouriertarantola, vinet, antonschmidt, p3
     eos = EquationOfState(volumes_per_atom, [energy * -1.0 for energy in cohesive_energies_per_atom], eos='murnaghan')
