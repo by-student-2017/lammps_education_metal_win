@@ -52,7 +52,7 @@ spin polarization calculation for QE ver.6.8 or later.
 3. (search) /mag_line.split()[5]
 4. (enter) i
 5. Change "mag_line.split()[5]" to "mag_line.split()[-1]".
-6. ESC -> wq!
+6. ESC -> wq
 #---------------------------------------------------------------------
 
 #---------------------------------------------------------------------
