@@ -17,7 +17,7 @@ from ase.dft.kpoints import monkhorst_pack
 
 #------------------------------------------------------------------
 # b1: FCC_B1 (NaCl-type), b2:BCC_B2 (CsCl-type), dia:Diamond_B3 (Zinc Blende), l12: L12 (Cu3Au-type)
-lattce = 'l12'
+lattce = 'b2'
 #------------------------------------------------------------------
 # lattice structure of reference configuration [Angstrom] (https://en.wikipedia.org/wiki/Lattice_constant)
 lat = ''     # In the case of '', the sum of covalent_radii (sum of concentration ratio in L12)
@@ -29,7 +29,7 @@ lat = ''     # In the case of '', the sum of covalent_radii (sum of concentratio
 # making number of data (If the bulk modulus is approximately +/- 0.5 GPa or less, 11 points will suffice. However, for a3, 25 points or more is recommended to keep the accuracy at around +/- 0.005 or less.)
 npoints = 25 # >= 11 e.g., 11, 17, 21, or 25, etc (Recommend >= 25), (default = 25)
 #------------------------------------------------------------------
-fixed_element = 'Al'
+fixed_element = 'Fe'
 elements = [fixed_element,
              'H', 
             'Li', 'Be',  'B',  'C',  'N',  'O',  'F', 'Ne', 'Na', 'Mg', 'Al', 'Si',  'P',  'S', 'Cl', 
@@ -713,13 +713,14 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
         atoms.set_calculator(calc)
         print("qe cell = ", atoms.get_cell())
 
-        volumes.append(atoms.get_volume())
-        energies.append(atoms.get_total_energy())
+        energy = atoms.get_total_energy()
+        energies.append(energy)
 
         cohesive_energy = -(atoms.get_total_energy() - isolated_atom_energy1*Nelem1 - isolated_atom_energy2*Nelem2)
         cohesive_energies.append(cohesive_energy)
         
         volume = atoms.get_volume()
+        volumes.append(volume)
         volumes_per_atom.append(volume/len(atoms))
         
         energies_per_atom.append(atoms.get_total_energy()/len(atoms))
@@ -728,8 +729,6 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
         stress_tensor.append((calc.get_stress() * 160.21766208).tolist())
         
         forces.append(calc.get_forces().tolist())
-        
-        energy = atoms.get_total_energy()
         
         print(f'    Volume = {volume/len(atoms)} [A^3/atom], Cohesive_energy = {cohesive_energy/len(atoms)} [eV/atom]')
         print(f'    Total energy = {energy} [eV]')
