@@ -718,6 +718,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
     stress_tensor = []
     forces = []
     charges = []
+    magnetic_moments = []
     isolated_atom_energy1 = pseudopotentials[element1]['total_psenergy'] * 13.605693
     isolated_atom_energy2 = pseudopotentials[element2]['total_psenergy'] * 13.605693
     
