@@ -12,6 +12,8 @@ python3 run_v1.0.py
 
 # with bader analysis (need bader code, val.pp.in and all.pp.in file) 
 python3 run_v1.1.py
+
+# Test: Ubuntu 22.04 LST or WSL2
 #---------------------------------------------------------------------
 
 #---------------------------------------------------------------------
