@@ -584,10 +584,10 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
             'smearing': 'mp',
             'degauss': 0.02,
             #
-            #'vdw_corr': 'dft-d', # DFT-D2 (Semiempirical Grimme's DFT-D2. Optional variables)
-            'vdw_corr': 'dft-d3',
-            'dftd3_version': 3, # 4:Grimme-D3 (BJ damping) or 3:Grimme-D3 (zero damping) (default = 3) (Error: Al-O for 4)
-            'dftd3_threebody': False, # If it is set to True, the calculation will hardly proceed at all.
+            'vdw_corr': 'dft-d', # DFT-D2 (Semiempirical Grimme's DFT-D2. Optional variables)
+            #'vdw_corr': 'dft-d3',
+            #'dftd3_version': 3, # 4:Grimme-D3 (BJ damping) or 3:Grimme-D3 (zero damping) (default = 3) (Error: Al-O for 4)
+            #'dftd3_threebody': False, # If it is set to True, the calculation will hardly proceed at all.
             #
             ## pseudo-potential: rel-DFT (e.g., rel-pbe or rel-pbesol, etc)
             #'noncolin': True,
