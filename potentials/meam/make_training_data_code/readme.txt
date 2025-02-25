@@ -56,6 +56,13 @@ spin polarization calculation for QE ver.6.8 or later.
 #---------------------------------------------------------------------
 
 #---------------------------------------------------------------------
+# vdW
+'vdw_corr': 'dft-d3',
+'dftd3_version': 3, # 4:Grimme-D3 (BJ damping) or 3:Grimme-D3 (zero damping) (default = 3) (Error: Al-O for 4) (The energy drops further at a volume close to the most stable level without being on the Marnahan scale.: Al-C for 3)
+'dftd3_threebody': False, # If it is set to True, the calculation will hardly proceed at all.
+#---------------------------------------------------------------------
+
+#---------------------------------------------------------------------
 Potfit: https://www.potfit.net/wiki/doku.php?id=config:main
 Note: potfit fits the stress tensor, not the elastic constants. I also have a very hard time calculating the elastic constants correctly, so I've decided to comment out the calculation and output of the elastic constants.
 #---------------------------------------------------------------------
