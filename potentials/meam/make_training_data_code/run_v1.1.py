@@ -28,7 +28,7 @@ lat = ''     # In the case of '', the sum of covalent_radii (sum of concentratio
 #lat = 5.640 # NaCl (e.g., FCC_B1 calculation)
 #----------------------------
 # making number of data (If the bulk modulus is approximately +/- 0.5 GPa or less, 11 points will suffice. However, for a3, 25 points or more is recommended to keep the accuracy at around +/- 0.005 or less.)
-npoints = 5 # >= 11 e.g., 11, 17, 21, or 25, etc (Recommend >= 25), (default = 25)
+npoints = 25 # >= 11 e.g., 11, 17, 21, or 25, etc (Recommend >= 25), (default = 25)
 #------------------------------------------------------------------
 fixed_element = 'Al'
 elements = [fixed_element,
@@ -49,7 +49,7 @@ element_combinations = [(fixed_element, element) for element in elements if elem
 #------------------------------------------------------------------
 # Note: In the field of phonons, the accuracy of lattice constant prediction is important, so PBEsol is generally used. 
 # However, since there are elements for which calculations do not go well, we recommend using PBE, which has been extensively verified as a database.
-PBEsol_flag = 0 # 0:PBE, 1:PBEsol, (default = 0)
+PBEsol_flag = 1 # 0:PBE, 1:PBEsol, (default = 0)
 # Load the pseudopotential data from the JSON file
 if PBEsol_flag == 0:
     #with open('PBE/PSlibrary_PBE.json', 'r') as f:
@@ -915,10 +915,15 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
 # Process the combinations sequentially and store results
 for i, combination in enumerate(element_combinations):
 
-    if PBEsol_flag == 0:
-        directory = f'results_PBE'
+    if spin_flag == 0:
+        spin_char = '_non-spin'
     else:
-        directory = f'results_PBEsol'
+        spin_char = '_spin'
+
+    if PBEsol_flag == 0:
+        directory = f'results_PBE{spin_char}'
+    else:
+        directory = f'results_PBEsol{spin_char}'
     if not os.path.exists(directory):
         os.makedirs(directory)
 
@@ -927,11 +932,11 @@ for i, combination in enumerate(element_combinations):
     results.append(result)
     element1, element2 = combination
 
-    with open(f'{directory}/{lattce}_{element1}-{element2}.json', 'a') as jsonfile:
+    with open(f'{directory}/{lattce}_{element1}-{element2}{spin_char}.json', 'a') as jsonfile:
         json.dump(result, jsonfile, indent=4)
         jsonfile.write('\n')
 
-    with open(f'{directory}_{lattce}.csv', 'a', newline='') as csvfile:
+    with open(f'{directory}_{lattce}{spin_char}.csv', 'a', newline='') as csvfile:
         fieldnames = ['Element1', 'Element2', 
                       #----------------------------------------------------------
                       'lattce',
@@ -1024,7 +1029,7 @@ for i, combination in enumerate(element_combinations):
         ap = (volume * 2) ** (1/3) # primitive cell
         ac = (volume) ** (1/3) # conventional cell
         
-        with open(f'{directory}/MPCv4_{element1}-{element2}-DFT_{lattce}', 'a') as mpcfile:
+        with open(f'{directory}/MPCv4_{element1}-{element2}-DFT_{lattce}{spin_char}', 'a') as mpcfile:
            mpcfile.write(f"{volume}  {cohesive_energy*-1.0}\n")
         
         if lattce == 'b1':
