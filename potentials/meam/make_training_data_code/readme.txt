@@ -37,6 +37,12 @@ v.1.1 (bader charge) [BC]
 #---------------------------------------------------------------------
 
 #---------------------------------------------------------------------
+sudo apt install dos2unix (WLS2 -> Linux)
+dos2unix *.in
+dos2unix *.py
+#---------------------------------------------------------------------
+
+#---------------------------------------------------------------------
 Potfit: https://www.potfit.net/wiki/doku.php?id=config:main
 Note: potfit fits the stress tensor, not the elastic constants. I also have a very hard time calculating the elastic constants correctly, so I've decided to comment out the calculation and output of the elastic constants.
 #---------------------------------------------------------------------
