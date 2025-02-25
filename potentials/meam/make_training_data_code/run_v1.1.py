@@ -60,7 +60,7 @@ else:
     with open('PBEsol/PSlibrary_PBEsol_valence_charge.json', 'r') as f:
         pseudopotentials = json.load(f)
 #------------------------------------------------------------------
-spin_flag = 0 # 0:non-spin, 1:spin, (default = 1)
+spin_flag = 1 # 0:non-spin, 1:spin, (default = 1)
 #------------------------------------------------------------------
 # Explicitly set OMP_NUM_THREADS
 os.environ['OMP_NUM_THREADS'] = '8' # Test CPU: 12th Gen Intel(R) Core(TM) i7-12700
@@ -764,9 +764,8 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
         if spin_flag == 0:
             print("-------------------------------------------------------------------------------------")
         else:
-            magnetic_moment = atoms.get_magnetic_moments().tolist()
-            magnetic_moments.append(magnetic_moment)
-            print(f'    Magnetic moment = {magnetic_moment}')
+            magnetic_moments.append(atoms.get_magnetic_moments().tolist())
+            print(f'    Magnetic moment = {magnetic_moments[tries-1][:]}')
             print("-------------------------------------------------------------------------------------")
         
         new_prefix = f'b2_{element1}_{element2}'
@@ -905,12 +904,10 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
         'Forces (eV/A)': forces,
         'Charges (e)': charges
         }
-
     if spin_flag == 0:
         pass
     else:
         return_data['Magnetic Moments (Bohr)'] = magnetic_moments
-
     return return_data
 
 
