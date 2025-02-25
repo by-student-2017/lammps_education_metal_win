@@ -907,13 +907,13 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
         #'Elastic Constants (GPa)': elastic_constants_final,
         #----------------------------------------------------------
         'Stress Tensor per Volume (GPa)': stress_tensor,
-        'Forces (eV/A)': forces,
-        'Charges (e)': charges
+        'Forces (eV/A)': forces
         }
     if spin_flag == 0:
         pass
     else:
         return_data['Magnetic Moments (Bohr)'] = magnetic_moments
+    return_data['Charges (e)'] = charges
     return return_data
 
 
