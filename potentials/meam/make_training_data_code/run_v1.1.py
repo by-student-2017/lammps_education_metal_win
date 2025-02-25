@@ -788,9 +788,9 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
                             valence_electrons1-charge[2],
                             valence_electrons2-charge[3]])
             mean_elem1_charge = (valence_electrons1-charge[0] + valence_electrons1-charge[1] + valence_electrons1-charge[2])/3
-            print(f'Error [%] for element 1 at position No.1: {(valence_electrons1-charge[0])/mean_elem1_charge*100}')
-            print(f'Error [%] for element 1 at position No.2: {(valence_electrons1-charge[1])/mean_elem1_charge*100}')
-            print(f'Error [%] for element 1 at position No.3: {(valence_electrons1-charge[2])/mean_elem1_charge*100}')
+            print(f'Error for element 1 at position No.1: {(valence_electrons1-charge[0])/mean_elem1_charge*100-100} [%]')
+            print(f'Error for element 1 at position No.2: {(valence_electrons1-charge[1])/mean_elem1_charge*100-100} [%]')
+            print(f'Error for element 1 at position No.3: {(valence_electrons1-charge[2])/mean_elem1_charge*100-100} [%]')
         else:
            print(f"{idx}: This code does not provide other structures. (Possible structures: b1, b2, dia, l12)")
         
