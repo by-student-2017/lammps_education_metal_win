@@ -8,7 +8,7 @@ gedit run_fcc_b1_pbe_v1.py
    (elements = ['Fe', 'Cr', 'Al'] # <- Enter the element you want to calculate)
 
 # without bader analysis
-python3 run_v1.py
+python3 run_v1.0.py
 
 # with bader analysis (need bader code, val.pp.in and all.pp.in file) 
 python3 run_v1.1.py
