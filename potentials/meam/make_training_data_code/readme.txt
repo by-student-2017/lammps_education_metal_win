@@ -19,7 +19,7 @@ The following libraries have been found:
 9. sudo make install
 #Note: sudo apt install quantum-espresso # In my case, the calculation of pw.x failed in ubuntu 22.04 qe. I recommend using qe-7.2 or qe-7.3.1.
 
-# Installation of ASE
+# Installation of ASE (ase-3.19.0 or ase-3.22.1)
 1. sudo apt update
 2. sudo apt -y install python3-ase
 3. find /usr/lib/python3/dist-packages/ase/io/ -name "espresso.py"
