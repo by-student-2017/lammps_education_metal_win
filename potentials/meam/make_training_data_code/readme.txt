@@ -1,7 +1,20 @@
 #---------------------------------------------------------------------
 This is a test version.
 
-pip install ase
+1. sudo apt update
+2. sudo apt -y install python3-ase
+3. sudo apt -y install gfortran gcc build-essential libopenmpi-dev 
+4. sudo apt -y install gnuplot 
+5. tar zxvf qe-7.2*
+6. cd qe-7.2
+7. ./configure LAPACK_LIBS="-L/usr/lib/x86_64-linux-gnu  -lopenblas"
+8. make pwall
+#--------------------------------------------------------
+The following libraries have been found:
+  BLAS_LIBS= -lopenblas
+  LAPACK_LIBS=-L/usr/lib/x86_64-linux-gnu  -lopenblas
+  FFT_LIBS= -lfftw3
+#--------------------------------------------------------
 #sudo apt install quantum-espresso # In my case, the calculation of pw.x failed in ubuntu 22.04 qe. I recommend using qe-7.2 or qe-7.3.1.
 
 gedit run_fcc_b1_pbe_v1.py
