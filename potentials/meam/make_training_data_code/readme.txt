@@ -1,7 +1,7 @@
 #---------------------------------------------------------------------
-This is a test (beta) version.
+## Installations and Usages
 
-# Installation qe-7.3.1
+# Installation of qe-7.3.1
 1. sudo apt update
 2. sudo apt -y install gfortran gcc build-essential libopenmpi-dev 
 3. sudo apt -y install gnuplot 
@@ -19,7 +19,7 @@ The following libraries have been found:
 9. sudo make install
 #Note: sudo apt install quantum-espresso # In my case, the calculation of pw.x failed in ubuntu 22.04 qe. I recommend using qe-7.2 or qe-7.3.1.
 
-# Installation ASE
+# Installation of ASE
 1. sudo apt update
 2. sudo apt -y install python3-ase
 3. find /usr/lib/python3/dist-packages/ase/io/ -name "espresso.py"
@@ -34,14 +34,18 @@ STUDENT, B. (2025). SUGGESTED PSEUDOPOTENTIALS for PBEsol v.1.0.0 [Data set]. Ze
 STUDENT, B. (2025). SUGGESTED PSEUDOPOTENTIALS for PBE v.1.0.0 [Data set]. Zenodo. https://doi.org/10.5281/zenodo.14912402
 
 # Usage
-gedit run_fcc_b1_pbe_v1.py
+1. gedit run_v1.0.py
    (elements = ['Fe', 'Cr', 'Al'] # <- Enter the element you want to calculate)
+2. python3 run_v1.0.py
 
-# without bader analysis
-python3 run_v1.0.py
+# Installation of bader
+1. wget http://theory.cm.utexas.edu/henkelman/code/bader/download/bader_lnx_64.tar.gz
+2. tar xzvf bader_lnx_64.tar.gz
+3. chmod +x bader
 
-# with bader analysis (need bader code, val.pp.in and all.pp.in file) 
-python3 run_v1.1.py
+# Usage (with bader analysis (need bader code, val.pp.in and all.pp.in file) 
+1. gedit run_v1.1.py
+2. python3 run_v1.1.py
 
 # Test: Ubuntu 22.04 LST or WSL2
 # Note: 0.02 [Ry] * 13.6 [eV] / 11605 [K/eV] = ca. 315.8 [K]
