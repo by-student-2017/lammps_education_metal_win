@@ -1,13 +1,13 @@
 #---------------------------------------------------------------------
 ## Installations and Usages
 
-# Installation of qe-7.3.1
+# Installation of qe-7.3
 1. sudo apt update
 2. sudo apt -y install gfortran gcc build-essential libopenmpi-dev 
 3. sudo apt -y install gnuplot 
-4. wget https://github.com/QEF/q-e/archive/refs/tags/qe-7.3.1.tar.gz
-5. tar zxvf qe-7.3.1
-6. cd q-e-qe-7.3.1
+4. wget https://github.com/QEF/q-e/archive/refs/tags/qe-7.3.tar.gz
+5. tar zxvf qe-7.3
+6. cd q-e-qe-7.3
 7. ./configure LAPACK_LIBS="-L/usr/lib/x86_64-linux-gnu  -lopenblas"
 #--------------------------------------------------------
 The following libraries have been found:
