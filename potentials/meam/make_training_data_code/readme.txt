@@ -2,7 +2,7 @@
 This is a test version.
 
 pip install ase
-sudo apt install quantum-espresso
+#sudo apt install quantum-espresso # In my case, the calculation of pw.x failed in ubuntu 22.04 qe. I recommend using qe-7.2 or qe-7.3.1.
 
 gedit run_fcc_b1_pbe_v1.py
    (elements = ['Fe', 'Cr', 'Al'] # <- Enter the element you want to calculate)
