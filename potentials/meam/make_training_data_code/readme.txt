@@ -1,21 +1,33 @@
 #---------------------------------------------------------------------
 This is a test version.
 
+# Installation qe-7.3.1
 1. sudo apt update
-2. sudo apt -y install python3-ase
-3. sudo apt -y install gfortran gcc build-essential libopenmpi-dev 
-4. sudo apt -y install gnuplot 
-5. tar zxvf qe-7.2*
-6. cd qe-7.2
+2. sudo apt -y install gfortran gcc build-essential libopenmpi-dev 
+3. sudo apt -y install gnuplot 
+4. wget https://github.com/QEF/q-e/archive/refs/tags/qe-7.3.1.tar.gz
+5. tar zxvf qe-7.3.1
+6. cd q-e-qe-7.3.1
 7. ./configure LAPACK_LIBS="-L/usr/lib/x86_64-linux-gnu  -lopenblas"
-8. make pwall
 #--------------------------------------------------------
 The following libraries have been found:
   BLAS_LIBS= -lopenblas
   LAPACK_LIBS=-L/usr/lib/x86_64-linux-gnu  -lopenblas
   FFT_LIBS= -lfftw3
 #--------------------------------------------------------
-#sudo apt install quantum-espresso # In my case, the calculation of pw.x failed in ubuntu 22.04 qe. I recommend using qe-7.2 or qe-7.3.1.
+8. make pwall
+9. sudo make install
+#Note: sudo apt install quantum-espresso # In my case, the calculation of pw.x failed in ubuntu 22.04 qe. I recommend using qe-7.2 or qe-7.3.1.
+
+# Installation ASE
+1. sudo apt update
+2. sudo apt -y install python3-ase
+3. find /usr/lib/python3/dist-packages/ase/io/ -name "espresso.py"
+4. sudo vim /usr/lib/python3/dist-packages/ase/io/espresso.py
+5. /mag_line.split
+6. i
+7. Change "mag_line.split()[5]" to "mag_line.split()[-1]".
+8. ESC -> wq
 
 gedit run_fcc_b1_pbe_v1.py
    (elements = ['Fe', 'Cr', 'Al'] # <- Enter the element you want to calculate)
