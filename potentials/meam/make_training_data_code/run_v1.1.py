@@ -39,6 +39,14 @@ elements = [fixed_element,
             'Cs', 'Ba', 'La', 'Ce', 'Pr', 'Nd', 'Pm', 'Sm', 'Eu', 'Gd', 'Tb', 'Dy', 'Ho', 'Er', 'Tm', 'Yb', 'Lu', 
             'Hf', 'Ta',  'W', 'Re', 'Os', 'Ir', 'Pt', 'Au', 'Hg', 'Tl', 'Pb', 'Bi', 'Po', 'At', 'Rn', 'Fr',
             'Ac', 'Th', 'Pa',  'U', 'Np', 'Pu'] # <- Enter the element you want to calculate (Note: Time Consumption: Approx. 4 elements/hour)
+#elements = [fixed_element,
+#             'H', 
+#            'Li', 'Be',  'B',  'C',  'N',  'O',  'F', 'Ne', 'Na', 'Mg', 'Al', 'Si',  'P',  'S', 'Cl', 
+#             'K', 'Ca', 'Sc', 'Ti',  'V', 'Cr', 'Mn', 'Fe', 'Co', 'Ni', 'Cu', 'Zn', 'Ga', 'Ge', 'As', 'Se', 'Br', 
+#            'Rb', 'Sr',  'Y', 'Zr', 'Nb', 'Mo', 'Tc', 'Ru', 'Rh', 'Pd', 'Ag', 'Cd', 'In', 'Sn', 'Sb', 'Te',  'I', 
+#            'Cs', 'Ba', 'La', 'Ce', 'Pr', 'Nd', 'Pm', 'Sm', 'Eu', 'Gd', 'Tb', 'Dy', 'Ho', 'Er', 'Tm', 'Yb', 'Lu', 
+#            'Hf', 'Ta',  'W', 'Re', 'Os', 'Ir', 'Pt', 'Au', 'Hg', 'Tl', 'Pb', 'Bi', 'Po', 'At', 'Rn', 'Fr',
+#            'Ac', 'Th', 'Pa',  'U', 'Np', 'Pu'] # <- Enter the element you want to calculate (Note: Time Consumption: Approx. 4 elements/hour)
 #elements = [fixed_element, 'He', 'Ar', 'Kr', 'Xe', 'Ra'] # Pairs with noble gases require careful calculations and must be calculated separately.
 element_combinations = [(fixed_element, element) for element in elements if element != fixed_element]
 #----------------------------
@@ -201,6 +209,10 @@ def fit_rose_curve_erose_form_0(volumes_per_atom, cohesive_energies_per_atom, al
     plt.scatter(volumes_per_atom, E_data, label='DFT Data (QE, PAW(pslibrary))')
     plt.plot(volumes_per_atom, rose_curve(volumes_per_atom, alpha, V0, Ec, repuls_fit, attrac_fit), 
              label=f'Rose Curve Fit (repuls={repuls_fit:.4f}, attrac={attrac_fit:.4f})', color='red')
+    plt.plot(volumes_per_atom, rose_curve(volumes_per_atom, alpha, V0, Ec, repuls_fit, 0), 
+             label=f'Rose Curve Fit (repuls={repuls_fit:.4f}, attrac=0)', color='blue')
+    plt.plot(volumes_per_atom, rose_curve(volumes_per_atom, alpha, V0, Ec, 0.05, 0.05), 
+             label=f'Rose Curve Fit (repuls=0.05, attrac=0.05)', color='green')
     plt.xlabel('Volume, V (A^3/atom)')
     plt.ylabel('Cohesive Energy, -Ec (eV/atom)')
     plt.legend()
@@ -249,6 +261,10 @@ def fit_rose_curve_erose_form_1(volumes_per_atom, cohesive_energies_per_atom, al
     plt.scatter(volumes_per_atom, E_data, label='DFT Data (QE, PAW(pslibrary))')
     plt.plot(volumes_per_atom, rose_curve(volumes_per_atom, alpha, V0, Ec, repuls_fit, attrac_fit, nearest_neighbor_distance), 
              label=f'Rose Curve Fit (repuls={repuls_fit:.4f}, attrac={attrac_fit:.4f})', color='red')
+    plt.plot(volumes_per_atom, rose_curve(volumes_per_atom, alpha, V0, Ec, 0, 0, nearest_neighbor_distance),  
+         label=f'Rose Curve Fit with (repuls=0, attrac=0)', color='blue')
+    plt.plot(volumes_per_atom, rose_curve(volumes_per_atom, alpha, V0, Ec, 0.05, 0.05, nearest_neighbor_distance),  
+             label=f'Rose Curve Fit (repuls=0.05, attrac=0.05)', color='green')
     plt.xlabel('Volume, V (A^3/atom)')
     plt.ylabel('Cohesive Energy, -Ec (eV/atom)')
     plt.legend()
@@ -297,6 +313,10 @@ def fit_rose_curve_erose_form_2(volumes_per_atom, cohesive_energies_per_atom, al
     plt.scatter(volumes_per_atom, E_data, label='DFT Data (QE, PAW(pslibrary))')
     plt.plot(volumes_per_atom, rose_curve(volumes_per_atom, alpha, V0, Ec, repuls_fit, attrac_fit), 
              label=f'Rose Curve Fit (repuls={repuls_fit:.4f}, attrac={attrac_fit:.4f})', color='red')
+    plt.plot(volumes_per_atom, rose_curve(volumes_per_atom, alpha, V0, Ec, repuls_fit, 0), 
+             label=f'Rose Curve Fit (repuls={repuls_fit:.4f}, attrac=0)', color='blue')
+    plt.plot(volumes_per_atom, rose_curve(volumes_per_atom, alpha, V0, Ec, 0.05, 0.05), 
+             label=f'Rose Curve Fit (repuls=0.05, attrac=0.05)', color='green')
     plt.xlabel('Volume, V (A^3/atom)')
     plt.ylabel('Cohesive Energy, -Ec (eV/atom)')
     plt.legend()
