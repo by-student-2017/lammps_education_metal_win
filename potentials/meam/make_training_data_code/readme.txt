@@ -50,7 +50,8 @@ STUDENT, B. (2025). SUGGESTED PSEUDOPOTENTIALS for PBE v.1.0.0 [Data set]. Zenod
 # Test
 - Ubuntu 20.04.3 LTS, ase-3.19.0 and qe-7.2
 - Ubuntu 22.04.5 LTS on WLS, ase-3.22.1 and qe-7.3
-- Ubuntu 24.04 LTS, ase-3.22.1 and qe-7.3.1
+- Ubuntu 24.04 LTS, ase-3.22.1 and qe-7.3
+# Note: qe-7.3.1 show ylmr2 error.
 # Note: 0.02 [Ry] * 13.6 [eV] / 11605 [K/eV] = ca. 315.8 [K]
 #---------------------------------------------------------------------
 
