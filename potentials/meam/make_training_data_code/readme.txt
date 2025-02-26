@@ -29,6 +29,11 @@ The following libraries have been found:
 7. Change "mag_line.split()[5]" to "mag_line.split()[-1]".
 8. ESC -> wq
 
+# Get pseudo-potential
+STUDENT, B. (2025). SUGGESTED PSEUDOPOTENTIALS for PBEsol v.1.0.0 [Data set]. Zenodo. https://doi.org/10.5281/zenodo.14912399
+STUDENT, B. (2025). SUGGESTED PSEUDOPOTENTIALS for PBE v.1.0.0 [Data set]. Zenodo. https://doi.org/10.5281/zenodo.14912402
+
+# Usage
 gedit run_fcc_b1_pbe_v1.py
    (elements = ['Fe', 'Cr', 'Al'] # <- Enter the element you want to calculate)
 
@@ -57,7 +62,7 @@ STUDENT, B. (2025). SUGGESTED PSEUDOPOTENTIALS for PBE v.1.0.0 [Data set]. Zenod
 
 #---------------------------------------------------------------------
 v.1.1 (bader charge) [BC]
-1. wget  http://theory.cm.utexas.edu/henkelman/code/bader/download/bader_lnx_64.tar.gz
+1. wget http://theory.cm.utexas.edu/henkelman/code/bader/download/bader_lnx_64.tar.gz
 2. tar xzvf bader_lnx_64.tar.gz
 3. chmod +x bader
 [BC1] https://ma.issp.u-tokyo.ac.jp/app-post/2321
