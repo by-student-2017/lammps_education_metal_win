@@ -1,5 +1,5 @@
 #---------------------------------------------------------------------
-This is a test version.
+This is a test (beta) version.
 
 # Installation qe-7.3.1
 1. sudo apt update
