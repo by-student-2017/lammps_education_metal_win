@@ -38,7 +38,7 @@ STUDENT, B. (2025). SUGGESTED PSEUDOPOTENTIALS for PBE v.1.0.0 [Data set]. Zenod
    (elements = ['Fe', 'Cr', 'Al'] # <- Enter the element you want to calculate)
 2. python3 run_v1.0.py
 
-# Installation of bader
+# Installation of bader (Version 1.05 08/19/23)
 1. wget http://theory.cm.utexas.edu/henkelman/code/bader/download/bader_lnx_64.tar.gz
 2. tar xzvf bader_lnx_64.tar.gz
 3. chmod +x bader
