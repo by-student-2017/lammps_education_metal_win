@@ -63,8 +63,8 @@ STUDENT, B. (2025). SUGGESTED PSEUDOPOTENTIALS for PBE v.1.0.0 [Data set]. Zenod
      atom Fr     not found
 #---------------------------------------------------------------------
 # Cutoff: Materials Project
-# 520 eV: All elements except "Boron"
-# 700 eV: "Boron"
+# 520 eV (= 38.22 Ry): All elements except "Boron"
+# 700 eV (= 51.45 Ry): "Boron"
 #---------------------------------------------------------------------
 
 #---------------------------------------------------------------------
