@@ -56,7 +56,16 @@ STUDENT, B. (2025). SUGGESTED PSEUDOPOTENTIALS for PBE v.1.0.0 [Data set]. Zenod
 #---------------------------------------------------------------------
 # Failed
 # PBEsol-D2, B2: Fe-F, Fe-Si
-# PBEsol-D2, L12: Al-Au: Au.pbesol-n-kjpaw_psl.1.0.0.UPF -> 
+# PBEsol-D2, L12: Al-Au: Au.pbesol-n-kjpaw_psl.1.0.0.UPF -> Au.pbesol-spfn-kjpaw_psl.1.0.0.UPF
+    "Au": {
+        "filename": "Au.pbesol-spfn-kjpaw_psl.1.0.0.UPF",
+        "total_psenergy": -1.766801987022e3,
+        "pseudopotential": "PAW",
+        "relativistic": "scalar",
+        "cutoff_wfc": 68.0,
+        "cutoff_rho": 376.0,
+        "z_valence": 3.300000000000e1,
+        "md5": ""
 # PBEsol-D3, L12: Al-Fr: Fr.pbesol-spdn-kjpaw_psl.1.0.0.UPF and Fr.pbesol-spdn-rrkjus_psl.1.0.0.UPF
 #---------------------------------------------------------------------
 # Cutoff: Materials Project
