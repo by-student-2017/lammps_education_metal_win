@@ -860,9 +860,9 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
         spin_char = '_spin'
 
     if PBEsol_flag == 0:
-        directory = f'results_PBE{D_char}{spin_char}'
+        directory = f'results_PBE{D_char}{spin_char}_{lattce.upper()}'
     else:
-        directory = f'results_PBEsol{D_char}{spin_char}'
+        directory = f'results_PBEsol{D_char}{spin_char}_{lattce.upper()}'
 
     # eos: sjeos, taylor, murnaghan, birch, birchmurnaghan, pouriertarantola, vinet, antonschmidt, p3
     eos = EquationOfState(volumes_per_atom, [energy * -1.0 for energy in cohesive_energies_per_atom], eos='murnaghan')
@@ -978,9 +978,9 @@ for i, combination in enumerate(element_combinations):
         spin_char = '_spin'
 
     if PBEsol_flag == 0:
-        directory = f'results_PBE{D_char}{spin_char}'
+        directory = f'results_PBE{D_char}{spin_char}_{lattce.upper()}'
     else:
-        directory = f'results_PBEsol{D_char}{spin_char}'
+        directory = f'results_PBEsol{D_char}{spin_char}_{lattce.upper()}'
     if not os.path.exists(directory):
         os.makedirs(directory)
 
