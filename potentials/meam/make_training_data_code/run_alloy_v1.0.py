@@ -669,7 +669,8 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
                     try:
                         scaling_factor, dsfactor, best_energy = binary_search(original_cell, atoms, calc, scaling_factor, dsfactor, best_energy)
                     except Exception as e:
-                        print("It probably hasn't converged. You should try increasing electron_maxstep or changing occupations or smearing.")
+                        print("It probably has not converged. You should try increasing electron_maxstep or changing occupations or smearing.")
+                        return "Error-2"
                     print(f'{step}/5:')
                     print(f'    scaling_factor = {scaling_factor}, dsfactor = {dsfactor}')
                     print(f'    Total energy = {best_energy} [eV]')
@@ -936,6 +937,10 @@ for i, combination in enumerate(element_combinations):
     if result == "Error-1":
         with open("error_log.txt", "a") as file:
             file.write(f"Error-1, Max retries reached. Skipping this combination.: {element1}-{element2} in {DFT}{D_char}_{spin_char}_{lattce.upper()}\n")
+        continue
+    elif result == "Error-2":
+        with open("error_log.txt", "a") as file:
+            file.write(f"Error-2, It probably has not converged.: {element1}-{element2} in {DFT}{D_char}_{spin_char}_{lattce.upper()}\n")
         continue
     results.append(result)
 
