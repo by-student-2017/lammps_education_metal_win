@@ -17,7 +17,7 @@ The following libraries have been found:
 #--------------------------------------------------------
 8. make pwall
 9. sudo make install
-#Note: sudo apt install quantum-espresso # In my case, the calculation of pw.x failed in ubuntu 22.04 qe. I recommend using qe-7.2 or qe-7.3.1.
+#Note: sudo apt install quantum-espresso # In my case, the calculation of pw.x failed in ubuntu 22.04 qe. I recommend using qe-7.2 or qe-7.3 (not qe-7.3.1 !!!).
 
 # Installation of ASE
 1. sudo apt update
