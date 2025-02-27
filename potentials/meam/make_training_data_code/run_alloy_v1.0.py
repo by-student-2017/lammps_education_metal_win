@@ -60,7 +60,7 @@ cutoff = 0 # [eV], 0:read PP file, (520 eV is the main in the Materials Project,
 #------------------------------------------------------------------
 # Note: In the field of phonons, the accuracy of lattice constant prediction is important, so PBEsol is generally used. 
 # However, since there are elements for which calculations do not go well, we recommend using PBE, which has been extensively verified as a database.
-PBEsol_flag = 1 # 0:PBE, 1:PBEsol, (default = 0)
+PBEsol_flag = 0 # 0:PBE, 1:PBEsol, (default = 0)
 # Load the pseudopotential data from the JSON file
 if PBEsol_flag == 0:
     with open('PBE/PSlibrary_PBE.json', 'r') as f:
@@ -682,7 +682,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
             print(f"Optimization failed for {element1}-{element2} with error: {e}")
             if retries >= max_retries:
                 print("Max retries reached. Skipping this combination.")
-                break
+                return "Error-1"
             else:
                 good_flag = 0
                 continue
@@ -932,8 +932,12 @@ for i, combination in enumerate(element_combinations):
 
     results = []
     result = calculate_properties(combination, omp_num_threads, mpi_num_procs, max_retries, lattce, lat, npoints, primitive_flag, PBEsol_flag, spin_flag, D_flag, cutoff)
-    results.append(result)
     element1, element2 = combination
+    if result == "Error-1":
+        with open("error_log.txt", "a") as file:
+            file.write(f"Error-1, Max retries reached. Skipping this combination.: {element1}-{element2}\n")
+        continue
+    results.append(result)
 
     with open(f'{directory}/{lattce}_{element1}-{element2}_{spin_char}.json', 'a') as jsonfile:
         json.dump(result, jsonfile, indent=4)
