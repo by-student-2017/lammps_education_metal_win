@@ -70,6 +70,8 @@ else:
     with open('PBEsol/PSlibrary_PBEsol_valence_charge.json', 'r') as f:
         pseudopotentials = json.load(f)
 #------------------------------------------------------------------
+D_flag = 1 # 0:non-dispersion (non-vdW), 1:DFT-D2, 2: DFT-D3 (no three-body), 3: DFT-D3, (default: 1)
+#------------------------------------------------------------------
 spin_flag = 1 # 0:non-spin, 1:spin, (default = 1)
 #------------------------------------------------------------------
 # Explicitly set OMP_NUM_THREADS
@@ -448,7 +450,7 @@ def calculate_elastic_constants(atoms, calc, shear_strains, normal_strains):
 
 
 
-def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, max_retries=100, lattce='', lat='', npoints=25, primitive_flag=1, PBEsol_flag=0, spin_flag=1):
+def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, max_retries=100, lattce='', lat='', npoints=25, primitive_flag=1, PBEsol_flag=0, spin_flag=1, D_flag=1):
     element1, element2 = elements_combination
     
     print(f"{element1}-{element2} pair, lattce = {lattce}")
@@ -626,6 +628,16 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
             'cell_dynamics': 'bfgs'
         }
     }
+    
+    if D_flag == 0:
+        pass
+    elif D_flag == 1:
+        input_data['system']['vdw_corr'] = 'dft-d'
+    elif D_flag == 2:
+        input_data['system']['vdw_corr'] = 'dft-d3'
+        input_data['system']['dftd3_threebody'] = False
+    elif D_flag == 3:
+        input_data['system']['vdw_corr'] = 'dft-d3'
     
     calc = Espresso(pseudopotentials=pseudopotentials_dict, input_data=input_data, kpts=(kpt, kpt, kpt), koffset=True, omp_num_threads=omp_num_threads, mpi_num_procs=mpi_num_procs, nspin=nspin)
     #calc = Espresso(pseudopotentials=pseudopotentials_dict, input_data=input_data, kpts=(kpt, kpt, kpt), omp_num_threads=omp_num_threads, mpi_num_procs=mpi_num_procs, nspin=nspin)
@@ -833,15 +845,24 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
         print(f'Charges [e]: {charges[tries-1][:]}')
         print("-------------------------------------------------------------------------------------")
 
+    if D_flag == 0:
+        D_char = ''
+    elif D_flag == 1:
+        D_char = '-D2'
+    elif D_flag == 2:
+        D_char = '-D3-no3body'
+    elif D_flag == 3:
+        dW_char = '-D3'
+
     if spin_flag == 0:
         spin_char = '_non-spin'
     else:
         spin_char = '_spin'
 
     if PBEsol_flag == 0:
-        directory = f'results_PBE{spin_char}'
+        directory = f'results_PBE{D_char}{spin_char}'
     else:
-        directory = f'results_PBEsol{spin_char}'
+        directory = f'results_PBEsol{D_char}{spin_char}'
 
     # eos: sjeos, taylor, murnaghan, birch, birchmurnaghan, pouriertarantola, vinet, antonschmidt, p3
     eos = EquationOfState(volumes_per_atom, [energy * -1.0 for energy in cohesive_energies_per_atom], eos='murnaghan')
@@ -942,15 +963,24 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
 # Process the combinations sequentially and store results
 for i, combination in enumerate(element_combinations):
 
+    if D_flag == 0:
+        D_char = ''
+    elif D_flag == 1:
+        D_char = '-D2'
+    elif D_flag == 2:
+        D_char = '-D3-no3body'
+    elif D_flag == 3:
+        dW_char = '-D3'
+    
     if spin_flag == 0:
         spin_char = '_non-spin'
     else:
         spin_char = '_spin'
 
     if PBEsol_flag == 0:
-        directory = f'results_PBE{spin_char}'
+        directory = f'results_PBE{D_char}{spin_char}'
     else:
-        directory = f'results_PBEsol{spin_char}'
+        directory = f'results_PBEsol{D_char}{spin_char}'
     if not os.path.exists(directory):
         os.makedirs(directory)
 
