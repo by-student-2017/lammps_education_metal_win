@@ -56,7 +56,7 @@ element_combinations = [(fixed_element, element) for element in elements if elem
 #elements = ['Fe', 'Cr']
 #element_combinations = list(combinations(elements, 2))
 #------------------------------------------------------------------
-cutoff = 0 # [eV], 0:read PP file, (520 eV is the main in the Materials Project), negative value (< 0): 520 eV
+cutoff = 0 # [eV], 0:read PP file, (520 eV is the main in the Materials Project, except Boron (700 eV)), negative value (< 0): 520 eV
 #------------------------------------------------------------------
 # Note: In the field of phonons, the accuracy of lattice constant prediction is important, so PBEsol is generally used. 
 # However, since there are elements for which calculations do not go well, we recommend using PBE, which has been extensively verified as a database.
