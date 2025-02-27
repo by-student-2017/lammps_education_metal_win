@@ -34,9 +34,9 @@ STUDENT, B. (2025). SUGGESTED PSEUDOPOTENTIALS for PBEsol v.1.0.0 [Data set]. Ze
 STUDENT, B. (2025). SUGGESTED PSEUDOPOTENTIALS for PBE v.1.0.0 [Data set]. Zenodo. https://doi.org/10.5281/zenodo.14912402
 
 # Usage
-1. gedit run_v1.0.py
+1. gedit run_alloy_v1.0.py
    (elements = ['Fe', 'Cr', 'Al'] # <- Enter the element you want to calculate)
-2. python3 run_v1.0.py
+2. python3 run_alloy_v1.0.py
 
 # Installation of bader (Version 1.05 08/19/23)
 1. wget http://theory.cm.utexas.edu/henkelman/code/bader/download/bader_lnx_64.tar.gz
@@ -44,8 +44,8 @@ STUDENT, B. (2025). SUGGESTED PSEUDOPOTENTIALS for PBE v.1.0.0 [Data set]. Zenod
 3. chmod +x bader
 
 # Usage (with bader analysis (need bader code, val.pp.in and all.pp.in file) 
-1. gedit run_v1.1.py
-2. python3 run_v1.1.py
+1. gedit run_alloy_v1.1.py
+2. python3 run_alloy_v1.1.py
 
 # Test
 - Ubuntu 20.04.3 LTS, ase-3.19.0 and qe-7.2
