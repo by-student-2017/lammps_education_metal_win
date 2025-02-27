@@ -69,7 +69,7 @@ else:
     with open('PBEsol/PSlibrary_PBEsol.json', 'r') as f:
         pseudopotentials = json.load(f)
 #------------------------------------------------------------------
-D_flag = 1 # 0:non-dispersion (non-vdW), 1:DFT-D2, 2: DFT-D3 (no three-body), 3: DFT-D3, (default: 1)
+D_flag = 0 # 0:non-dispersion (non-vdW), 1:DFT-D2, 2: DFT-D3 (no three-body), 3: DFT-D3, (default: 1)
 #------------------------------------------------------------------
 spin_flag = 1 # 0:non-spin, 1:spin, (default = 1)
 #------------------------------------------------------------------
