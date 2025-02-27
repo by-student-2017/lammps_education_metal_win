@@ -848,11 +848,11 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
     if D_flag == 0:
         D_char = ''
     elif D_flag == 1:
-        D_char = 'D2'
+        D_char = '-D2'
     elif D_flag == 2:
-        D_char = 'D3-no3body'
+        D_char = '-D3-no3body'
     elif D_flag == 3:
-        D_char = 'D3'
+        D_char = '-D3'
     
     if spin_flag == 0:
         spin_char = 'non-spin'
@@ -864,7 +864,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
     else:
         DFT = 'PBEsol'
     
-    directory = f'results_{DFT}-{D_char}_{spin_char}_{lattce.upper()}'
+    directory = f'results_{DFT}{D_char}_{spin_char}_{lattce.upper()}'
     if not os.path.exists(directory):
         os.makedirs(directory)
 
@@ -970,11 +970,11 @@ for i, combination in enumerate(element_combinations):
     if D_flag == 0:
         D_char = ''
     elif D_flag == 1:
-        D_char = 'D2'
+        D_char = '-D2'
     elif D_flag == 2:
-        D_char = 'D3-no3body'
+        D_char = '-D3-no3body'
     elif D_flag == 3:
-        D_char = 'D3'
+        D_char = '-D3'
     
     if spin_flag == 0:
         spin_char = 'non-spin'
@@ -986,7 +986,7 @@ for i, combination in enumerate(element_combinations):
     else:
         DFT = 'PBEsol'
     
-    directory = f'results_{DFT}-{D_char}_{spin_char}_{lattce.upper()}'
+    directory = f'results_{DFT}{D_char}_{spin_char}_{lattce.upper()}'
     if not os.path.exists(directory):
         os.makedirs(directory)
 
