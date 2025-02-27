@@ -852,17 +852,17 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
     elif D_flag == 2:
         D_char = '-D3-no3body'
     elif D_flag == 3:
-        dW_char = '-D3'
+        D_char = '-D3'
 
     if spin_flag == 0:
-        spin_char = '_non-spin'
+        spin_char = 'non-spin'
     else:
-        spin_char = '_spin'
+        spin_char = 'spin'
 
     if PBEsol_flag == 0:
-        directory = f'results_PBE{D_char}{spin_char}_{lattce.upper()}'
+        directory = f'results_PBE{D_char}_{spin_char}_{lattce.upper()}'
     else:
-        directory = f'results_PBEsol{D_char}{spin_char}_{lattce.upper()}'
+        directory = f'results_PBEsol{D_char}_{spin_char}_{lattce.upper()}'
 
     # eos: sjeos, taylor, murnaghan, birch, birchmurnaghan, pouriertarantola, vinet, antonschmidt, p3
     eos = EquationOfState(volumes_per_atom, [energy * -1.0 for energy in cohesive_energies_per_atom], eos='murnaghan')
@@ -970,17 +970,17 @@ for i, combination in enumerate(element_combinations):
     elif D_flag == 2:
         D_char = '-D3-no3body'
     elif D_flag == 3:
-        dW_char = '-D3'
+        D_char = '-D3'
     
     if spin_flag == 0:
-        spin_char = '_non-spin'
+        spin_char = 'non-spin'
     else:
-        spin_char = '_spin'
+        spin_char = 'spin'
 
     if PBEsol_flag == 0:
-        directory = f'results_PBE{D_char}{spin_char}_{lattce.upper()}'
+        directory = f'results_PBE{D_char}_{spin_char}_{lattce.upper()}'
     else:
-        directory = f'results_PBEsol{D_char}{spin_char}_{lattce.upper()}'
+        directory = f'results_PBEsol{D_char}_{spin_char}_{lattce.upper()}'
     if not os.path.exists(directory):
         os.makedirs(directory)
 
@@ -989,7 +989,7 @@ for i, combination in enumerate(element_combinations):
     results.append(result)
     element1, element2 = combination
 
-    with open(f'{directory}/{lattce}_{element1}-{element2}{spin_char}.json', 'a') as jsonfile:
+    with open(f'{directory}/{lattce}_{element1}-{element2}_{spin_char}.json', 'a') as jsonfile:
         json.dump(result, jsonfile, indent=4)
         jsonfile.write('\n')
 
@@ -1086,7 +1086,7 @@ for i, combination in enumerate(element_combinations):
         ap = (volume * 2) ** (1/3) # primitive cell
         ac = (volume) ** (1/3) # conventional cell
         
-        with open(f'{directory}/MPCv4_{element1}-{element2}-DFT_{lattce}{spin_char}', 'a') as mpcfile:
+        with open(f'{directory}/MPCv4_{element1}-{element2}-DFT_{lattce}_{spin_char}', 'a') as mpcfile:
            mpcfile.write(f"{volume}  {cohesive_energy*-1.0}\n")
         
         if lattce == 'b1':
