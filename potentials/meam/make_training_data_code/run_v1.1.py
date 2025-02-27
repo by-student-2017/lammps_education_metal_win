@@ -630,7 +630,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
     }
     
     if D_flag == 0:
-        pass
+        input_data['system']['vdw_corr'] = 'none'
     elif D_flag == 1:
         input_data['system']['vdw_corr'] = 'dft-d'
     elif D_flag == 2:
