@@ -848,21 +848,25 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
     if D_flag == 0:
         D_char = ''
     elif D_flag == 1:
-        D_char = '-D2'
+        D_char = 'D2'
     elif D_flag == 2:
-        D_char = '-D3-no3body'
+        D_char = 'D3-no3body'
     elif D_flag == 3:
-        D_char = '-D3'
-
+        D_char = 'D3'
+    
     if spin_flag == 0:
         spin_char = 'non-spin'
     else:
         spin_char = 'spin'
 
     if PBEsol_flag == 0:
-        directory = f'results_PBE{D_char}_{spin_char}_{lattce.upper()}'
+        DFT = 'PBE'
     else:
-        directory = f'results_PBEsol{D_char}_{spin_char}_{lattce.upper()}'
+        DFT = 'PBEsol'
+    
+    directory = f'results_{DFT}-{D_char}_{spin_char}_{lattce.upper()}'
+    if not os.path.exists(directory):
+        os.makedirs(directory)
 
     # eos: sjeos, taylor, murnaghan, birch, birchmurnaghan, pouriertarantola, vinet, antonschmidt, p3
     eos = EquationOfState(volumes_per_atom, [energy * -1.0 for energy in cohesive_energies_per_atom], eos='murnaghan')
@@ -966,11 +970,11 @@ for i, combination in enumerate(element_combinations):
     if D_flag == 0:
         D_char = ''
     elif D_flag == 1:
-        D_char = '-D2'
+        D_char = 'D2'
     elif D_flag == 2:
-        D_char = '-D3-no3body'
+        D_char = 'D3-no3body'
     elif D_flag == 3:
-        D_char = '-D3'
+        D_char = 'D3'
     
     if spin_flag == 0:
         spin_char = 'non-spin'
@@ -978,9 +982,11 @@ for i, combination in enumerate(element_combinations):
         spin_char = 'spin'
 
     if PBEsol_flag == 0:
-        directory = f'results_PBE{D_char}_{spin_char}_{lattce.upper()}'
+        DFT = 'PBE'
     else:
-        directory = f'results_PBEsol{D_char}_{spin_char}_{lattce.upper()}'
+        DFT = 'PBEsol'
+    
+    directory = f'results_{DFT}-{D_char}_{spin_char}_{lattce.upper()}'
     if not os.path.exists(directory):
         os.makedirs(directory)
 
@@ -993,7 +999,7 @@ for i, combination in enumerate(element_combinations):
         json.dump(result, jsonfile, indent=4)
         jsonfile.write('\n')
 
-    with open(f'{directory}_{lattce}{spin_char}.csv', 'a', newline='') as csvfile:
+    with open(f'{directory}_{lattce}_{spin_char}.csv', 'a', newline='') as csvfile:
         fieldnames = ['Element1', 'Element2', 
                       #----------------------------------------------------------
                       'lattce',
