@@ -935,7 +935,7 @@ for i, combination in enumerate(element_combinations):
     element1, element2 = combination
     if result == "Error-1":
         with open("error_log.txt", "a") as file:
-            file.write(f"Error-1, Max retries reached. Skipping this combination.: {element1}-{element2}\n")
+            file.write(f"Error-1, Max retries reached. Skipping this combination.: {element1}-{element2} in {DFT}{D_char}_{spin_char}_{lattce.upper()}\n")
         continue
     results.append(result)
 
