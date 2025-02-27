@@ -985,7 +985,7 @@ for i, combination in enumerate(element_combinations):
         os.makedirs(directory)
 
     results = []
-    result = calculate_properties(combination, omp_num_threads, mpi_num_procs, max_retries, lattce, lat, npoints, primitive_flag, PBEsol_flag, spin_flag)
+    result = calculate_properties(combination, omp_num_threads, mpi_num_procs, max_retries, lattce, lat, npoints, primitive_flag, PBEsol_flag, spin_flag, D_flag)
     results.append(result)
     element1, element2 = combination
 
