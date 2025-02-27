@@ -57,7 +57,7 @@ STUDENT, B. (2025). SUGGESTED PSEUDOPOTENTIALS for PBE v.1.0.0 [Data set]. Zenod
 # Failed
 # PBEsol-D2, B2: Fe-F, Fe-Si
 # PBEsol-D2, L12: Al-Au: Au.pbesol-n-kjpaw_psl.1.0.0.UPF -> Au.pbesol-spfn-kjpaw_psl.1.0.0.UPF
-# PBEsol-D3, L12: Fr, Ac, etc
+# PBEsol-D2, L12: Fr, Ac, etc
      Error in routine  init_london (2):
      atom Fr     not found
 #---------------------------------------------------------------------
