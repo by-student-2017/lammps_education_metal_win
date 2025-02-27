@@ -57,6 +57,8 @@ element_combinations = [(fixed_element, element) for element in elements if elem
 #elements = ['Fe', 'Cr']
 #element_combinations = list(combinations(elements, 2))
 #------------------------------------------------------------------
+cutoff = 0 # [eV], 0:read PP file, (520 eV is the main in the Materials Project), negative value (< 0): 520 eV
+#------------------------------------------------------------------
 # Note: In the field of phonons, the accuracy of lattice constant prediction is important, so PBEsol is generally used. 
 # However, since there are elements for which calculations do not go well, we recommend using PBE, which has been extensively verified as a database.
 PBEsol_flag = 1 # 0:PBE, 1:PBEsol, (default = 0)
@@ -84,7 +86,7 @@ mpi_num_procs = 1
 primitive_flag = 1 # 0:conventional cell, 1:primitive cell, (default = 1)
 #------------------------------------------------------------------
 # max number of cycles for search optimized structure
-max_retries = 100 # default = 100
+max_retries = 20 # default = 20
 #------------------------------------------------------------------
 
 # Define covalent radii for elements (in angstroms)
@@ -450,7 +452,7 @@ def calculate_elastic_constants(atoms, calc, shear_strains, normal_strains):
 
 
 
-def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, max_retries=100, lattce='', lat='', npoints=25, primitive_flag=1, PBEsol_flag=0, spin_flag=1, D_flag=1):
+def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, max_retries=20, lattce='', lat='', npoints=25, primitive_flag=1, PBEsol_flag=0, spin_flag=1, D_flag=1, cutoff=520):
     element1, element2 = elements_combination
     
     print(f"{element1}-{element2} pair, lattce = {lattce}")
@@ -638,6 +640,15 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
         input_data['system']['dftd3_threebody'] = False
     elif D_flag == 3:
         input_data['system']['vdw_corr'] = 'dft-d3'
+    
+    if cutoff == 0:
+        pass
+    elif cutoff > 0:
+        input_data['system']['ecutwfc'] = f'{cutoff/Rydberg}'
+        input_data['system']['ecutwfc'] = f'{cutoff*4.0/Rydberg}'
+    else:
+        input_data['system']['ecutwfc'] = f'{520/Rydberg}'
+        input_data['system']['ecutwfc'] = f'{520*4.0/Rydberg}'
     
     calc = Espresso(pseudopotentials=pseudopotentials_dict, input_data=input_data, kpts=(kpt, kpt, kpt), koffset=True, omp_num_threads=omp_num_threads, mpi_num_procs=mpi_num_procs, nspin=nspin)
     #calc = Espresso(pseudopotentials=pseudopotentials_dict, input_data=input_data, kpts=(kpt, kpt, kpt), omp_num_threads=omp_num_threads, mpi_num_procs=mpi_num_procs, nspin=nspin)
@@ -991,7 +1002,7 @@ for i, combination in enumerate(element_combinations):
         os.makedirs(directory)
 
     results = []
-    result = calculate_properties(combination, omp_num_threads, mpi_num_procs, max_retries, lattce, lat, npoints, primitive_flag, PBEsol_flag, spin_flag, D_flag)
+    result = calculate_properties(combination, omp_num_threads, mpi_num_procs, max_retries, lattce, lat, npoints, primitive_flag, PBEsol_flag, spin_flag, D_flag, cutoff)
     results.append(result)
     element1, element2 = combination
 
