@@ -54,6 +54,11 @@ STUDENT, B. (2025). SUGGESTED PSEUDOPOTENTIALS for PBE v.1.0.0 [Data set]. Zenod
 # Note: qe-7.3.1 show ylmr2 error.
 # Note: 0.02 [Ry] * 13.6 [eV] / 11605 [K/eV] = ca. 315.8 [K]
 #---------------------------------------------------------------------
+# For d = a3
+Problems will arise if a3 becomes negative.
+When erose_form=1, a3 = -attrac + replus/r, so the condition replus/attrac <= r exists.
+In the case of erose_form=1, this has been improved in later data to show rc = replus/attrac in the figure.
+#---------------------------------------------------------------------
 # Failed
 # PBEsol-D2, B2: Fe-F, Fe-Si
 # PBEsol-D2, L12: Al-Au: Au.pbesol-n-kjpaw_psl.1.0.0.UPF -> Au.pbesol-spfn-kjpaw_psl.1.0.0.UPF
