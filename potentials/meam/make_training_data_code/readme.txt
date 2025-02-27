@@ -60,9 +60,12 @@ When erose_form=1, a3 = -attrac + replus/r, so the condition replus/attrac <= r 
 In the case of erose_form=1, this has been improved in later data to show rc = replus/attrac in the figure.
 #---------------------------------------------------------------------
 # Failed
-# PBEsol-D2, B2: Fe-F, Fe-Si
+# PBEsol-D2, B2: Fe-F:
+# PBEsol-D2, B2: Fe-Si:
 # PBEsol-D2, L12: Al-Au: Au.pbesol-n-kjpaw_psl.1.0.0.UPF -> Au.pbesol-spfn-kjpaw_psl.1.0.0.UPF
 # PBEsol-D2, L12: Al-Mn:
+# PBEsol-D2, L12: Al-Ar:
+# PBEsol-D2, L12: Al-Kr:
 # PBEsol-D2, L12: Fr, Ac, etc -> PBEsol-D3(non threebody)
      Error in routine  init_london (2):
      atom Fr     not found
