@@ -54,6 +54,10 @@ STUDENT, B. (2025). SUGGESTED PSEUDOPOTENTIALS for PBE v.1.0.0 [Data set]. Zenod
 # Note: qe-7.3.1 show ylmr2 error.
 # Note: 0.02 [Ry] * 13.6 [eV] / 11605 [K/eV] = ca. 315.8 [K]
 #---------------------------------------------------------------------
+# Failed
+# PBEsol-D2, B2, Fe-F
+# PBEsol-D2, L12, Al-Au: Au.pbesol-n-kjpaw_psl.1.0.0.UPF
+#---------------------------------------------------------------------
 
 #---------------------------------------------------------------------
 ## pseudopotentials
