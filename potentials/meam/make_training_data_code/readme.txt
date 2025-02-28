@@ -64,11 +64,11 @@ In the case of erose_form=1, this has been improved in later data to show rc = r
 # PBEsol-D2, B2: Fe-Si: Si.pbesol-n-kjpaw_psl.1.0.0.UPF
 # PBEsol-D2, B2: Fe-Ti: Ti.pbesol-spn-kjpaw_psl.1.0.0.UPF
 # PBEsol-D2, B2: Fe-Cs: Cs.pbesol-spn-kjpaw_psl.1.0.0.UPF
-# PBE, L12: Al-Fe
+# PBE, L12: Al-Fe: Fe.pbe-spn-kjpaw_psl.1.0.0.UPF
 # PBEsol-D2, L12: Al-Au: Au.pbesol-n-kjpaw_psl.1.0.0.UPF -> Au.pbesol-spfn-kjpaw_psl.1.0.0.UPF
-# PBEsol-D2, L12: Al-Mn:
-# PBEsol-D3(no3body), L12: Al-Ar:
-# PBEsol-D3(no3body), L12: Al-Kr:
+# PBEsol-D2, L12: Al-Mn: Mn.pbesol-spn-kjpaw_psl.0.3.1.UPF
+# PBEsol-D3(no3body), L12: Al-Ar: Ar.pbesol-n-kjpaw_psl.1.0.0.UPF
+# PBEsol-D3(no3body), L12: Al-Kr: Kr.pbesol-dn-kjpaw_psl.1.0.0.UPF
 # PBEsol-D2, L12: Fr, Ac, etc -> PBEsol-D3(non threebody)
      Error in routine  init_london (2):
      atom Fr     not found
