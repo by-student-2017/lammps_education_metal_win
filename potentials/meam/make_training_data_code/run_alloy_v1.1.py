@@ -601,7 +601,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
             'etot_conv_thr': 1.0e-4/2*len(atoms), # 0.68 meV/atom <= about 1 meV/atom
             #'forc_conv_thr': 1.0e-3 # dafault value
             'wf_collect': False,
-            'disk_io': 'minimal',
+            'disk_io': 'nowf', # qe-7.2:'minimal', qe-7.3:'nowf'
         },
         'system': {
             'ecutwfc': max(pseudopotentials[element1]['cutoff_wfc'], pseudopotentials[element2]['cutoff_wfc']),
