@@ -575,6 +575,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
             'nstep': 1000,   # for MD or structure optimization
             'etot_conv_thr': 1.0e-4/2*len(atoms), # 0.68 meV/atom <= about 1 meV/atom
             #'forc_conv_thr': 1.0e-3 # dafault value
+            'wf_collect': False,
             'disk_io': 'none',
         },
         'system': {
