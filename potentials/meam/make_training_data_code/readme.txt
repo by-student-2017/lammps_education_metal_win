@@ -60,8 +60,10 @@ When erose_form=1, a3 = -attrac + replus/r, so the condition replus/attrac <= r 
 In the case of erose_form=1, this has been improved in later data to show rc = replus/attrac in the figure.
 #---------------------------------------------------------------------
 # Failed
-# PBEsol-D2, B2: Fe-F:
-# PBEsol-D2, B2: Fe-Si:
+# PBEsol-D2, B2: Fe-F: F.pbesol-n-kjpaw_psl.1.0.0.UPF
+# PBEsol-D2, B2: Fe-Si: Si.pbesol-n-kjpaw_psl.1.0.0.UPF
+# PBEsol-D2, B2: Fe-Ti: Ti.pbesol-spn-kjpaw_psl.1.0.0.UPF
+# PBEsol-D2, B2: Fe-Cs: Cs.pbesol-spn-kjpaw_psl.1.0.0.UPF
 # PBE, L12: Al-Fe
 # PBEsol-D2, L12: Al-Au: Au.pbesol-n-kjpaw_psl.1.0.0.UPF -> Au.pbesol-spfn-kjpaw_psl.1.0.0.UPF
 # PBEsol-D2, L12: Al-Mn:
