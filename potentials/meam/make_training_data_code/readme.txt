@@ -65,6 +65,10 @@ In the case of erose_form=1, this has been improved in later data to show rc = r
 # PBEsol-D2, B2: Fe-Si: Si.pbesol-n-kjpaw_psl.1.0.0.UPF
 # PBEsol-D2, B2: Fe-Ti: Ti.pbesol-spn-kjpaw_psl.1.0.0.UPF
 # PBEsol-D2, B2: Fe-Cs: Cs.pbesol-spn-kjpaw_psl.1.0.0.UPF
+# PBE, B2: Al-Sc:
+# PBE, B2: Al-Pt:
+# PBE, B2: Al-Pd:
+# PBE, B2: Al-I:
 # PBE, L12: Al-Fe: Fe.pbe-spn-kjpaw_psl.1.0.0.UPF
 # PBEsol-D2, L12: Al-Au: Au.pbesol-n-kjpaw_psl.1.0.0.UPF -> Au.pbesol-spfn-kjpaw_psl.1.0.0.UPF
 # PBEsol-D2, L12: Al-Mn: Mn.pbesol-spn-kjpaw_psl.0.3.1.UPF (Specify re manually.)
