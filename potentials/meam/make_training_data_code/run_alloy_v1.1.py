@@ -600,7 +600,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
             'nstep': 1000,   # for MD or structure optimization
             'etot_conv_thr': 1.0e-4/2*len(atoms), # 0.68 meV/atom <= about 1 meV/atom
             #'forc_conv_thr': 1.0e-3 # dafault value
-            
+            'disk_io': 'none',
         },
         'system': {
             'ecutwfc': max(pseudopotentials[element1]['cutoff_wfc'], pseudopotentials[element2]['cutoff_wfc']),
@@ -621,13 +621,13 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
         },
         'electrons': {
             'conv_thr': 1.0e-6/2*len(atoms),
-            'electron_maxstep': 1000
+            'electron_maxstep': 1000,
         },
         'ions': {
-            'ion_dynamics': 'bfgs'
+            'ion_dynamics': 'bfgs',
         },
         'cell': {
-            'cell_dynamics': 'bfgs'
+            'cell_dynamics': 'bfgs',
         }
     }
     
