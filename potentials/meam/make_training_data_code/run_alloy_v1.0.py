@@ -573,7 +573,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
             'tprnfor': True, # Forces will be printed
             'tstress': True, # Stress will be printed
             'nstep': 1000,   # for MD or structure optimization
-            'etot_conv_thr': 1.0e-4/2*len(atoms), # 1.36 meV/atom = about 1 meV/atom
+            'etot_conv_thr': 1.0e-4/2*len(atoms), # 0.68 meV/atom <= about 1 meV/atom
             #'forc_conv_thr': 1.0e-3 # dafault value
             
         },
@@ -583,7 +583,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
             #'occupations': 'tetrahedra_opt', # L12 A-N is failed
             'occupations': 'smearing',
             'smearing': 'mp',
-            'degauss': 0.02,
+            'degauss': 0.01, # 0.01 = about 150 K, 0.02 = about 300 K, 0.01 is better for Equation of states (eos).
             #
             #'vdw_corr': 'dft-d', # DFT-D2 (Semiempirical Grimme's DFT-D2. Optional variables)
             #'vdw_corr': 'dft-d3',

@@ -18,7 +18,7 @@ from ase.dft.kpoints import monkhorst_pack
 
 #------------------------------------------------------------------
 # b1: FCC_B1 (NaCl-type), b2:BCC_B2 (CsCl-type), dia:Diamond_B3 (Zinc Blende), l12: L12 (Cu3Au-type)
-lattce = 'l12'
+lattce = 'b1'
 #------------------------------------------------------------------
 # lattice structure of reference configuration [Angstrom] (https://en.wikipedia.org/wiki/Lattice_constant)
 lat = ''     # In the case of '', the sum of covalent_radii (sum of concentration ratio in L12)
@@ -31,16 +31,16 @@ lat = ''     # In the case of '', the sum of covalent_radii (sum of concentratio
 npoints = 25 # >= 11 e.g., 11, 17, 21, or 25, etc (Recommend >= 25), (default = 25)
 #------------------------------------------------------------------
 fixed_element = 'Al'
-#elements = [fixed_element,
-#             'H',
-#            'Li', 'Be',  'B',  'C',  'N',  'O',  'F',
-#            'Na', 'Mg', 'Al', 'Si',  'P',  'S', 'Cl',
-#             'K', 'Ca', 'Sc', 'Ti',  'V', 'Cr', 'Mn', 'Fe', 'Co', 'Ni', 'Cu', 'Zn', 'Ga', 'Ge', 'As', 'Se', 'Br',
-#            'Rb', 'Sr',  'Y', 'Zr', 'Nb', 'Mo', 'Tc', 'Ru', 'Rh', 'Pd', 'Ag', 'Cd', 'In', 'Sn', 'Sb', 'Te',  'I',
-#            'Cs', 'Ba', 'La', 'Ce', 'Pr', 'Nd', 'Pm', 'Sm', 'Eu', 'Gd', 'Tb', 'Dy', 'Ho', 'Er', 'Tm', 'Yb', 'Lu',
-#            'Hf', 'Ta',  'W', 'Re', 'Os', 'Ir', 'Pt', 'Au', 'Hg', 'Tl', 'Pb', 'Bi', 'Po', 'At',
-#            'Rn', 'Fr', 'Ac', 'Th', 'Pa',  'U', 'Np', 'Pu'] # <- Enter the element you want to calculate (Note: Time Consumption: Approx. 4 elements/hour)
-elements = [fixed_element, 'He', 'Ne', 'Ar', 'Kr', 'Xe', 'Ra'] # Pairs with noble gases require careful calculations and must be calculated separately.
+elements = [fixed_element,
+             'H', 'He',
+            'Li', 'Be',  'B',  'C',  'N',  'O',  'F', 'Ne', 
+            'Na', 'Mg', 'Al', 'Si',  'P',  'S', 'Cl', 'Ar',
+             'K', 'Ca', 'Sc', 'Ti',  'V', 'Cr', 'Mn', 'Fe', 'Co', 'Ni', 'Cu', 'Zn', 'Ga', 'Ge', 'As', 'Se', 'Br', 'Kr',
+            'Rb', 'Sr',  'Y', 'Zr', 'Nb', 'Mo', 'Tc', 'Ru', 'Rh', 'Pd', 'Ag', 'Cd', 'In', 'Sn', 'Sb', 'Te',  'I', 'Xe',
+            'Cs', 'Ba', 'La', 'Ce', 'Pr', 'Nd', 'Pm', 'Sm', 'Eu', 'Gd', 'Tb', 'Dy', 'Ho', 'Er', 'Tm', 'Yb', 'Lu', 
+            'Hf', 'Ta',  'W', 'Re', 'Os', 'Ir', 'Pt', 'Au', 'Hg', 'Tl', 'Pb', 'Bi', 'Po', 'At', 'Ra',
+            'Rn'] # <- Enter the element you want to calculate (Note: Time Consumption: Approx. 4 elements/hour)
+#elements = [fixed_element, 'He', 'Ne', 'Ar', 'Kr', 'Xe', 'Ra'] # Pairs with noble gases require careful calculations and must be calculated separately.
 #elements = [fixed_element,
 #             'H', 'He',
 #            'Li', 'Be',  'B',  'C',  'N',  'O',  'F', 'Ne', 
@@ -61,7 +61,7 @@ cutoff = 0 # [eV], 0:read PP file, (520 eV is the main in the Materials Project,
 #------------------------------------------------------------------
 # Note: In the field of phonons, the accuracy of lattice constant prediction is important, so PBEsol is generally used. 
 # However, since there are elements for which calculations do not go well, we recommend using PBE, which has been extensively verified as a database.
-PBEsol_flag = 0 # 0:PBE, 1:PBEsol, (default = 0)
+PBEsol_flag = 1 # 0:PBE, 1:PBEsol, (default = 0)
 # Load the pseudopotential data from the JSON file
 if PBEsol_flag == 0:
     #with open('PBE/PSlibrary_PBE.json', 'r') as f:
@@ -598,7 +598,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
             'tprnfor': True, # Forces will be printed
             'tstress': True, # Stress will be printed
             'nstep': 1000,   # for MD or structure optimization
-            'etot_conv_thr': 1.0e-4/2*len(atoms), # 1.36 meV/atom = about 1 meV/atom
+            'etot_conv_thr': 1.0e-4/2*len(atoms), # 0.68 meV/atom <= about 1 meV/atom
             #'forc_conv_thr': 1.0e-3 # dafault value
             
         },
@@ -608,7 +608,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
             #'occupations': 'tetrahedra_opt', # L12 A-N is failed
             'occupations': 'smearing',
             'smearing': 'mp',
-            'degauss': 0.02,
+            'degauss': 0.01, # 0.01 = about 150 K, 0.02 = about 300 K, 0.01 is better for Equation of states (eos).
             #
             #'vdw_corr': 'dft-d', # DFT-D2 (Semiempirical Grimme's DFT-D2. Optional variables)
             #'vdw_corr': 'dft-d3',
