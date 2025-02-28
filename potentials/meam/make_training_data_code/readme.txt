@@ -62,6 +62,7 @@ In the case of erose_form=1, this has been improved in later data to show rc = r
 # Failed
 # PBEsol-D2, B2: Fe-F:
 # PBEsol-D2, B2: Fe-Si:
+# PBE, L12: Al-Fe
 # PBEsol-D2, L12: Al-Au: Au.pbesol-n-kjpaw_psl.1.0.0.UPF -> Au.pbesol-spfn-kjpaw_psl.1.0.0.UPF
 # PBEsol-D2, L12: Al-Mn:
 # PBEsol-D3(no3body), L12: Al-Ar:
