@@ -543,7 +543,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
     
     dsfactor = 0.15
     #scaling_factor = 1.0 - dsfactor*3.0 # The minimum setting for a downward convex search is "scaling_factor = 1.0 - dsfactor*1.0".
-    scaling_factor = 1.0 - dsfactor*2.0
+    scaling_factor = 1.0 - dsfactor*1.0
     
     original_cell = atoms.get_cell()
     scaled_cell = original_cell * scaling_factor
