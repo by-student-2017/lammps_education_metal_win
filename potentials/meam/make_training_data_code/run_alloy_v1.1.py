@@ -866,8 +866,8 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
         if abs(total_charge) >= 0.005:
             warning_message = f"Warning: Total charge is {total_charge}, which is 0.5 % or more."
             print(warning_message)
-            with open('charge_log.txt', 'a') as log_file:
-            log_file.write(warning_message + '\n')
+            with open('error_log.txt', 'a') as file:
+                file.write(warning_message + '\n')
         print("-------------------------------------------------------------------------------------")
 
     if D_flag == 0:
