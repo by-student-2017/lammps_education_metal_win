@@ -861,7 +861,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
         
         #print(f'Charges [e]: {charge}')
         print(f'Charges [e]: {charges[ndata-1][:]}')
-        total_charge = sum(charges)
+        total_charge = sum(charge)
         print(f"Total charge: {total_charge}")
         if abs(total_charge) >= 0.005:
             warning_message = f"Warning: Total charge is {total_charge}, which is 0.5 % or more."
