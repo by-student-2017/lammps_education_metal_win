@@ -65,6 +65,8 @@ In the case of erose_form=1, this has been improved in later data to show rc = r
 # PBEsol-D2, B2: Fe-Ti: Ti.pbesol-spn-kjpaw_psl.1.0.0.UPF -> Ti.pbesol-spn-rrkjus_psl.1.0.0.UPF
 # PBEsol-D2, B2: Fe-Cs: Cs.pbesol-spn-kjpaw_psl.1.0.0.UPF -> Cs.pbesol-spn-rrkjus_psl.1.0.0.UPF
 # PBEsol-D2, L12: Fe-F: F.pbesol-n-kjpaw_psl.1.0.0.UPF -> F.pbesol-n-kjpaw_psl.0.1.UPF
+# PBEsol-D2, L12: Fe-Ti: Ti.pbesol-spn-kjpaw_psl.1.0.0.UPF -> Ti.pbesol-spn-rrkjus_psl.1.0.0.UPF
+# PBEsol-D2, L12: Fe-Cs: Cs.pbesol-spn-kjpaw_psl.1.0.0.UPF -> Cs.pbesol-spn-rrkjus_psl.1.0.0.UPF
 # PBE, B2: Al-Sc: Using SSSP-1.3.0 didn't work either. (Removed the parts that are not compatible with eos.)
 # PBE, B2: Al-Pt: Using SSSP-1.3.0 didn't work either. (Removed the parts that are not compatible with eos.)
 # PBE, B2: Al-Pd: Using SSSP-1.3.0 didn't work either. (All failed)
