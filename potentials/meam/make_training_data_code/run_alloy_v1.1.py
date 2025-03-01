@@ -778,12 +778,14 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
 
     skip_indices = []
     tries = 0
+    ndata = 0
     vrange = 0.01*(npoints-1)/2
     for scale in np.linspace((1.0-vrange)**(1/3), (1.0+vrange)**(1/3), npoints):
         tries += 1
         if tries in skip_indices:
             continue
         print(f'{tries}/{npoints}:')
+        ndata += 1
         
         scaled_cell = original_cell * optimized_scaling_factor * scale
         atoms.set_cell(scaled_cell, scale_atoms=True)
@@ -816,7 +818,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
             print("-------------------------------------------------------------------------------------")
         else:
             magnetic_moments.append(atoms.get_magnetic_moments().tolist())
-            print(f'    Magnetic moment = {magnetic_moments[tries-1][:]}')
+            print(f'    Magnetic moment = {magnetic_moments[ndata-1][:]}')
             print("-------------------------------------------------------------------------------------")
         
         new_prefix = f'b2_{element1}_{element2}'
@@ -858,7 +860,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
            print(f"{idx}: This code does not provide other structures. (Possible structures: b1, b2, dia, l12)")
         
         #print(f'Charges [e]: {charge}')
-        print(f'Charges [e]: {charges[tries-1][:]}')
+        print(f'Charges [e]: {charges[ndata-1][:]}')
         print("-------------------------------------------------------------------------------------")
 
     if D_flag == 0:
