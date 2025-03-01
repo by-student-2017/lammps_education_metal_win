@@ -776,10 +776,13 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
     energies_per_atom = []
     cohesive_energies_per_atom = []
 
+    skip_indices = []
     tries = 0
     vrange = 0.01*(npoints-1)/2
     for scale in np.linspace((1.0-vrange)**(1/3), (1.0+vrange)**(1/3), npoints):
         tries += 1
+        if tries in skip_indices:
+            continue
         print(f'{tries}/{npoints}:')
         
         scaled_cell = original_cell * optimized_scaling_factor * scale
