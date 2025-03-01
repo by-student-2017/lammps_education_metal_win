@@ -607,10 +607,6 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
         }
     }
     
-    # Set starting magnetization for each atom
-    for i in range(1, len(atoms) + 1):
-        input_data['system'][f'starting_magnetization({i})'] = 1.0
-    
     if D_flag == 0:
         input_data['system']['vdw_corr'] = 'none'
     elif D_flag == 1:
