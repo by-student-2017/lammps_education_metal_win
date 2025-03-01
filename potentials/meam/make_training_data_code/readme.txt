@@ -60,15 +60,15 @@ When erose_form=1, a3 = -attrac + replus/r, so the condition replus/attrac <= r 
 In the case of erose_form=1, this has been improved in later data to show rc = replus/attrac in the figure.
 #---------------------------------------------------------------------
 # Failed
-# PBEsol-D2, B2: Fe-F: F.pbesol-n-kjpaw_psl.1.0.0.UPF
-# PBEsol-D2, L12: Fe-F: F.pbesol-n-kjpaw_psl.1.0.0.UPF -> F.pbesol-n-kjpaw_psl.0.1.UPF
+# PBEsol-D2, B2: Fe-F: F.pbesol-n-kjpaw_psl.1.0.0.UPF -> F.pbesol-n-kjpaw_psl.0.1.UPF
 # PBEsol-D2, B2: Fe-Si: Si.pbesol-n-kjpaw_psl.1.0.0.UPF
-# PBEsol-D2, B2: Fe-Ti: Ti.pbesol-spn-kjpaw_psl.1.0.0.UPF
-# PBEsol-D2, B2: Fe-Cs: Cs.pbesol-spn-kjpaw_psl.1.0.0.UPF
+# PBEsol-D2, B2: Fe-Ti: Ti.pbesol-spn-kjpaw_psl.1.0.0.UPF -> Ti.pbesol-spn-rrkjus_psl.1.0.0.UPF
+# PBEsol-D2, B2: Fe-Cs: Cs.pbesol-spn-kjpaw_psl.1.0.0.UPF -> Cs.pbesol-spn-rrkjus_psl.1.0.0.UPF
+# PBEsol-D2, L12: Fe-F: F.pbesol-n-kjpaw_psl.1.0.0.UPF -> F.pbesol-n-kjpaw_psl.0.1.UPF
 # PBE, B2: Al-Sc: Using SSSP-1.3.0 didn't work either. (Removed the parts that are not compatible with eos.)
 # PBE, B2: Al-Pt: Using SSSP-1.3.0 didn't work either. (Removed the parts that are not compatible with eos.)
 # PBE, B2: Al-Pd: Using SSSP-1.3.0 didn't work either. (All failed)
-# PBE, B2: Al-I:
+# PBE, B2: Al-I: I.pbe-n-kjpaw_psl.1.0.0.UPF -> I.pbe-n-kjpaw_psl.0.2.UPF (Removed the parts that are not compatible with eos.)
 # PBE, L12: Al-Fe: Fe.pbe-spn-kjpaw_psl.1.0.0.UPF
 # PBEsol-D2, L12: Al-Au: Au.pbesol-n-kjpaw_psl.1.0.0.UPF -> Au.pbesol-spfn-kjpaw_psl.1.0.0.UPF
 # PBEsol-D2, L12: Al-Mn: Mn.pbesol-spn-kjpaw_psl.0.3.1.UPF (Specify re manually.)
