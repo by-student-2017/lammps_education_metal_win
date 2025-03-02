@@ -16,7 +16,7 @@ pair_coeff * * library.meam Fe Fe.meam Fe
 pair_style meam
 pair_coeff * * library.meam Ni H NULL Ni H
 #-----------------------------------------------------------
-# M. I. Baskes, Phys. Rev. B 46 (1992) 2727.: https://iopscience.iop.org/article/10.1088/0965-0393/2/1/011
+# M. I. Baskes, Phys. Rev. B 46 (1992) 2727.: https://journals.aps.org/prb/abstract/10.1103/PhysRevB.46.2727
 Cu,Ag,Au,Ni,Pd,Pt,Al,Pb,Rh,Ir,Li,Na,K,V,Nb,Ta,Cr,Mo,W,Fe,C,Si,Ge,H,N,O
 - This simple model was found to explain the elastic behavior and simple defect properties of these diverse materials. 
 - The surface properties are in fair agreement with experiments, but the energies of bcc metals in open structure do not match the LDA calculations.
