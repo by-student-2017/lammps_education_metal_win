@@ -123,7 +123,7 @@ Conclusion
 #   I haven't looked at the Lammps code yet, but it probably goes something like this:
 #     F(rho) = A*Esub*(rho/rozero)*ln(rho/rozero)
 #-------------------------------
-# Pair potential, phi(r) = (2/Z1)*{Erose(r) - F(rho(r))} for 1NN-MEAM
+# Pair potential, phi(r) = (2/Z1)*[Erose(r) - F(rho(r))] for 1NN-MEAM
 #   Z1 is the number of first neighboring atoms. 
 # In the case of 2NN-MEAM, the pair potential is calculated taking into account the second nearest neighbor configuration.
 #-------------------------------
