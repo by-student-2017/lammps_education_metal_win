@@ -124,8 +124,18 @@ Conclusion
 #     F(rho) = A*Esub*(rho/rozero)*ln(rho/rozero)
 #-------------------------------
 # Pair potential, phi(r) = (2/Z1)*[Erose(r) - F(rho(r))] for 1NN-MEAM
-#   Z1 is the number of first neighboring atoms. 
+#   Z1 is the number of first neighboring atoms.
+#   E_rose(r) = (1/2)*{F(rho(r) + Z1*phi(r)}
 # In the case of 2NN-MEAM, the pair potential is calculated taking into account the second nearest neighbor configuration.
+# Pair potential, phi(r) = (1/Z1)*[Erose(r) - F(rho(r))] - (Z2/2)*[S*phi(r)] for 2NN-MEAM
+#   Z2 is the number of second neighboring atoms.
+#   E_rose(r) = (1/2)*{F(rho(r) + Z1*phi(r)} + (Z2/2)*{S*phi(r)}
+#   S = fc( (C-Cmin)/(Cmax-Cmin) ): In reality, S is the multiplication of Sijk (i,j,k are atoms)
+#   The fc is smooth cutoff function.
+#   For C = Cmin case, fc = 0 -> S = 0 -> 1NN-MEAM (The formula for phi(r) takes into account the first nearest neighbors)
+#   For C > Cmax case, fc = 1 -> S = 1 -> The formula for phi(r) takes into account the second nearest neighbors.
+#   For C > Cmin and C < Cmax, 
+#   C is related with (rik/rij) and (rjk/rij).
 #-------------------------------
 # Therefore, for structures with only first nearest neighbors such as dimer(dim) and ch4, the formula is the same for 2NN as for 1NN. This is the justification for using MEAM92 parameters with dim set to 1NN in 2NN as well. Even for elements with dim set in library.meam, if an alloy with a second nearest neighbor structure is specified as the reference structure, naturally 2NN-MEAM will also set to 2NN.
 # It is believed that the dimers in 1NN-MEAM can be used as is in 2NN-MEAM. In papers where parameters have been changed, one possibility is to change the ibar.
