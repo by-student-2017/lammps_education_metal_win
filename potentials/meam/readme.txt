@@ -134,8 +134,8 @@ Conclusion
 #   S = fc( (C-Cmin)/(Cmax-Cmin) ): In reality, S is the multiplication of S_ijk (i,j,k are atoms)
 #   The fc is smooth cutoff function.
 #   For C = Cmin case, fc = 0 -> S = 0 -> 1NN-MEAM (The formula for phi(r) takes into account the first nearest neighbors)
-#   For C > Cmax case, fc = 1 -> S = 1 -> The second nearest neighbors are fully taken into account (the second nearest neighbors' pair potentials multiplied by the screening S_ijk are fully subtracted).
-#   For C > Cmin and C < Cmax, As C increase, fc and S increase. The second nearest neighbors are gradually taken into account (the pair potential of the second nearest neighbors multiplied by the screening S_ijk is gradually subtracted).
+#   For C > Cmax case, fc = 1 -> S = 1. In other words, phi_ij(r) is created by removing overlaps between phi_i(r) and phi_j(r), including the second nearest neighbors, so that Erose holds.
+#   For C > Cmin and C < Cmax, As C increase, fc and S increase. In other words, phi_ij(r) is created by gradually removing the overlap between phi_i(r) and phi_j(r), including the second nearest neighbors, so that Erose holds.
 #   C is related with (r_ik/r_ij) and (r_jk/r_ij).
 #   This screening S_ijk results in the inclusion of three-body terms in the pair potential.
 #-------------------------------
