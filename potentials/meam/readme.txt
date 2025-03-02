@@ -120,6 +120,8 @@ Conclusion
 #-------------------------------
 # Embedded Function F(rho) = A*Ec*(rho/rho(0)_ref)*ln(rho/rho(0)_ref)
 #   "rho(0)_ref" is the background electron density at the reference structure.
+#   I haven't looked at the Lammps code yet, but it probably goes something like this:
+#     F(rho) = A*Esub*(rho/rozero)*ln(rho/rozero)
 #-------------------------------------------------------------
 
 #-------------------------------------------------------------
