@@ -112,7 +112,7 @@ Conclusion
 
 #-------------------------------------------------------------
 # The electron density function (with orientation dependence) rho(h) is related with b(h). h=0,1,2,3. i.e., b(0) = b0, etc.
-#   rho(h) = "Direction vector using rij" * exp{-b(h)*(r/re-1)}
+#   rho(h) is related with "Direction vector using rij" * exp{-b(h)*(r/re-1)}
 #   The number of direction vectors to be multiplied increases as h increases. (Spherical symmetry at h=0.)
 #-------------------------------
 # The gamma is related with t(h) and rho(h). h=0,1,2,3. i.e., "t(0) = t0 and rho(0)", "t(1) = t0 and rho(1)", etc.
