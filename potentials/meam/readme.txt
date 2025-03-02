@@ -118,10 +118,13 @@ Conclusion
 # The gamma is related with t(h) and rho(h). h=0,1,2,3. i.e., "t(0) = t0 and rho(0)", "t(1) = t0 and rho(1)", etc.
 #   Total background electron density rho = rho(0) * "The formula specified in ibar (using gamma)".
 #-------------------------------
-# Embedded Function F(rho) = A*Ec*(rho/rho(0)_ref)*ln(rho/rho(0)_ref)
+# Embedded Function, F(rho) = A*Ec*(rho/rho(0)_ref)*ln(rho/rho(0)_ref)
 #   "rho(0)_ref" is the background electron density at the reference structure.
 #   I haven't looked at the Lammps code yet, but it probably goes something like this:
 #     F(rho) = A*Esub*(rho/rozero)*ln(rho/rozero)
+#-------------------------------
+# Pair potential, phi(r) = (2/Z1)*{Erose(r) - F(rho(r))} for 1NN-MEAM
+# In the case of 2NN-MEAM, the pair potential is calculated taking into account the second nearest neighbor configuration.
 #-------------------------------------------------------------
 
 #-------------------------------------------------------------
