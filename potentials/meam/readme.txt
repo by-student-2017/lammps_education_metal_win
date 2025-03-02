@@ -129,6 +129,7 @@ Conclusion
 #-------------------------------
 # Therefore, for structures with only first nearest neighbors such as dimer(dim) and ch4, the formula is the same for 2NN as for 1NN. This is the justification for using MEAM92 parameters with dim set to 1NN in 2NN as well. Even for elements with dim set in library.meam, if an alloy with a second nearest neighbor structure is specified as the reference structure, naturally 2NN-MEAM will also set to 2NN.
 # It is believed that the dimers in 1NN-MEAM can be used as is in 2NN-MEAM. In papers where parameters have been changed, one possibility is to change the ibar.
+# Regarding the dimer(dim) of the MEAM92 series, H, N, and O, papers on 2NN-MEAM have also been reported, so there is little need to reuse the parameters of 1NN-MEAM.
 #-------------------------------------------------------------
 
 #-------------------------------------------------------------
