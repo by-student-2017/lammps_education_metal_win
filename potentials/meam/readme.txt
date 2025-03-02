@@ -111,6 +111,11 @@ Conclusion
 #-------------------------------------------------------------
 
 #-------------------------------------------------------------
+# rho: b0, b1, b2, b3
+# Gamma: t0, t1, t2, t3
+#-------------------------------------------------------------
+
+#-------------------------------------------------------------
 # Assumption in ternary systems
 C(A-C-B) = C(A,B,C), when A-B atom pair is screened by C atom.
 #----------(see VPdY.meam or TiVN.meam) (This is easy to understand as it is a simple mixture of each.)
