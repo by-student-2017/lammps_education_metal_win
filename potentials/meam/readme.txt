@@ -178,6 +178,19 @@ see https://github.com/by-student-2017/lammps_education_metal_win/blob/master/po
 #-------------------------------------------------------------
 
 #-------------------------------------------------------------
+# M I Baskes and R A Johnson 1994 Modelling Simul. Mater. Sci. Eng. 2 147.: 10.1088/0965-0393/2/1/011
+E(r) = -Ec*[1+alpha(r/re-1)]*exp[-alpha(r/re-1)]
+alpha^2 = 9*Omega*B/Ec
+#-----At r = re
+E = -Ec
+dE/dr = 0
+d(dE/dr)/dr = 9*Omega*B/re^2
+HCP and FCC: re^3 = sqrt(2)*Omega
+#-----EAM form
+t1 = t2 = t3 = 0 -> Only b0 is a variable (note that b0 is related to spherical symmetry)
+#-------------------------------------------------------------
+
+#-------------------------------------------------------------
 # Relationship between EAM and MEAM when "b1=b2=b3=t1=t2=t3=O" (e.g., He of FeHe, or Zn of CuZn and AA7075)
 - If all the b parameters (b1, b2, b3) other than b0 and all the t parameters (t1, t2, t3) other than t0 are 0, then the MEAM is equivalent to the EAM. This is because the MEAM is an extension of the EAM, with the additional parameters b and t being used to introduce angular dependence.
 - Specifically, b0 represents the fundamental term of the angular dependence, and t0 is the parameter for scaling it. If all other parameters are 0, then the angular dependence disappears, resulting in the same form as the EAM.
