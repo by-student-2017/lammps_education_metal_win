@@ -271,6 +271,16 @@ The NaCl-type FeH, for which first-principles calculation of lattice parameter a
 #-------------------------------------------------------------
 
 #-------------------------------------------------------------
+Note: For Ec, re and B
+The first derivative of energy with respect to volume represents pressure, and the second derivative represents bulk modulus.
+P = -dE/dV   (1st derivative)
+B = V*-dP/dV = V*d(dE/dV)/dV   (2nd derivative)
+As reported in many papers, re and B from DFT (VASP, QE, etc.) are used. This is because they are not bad compared to the experimental values. On the other hand, Ec is quite different from the experimental value even in DFT. 
+Considering that B is close to the experimental value, it is thought that the second and first derivatives of the energy are predicted quite accurately.
+
+#-------------------------------------------------------------
+
+#-------------------------------------------------------------
 # Inferred phylogenetic tree
 - CFeMnSi (Aslam 2019) -> FeCoCrMnSi (Salloom 2022)
 - Fe-X(X=Al,Cu,Nb,W)_CoNb (Muralles 2023) -> CoFe-X(X=V,Nb,Mo,W) (Muralles 2024)
