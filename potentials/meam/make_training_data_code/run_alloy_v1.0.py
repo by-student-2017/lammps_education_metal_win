@@ -567,7 +567,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
         'control': {
             'calculation': 'scf',
             'restart_mode': 'from_scratch',
-            'prefix': f'b2_{element1}_{element2}',
+            'prefix': f'{lattce}_{element1}_{element2}',
             'pseudo_dir': f'{pseudo_dir}',
             'outdir': './out',
             'tprnfor': True, # Forces will be printed
