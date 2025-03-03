@@ -140,8 +140,8 @@ Conclusion
 #   This screening S_ijk results in the inclusion of three-body terms in the pair potential.
 #-------------------------------
 # C = [2*(Xik+Xkj)-(Xik-Xkj)^2-1]/[1-(Xik-Xkj)^2]
-# Xik = (Rik/Rij)^2, Xkj = (Rkj/Rij)^2
-# If Rij is the second nearest neighbor distance and Rik = Rkj is the first nearest neighbor distance, then we get:
+# Xik = (r_ik/r_ij)^2, Xkj = (r_kj/r_ij)^2
+# If r_ij is the second nearest neighbor distance and r_ik = r_kj is the first nearest neighbor distance, then we get:
 # FCC: Xik = Xkj = (sqrt(2)/2)^2 -> C = 1.0
 # BCC: Xik = Xkj = (sqrt(3)/2)^2 -> C = 2.0
 # The second nearest-neighbor interactions can be taken into consideration by giving a lower value than 2.0 and 1.0 to Cmin in the case of bcc and fcc metals, respectively. [B.-J. Lee et al., Phys. Rev. B. 62, 8564 (2000).]
