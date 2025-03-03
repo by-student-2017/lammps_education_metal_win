@@ -144,7 +144,7 @@ Conclusion
 # If Rij is the second nearest neighbor distance and Rik = Rkj is the first nearest neighbor distance, then we get:
 # FCC: Xik = Xkj = (sqrt(2)/2)^2 -> C = 1.0
 # BCC: Xik = Xkj = (sqrt(3)/2)^2 -> C = 2.0
-#  The second nearest-neighbor interactions can be taken into consideration by giving a lower value than 2.0 and 1.0 to Cmin in the case of bcc and fcc metals, respectively. [B.-J. Lee et al., Phys. Rev. B. 62, 8564 (2000).]
+# The second nearest-neighbor interactions can be taken into consideration by giving a lower value than 2.0 and 1.0 to Cmin in the case of bcc and fcc metals, respectively. [B.-J. Lee et al., Phys. Rev. B. 62, 8564 (2000).]
 # In the original MEAM (1NN-MEAM) Cmax=2.8  and Cmin=2.0 were chosen. These values ensure that for the fcc structure first nearest neighbors are completely unscreened for reasonably large thermal vibration, and the interactions are still first neighbor only even in the bcc structure. [M. I.Baskes, Phys. Rev. B 46, 2727 (1992).]
 #-------------------------------
 # Therefore, for structures with only first nearest neighbors such as dimer(dim) and ch4, the formula is the same for 2NN as for 1NN. This is the justification for using MEAM92 parameters with dim set to 1NN in 2NN as well. Even for elements with dim set in library.meam, if an alloy with a second nearest neighbor structure is specified as the reference structure, naturally 2NN-MEAM will also set to 2NN.
