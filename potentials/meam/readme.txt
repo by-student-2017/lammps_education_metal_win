@@ -142,8 +142,8 @@ Conclusion
 # C = [2*(Xik+Xkj)-(Xik-Xkj)^2-1]/[1-(Xik-Xkj)^2]
 # Xik = (r_ik/r_ij)^2, Xkj = (r_kj/r_ij)^2
 # If r_ij is the second nearest neighbor distance and r_ik = r_kj is the first nearest neighbor distance, then we get:
-# FCC: Xik = Xkj = (sqrt(2)/2)^2 -> C = 1.0
-# BCC: Xik = Xkj = (sqrt(3)/2)^2 -> C = 2.0
+# FCC: Xik = Xkj = (sqrt(2)/2)^2 -> C = 2*(2/4+2/4)-1 = 1.0
+# BCC: Xik = Xkj = (sqrt(3)/2)^2 -> C = 2*(3/4+3/4)-1 = 2.0
 # The second nearest-neighbor interactions can be taken into consideration by giving a lower value than 2.0 and 1.0 to Cmin in the case of bcc and fcc metals, respectively. [B.-J. Lee et al., Phys. Rev. B. 62, 8564 (2000).]
 # In the original MEAM (1NN-MEAM) Cmax=2.8  and Cmin=2.0 were chosen. These values ensure that for the fcc structure first nearest neighbors are completely unscreened for reasonably large thermal vibration, and the interactions are still first neighbor only even in the bcc structure. [M. I.Baskes, Phys. Rev. B 46, 2727 (1992).]
 #-------------------------------
