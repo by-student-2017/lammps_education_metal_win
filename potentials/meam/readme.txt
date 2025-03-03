@@ -244,7 +244,7 @@ Note: For b1, b2, and b3, it was also intended to keep the same values (2.2, 6.0
 Note: In some cases, different values were given to b1 and b3 in order to better fit surface relaxation, as will be mentioned later again.
 Note: By fixing the values of Cmax, b1, b2, and b3, the adjustable parameters whose values should be actually determined by fitting to physical properties become only seven, A, b0, t1, t2, t3, Cmin, and d.
 Note:  The plus sign does not mean that the individual properties are affected only by the linked parameter values. For example, the A parameter has an effect on almost all properties. 
-- HCP case (Ti and Zr)
+- HCP case (Ti and Zr) [Y.-M. Kim et al., Phys. Rev. B 74, 014101 (2006).]
 |                 | A  | b0 | b1 | b2 | b3 | t1 | t2 | t3 |
 | --------------- | -- | -- | -- | -- | -- | -- | -- | -- |
 | C11             | +  | +  | +  |    |    |    |    | +  |
@@ -254,6 +254,7 @@ Note:  The plus sign does not mean that the individual properties are affected o
 | EfI             | +  | +  |    | +  | +  | +  | +  | +  |
 | dE(hcp->bcc)    | +  | +  |    |    |    |    |    | +  |
 | dE(hcp->fcc)    | +  | +  |    |    |    |    |    | +  |
+Note: For the determination of the adjustable parameter values, a similar procedure to the previous ones for bcc and fcc elements was used.
 #-------------------------------------------------------------
 
 #-------------------------------------------------------------
