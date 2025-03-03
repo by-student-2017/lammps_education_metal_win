@@ -142,8 +142,10 @@ Conclusion
 # C = [2*(Xik+Xkj)-(Xik-Xkj)^2-1]/[1-(Xik-Xkj)^2]
 # Xik = (Rik/Rij)^2, Xkj = (Rkj/Rij)^2
 # If Rij is the second nearest neighbor distance and Rik = Rkj is the first nearest neighbor distance, then we get:
-# FCC: Xik = Xkj = (sqrt(2)/2)^2 -> C = 1.0
-# BCC: Xik = Xkj = (sqrt(3)/2)^2 -> C = 2.0
+# FCC: Xik = Xkj = (sqrt(2)/2)^2 -> C = 1.0 (i.e., Cmin < 1.0 for 2NN-MEAM)
+# BCC: Xik = Xkj = (sqrt(3)/2)^2 -> C = 2.0 (i.e., Cmin < 2.0 for 2NN-MEAM)
+# 
+# In the original MEAM (1NN-MEAM) Cmax=2.8  and Cmin=2.0 were chosen. These values ensure that for the fcc structure first nearest neighbors are completely unscreened for reasonably large thermal vibration, and the interactions are still first neighbor only even in the bcc structure. [M. I.Baskes, Phys. Rev. B 46,2727 (1992).]
 #-------------------------------
 # Therefore, for structures with only first nearest neighbors such as dimer(dim) and ch4, the formula is the same for 2NN as for 1NN. This is the justification for using MEAM92 parameters with dim set to 1NN in 2NN as well. Even for elements with dim set in library.meam, if an alloy with a second nearest neighbor structure is specified as the reference structure, naturally 2NN-MEAM will also set to 2NN.
 # It is believed that the dimers in 1NN-MEAM can be used as is in 2NN-MEAM. In papers where parameters have been changed, one possibility is to change the ibar.
