@@ -18,7 +18,7 @@ from ase.dft.kpoints import monkhorst_pack
 #------------------------------------------------------------------
 # b1: FCC_B1 (NaCl-type), b2:BCC_B2 (CsCl-type), dia:Diamond_B3 (Zinc Blende), l12: L12 (Cu3Au-type)
 # fcc: FCC (1 element), hcp: HCP (1 element), bcc: BCC (1 element), sc: SC (1 element), dia1: Daiamond
-lattce = 'hcp'
+lattce = 'bcc'
 #------------------------------------------------------------------
 # lattice structure of reference configuration [Angstrom] (https://en.wikipedia.org/wiki/Lattice_constant)
 lat = ''     # In the case of '', the sum of covalent_radii (sum of concentration ratio in L12)
@@ -958,7 +958,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
     cohesive_energy_per_atom = e0 * -1.0
     if primitive_flag == 1 and (lattce == 'b1' or lattce == 'dia' or lattce == 'fcc' or lattce == 'dia1'):
         optimized_a = (v0 * len(atoms) * 4)**(1/3)
-    elif primitive_flag == 1 and lattce == 'bcc'):
+    elif primitive_flag == 1 and lattce == 'bcc':
         optimized_a = (v0 * len(atoms) * 2)**(1/3)
     else:
         optimized_a = (v0 * len(atoms))**(1/3)
