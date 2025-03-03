@@ -188,7 +188,7 @@ dE/dr = 0
 d(dE/dr)/dr = 9*Omega*B/re^2
 #-----EAM form
 t1 = t2 = t3 = 0 -> Only b0 is a variable (note that b0 is related to spherical symmetry)
-#-----1NN-MEAM
+#-----1NN-MEAM (HCP)
 Parameter | Experimental input | Eauation
 Ec        | sublimation energy | direct
 re        | atomic volume      | re^3 = sqrt(2)*Omega
