@@ -227,15 +227,23 @@ Note: By fixing the values of b1, b2, and b3, the adjustable parameters whose va
 | --------------- | -- | -- | -- | -- | -- | ---- |
 | C11 and C12     |    | +  |    |    |    |      |
 | C44             |    |    |    | +  |    |      |
-| Esurf, EfV, QD  |    |    | +  |    |    |      |
+| Esurf, EfV, Q   |    |    | +  |    |    |      |
 | Esf             |    |    |    |    | +  |      |
 | dE(bcc->fcc)    | +  |    |    |    |    |      |
 | dE(fcc->hcp)    | +  |    |    |    | +  |      |
 | epsilon         |    |    |    |    |    |  +   |
-| surf. reconst.  | +  |    |    |    |    |  +   |
+| surface reconstraction | +  |    |    |    |    |  +   |
+(epsilon is the thermal expansion coefficient.)
+Step 1. Assume Cmin (set about -2.0% of 1NN-MEAM value)
+Step 2. fit A for surface reconstruction
+Step 3. fit b0 for C11 and C44
+Step 4. fit t2 for C44
+Step 5. fit t3 for (111) stacking fault energy (Esf)
+Step 4. fit t1 for Esurf, EfV and vacancy diffusion (Q) -> proceed to step 1 for epsilon
 Note: For b1, b2, and b3, it was also intended to keep the same values (2.2, 6.0, and 2.2, respectively) as in the 1NN MEAM because the effect of those parameters on the physical properties considered here was meager. 
 Note: In some cases, different values were given to b1 and b3 in order to better fit surface relaxation, as will be mentioned later again.
 Note: By fixing the values of Cmax, b1, b2, and b3, the adjustable parameters whose values should be actually determined by fitting to physical properties become only seven, A, b0, t1, t2, t3, Cmin, and d.
+Note:  The plus sign does not mean that the individual properties are affected only by the linked parameter values. For example, the A parameter has an effect on almost all properties. 
 - HCP case (Ti and Zr)
 |                 | A  | b0 | b1 | b2 | b3 | t1 | t2 | t3 |
 | --------------- | -- | -- | -- | -- | -- | -- | -- | -- |
