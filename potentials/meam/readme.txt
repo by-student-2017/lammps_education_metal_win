@@ -256,6 +256,9 @@ Note:  The plus sign does not mean that the individual properties are affected o
 | dE(hcp->fcc)    | +  | +  |    |    |    |    |    | +  |
 Note: For the determination of the adjustable parameter values, a similar procedure to the previous ones for bcc and fcc elements was used.
 #-------------------------------------------------------------
+Fe-H: [7] B.-J. Lee and J.-W. Jang, A modified embedded-atom method interatomic potential for the FeH system, Acta Materialia, vol. 55, pp. 67796788, Dec. 2007.
+The NaCl-type FeH, for which first-principles calculation of lattice parameter and bulk modulus is available, was selected as the reference structure.
+#-------------------------------------------------------------
 
 #-------------------------------------------------------------
 # Relationship between EAM and MEAM when "b1=b2=b3=t1=t2=t3=O" (e.g., He of FeHe, or Zn of CuZn and AA7075)
