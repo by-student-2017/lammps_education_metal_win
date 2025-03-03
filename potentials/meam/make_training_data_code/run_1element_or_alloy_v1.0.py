@@ -741,6 +741,10 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
     elif D_flag == 3:
         input_data['system']['vdw_corr'] = 'dft-d3'
     
+    if lattce == 'fcc' or lattce == 'bcc' or lattce == 'hcp' or lattce == 'dia1':
+        input_data['system']['ecutwfc'] = pseudopotentials[element2]['cutoff_wfc']
+        input_data['system']['ecutrho'] = pseudopotentials[element2]['cutoff_rho']
+    
     if cutoff == 0:
         pass
     elif cutoff > 0:
@@ -749,10 +753,6 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
     else:
         input_data['system']['ecutwfc'] = f'{520/Rydberg}'
         input_data['system']['ecutwfc'] = f'{520*4.0/Rydberg}'
-    
-    if lattce == 'fcc' or lattce == 'bcc' or lattce == 'hcp' or lattce == 'dia1':
-        input_data['system']['ecutwfc'] = pseudopotentials[element2]['cutoff_wfc']
-        input_data['system']['ecutrho'] = pseudopotentials[element2]['cutoff_rho']
     
     calc = Espresso(pseudopotentials=pseudopotentials_dict, input_data=input_data, kpts=(kpt, kpt, kptc), koffset=True, omp_num_threads=omp_num_threads, mpi_num_procs=mpi_num_procs, nspin=nspin)
     #calc = Espresso(pseudopotentials=pseudopotentials_dict, input_data=input_data, kpts=(kpt, kpt, kptc), omp_num_threads=omp_num_threads, mpi_num_procs=mpi_num_procs, nspin=nspin)
