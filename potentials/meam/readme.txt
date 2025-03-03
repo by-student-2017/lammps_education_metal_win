@@ -232,8 +232,8 @@ Note: By fixing the values of b1, b2, and b3, the adjustable parameters whose va
 | dE(bcc->fcc)    | +  |    |    |    |    |      |
 | dE(fcc->hcp)    | +  |    |    |    | +  |      |
 | epsilon         |    |    |    |    |    |  +   |
-| surface reconstraction | +  |    |    |    |    |  +   |
-(epsilon is the thermal expansion coefficient.)
+| surf. reconst.  | +  |    |    |    |    |  +   |
+(epsilon is the thermal expansion coefficient. "surf. reconst." means "surface reconstruction")
 Step 1. Assume Cmin (set about -2.0% of 1NN-MEAM value)
 Step 2. fit A for surface reconstruction
 Step 3. fit b0 for C11 and C44
