@@ -188,6 +188,19 @@ dE/dr = 0
 d(dE/dr)/dr = 9*Omega*B/re^2
 #-----EAM form
 t1 = t2 = t3 = 0 -> Only b0 is a variable (note that b0 is related to spherical symmetry)
+#-----1NN-MEAM
+Parameter | Experimental input | Eauation
+Ec        | sublimation energy | direct
+re        | atomic volume      | re^3 = sqrt(2)*Omega
+alpha     | bulk modulus       | sqrt(9*Omega*B/Ec)
+A         | BCC-HCP energy difference | numerical
+b0        | shear elastic constant, Ca | numerical
+b1        | internal relaxation for Ca | fixed (Note: b0 = 0)
+b2        | shear elastic constants (Cb, Cc) | Equ.24
+b3        | shear elastic constant, Ca | numerical
+t1        | vacancy fromation energy | Equ.28 and 21
+t2        | shear elastic constants (Cb, Cc) | Equ.27
+t3        | c/a | numerical
 #-------------------------------------------------------------
 
 #-------------------------------------------------------------
@@ -198,20 +211,6 @@ t1 = t2 = t3 = 0 -> Only b0 is a variable (note that b0 is related to spherical 
 - Note: This is also important when creating potentials with rare gases, since studying different gas atmospheres and their pressures is important for the development of practical materials. 
 - Note: The Lammps code has a function ("momb") to calculate Grimme's dispersion force (-D2). It may be worth considering using this function. However, the easiest way to interact with noble gases is to use the Lennerd-Jones potential (see https://doi.org/10.1140/epjd/e2019-100387-9). 
 - Note: If you want to take into account the second moment approximation, which has an important effect when changing the coordination number, you need to add it to the MEAM file. In that sense, it is worth taking the trouble to add new elements to the MEAM file.
-#-------------------------------------------------------------
-
-#-------------------------------------------------------------
-# For 1NN-MEAM (2025/1/25)
-- Ask Copilot: The 2022 paper "High strain-rate effect on microstructure evolution and plasticity of aluminum 5052 alloy nano-multilayer: A molecular dynamics study" uses 1NN-MEAM. This is probably because it is a closed pack, and although it deals with grain boundaries, it does not deal with the surface, and discusses tensile strength and dislocation density. What are your thoughts on this? Incidentally, 2NN-MEAM was published by Lee in 2001. I think the authors and referees decided that 2NN-MEAM was not necessary. In addition, as Baskes​ studied with MEAM​ in 1992, it has shown good results in dilute systems. Perhaps it was judged that the additives in Al​ could be approximated as dilute because it is AA5052 ?
-- Answer from Copilot: Your analysis is quite insightful. Here are some points to consider regarding the use of 1NN-MEAM in the 2022 paper titled "High strain-rate effect on microstructure evolution and plasticity of aluminum 5052 alloy nano-multilayer: A molecular dynamics study":
-1. Closed-packed structure: 1NN-MEAM is well-suited for FCC (face-centered cubic) structures. Since AA5052 has an FCC structure, 1NN-MEAM is a suitable choice.
-2. Grain boundary treatment: 1NN-MEAM can accurately simulate grain boundary behavior. Even without considering surface effects, it can effectively capture the influence of grain boundaries.
-3. Tensile strength and dislocation density: 1NN-MEAM is effective in evaluating tensile strength and dislocation density, which are directly related to the plastic deformation and strength of the material.
-4. Dilute alloying elements: AA5052 is an aluminum alloy with low concentrations of alloying elements. As Baskes demonstrated in 1992, MEAM performs well in dilute systems. Therefore, it is likely that the authors and reviewers deemed 1NN-MEAM sufficient for this study.
-- 2NN-MEAM, developed by Lee in 2001, considers more complex interactions but is not always necessary for all simulations. When 1NN-MEAM provides adequate accuracy, it is often chosen for its lower computational cost and simpler model.
-- In summary, the choice of 1NN-MEAM in this study appears to be a well-considered decision based on the material properties and the objectives of the simulation. Your analysis aligns well with these considerations.
-5. Application to Other Bases
-- This research methodology can be applied not only to Al-based materials but also to Fe-based and Ni-based materials. For example, it is effective for analyzing the microstructure of Fe-based nanocrystalline materials and Ni-based superalloys.
 #-------------------------------------------------------------
 
 #-------------------------------------------------------------
