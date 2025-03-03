@@ -432,7 +432,10 @@ def calculate_elastic_constants(atoms, calc, shear_strains, normal_strains):
 def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, max_retries=20, lattce='', lat='', npoints=25, primitive_flag=1, PBEsol_flag=0, spin_flag=1, D_flag=1, cutoff=520):
     element1, element2 = elements_combination
     
-    print(f"{element1}-{element2} pair, lattce = {lattce}")
+    if lattce == 'fcc' or lattce == 'bcc' or lattce == 'hcp' or lattce == 'dia1':
+        print(f"{element2} pair, lattce = {lattce}")
+    else:
+        print(f"{element1}-{element2} pair, lattce = {lattce}")
     
     #radius1 = atomic_radii[element1]
     #radius2 = atomic_radii[element2]
@@ -447,6 +450,8 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
         if lattce == 'l12':
             re = (radius1*3/2 + radius2/2) # The reason for this is based on Vegard's law.
             print(f'Start Nearest Neighbor Distance, re = (radius1*3/2 + radius2/2) = {re} [A]')
+        elif lattce == 'fcc' or lattce == 'bcc' or lattce == 'hcp' or lattce == 'dia1':
+            re = radius2*2 # radius2 = covalent_radii[element2]
         else:
             re = (radius1 + radius2)
             print(f'Start Nearest Neighbor Distance, re = (radius1 + radius2) = {re} [A]')
@@ -691,7 +696,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
         'control': {
             'calculation': 'scf',
             'restart_mode': 'from_scratch',
-            'prefix': f'b2_{element1}_{element2}',
+            'prefix': f'{lattce}_{element1}_{element2}',
             'pseudo_dir': f'{pseudo_dir}',
             'outdir': './out',
             'tprnfor': True, # Forces will be printed
@@ -742,6 +747,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
         input_data['system']['vdw_corr'] = 'dft-d3'
     
     if lattce == 'fcc' or lattce == 'bcc' or lattce == 'hcp' or lattce == 'dia1':
+        input_data['control']['prefix'] = f'{lattce}_{element2}'
         input_data['system']['ecutwfc'] = pseudopotentials[element2]['cutoff_wfc']
         input_data['system']['ecutrho'] = pseudopotentials[element2]['cutoff_rho']
     
@@ -809,7 +815,10 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
                 #---------------------------------
             good_flag = 1
         except Exception as e:
-            print(f"Optimization failed for {element1}-{element2} with error: {e}")
+            if lattce == 'fcc' or lattce == 'bcc' or lattce == 'hcp' or lattce == 'dia1':
+                print(f"Optimization failed for {element2} with error: {e}")
+            else:
+                print(f"Optimization failed for {element1}-{element2} with error: {e}")
             if retries >= max_retries:
                 print("Max retries reached. Skipping this combination.")
                 return "Error-1"
@@ -942,6 +951,9 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
     directory = f'results_{DFT}{D_char}_{spin_char}_{lattce.upper()}'
     if not os.path.exists(directory):
         os.makedirs(directory)
+    
+    if lattce == 'fcc' or lattce == 'bcc' or lattce == 'hcp' or lattce == 'dia1':
+        element1 = '1element'
 
     # eos: sjeos, taylor, murnaghan, birch, birchmurnaghan, pouriertarantola, vinet, antonschmidt, p3
     eos = EquationOfState(volumes_per_atom, [energy * -1.0 for energy in cohesive_energies_per_atom], eos='murnaghan')
