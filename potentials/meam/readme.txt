@@ -204,14 +204,23 @@ t3        | c/a | numerical
 #-------------------------------------------------------------
 
 #-------------------------------------------------------------
-- BCC case
+#  Here, the plus sign means the effect is significant, the minus sign means the effect is minor, and no sign means no effect.
+- BCC case (b1 = b3 = 1) (EfV is the relaxed vacancy-formation energy)
 |                 | A  | b0 | t1 | t2 | t3 | Cmin |
 | --------------- | -- | -- | -- | -- | -- | ---- |
 | C11 and C12     | +  | +  |    | -  |    |  +   |
 | C44             | +  | +  |    | -  |    |  +   |
 | Esurf           | +  | -  | +  | -  | -  |  -   |
+| EfV             | +  | -  | +  | +  | +  |  +   |
 | dE(bcc->fcc)    | +  | +  |    |    | +  |  +   |
 | dE(fcc->hcp)    | +  | +  |    |    | +  |  +   |
+Step 1. Assume Cmin
+Step 2. fit A and b0 for C11 and C44
+Step 3. fit Cmin for dE(bcc->fcc) and elastic constants
+Step 4. fit t1 and t2 for Esurf and EfV -> Since the elastic constants change with t2, proceed to step 2.
+Note: For b1, b2 and b3, it was also intended to keep the same values (all 1.0) as in the 1NN-MEAM.
+Note: However, some different values had to be given to b2 for some elements [Nb and V].
+Note: By fixing the values of b1, b2, and b3, the adjustable parameters whose values should be actually determined by fitting to physical properties becomes only seven, A, b0, t1, t2, t3, Cmin, and d. 
 - HCP case (Ti and Zr)
 |                 | A  | b0 | b1 | b2 | b3 | t1 | t2 | t3 |
 | --------------- | -- | -- | -- | -- | -- | -- | -- | -- |
