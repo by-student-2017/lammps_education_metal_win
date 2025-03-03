@@ -205,7 +205,7 @@ t3        | c/a | numerical
 
 #-------------------------------------------------------------
 #  Here, the plus sign means the effect is significant, the minus sign means the effect is minor, and no sign means no effect.
-- BCC case (b1 = b3 = 1) (EfV is the relaxed vacancy-formation energy)
+- BCC case (b1 = b3 = 1) (EfV is the relaxed vacancy-formation energy) [B.-J. Lee et al., Phys. Rev. B 64, 184102 (2001).]
 |                 | A  | b0 | t1 | t2 | t3 | Cmin |
 | --------------- | -- | -- | -- | -- | -- | ---- |
 | C11 and C12     | +  | +  |    | -  |    |  +   |
