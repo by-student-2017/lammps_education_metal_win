@@ -1258,7 +1258,7 @@ for i, combination in enumerate(element_combinations):
         
         #print(f"## check {natoms} vs. {len(types)}")
         
-        with open(f'{directory}/potfit_{lattce}_{element1}-{element2}.config', 'a') as txtfile:
+        with open(f'{directory}/potfit_{lattce}_{element1}-{element2}_{spin_char}.config', 'a') as txtfile:
             txtfile.write(f"#N {natoms} 1\n")
             txtfile.write(f"#C {element1} {element2}\n")
             txtfile.write(f"## force file generated from file espresso.pwo\n")

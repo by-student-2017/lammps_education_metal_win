@@ -1640,7 +1640,7 @@ for i, combination in enumerate(element_combinations):
         
         #print(f"## check {natoms} vs. {len(types)}")
         
-        with open(f'{directory}/potfit_{lattce}_{element1}-{element2}.config', 'a') as txtfile:
+        with open(f'{directory}/potfit_{lattce}_{element1}-{element2}_{spin_char}.config', 'a') as txtfile:
             txtfile.write(f"#N {natoms} 1\n")
             if lattce in ['fcc', 'bcc', 'hcp', 'sc', 'dia1', 'dim1']:
                 txtfile.write(f"#C {element2}\n")
