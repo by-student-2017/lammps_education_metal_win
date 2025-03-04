@@ -963,6 +963,8 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
     return_data = {
         'Element1': element1,
         'Element2': element2,
+        #-------------------------
+        # XX.meam file
         'Lattice Type': lattice_type,
         'Cohesive Energy (eV/atom)': cohesive_energy_per_atom,
         'Nearest Neighbor Distance (A)': nearest_neighbor_distance,
@@ -978,14 +980,23 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
         'attrac_erose_form_2': attrac_fit_erose_form_2, # d = a3 = attrac, astar >= 0
         #-------------------------
         #----------------------------------------------------------
+        # lattice information
         'optimized_scaling_factor': optimized_scaling_factor,
         'Atoms': len(atoms),
-        'Lattice Constant (A)': optimized_a, # Values ​​in conventional cells.
+        'Lattice Constant a (A)': optimized_a, # Values ​​in conventional cells.
+        'Lattice Constant b (A)': optimized_a, # Values ​​in conventional cells.
+        'Lattice Constant c (A)': optimized_a, # Values ​​in conventional cells.
+        #----------------------------------------------------------
+        # eos
+        'Optimized Energy (eV/atom)': e0,
+        'Optimized Volume (A^3/atom)': v0,
+        'Bulk Modulus (GPa)': B / kJ * 1.0e24,
+        #----------------------------------------------------------
+        # fitting data
         'Volumes (A^3)': volumes,
         'Energies (eV)': energies,
         'Cohesive Energies (eV)': cohesive_energies,
         #----------------------------------------------------------
-        'Bulk Modulus (GPa)': B / kJ * 1.0e24,
         #'Elastic Constants (GPa)': elastic_constants_final,
         #----------------------------------------------------------
         'Stress Tensor per Volume (GPa)': stress_tensor,
@@ -1045,6 +1056,7 @@ for i, combination in enumerate(element_combinations):
     with open(f'{directory}.csv', 'a', newline='') as csvfile:
         fieldnames = ['Element1', 'Element2', 
                       #----------------------------------------------------------
+                      # XX.meam file
                       'lattce',
                       'Ec', 
                       're', 
@@ -1060,13 +1072,28 @@ for i, combination in enumerate(element_combinations):
                       'attrac (erose_form=2)', 
                       #-------------------------
                       #----------------------------------------------------------
+                      # lattice information
                       're_opt/re_init',
                       'Atoms', 
                       'Lattice Type',
-                      'Lattice Constant (A)', 'Volumes (A^3)', 
-                      'Energies (eV)', 'Cohesive Energies (eV)', 
+                      'Lattice Constant a (A)', 
+                      'Lattice Constant b (A)', 
+                      'Lattice Constant c (A)', 
+                      #-------------------------
+                      # eos
+                      'Optimized Energy (eV/atom)',
+                      'Optimized Volume (A^3/atom)',
                       'Bulk Modulus (GPa)', 
+                      #-------------------------
+                      # fitting data
+                      'Volumes (A^3)', 
+                      'Energies (eV)',
+                      'Cohesive Energies (eV)', 
+                      #-------------------------
+                      'Bulk Modulus (GPa)', 
+                      #-------------------------
                       #'C11', 'C12', 'C22', 'C33', 'C23', 'C13', 'C44', 'C55', 'C66', 
+                      #-------------------------
                       'Stress Tensor per Volume (GPa)',
                       'Forces (eV/A)'
                       ]
@@ -1085,7 +1112,8 @@ for i, combination in enumerate(element_combinations):
             'Element1': result['Element1'],
             'Element2': result['Element2'],
             #----------------------------------------------------------
-            'lattce': lattce,
+            # XX.meam file
+            'lattce': result['Lattice Type'],
             'Ec': result['Cohesive Energy (eV/atom)'],
             're': result['Nearest Neighbor Distance (A)'],
             'alpha': result['alpha'],
@@ -1100,15 +1128,20 @@ for i, combination in enumerate(element_combinations):
             'attrac (erose_form=2)': result['attrac_erose_form_2'],
             #-------------------------
             #----------------------------------------------------------
+            # lattice information
             're_opt/re_init': result['optimized_scaling_factor'],
             'Atoms': result['Atoms'],
             'Lattice Type': result['Lattice Type'],
-            'Lattice Constant (A)': result['Lattice Constant (A)'], # Values ​​in conventional cells.
-            'Volumes (A^3)': result['Volumes (A^3)'],
-            'Energies (eV)': result['Energies (eV)'],
-            'Cohesive Energies (eV)': result['Cohesive Energies (eV)'],
+            'Lattice Constant a (A)': result['Lattice Constant a (A)'], # Values ​​in conventional cells.
+            'Lattice Constant b (A)': result['Lattice Constant b (A)'], # Values ​​in conventional cells.
+            'Lattice Constant c (A)': result['Lattice Constant c (A)'], # Values ​​in conventional cells.
             #-----------------------------------------------
+            # eos
+            'Optimized Energy (eV/atom)': result['Optimized Energy (eV/atom)'],
+            'Optimized Volume (A^3/atom)': result['Optimized Volume (A^3/atom)'],
             'Bulk Modulus (GPa)': result['Bulk Modulus (GPa)'],
+            #-----------------------------------------------
+            # fitting data for stable structure
             #'C11': result['Elastic Constants (GPa)']['C11'],
             #'C12': result['Elastic Constants (GPa)']['C12'],
             #'C22': result['Elastic Constants (GPa)']['C22'],
@@ -1119,8 +1152,13 @@ for i, combination in enumerate(element_combinations):
             #'C55': result['Elastic Constants (GPa)']['C55'],
             #'C66': result['Elastic Constants (GPa)']['C66'],
             #-----------------------------------------------
+            # fitting data
+            'Volumes (A^3)': result['Volumes (A^3)'],
+            'Energies (eV)': result['Energies (eV)'],
+            'Cohesive Energies (eV)': result['Cohesive Energies (eV)'],
             'Stress Tensor per Volume (GPa)': result['Stress Tensor per Volume (GPa)'],
             'Forces (eV/A)': result['Forces (eV/A)']
+            #-----------------------------------------------
         }
         if spin_flag == 0:
             pass
@@ -1132,7 +1170,7 @@ for i, combination in enumerate(element_combinations):
     # Generate the potfit text file output for each volume and cohesive energy
     natoms = result['Atoms']
     for idx, (volume, cohesive_energy, stress, force) in enumerate(zip(result['Volumes (A^3)'], result['Cohesive Energies (eV)'], result['Stress Tensor per Volume (GPa)'], result['Forces (eV/A)'])):
-        ap = (volume * 2) ** (1/3) # primitive cell
+        ap = (volume * 4) ** (1/3) # primitive cell
         ac = (volume) ** (1/3) # conventional cell
         
         with open(f'{directory}/MPCv4_{element1}-{element2}-DFT_{lattce}_{spin_char}', 'a') as mpcfile:

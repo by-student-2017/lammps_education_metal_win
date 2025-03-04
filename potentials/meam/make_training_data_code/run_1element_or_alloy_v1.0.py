@@ -1266,15 +1266,16 @@ for i, combination in enumerate(element_combinations):
                       'Optimized Volume (A^3/atom)',
                       'Bulk Modulus (GPa)', 
                       #-------------------------
+                      # fitting data for stable structure
+                      #'C11', 'C12', 'C22', 'C33', 'C23', 'C13', 'C44', 'C55', 'C66', 
+                      #-------------------------
                       # fitting data
                       'Volumes (A^3)', 
                       'Energies (eV)', 
                       'Cohesive Energies (eV)', 
-                      #-------------------------
-                      #'C11', 'C12', 'C22', 'C33', 'C23', 'C13', 'C44', 'C55', 'C66', 
-                      #-------------------------
                       'Stress Tensor per Volume (GPa)',
                       'Forces (eV/A)'
+                      #-----------------------------------------------
                       )
         if spin_flag == 0:
             pass
@@ -1327,8 +1328,8 @@ for i, combination in enumerate(element_combinations):
             'Atoms': result['Atoms'],
             'Lattice Type': result['Lattice Type'],
             'Lattice Constant a (A)': result['Lattice Constant a (A)'], # Values ​​in conventional cells.
-            'Lattice Constant a (A)': result['Lattice Constant b (A)'], # Values ​​in conventional cells.
-            'Lattice Constant a (A)': result['Lattice Constant c (A)'], # Values ​​in conventional cells.
+            'Lattice Constant b (A)': result['Lattice Constant b (A)'], # Values ​​in conventional cells.
+            'Lattice Constant c (A)': result['Lattice Constant c (A)'], # Values ​​in conventional cells.
             #-----------------------------------------------
             # eos
             'Optimized Energy (eV/atom)': result['Optimized Energy (eV/atom)'],
