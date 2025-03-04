@@ -18,7 +18,7 @@ from ase.dft.kpoints import monkhorst_pack
 #------------------------------------------------------------------
 # b1: FCC_B1 (NaCl-type), b2:BCC_B2 (CsCl-type), dia:Diamond_B3 (Zinc Blende), l12: L12 (Cu3Au-type)
 # fcc: FCC (1 element), hcp: HCP (1 element), bcc: BCC (1 element), sc: SC (1 element), dia1: Daiamond
-lattce = 'dia1'
+lattce = 'sc'
 #------------------------------------------------------------------
 # lattice structure of reference configuration [Angstrom] (https://en.wikipedia.org/wiki/Lattice_constant)
 lat = ''     # In the case of '', the sum of covalent_radii (sum of concentration ratio in L12)
@@ -32,12 +32,14 @@ npoints = 25 # >= 11 e.g., 11, 17, 21, or 25, etc (Recommend >= 25), (default = 
 #------------------------------------------------------------------
 # Note: "fixed_element" becomes a dummy when a lattice of one element is selected (the atom in *.json is temporarily specified).
 fixed_element = 'XX'
-elements = [fixed_element,
+elements = [fixed_element, 'Be']
+'''
              'K', 'Ca', 'Sc', 'Ti',  'V', 'Cr', 'Mn', 'Fe', 'Co', 'Ni', 'Cu', 'Zn', 'Ga', 'Ge', 'As', 'Se', 'Br',
             'Rb', 'Sr',  'Y', 'Zr', 'Nb', 'Mo', 'Tc', 'Ru', 'Rh', 'Pd', 'Ag', 'Cd', 'In', 'Sn', 'Sb', 'Te',  'I',
             'Cs', 'Ba', 'La', 'Ce', 'Pr', 'Nd', 'Pm', 'Sm', 'Eu', 'Gd', 'Tb', 'Dy', 'Ho', 'Er', 'Tm', 'Yb', 'Lu', 
             'Hf', 'Ta',  'W', 'Re', 'Os', 'Ir', 'Pt', 'Au', 'Hg', 'Tl', 'Pb', 'Bi', 'Po', 'At',
             'Rn', 'Fr', 'Ac', 'Th', 'Pa',  'U', 'Np', 'Pu'] # <- Enter the element you want to calculate (Note: Time Consumption: Approx. 4 elements/hour)
+'''
 #elements = [fixed_element, 'He', 'Ne', 'Ar', 'Kr', 'Xe', 'Ra'] # Pairs with noble gases require careful calculations and must be calculated separately.
 '''
 elements = [fixed_element,
@@ -431,25 +433,25 @@ def calculate_elastic_constants(atoms, calc, shear_strains, normal_strains):
 def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, max_retries=20, lattce='', lat='', npoints=25, primitive_flag=1, PBEsol_flag=0, spin_flag=1, D_flag=1, cutoff=520):
     element1, element2 = elements_combination
     
-    if lattce == 'fcc' or lattce == 'bcc' or lattce == 'hcp' or lattce == 'sc' or lattce == 'dia1':
+    if lattce in ['fcc', 'bcc', 'hcp', 'sc', 'dia1']:
         print(f"{element2} pair, lattce = {lattce}")
     else:
         print(f"{element1}-{element2} pair, lattce = {lattce}")
     
-    #radius1 = atomic_radii[element1]
-    #radius2 = atomic_radii[element2]
-    #
-    #radius1 = vdw_radii[element1]
-    #radius2 = vdw_radii[element2]
-    #
-    radius1 = covalent_radii[element1]
-    radius2 = covalent_radii[element2]
+    if lattce == 'dim' or lattce == 'ch4' or lattce == 'dim1':
+        radius1 = atomic_radii[element1]
+        radius2 = atomic_radii[element2]
+    else:
+        radius1 = covalent_radii[element1]
+        radius2 = covalent_radii[element2]
+        #radius1 = vdw_radii[element1]
+        #radius2 = vdw_radii[element2]
     
     if lat == '':
         if lattce == 'l12':
             re = (radius1*3/2 + radius2/2) # The reason for this is based on Vegard's law.
             print(f'Start Nearest Neighbor Distance, re = (radius1*3/2 + radius2/2) = {re} [A]')
-        elif lattce == 'fcc' or lattce == 'bcc' or lattce == 'hcp' or lattce == 'sc' or lattce == 'dia1':
+        elif lattce in ['fcc', 'bcc', 'hcp', 'sc', 'dia1']:
             re = radius2*2 # radius2 = covalent_radii[element2]
         else:
             re = (radius1 + radius2)
@@ -819,7 +821,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
                 #---------------------------------
             good_flag = 1
         except Exception as e:
-            if lattce == 'fcc' or lattce == 'bcc' or lattce == 'hcp' or lattce == 'sc' or lattce == 'dia1':
+            if lattce in ['fcc', 'bcc', 'hcp', 'sc', 'dia1']:
                 print(f"Optimization failed for {element2} with error: {e}")
             else:
                 print(f"Optimization failed for {element1}-{element2} with error: {e}")
@@ -906,7 +908,14 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
         atoms.set_calculator(calc)
         print("qe cell = ", atoms.get_cell())
 
-        energy = atoms.get_total_energy()
+        try:
+            energy = atoms.get_total_energy()
+        except Exception as e:
+            print(f"Error-l1: The calculation may have stopped with [Error in routine electrons: charge is wrong].")
+            with open("error_log.txt", "a") as file:
+                file.write(f"Error-l1: The calculation may have stopped with [Error in routine electrons: charge is wrong].: {lattce}-{element1}-{element2}\n")
+            ndata -= 1
+            continue
         energies.append(energy)
 
         cohesive_energy = -(atoms.get_total_energy() - isolated_atom_energy1*Nelem1 - isolated_atom_energy2*Nelem2)
@@ -956,7 +965,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
     if not os.path.exists(directory):
         os.makedirs(directory)
     
-    if lattce == 'fcc' or lattce == 'bcc' or lattce == 'hcp' or lattce == 'sc' or lattce == 'dia1':
+    if lattce in ['fcc', 'bcc', 'hcp', 'sc', 'dia1']:
         element1 = '1element'
 
     # eos: sjeos, taylor, murnaghan, birch, birchmurnaghan, pouriertarantola, vinet, antonschmidt, p3
@@ -969,12 +978,13 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
         eos.plot(f'{directory}/{lattce}-{element1}-{element2}_eos.png')
         print("The notation of the ASE plot has not been changed. Note that the calculations are done with -Ec [eV/atom] and V [A^3/atom] (the volumes of b1 and dia are the volume of the primitive cell = the volume of the conventional cell / 4).")
     except ValueError as e:
-        print(f"Error fitting EOS: {e}")
+        with open("error_log.txt", "a") as file:
+            file.write(f"Error fitting EOS: {e}.: in {lattce}-{element1}-{element2}\n")
     
     cohesive_energy_per_atom = e0 * -1.0
-    if primitive_flag == 1 and (lattce == 'b1' or lattce == 'dia' or lattce == 'fcc' or lattce == 'dia1'):
+    if primitive_flag == 1 and lattce in ['b1', 'dia', 'fcc', 'dia1']:
         optimized_a = (v0 * len(atoms) * 4)**(1/3)
-    elif primitive_flag == 1 and lattce == 'bcc':
+    elif primitive_flag == 1 and lattce in ['bcc']:
         optimized_a = (v0 * len(atoms) * 2)**(1/3)
     else:
         optimized_a = (v0 * len(atoms))**(1/3)
@@ -1086,7 +1096,7 @@ for i, combination in enumerate(element_combinations):
     results = []
     result = calculate_properties(combination, omp_num_threads, mpi_num_procs, max_retries, lattce, lat, npoints, primitive_flag, PBEsol_flag, spin_flag, D_flag, cutoff)
     element1, element2 = combination
-    if lattce == 'fcc' or lattce == 'bcc' or lattce == 'hcp' or lattce == 'sc' or lattce == 'dia1':
+    if lattce in ['fcc', 'bcc', 'hcp', 'sc', 'dia1']:
         element1 = '1element'
     if result == "Error-1":
         with open("error_log.txt", "a") as file:
@@ -1316,7 +1326,7 @@ for i, combination in enumerate(element_combinations):
         
         with open(f'{directory}/potfit_{lattce}_{element1}-{element2}.config', 'a') as txtfile:
             txtfile.write(f"#N {natoms} 1\n")
-            if lattce == 'fcc' or lattce == 'bcc' or lattce == 'hcp' or lattce == 'sc' or lattce == 'dia1':
+            if lattce in ['fcc', 'bcc', 'hcp', 'sc', 'dia1']:
                 txtfile.write(f"#C {element2}\n")
             else:
                 txtfile.write(f"#C {element1} {element2}\n")
