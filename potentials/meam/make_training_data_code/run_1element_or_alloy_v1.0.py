@@ -18,7 +18,7 @@ from ase.dft.kpoints import monkhorst_pack
 #------------------------------------------------------------------
 # b1: FCC_B1 (NaCl-type), b2:BCC_B2 (CsCl-type), dia:Diamond_B3 (Zinc Blende), l12: L12 (Cu3Au-type)
 # fcc: FCC (1 element), hcp: HCP (1 element), bcc: BCC (1 element), sc: SC (1 element), dia1: Daiamond
-lattce = 'bcc'
+lattce = 'dia1'
 #------------------------------------------------------------------
 # lattice structure of reference configuration [Angstrom] (https://en.wikipedia.org/wiki/Lattice_constant)
 lat = ''     # In the case of '', the sum of covalent_radii (sum of concentration ratio in L12)
@@ -432,7 +432,7 @@ def calculate_elastic_constants(atoms, calc, shear_strains, normal_strains):
 def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, max_retries=20, lattce='', lat='', npoints=25, primitive_flag=1, PBEsol_flag=0, spin_flag=1, D_flag=1, cutoff=520):
     element1, element2 = elements_combination
     
-    if lattce == 'fcc' or lattce == 'bcc' or lattce == 'hcp' or lattce == 'dia1':
+    if lattce == 'fcc' or lattce == 'bcc' or lattce == 'hcp' or lattce == 'sc' or lattce == 'dia1':
         print(f"{element2} pair, lattce = {lattce}")
     else:
         print(f"{element1}-{element2} pair, lattce = {lattce}")
@@ -820,7 +820,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
                 #---------------------------------
             good_flag = 1
         except Exception as e:
-            if lattce == 'fcc' or lattce == 'bcc' or lattce == 'hcp' or lattce == 'dia1':
+            if lattce == 'fcc' or lattce == 'bcc' or lattce == 'hcp' or lattce == 'sc' or lattce == 'dia1':
                 print(f"Optimization failed for {element2} with error: {e}")
             else:
                 print(f"Optimization failed for {element1}-{element2} with error: {e}")
@@ -957,7 +957,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
     if not os.path.exists(directory):
         os.makedirs(directory)
     
-    if lattce == 'fcc' or lattce == 'bcc' or lattce == 'hcp' or lattce == 'dia1':
+    if lattce == 'fcc' or lattce == 'bcc' or lattce == 'hcp' or lattce == 'sc' or lattce == 'dia1':
         element1 = '1element'
 
     # eos: sjeos, taylor, murnaghan, birch, birchmurnaghan, pouriertarantola, vinet, antonschmidt, p3
@@ -1087,7 +1087,7 @@ for i, combination in enumerate(element_combinations):
     results = []
     result = calculate_properties(combination, omp_num_threads, mpi_num_procs, max_retries, lattce, lat, npoints, primitive_flag, PBEsol_flag, spin_flag, D_flag, cutoff)
     element1, element2 = combination
-    if lattce == 'fcc' or lattce == 'bcc' or lattce == 'hcp' or lattce == 'dia1':
+    if lattce == 'fcc' or lattce == 'bcc' or lattce == 'hcp' or lattce == 'sc' or lattce == 'dia1':
         element1 = '1element'
     if result == "Error-1":
         with open("error_log.txt", "a") as file:
@@ -1317,7 +1317,7 @@ for i, combination in enumerate(element_combinations):
         
         with open(f'{directory}/potfit_{lattce}_{element1}-{element2}.config', 'a') as txtfile:
             txtfile.write(f"#N {natoms} 1\n")
-            if lattce == 'fcc' or lattce == 'bcc' or lattce == 'hcp' or lattce == 'dia1':
+            if lattce == 'fcc' or lattce == 'bcc' or lattce == 'hcp' or lattce == 'sc' or lattce == 'dia1':
                 txtfile.write(f"#C {element2}\n")
             else:
                 txtfile.write(f"#C {element1} {element2}\n")
