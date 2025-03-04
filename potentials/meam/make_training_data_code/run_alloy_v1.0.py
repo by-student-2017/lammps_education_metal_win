@@ -198,8 +198,14 @@ def fit_rose_curve_erose_form_0(volumes_per_atom, cohesive_energies_per_atom, al
     plt.scatter(volumes_per_atom, E_data, label='DFT Data (QE, PAW(pslibrary))')
     plt.plot(volumes_per_atom, rose_curve(volumes_per_atom, alpha, V0, Ec, repuls_fit, attrac_fit), 
              label=f'Rose Curve Fit (repuls={repuls_fit:.4f}, attrac={attrac_fit:.4f})', color='red')
-    plt.plot(volumes_per_atom, rose_curve(volumes_per_atom, alpha, V0, Ec, repuls_fit, 0), 
+    #----------
+    if repuls_fit < 0.0:
+        plt.plot(volumes_per_atom, rose_curve(volumes_per_atom, alpha, V0, Ec, 0, 0), 
+             label=f'Rose Curve Fit (repuls=0, attrac=0)', color='blue')
+    else:
+        plt.plot(volumes_per_atom, rose_curve(volumes_per_atom, alpha, V0, Ec, repuls_fit, 0), 
              label=f'Rose Curve Fit (repuls={repuls_fit:.4f}, attrac=0)', color='blue')
+    #----------
     plt.plot(volumes_per_atom, rose_curve(volumes_per_atom, alpha, V0, Ec, 0.05, 0.05), 
              label=f'Rose Curve Fit (repuls=0.05, attrac=0.05)', color='green')
     plt.xlabel('Volume, V (A^3/atom)')
@@ -252,8 +258,8 @@ def fit_rose_curve_erose_form_1(volumes_per_atom, cohesive_energies_per_atom, al
              label=f'Rose Curve Fit (repuls={repuls_fit:.4f}, attrac={attrac_fit:.4f}, rc={repuls_fit/attrac_fit:.2f})', color='red')
     plt.plot(volumes_per_atom, rose_curve(volumes_per_atom, alpha, V0, Ec, 0, 0, nearest_neighbor_distance),  
              label=f'Rose Curve Fit (repuls=0, attrac=0)', color='blue')
-    plt.plot(volumes_per_atom, rose_curve(volumes_per_atom, alpha, V0, Ec, 0.05, 0.05, nearest_neighbor_distance),  
-             label=f'Rose Curve Fit (repuls=0.05, attrac=0.05)', color='green')
+    plt.plot(volumes_per_atom, rose_curve(volumes_per_atom, alpha, V0, Ec, 0.20, 0.05, nearest_neighbor_distance),  
+             label=f'Rose Curve Fit (repuls=0.05, attrac=0.05, rc=4.0)', color='green')
     plt.xlabel('Volume, V (A^3/atom)')
     plt.ylabel('Cohesive Energy, -Ec (eV/atom)')
     plt.legend()
@@ -302,8 +308,14 @@ def fit_rose_curve_erose_form_2(volumes_per_atom, cohesive_energies_per_atom, al
     plt.scatter(volumes_per_atom, E_data, label='DFT Data (QE, PAW(pslibrary))')
     plt.plot(volumes_per_atom, rose_curve(volumes_per_atom, alpha, V0, Ec, repuls_fit, attrac_fit), 
              label=f'Rose Curve Fit (repuls={repuls_fit:.4f}, attrac={attrac_fit:.4f})', color='red')
-    plt.plot(volumes_per_atom, rose_curve(volumes_per_atom, alpha, V0, Ec, repuls_fit, 0), 
+    #----------
+    if repuls_fit < 0.0:
+        plt.plot(volumes_per_atom, rose_curve(volumes_per_atom, alpha, V0, Ec, 0, 0), 
+             label=f'Rose Curve Fit (repuls=0, attrac=0)', color='blue')
+    else:
+        plt.plot(volumes_per_atom, rose_curve(volumes_per_atom, alpha, V0, Ec, repuls_fit, 0), 
              label=f'Rose Curve Fit (repuls={repuls_fit:.4f}, attrac=0)', color='blue')
+    #----------
     plt.plot(volumes_per_atom, rose_curve(volumes_per_atom, alpha, V0, Ec, 0.05, 0.05), 
              label=f'Rose Curve Fit (repuls=0.05, attrac=0.05)', color='green')
     plt.xlabel('Volume, V (A^3/atom)')
