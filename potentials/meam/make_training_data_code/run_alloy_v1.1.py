@@ -849,7 +849,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
             print(f'    Magnetic moment = {magnetic_moments[ndata-1][:]}')
             print("-------------------------------------------------------------------------------------")
         
-        new_prefix = f'b2_{element1}_{element2}'
+        new_prefix = f'{lattce}_{element1}_{element2}'
         
         update_prefix_in_file('val.pp.in', new_prefix)
         update_prefix_in_file('all.pp.in', new_prefix)
