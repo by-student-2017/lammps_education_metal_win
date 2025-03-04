@@ -31,7 +31,7 @@ lat = ''     # In the case of '', the sum of covalent_radii (sum of concentratio
 npoints = 25 # >= 11 e.g., 11, 17, 21, or 25, etc (Recommend >= 25), (default = 25)
 #------------------------------------------------------------------
 # Note: "fixed_element" becomes a dummy when a lattice of one element is selected (the atom in *.json is temporarily specified).
-fixed_element = 'Pu' 
+fixed_element = 'XX' 
 elements = [fixed_element,
              'H',
             'Li', 'Be',  'B',  'C',  'N',  'O',  'F',
