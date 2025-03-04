@@ -18,7 +18,8 @@ from ase.dft.kpoints import monkhorst_pack
 #------------------------------------------------------------------
 # b1: FCC_B1 (NaCl-type), b2:BCC_B2 (CsCl-type), dia:Diamond_B3 (Zinc Blende), l12: L12 (Cu3Au-type)
 # fcc: FCC (1 element), hcp: HCP (1 element), bcc: BCC (1 element), sc: SC (1 element), dia1: Daiamond
-lattce = 'sc'
+# dim(dimer), ch4(binary system), dim1(1 element)
+lattce = 'dim'
 #------------------------------------------------------------------
 # lattice structure of reference configuration [Angstrom] (https://en.wikipedia.org/wiki/Lattice_constant)
 lat = ''     # In the case of '', the sum of covalent_radii (sum of concentration ratio in L12)
@@ -31,7 +32,7 @@ lat = ''     # In the case of '', the sum of covalent_radii (sum of concentratio
 npoints = 25 # >= 11 e.g., 11, 17, 21, or 25, etc (Recommend >= 25), (default = 25)
 #------------------------------------------------------------------
 # Note: "fixed_element" becomes a dummy when a lattice of one element is selected (the atom in *.json is temporarily specified).
-fixed_element = 'XX'
+fixed_element = 'H'
 elements = [fixed_element,
              'H',
             'Li', 'Be',  'B',  'C',  'N',  'O',  'F',
@@ -73,7 +74,7 @@ else:
     with open('PBEsol/PSlibrary_PBEsol.json', 'r') as f:
         pseudopotentials = json.load(f)
 #------------------------------------------------------------------
-D_flag = 0 # 0:non-dispersion (non-vdW), 1:DFT-D2, 2: DFT-D3 (no three-body), 3: DFT-D3, (default: 1) (Fr-Pu: 0, 2, or 3)
+D_flag = 1 # 0:non-dispersion (non-vdW), 1:DFT-D2, 2: DFT-D3 (no three-body), 3: DFT-D3, (default: 1) (Fr-Pu: 0, 2, or 3)
 #------------------------------------------------------------------
 spin_flag = 1 # 0:non-spin, 1:spin, (default = 1)
 #------------------------------------------------------------------
@@ -132,6 +133,38 @@ vdw_radii = {
     "Pa": 2.00,  "U": 1.96, "Np": 1.90, "Pu": 1.87, "XX": 2.00
 }
 
+atomic_numbers = {
+     "H":  1, "He":  2, "Li":  3, "Be":  4,  "B":  5,  "C": 6,   "N":  7,  "O":  8,  "F":  9, "Ne": 10,
+    "Na": 11, "Mg": 12, "Al": 13, "Si": 14,  "P": 15,  "S": 16, "Cl": 17, "Ar": 18,  "K": 19, "Ca": 20,
+    "Sc": 21, "Ti": 22,  "V": 23, "Cr": 24, "Mn": 25, "Fe": 26, "Co": 27, "Ni": 28, "Cu": 29, "Zn": 30,
+    "Ga": 31, "Ge": 32, "As": 33, "Se": 34, "Br": 35, "Kr": 36, "Rb": 37, "Sr": 38,  "Y": 39, "Zr": 40,
+    "Nb": 41, "Mo": 42, "Tc": 43, "Ru": 44, "Rh": 45, "Pd": 46, "Ag": 47, "Cd": 48, "In": 49, "Sn": 50,
+    "Sb": 51, "Te": 52,  "I": 53, "Xe": 54, "Cs": 55, "Ba": 56, "La": 57, "Ce": 58, "Pr": 59, "Nd": 60,
+    "Pm": 61, "Sm": 62, "Eu": 63, "Gd": 64, "Tb": 65, "Dy": 66, "Ho": 67, "Er": 68, "Tm": 69, "Yb": 70,
+    "Lu": 71, "Hf": 72, "Ta": 73,  "W": 74, "Re": 75, "Os": 76, "Ir": 77, "Pt": 78, "Au": 79, "Hg": 80,
+    "Tl": 81, "Pb": 82, "Bi": 83, "Po": 84, "At": 85, "Rn": 86, "Fr": 87, "Ra": 88, "Ac": 89, "Th": 90,
+    "Pa": 91,  "U": 92, "Np": 93, "Pu": 94, "XX": 95
+}
+
+atomic_masses = {
+     "H":  1.008, "He": 4.0026, "Li": 6.94,   "Be": 9.0122,  "B": 10.81,   "C": 12.011,  "N": 14.007,  "O": 15.999,  "F": 18.998, "Ne": 20.180,
+    "Na": 22.990, "Mg": 24.305, "Al": 26.982, "Si": 28.085,  "P": 30.974,  "S": 32.06,  "Cl": 35.45,  "Ar": 39.948,  "K": 39.098, "Ca": 40.078,
+    "Sc": 44.956, "Ti": 47.867,  "V": 50.942, "Cr": 51.996, "Mn": 54.938, "Fe": 55.845, "Co": 58.933, "Ni": 58.693, "Cu": 63.546, "Zn": 65.38,
+    "Ga": 69.723, "Ge": 72.63,  "As": 74.922, "Se": 78.971, "Br": 79.904, "Kr": 83.798, "Rb": 85.468, "Sr": 87.62,   "Y": 88.906, "Zr": 91.224,
+    "Nb": 92.906, "Mo": 95.95,  "Tc": 98,     "Ru": 101.07, "Rh": 102.91, "Pd": 106.42, "Ag": 107.87, "Cd": 112.41, "In": 114.82, "Sn": 118.71,
+    "Sb": 121.76, "Te": 127.60,  "I": 126.90, "Xe": 131.29, "Cs": 132.91, "Ba": 137.33, "La": 138.91, "Ce": 140.12, "Pr": 140.91, "Nd": 144.24,
+    "Pm": 145,    "Sm": 150.36, "Eu": 151.96, "Gd": 157.25, "Tb": 158.93, "Dy": 162.50, "Ho": 164.93, "Er": 167.26, "Tm": 168.93, "Yb": 173.05,
+    "Lu": 174.97, "Hf": 178.49, "Ta": 180.95,  "W": 183.84, "Re": 186.21, "Os": 190.23, "Ir": 192.22, "Pt": 195.08, "Au": 196.97, "Hg": 200.59,
+    "Tl": 204.38, "Pb": 207.2,  "Bi": 208.98, "Po": 209,    "At": 210,    "Rn": 222,    "Fr": 223,    "Ra": 226,    "Ac": 227,    "Th": 232.04,
+    "Pa": 231.04,  "U": 238.03, "Np": 237, "   Pu": 244,    "XX": 999
+}
+
+# CN = coordination number, z = CN
+CN = {
+      "b1":  6,  "b2": 8, "l12": 12,
+     "fcc": 12, "bcc": 8, "hcp": 12, "sc": 6, "dia": 4,
+     "dim":  1, "ch4": 4
+}
 
 def binary_search(original_cell, atoms, calc, scaling_factor, dsfactor, best_energy):
     scaling_factor += dsfactor/2.0
@@ -434,17 +467,17 @@ def calculate_elastic_constants(atoms, calc, shear_strains, normal_strains):
 def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, max_retries=20, lattce='', lat='', npoints=25, primitive_flag=1, PBEsol_flag=0, spin_flag=1, D_flag=1, cutoff=520):
     element1, element2 = elements_combination
     
-    if lattce in ['fcc', 'bcc', 'hcp', 'sc', 'dia1']:
-        print(f"{element2} pair, lattce = {lattce}")
+    if lattce in ['fcc', 'bcc', 'hcp', 'sc', 'dia1', 'dim1']:
+        print(f"{element2}, lattce = {lattce}")
     else:
         print(f"{element1}-{element2} pair, lattce = {lattce}")
     
-    if lattce == 'dim' or lattce == 'ch4' or lattce == 'dim1':
-        radius1 = atomic_radii[element1]
-        radius2 = atomic_radii[element2]
-    else:
+    if lattce in ['dim', 'ch4', 'dim1']:
         radius1 = covalent_radii[element1]
         radius2 = covalent_radii[element2]
+    else:
+        radius1 = atomic_radii[element1]
+        radius2 = atomic_radii[element2]
         #radius1 = vdw_radii[element1]
         #radius2 = vdw_radii[element2]
     
@@ -589,6 +622,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
             re = lat / re2a
         a = re * re2a
         c = a*np.sqrt(8/3) # c = a*np.sqrt(8/3) case: re = 1.0 (atomic distance = 1.0)
+        covera = c/a
         atoms = Atoms(f'{element2}2', 
                 positions=[(a, np.sqrt(3)/3*2*a, 0.75*c), (0, np.sqrt(3)/3*a, 0.25*c)], 
                 cell=[(a, 0, 0), (-a/2, np.sqrt(3)*a/2, 0), (0, 0, c)], 
@@ -669,13 +703,52 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
             kptc = kpt
             Nelem1 = 0
             Nelem2 = 1
+    #------------------------------------------------------------------------------
+    elif lattce == 'dim':
+        print("Create the dimer structure")
+        lattice_type = 'dim'
+        a = 12.0
+        re2a = a/re
+        atoms = Atoms(f'{element1}{element2}', 
+                positions=[(0.5*a, 0.5*a, 0.5*a+re/2),
+                           (0.5*a, 0.5*a, 0.5*a-re/2)], 
+                cell=[a, a, a+re], 
+                pbc=True)
+        Nelem1 = 1
+        Nelem2 = 1
+    elif lattce == 'ch4':
+        print("Create the CH4 structure")
+        lattice_type = 'ch4'
+        a = 12.0
+        re2a = a/re
+        atoms = Atoms(f'{element1}{element2}3', 
+                positions=[(0.5*a,    0.5*a,    0.5*a   ),  # Carbon atom
+                           (0.5*a+re, 0.5*a+re, 0.5*a+re),  # Hydrogen atoms
+                           (0.5*a-re, 0.5*a-re, 0.5*a+re),  # Hydrogen atoms
+                           (0.5*a+re, 0.5*a-re, 0.5*a-re),  # Hydrogen atoms
+                           (0.5*a-re, 0.5*a+re, 0.5*a-re)], # Hydrogen atoms
+                cell=[a+re*np.sqrt(2/3), a+re*np.sqrt(2/3), a+re*np.sqrt(2/3)], 
+                pbc=True)
+        Nelem1 = 1
+        Nelem2 = 3
+    #------------------------------------------------------------------------------
+    elif lattce == 'dim1':
+        print("Create the dimer structure (1 element)")
+        lattice_type = 'dim (1 element)'
+        a = 12.0
+        re2a = a/re
+        #atoms = bulk('{element2}', 'sc', a)
+        atoms = Atoms(f'{element2}2', 
+                positions=[(0, 0,  re/2),
+                           (0, 0, -re/2)], 
+                cell=[a, a, a+re], 
+                pbc=True)
+        Nelem1 = 0
+        Nelem2 = 1
     else:
-        print("This code does not provide other structures. (Possible structures: b1, b2, dia, l12, or fcc, bcc, hcp, dia1)")
+        print("This code does not provide other structures. (Possible structures: b1, b2, dia, l12, or fcc, bcc, hcp, dia1, dim, ch4, dim1)")
     
-    dsfactor = 0.15
-    #scaling_factor = 1.0 - dsfactor*3.0 # The minimum setting for a downward convex search is "scaling_factor = 1.0 - dsfactor*1.0".
-    scaling_factor = 1.0 - dsfactor*2.0
-    
+    scaling_factor = 1.0
     original_cell = atoms.get_cell()
     scaled_cell = original_cell * scaling_factor
     atoms.set_cell(scaled_cell, scale_atoms=True)
@@ -762,14 +835,53 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
         input_data['system']['ecutwfc'] = f'{520/Rydberg}'
         input_data['system']['ecutwfc'] = f'{520*4.0/Rydberg}'
     
-    calc = Espresso(pseudopotentials=pseudopotentials_dict, input_data=input_data, kpts=(kpt, kpt, kptc), koffset=True, omp_num_threads=omp_num_threads, mpi_num_procs=mpi_num_procs, nspin=nspin)
-    #calc = Espresso(pseudopotentials=pseudopotentials_dict, input_data=input_data, kpts=(kpt, kpt, kptc), omp_num_threads=omp_num_threads, mpi_num_procs=mpi_num_procs, nspin=nspin)
+    if lattce in ['dim', 'ch4', 'dim1']:
+        calc = Espresso(pseudopotentials=pseudopotentials_dict, input_data=input_data, kpts=None, koffset=False, omp_num_threads=omp_num_threads, mpi_num_procs=mpi_num_procs, nspin=nspin)
+    else:
+        calc = Espresso(pseudopotentials=pseudopotentials_dict, input_data=input_data, kpts=(kpt, kpt, kptc), koffset=True, omp_num_threads=omp_num_threads, mpi_num_procs=mpi_num_procs, nspin=nspin)
+        #calc = Espresso(pseudopotentials=pseudopotentials_dict, input_data=input_data, kpts=(kpt, kpt, kptc), omp_num_threads=omp_num_threads, mpi_num_procs=mpi_num_procs, nspin=nspin)
     atoms.set_calculator(calc)
     
     # BCC: P
     #     Error in routine electrons (1):
     # charge is wrong
     #input_data['system']['starting_magnetization(1)'] = 1.0
+
+    #-----------------------------------------------------------------------------
+    # search optimized structure with vc-relax
+    if lattce in ['hcp', 'dim', 'ch4', 'dim1']:
+        print("search optimized structure with vc-relax")
+        input_data['control']['calculation'] = 'vc-relax'
+        scaled_cell = original_cell * scaling_factor
+        atoms.set_cell(scaled_cell, scale_atoms=True)
+        try:
+            opt = BFGS(atoms)
+            #opt.run(fmax=0.0514) # 1e-3*51.422 [eV/A]
+            opt.run(fmax=0.02) # max force <= 0.02 [eV/A]
+            energy = atoms.get_total_energy()
+            print(f'E = {energy} [eV]')
+            opt_cell = atoms.get_cell()
+            print(f'optimized cell = {opt_cell}')
+        except Exception as e:
+            print(f"Optimization failed: {e}")
+        #-------------------------------------
+        positions = atoms.get_positions()
+        re = np.linalg.norm(positions[0] - positions[1])
+        re2a = opt_cell[0][0]/re
+        print(f'Distance, re [A] = {re}')
+    #-----------------------------------------------------------------------------
+    
+    dsfactor = 0.15
+    #scaling_factor = 1.0 - dsfactor*3.0 # The minimum setting for a downward convex search is "scaling_factor = 1.0 - dsfactor*1.0".
+    scaling_factor = 1.0 - dsfactor*2.0
+    
+    original_cell = atoms.get_cell()
+    scaled_cell = original_cell * scaling_factor
+    atoms.set_cell(scaled_cell, scale_atoms=True)
+    
+    print(f'{scaled_cell[0,0]},{scaled_cell[1,1]},{scaled_cell[2,2]}')
+    bovera = scaled_cell[1][1]/scaled_cell[0][0]
+    covera = scaled_cell[2][2]/scaled_cell[0][0]
 
     #-----------------------------------------------------------------------------
     # search optimized structure with scf
@@ -840,38 +952,6 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
     atoms.set_cell(scaled_cell, scale_atoms=True)
     print("cell = ", scaled_cell)
     #-----------------------------------------------------------------------------
-    
-    '''
-    # The following was useless because vc-relax didn't work properly.
-    #-----------------------------------------------------------------------------
-    # search optimized structure with vc-relax
-    input_data['control']['calculation'] = 'vc-relax'
-    retries = 0
-    energy = 0.0
-    scaling_factor -= dsfactor
-    print("search optimized structure with vc-relax")
-    while retries < max_retries:
-        retries += 1
-        scaling_factor += dsfactor
-        scaled_cell = original_cell * scaling_factor
-        atoms.set_cell(scaled_cell, scale_atoms=True)
-        print("---------------------------------")
-        print("scaling factor = ", scaling_factor, "energy = ", energy)
-        print("cell = ", scaled_cell)
-        try:
-            opt = BFGS(atoms)
-            opt.run(fmax=0.02)
-            energy = atoms.get_total_energy()
-            print("E =",atoms.get_total_energy()," [eV]")
-            break
-        except Exception as e:
-            print(f"Optimization failed for {element1}-{element2} with error: {e}")
-            if retries >= max_retries:
-                print("Max retries reached. Skipping this combination.")
-            else:
-                continue
-    #-----------------------------------------------------------------------------
-    '''
 
     print("----------------------------------------")
     print("making data and equation of states (eos)")
@@ -966,7 +1046,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
     if not os.path.exists(directory):
         os.makedirs(directory)
     
-    if lattce in ['fcc', 'bcc', 'hcp', 'sc', 'dia1']:
+    if lattce in ['fcc', 'bcc', 'hcp', 'sc', 'dia1', 'dim1']:
         element1 = '1element'
 
     # eos: sjeos, taylor, murnaghan, birch, birchmurnaghan, pouriertarantola, vinet, antonschmidt, p3
@@ -985,10 +1065,26 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
     cohesive_energy_per_atom = e0 * -1.0
     if primitive_flag == 1 and lattce in ['b1', 'dia', 'fcc', 'dia1']:
         optimized_a = (v0 * len(atoms) * 4)**(1/3)
+        optimized_b = optimized_a
+        optimized_c = optimized_a
     elif primitive_flag == 1 and lattce in ['bcc']:
         optimized_a = (v0 * len(atoms) * 2)**(1/3)
+        optimized_b = optimized_a
+        optimized_c = optimized_a
+    elif lattce == 'hcp':
+        # V = np.sqrt(3)/2 * covera * a**3 -> a = (V*2/np.sqrt(3)/covera)**(1/3)
+        optimized_a = (v0 * len(atoms) * 2/np.sqrt(3) / covera)**(1/3)
+        optimized_b = optimized_a
+        optimized_c = covera * optimized_a
+    elif lattce == ['dim', 'ch4', 'dim1']:
+        # V = a*(bovera*a)*(covera*a) -> a = (V/bovera/covera)**(1/3)
+        optimized_a = (v0 * len(atoms) / bovera / covera)**(1/3)
+        optimized_b = bovera * optimized_a
+        optimized_c = covera * optimized_a
     else:
         optimized_a = (v0 * len(atoms))**(1/3)
+        optimized_b = optimized_a
+        optimized_c = optimized_a
     nearest_neighbor_distance = optimized_a / re2a
     
     #alpha = (9.0*B*((nearest_neighbor_distance*re2a)**3/len(atoms))/cohesive_energy_per_atom)**0.5
@@ -1032,6 +1128,8 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
     return_data = {
         'Element1': element1,
         'Element2': element2,
+        #-------------------------
+        # XX.meam file
         'Lattice Type': lattice_type,
         'Cohesive Energy (eV/atom)': cohesive_energy_per_atom,
         'Nearest Neighbor Distance (A)': nearest_neighbor_distance,
@@ -1047,14 +1145,23 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
         'attrac_erose_form_2': attrac_fit_erose_form_2, # d = a3 = attrac, astar >= 0
         #-------------------------
         #----------------------------------------------------------
+        # lattice information
         'optimized_scaling_factor': optimized_scaling_factor,
         'Atoms': len(atoms),
-        'Lattice Constant (A)': optimized_a, # Values ​​in conventional cells.
+        'Lattice Constant a (A)': optimized_a, # Values ​​in conventional cells.
+        'Lattice Constant b (A)': optimized_b, # Values ​​in conventional cells.
+        'Lattice Constant c (A)': optimized_c, # Values ​​in conventional cells.
+        #----------------------------------------------------------
+        # eos
+        'Optimized Energy (eV/atom)': e0,
+        'Optimized Volume (A^3/atom)': v0,
+        'Bulk Modulus (GPa)': B / kJ * 1.0e24,
+        #----------------------------------------------------------
+        # fitting data
         'Volumes (A^3)': volumes,
         'Energies (eV)': energies,
         'Cohesive Energies (eV)': cohesive_energies,
         #----------------------------------------------------------
-        'Bulk Modulus (GPa)': B / kJ * 1.0e24,
         #'Elastic Constants (GPa)': elastic_constants_final,
         #----------------------------------------------------------
         'Stress Tensor per Volume (GPa)': stress_tensor,
@@ -1097,7 +1204,7 @@ for i, combination in enumerate(element_combinations):
     results = []
     result = calculate_properties(combination, omp_num_threads, mpi_num_procs, max_retries, lattce, lat, npoints, primitive_flag, PBEsol_flag, spin_flag, D_flag, cutoff)
     element1, element2 = combination
-    if lattce in ['fcc', 'bcc', 'hcp', 'sc', 'dia1']:
+    if lattce in ['fcc', 'bcc', 'hcp', 'sc', 'dia1', 'dim1']:
         element1 = '1element'
     if result == "Error-1":
         with open("error_log.txt", "a") as file:
@@ -1114,8 +1221,21 @@ for i, combination in enumerate(element_combinations):
         jsonfile.write('\n')
 
     with open(f'{directory}.csv', 'a', newline='') as csvfile:
-        fieldnames = ['Element1', 'Element2', 
-                      #----------------------------------------------------------
+        fieldnames = ['Element1', 'Element2']
+        if lattce in ['fcc', 'bcc', 'hcp', 'sc', 'dia1', 'dim1']:
+            # library.meam file
+            fieldnames.append(
+                      'elt',
+                      'lat',
+                      'z',
+                      'ielement',
+                      'atwt',
+                      'alat',
+                      'esub'
+                      )
+        else:
+            # XX.meam file
+            fieldnames.append(
                       'lattce',
                       'Ec', 
                       're', 
@@ -1130,17 +1250,32 @@ for i, combination in enumerate(element_combinations):
                       'repuls (erose_form=2)', 
                       'attrac (erose_form=2)', 
                       #-------------------------
+                      )
+        fieldnames.append(
                       #----------------------------------------------------------
+                      # lattice information
                       're_opt/re_init',
                       'Atoms', 
                       'Lattice Type',
-                      'Lattice Constant (A)', 'Volumes (A^3)', 
-                      'Energies (eV)', 'Cohesive Energies (eV)', 
+                      'Lattice Constant a (A)', 
+                      'Lattice Constant b (A)', 
+                      'Lattice Constant c (A)', 
+                      #-------------------------
+                      # eos
+                      'Optimized Energy (eV/atom)',
+                      'Optimized Volume (A^3/atom)',
                       'Bulk Modulus (GPa)', 
+                      #-------------------------
+                      # fitting data
+                      'Volumes (A^3)', 
+                      'Energies (eV)', 
+                      'Cohesive Energies (eV)', 
+                      #-------------------------
                       #'C11', 'C12', 'C22', 'C33', 'C23', 'C13', 'C44', 'C55', 'C66', 
+                      #-------------------------
                       'Stress Tensor per Volume (GPa)',
                       'Forces (eV/A)'
-                      ]
+                      )
         if spin_flag == 0:
             pass
         else:
@@ -1153,32 +1288,58 @@ for i, combination in enumerate(element_combinations):
 
         row_data = {
             'Element1': result['Element1'],
-            'Element2': result['Element2'],
+            'Element2': result['Element2']
+            }
+        if lattce in ['fcc', 'bcc', 'hcp', 'sc', 'dia1', 'dim1']:
+            # library.meam file
+            row_data.update({
+                'elt': result['Element2'],
+                'lat': result['Lattice Type'],
+                'z': CN[lattce],
+                'ielement': atomic_numbers[result['Element2']],
+                'atwt': atomic_masses[result['Element2']],
+                'alat': result['Lattice Constant a (A)'], # Values ​​in conventional cells.
+                'esub': result['Cohesive Energy (eV/atom)'],
+                })
+        else:
+            # XX.meam file
+            row_data.update({
+                'lattce': result['Lattice Type'],
+                'Ec': result['Cohesive Energy (eV/atom)'],
+                're': result['Nearest Neighbor Distance (A)'],
+                'alpha': result['alpha'],
+                'alat': result['Lattice Constant a (A)'], # Values ​​in conventional cells.
+                #-------------------------
+                'repuls (erose_form=0)': result['repuls_erose_form_0'],
+                'attrac (erose_form=0)': result['attrac_erose_form_0'],
+                #-------------------------
+                'repuls (erose_form=1)': result['repuls_erose_form_1'],
+                'attrac (erose_form=1)': result['attrac_erose_form_1'],
+                #-------------------------
+                'repuls (erose_form=2)': result['repuls_erose_form_2'],
+                'attrac (erose_form=2)': result['attrac_erose_form_2'],
+                #-------------------------
+                })
+        row_data.update({
             #----------------------------------------------------------
-            'lattce': lattce,
-            'Ec': result['Cohesive Energy (eV/atom)'],
-            're': result['Nearest Neighbor Distance (A)'],
-            'alpha': result['alpha'],
-            #-------------------------
-            'repuls (erose_form=0)': result['repuls_erose_form_0'],
-            'attrac (erose_form=0)': result['attrac_erose_form_0'],
-            #-------------------------
-            'repuls (erose_form=1)': result['repuls_erose_form_1'],
-            'attrac (erose_form=1)': result['attrac_erose_form_1'],
-            #-------------------------
-            'repuls (erose_form=2)': result['repuls_erose_form_2'],
-            'attrac (erose_form=2)': result['attrac_erose_form_2'],
-            #-------------------------
-            #----------------------------------------------------------
+            # lattice information
             're_opt/re_init': result['optimized_scaling_factor'],
             'Atoms': result['Atoms'],
             'Lattice Type': result['Lattice Type'],
-            'Lattice Constant (A)': result['Lattice Constant (A)'], # Values ​​in conventional cells.
+            'Lattice Constant a (A)': result['Lattice Constant a (A)'], # Values ​​in conventional cells.
+            'Lattice Constant a (A)': result['Lattice Constant b (A)'], # Values ​​in conventional cells.
+            'Lattice Constant a (A)': result['Lattice Constant c (A)'], # Values ​​in conventional cells.
+            #-----------------------------------------------
+            # eos
+            'Optimized Energy (eV/atom)': result['Optimized Energy (eV/atom)'],
+            'Optimized Volume (A^3/atom)': result['Optimized Volume (A^3/atom)'],
+            'Bulk Modulus (GPa)': result['Bulk Modulus (GPa)'],
+            #----------------------------------------------------------
+            # fitting data
             'Volumes (A^3)': result['Volumes (A^3)'],
             'Energies (eV)': result['Energies (eV)'],
             'Cohesive Energies (eV)': result['Cohesive Energies (eV)'],
             #-----------------------------------------------
-            'Bulk Modulus (GPa)': result['Bulk Modulus (GPa)'],
             #'C11': result['Elastic Constants (GPa)']['C11'],
             #'C12': result['Elastic Constants (GPa)']['C12'],
             #'C22': result['Elastic Constants (GPa)']['C22'],
@@ -1191,7 +1352,7 @@ for i, combination in enumerate(element_combinations):
             #-----------------------------------------------
             'Stress Tensor per Volume (GPa)': result['Stress Tensor per Volume (GPa)'],
             'Forces (eV/A)': result['Forces (eV/A)']
-        }
+            })
         if spin_flag == 0:
             pass
         else:
@@ -1200,9 +1361,25 @@ for i, combination in enumerate(element_combinations):
     
     # Generate the potfit text file output for each volume and cohesive energy
     natoms = result['Atoms']
-    for idx, (volume, cohesive_energy, stress, force) in enumerate(zip(result['Volumes (A^3)'], result['Cohesive Energies (eV)'], result['Stress Tensor per Volume (GPa)'], result['Forces (eV/A)'])):
-        ap = (volume * 2) ** (1/3) # primitive cell
-        ac = (volume) ** (1/3) # conventional cell
+    for idx, (volume, cohesive_energy, stress, force, re, la, lc, v0) in enumerate(zip(result['Volumes (A^3)'], 
+              result['Cohesive Energies (eV)'], result['Stress Tensor per Volume (GPa)'], result['Forces (eV/A)'], 
+              result['Nearest Neighbor Distance (A)'], 
+              result['Lattice Constant a (A)'], result['Lattice Constant c (A)'],
+              result['Optimized Volume (A^3/atom)'])):
+        
+        # primitive cell
+        if lattce == 'bcc':
+            ap = (volume * 2) ** (1/3)
+        else:
+            ap = (volume * 4) ** (1/3)
+        
+        # conventional cell
+        if lattce in ['hcp', 'dim', 'ch4', 'dim1']:
+            ac = la * (volume/v0)**(1/3)
+            cc = lc * (volume/v0)**(1/3)
+            ren = re * (volume/v0)**(1/3)
+        else:
+            ac = (volume) ** (1/3)
         
         with open(f'{directory}/MPCv4_{element1}-{element2}-DFT_{lattce}{spin_char}', 'a') as mpcfile:
            mpcfile.write(f"{volume}  {cohesive_energy*-1.0}\n")
@@ -1315,8 +1492,33 @@ for i, combination in enumerate(element_combinations):
                X = [0, 0.5*ap, 0.5*ap]
                Y = [0.5*ap, 0, 0.5*ap]
                Z = [0.5*ap, 0.5*ap, 0]
+        #--------------------------------------------------------------------------
+        elif lattce == 'dim':
+           types=[0,1]
+           positions=[(0.5*ac, 0.5*ac, 0.5*ac+ren/2),
+                      (0.5*ac, 0.5*ac, 0.5*ac-ren/2)], 
+           X = [ac, 0,  0 ]
+           Y = [0,  ac, 0 ]
+           Z = [0,  0,  cc]
+        elif lattce == 'ch4':
+           types=[0,1,1,1]
+           positions=[(0.5*ac,     0.5*ac,     0.5*ac   ),  # Carbon atom
+                      (0.5*ac+ren, 0.5*ac+ren, 0.5*ac+ren),  # Hydrogen atoms
+                      (0.5*ac-ren, 0.5*ac-ren, 0.5*ac+ren),  # Hydrogen atoms
+                      (0.5*ac+ren, 0.5*ac-ren, 0.5*ac-ren),  # Hydrogen atoms
+                      (0.5*ac-ren, 0.5*ac+ren, 0.5*ac-ren)], # Hydrogen atoms
+           X = [ac, 0,  0 ]
+           Y = [0,  ac, 0 ]
+           Z = [0,  0,  ac]
+        #------------------------------------------------------------------------------
+        elif lattce == 'dim1':
+           types=[0]
+           positions=[(0.5*ac, 0.5*ac, 0.5*ac+ren/2),(0.5*ac, 0.5*ac, 0.5*ac-ren/2)], 
+           X = [ac, 0,  0 ]
+           Y = [0,  ac, 0 ]
+           Z = [0,  0,  cc]
         else:
-           print("This code does not provide other structures. (Possible structures: b1, b2, dia, l12, or fcc, bcc, hcp, dia1)")
+           print("This code does not provide other structures. (Possible structures: b1, b2, dia, l12, or fcc, bcc, hcp, dia1, dim, ch4, dim1)")
         
         # xyz_array = [[pos[0], pos[1], pos[2]] for pos in positions]
         x_coords = [pos[0] for pos in positions]
@@ -1327,7 +1529,7 @@ for i, combination in enumerate(element_combinations):
         
         with open(f'{directory}/potfit_{lattce}_{element1}-{element2}.config', 'a') as txtfile:
             txtfile.write(f"#N {natoms} 1\n")
-            if lattce in ['fcc', 'bcc', 'hcp', 'sc', 'dia1']:
+            if lattce in ['fcc', 'bcc', 'hcp', 'sc', 'dia1', 'dim1']:
                 txtfile.write(f"#C {element2}\n")
             else:
                 txtfile.write(f"#C {element1} {element2}\n")
