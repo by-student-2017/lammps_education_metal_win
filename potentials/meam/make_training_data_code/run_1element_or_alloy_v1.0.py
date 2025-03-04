@@ -879,7 +879,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
     scaled_cell = original_cell * scaling_factor
     atoms.set_cell(scaled_cell, scale_atoms=True)
     
-    print(f'{scaled_cell[0,0]},{scaled_cell[1,1]},{scaled_cell[2,2]}')
+    print(f'start Cell([{scaled_cell[0,0]},{scaled_cell[1,1]},{scaled_cell[2,2]}])')
     bovera = scaled_cell[1][1]/scaled_cell[0][0]
     covera = scaled_cell[2][2]/scaled_cell[0][0]
 
