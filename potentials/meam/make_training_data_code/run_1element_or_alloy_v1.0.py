@@ -15,6 +15,8 @@ import matplotlib.pyplot as plt
 
 from ase.dft.kpoints import monkhorst_pack
 
+#----------------------------------------------------------------------------------------------------------------------------------------------------------
+# User input section
 #------------------------------------------------------------------
 # b1: FCC_B1 (NaCl-type), b2:BCC_B2 (CsCl-type), dia:Diamond_B3 (Zinc Blende), l12: L12 (Cu3Au-type)
 # fcc: FCC (1 element), hcp: HCP (1 element), bcc: BCC (1 element), sc: SC (1 element), dia1: Daiamond
@@ -90,6 +92,8 @@ primitive_flag = 1 # 0:conventional cell, 1:primitive cell, (default = 1)
 # max number of cycles for search optimized structure
 max_retries = 20 # default = 20
 #------------------------------------------------------------------
+# User input section: END
+#----------------------------------------------------------------------------------------------------------------------------------------------------------
 
 # Define covalent radii for elements (in angstroms)
 covalent_radii = {
@@ -1361,11 +1365,12 @@ for i, combination in enumerate(element_combinations):
     
     # Generate the potfit text file output for each volume and cohesive energy
     natoms = result['Atoms']
-    for idx, (volume, cohesive_energy, stress, force, re, la, lc, v0) in enumerate(zip(result['Volumes (A^3)'], 
-              result['Cohesive Energies (eV)'], result['Stress Tensor per Volume (GPa)'], result['Forces (eV/A)'], 
-              result['Nearest Neighbor Distance (A)'], 
-              result['Lattice Constant a (A)'], result['Lattice Constant c (A)'],
-              result['Optimized Volume (A^3/atom)'])):
+    re = result['Nearest Neighbor Distance (A)']
+    la = result['Lattice Constant a (A)']
+    lc = result['Lattice Constant c (A)']
+    v0 = result['Optimized Volume (A^3/atom)']
+    for idx, (volume, cohesive_energy, stress, force) in enumerate(zip(result['Volumes (A^3)'], 
+              result['Cohesive Energies (eV)'], result['Stress Tensor per Volume (GPa)'], result['Forces (eV/A)'])):
         
         # primitive cell
         if lattce == 'bcc':
