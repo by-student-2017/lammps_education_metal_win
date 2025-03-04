@@ -31,11 +31,8 @@ lat = ''     # In the case of '', the sum of covalent_radii (sum of concentratio
 npoints = 25 # >= 11 e.g., 11, 17, 21, or 25, etc (Recommend >= 25), (default = 25)
 #------------------------------------------------------------------
 # Note: "fixed_element" becomes a dummy when a lattice of one element is selected (the atom in *.json is temporarily specified).
-fixed_element = 'XX' 
+fixed_element = 'XX'
 elements = [fixed_element,
-             'H',
-            'Li', 'Be',  'B',  'C',  'N',  'O',  'F',
-            'Na', 'Mg', 'Al', 'Si',  'P',  'S', 'Cl',
              'K', 'Ca', 'Sc', 'Ti',  'V', 'Cr', 'Mn', 'Fe', 'Co', 'Ni', 'Cu', 'Zn', 'Ga', 'Ge', 'As', 'Se', 'Br',
             'Rb', 'Sr',  'Y', 'Zr', 'Nb', 'Mo', 'Tc', 'Ru', 'Rh', 'Pd', 'Ag', 'Cd', 'In', 'Sn', 'Sb', 'Te',  'I',
             'Cs', 'Ba', 'La', 'Ce', 'Pr', 'Nd', 'Pm', 'Sm', 'Eu', 'Gd', 'Tb', 'Dy', 'Ho', 'Er', 'Tm', 'Yb', 'Lu', 
@@ -452,7 +449,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
         if lattce == 'l12':
             re = (radius1*3/2 + radius2/2) # The reason for this is based on Vegard's law.
             print(f'Start Nearest Neighbor Distance, re = (radius1*3/2 + radius2/2) = {re} [A]')
-        elif lattce == 'fcc' or lattce == 'bcc' or lattce == 'hcp' or lattce == 'dia1':
+        elif lattce == 'fcc' or lattce == 'bcc' or lattce == 'hcp' or lattce == 'sc' or lattce == 'dia1':
             re = radius2*2 # radius2 = covalent_radii[element2]
         else:
             re = (radius1 + radius2)
