@@ -29,7 +29,7 @@ lat = ''     # In the case of '', the sum of covalent_radii (sum of concentratio
 #lat = 5.640 # NaCl (e.g., FCC_B1 calculation)
 #----------------------------
 # making number of data (If the bulk modulus is approximately +/- 0.5 GPa or less, 11 points will suffice. However, for a3, 25 points or more is recommended to keep the accuracy at around +/- 0.005 or less.)
-npoints = 25 # >= 11 e.g., 11, 17, 21, or 25, etc (Recommend >= 25), (default = 25)
+npoints = 5 # >= 11 e.g., 11, 17, 21, or 25, etc (Recommend >= 25), (default = 25)
 #------------------------------------------------------------------
 # Note: "fixed_element" becomes a dummy when a lattice of one element is selected (the atom in *.json is temporarily specified).
 fixed_element = 'H'
@@ -1231,7 +1231,7 @@ for i, combination in enumerate(element_combinations):
                       'ielement',
                       'atwt',
                       'alat',
-                      'esub'
+                      'esub',
                       ])
         else:
             # XX.meam file
@@ -1309,7 +1309,6 @@ for i, combination in enumerate(element_combinations):
                 'Ec': result['Cohesive Energy (eV/atom)'],
                 're': result['Nearest Neighbor Distance (A)'],
                 'alpha': result['alpha'],
-                'alat': result['Lattice Constant a (A)'], # Values ​​in conventional cells.
                 #-------------------------
                 'repuls (erose_form=0)': result['repuls_erose_form_0'],
                 'attrac (erose_form=0)': result['attrac_erose_form_0'],
