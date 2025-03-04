@@ -1494,7 +1494,7 @@ for i, combination in enumerate(element_combinations):
         else:
             ac = (volume) ** (1/3)
         
-        with open(f'{directory}/MPCv4_{element1}-{element2}-DFT_{lattce}{spin_char}', 'a') as mpcfile:
+        with open(f'{directory}/MPCv4_{element1}-{element2}-DFT_{lattce}_{spin_char}', 'a') as mpcfile:
            mpcfile.write(f"{volume}  {cohesive_energy*-1.0}\n")
         
         if lattce == 'b1':

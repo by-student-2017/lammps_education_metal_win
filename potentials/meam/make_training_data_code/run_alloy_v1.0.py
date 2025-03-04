@@ -1110,7 +1110,7 @@ for i, combination in enumerate(element_combinations):
         ap = (volume * 4) ** (1/3) # primitive cell
         ac = (volume) ** (1/3) # conventional cell
         
-        with open(f'{directory}/MPCv4_{element1}-{element2}-DFT_{lattce}{spin_char}', 'a') as mpcfile:
+        with open(f'{directory}/MPCv4_{element1}-{element2}-DFT_{lattce}_{spin_char}', 'a') as mpcfile:
            mpcfile.write(f"{volume}  {cohesive_energy*-1.0}\n")
         
         if lattce == 'b1':
