@@ -1224,7 +1224,7 @@ for i, combination in enumerate(element_combinations):
         fieldnames = ['Element1', 'Element2']
         if lattce in ['fcc', 'bcc', 'hcp', 'sc', 'dia1', 'dim1']:
             # library.meam file
-            fieldnames.append(
+            fieldnames.extend([
                       'elt',
                       'lat',
                       'z',
@@ -1232,10 +1232,10 @@ for i, combination in enumerate(element_combinations):
                       'atwt',
                       'alat',
                       'esub'
-                      )
+                      ])
         else:
             # XX.meam file
-            fieldnames.append(
+            fieldnames.extend([
                       'lattce',
                       'Ec', 
                       're', 
@@ -1250,8 +1250,8 @@ for i, combination in enumerate(element_combinations):
                       'repuls (erose_form=2)', 
                       'attrac (erose_form=2)', 
                       #-------------------------
-                      )
-        fieldnames.append(
+                      ])
+        fieldnames.extend([
                       #----------------------------------------------------------
                       # lattice information
                       're_opt/re_init',
@@ -1276,7 +1276,7 @@ for i, combination in enumerate(element_combinations):
                       'Stress Tensor per Volume (GPa)',
                       'Forces (eV/A)'
                       #-----------------------------------------------
-                      )
+                      ])
         if spin_flag == 0:
             pass
         else:
