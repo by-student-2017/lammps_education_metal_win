@@ -767,7 +767,14 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
         atoms.set_calculator(calc)
         print("qe cell = ", atoms.get_cell())
 
-        energy = atoms.get_total_energy()
+        try:
+            energy = atoms.get_total_energy()
+        except Exception as e:
+            print(f"Error-l1: The calculation may have stopped with [Error in routine electrons: charge is wrong].")
+            with open("error_log.txt", "a") as file:
+                file.write(f"Error-l1: The calculation may have stopped with [Error in routine electrons: charge is wrong].: {lattce}-{element1}-{element2}\n")
+            ndata -= 1
+            continue
         energies.append(energy)
 
         cohesive_energy = -(atoms.get_total_energy() - isolated_atom_energy1*Nelem1 - isolated_atom_energy2*Nelem2)
@@ -827,7 +834,8 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
         eos.plot(f'{directory}/{lattce}-{element1}-{element2}_eos.png')
         print("The notation of the ASE plot has not been changed. Note that the calculations are done with -Ec [eV/atom] and V [A^3/atom] (the volumes of b1 and dia are the volume of the primitive cell = the volume of the conventional cell / 4).")
     except ValueError as e:
-        print(f"Error fitting EOS: {e}")
+        with open("error_log.txt", "a") as file:
+            file.write(f"Error fitting EOS: {e}.: in {lattce}-{element1}-{element2}\n")
     
     cohesive_energy_per_atom = e0 * -1.0
     if primitive_flag == 1 and (lattce == 'b1' or lattce == 'dia'):
