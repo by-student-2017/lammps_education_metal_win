@@ -6,14 +6,14 @@ from ase.calculators.espresso import Espresso
 from ase.optimize import BFGS
 from ase.eos import EquationOfState
 from ase.units import Bohr, Rydberg, kJ, kB, fs, Hartree, mol, kcal
+from ase.dft.kpoints import monkhorst_pack
 import numpy as np
 import os
 
 # For Rose universal function
 from scipy.optimize import curve_fit
+from scipy.optimize import fsolve
 import matplotlib.pyplot as plt
-
-from ase.dft.kpoints import monkhorst_pack
 
 #----------------------------------------------------------------------------------------------------------------------------------------------------------
 #----------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -22,7 +22,7 @@ from ase.dft.kpoints import monkhorst_pack
 # b1: FCC_B1 (NaCl-type), b2:BCC_B2 (CsCl-type), dia:Diamond_B3 (Zinc Blende), l12: L12 (Cu3Au-type)
 # fcc: FCC (1 element), hcp: HCP (1 element), bcc: BCC (1 element), sc: SC (1 element), dia1: Daiamond
 # dim(dimer), ch4(binary system), dim1(1 element)
-lattce = 'dim'
+lattce = 'b1'
 #------------------------------------------------------------------
 # lattice structure of reference configuration [Angstrom] (https://en.wikipedia.org/wiki/Lattice_constant)
 lat = ''     # In the case of '', the sum of covalent_radii (sum of concentration ratio in L12)
@@ -32,11 +32,12 @@ lat = ''     # In the case of '', the sum of covalent_radii (sum of concentratio
 #lat = 5.640 # NaCl (e.g., FCC_B1 calculation)
 #----------------------------
 # making number of data (If the bulk modulus is approximately +/- 0.5 GPa or less, 11 points will suffice. However, for a3, 25 points or more is recommended to keep the accuracy at around +/- 0.005 or less.)
-npoints = 25 # >= 11 e.g., 11, 17, 21, or 25, etc (Recommend >= 25), (default = 25)
+npoints = 7 # >= 7 e.g., 7, 11, 17, 21, or 25, etc (Recommend >= 25), (default = 25) (SSSP: 7 points) (7 points:0.02 step, other:0.01 step)
 #------------------------------------------------------------------
 # Note: "fixed_element" becomes a dummy when a lattice of one element is selected (the atom in *.json is temporarily specified).
-fixed_element = 'H'
-elements = [fixed_element,
+fixed_element = 'Al'
+elements = [fixed_element, 'H', 'Cu']
+'''
              'H', 'He',
             'Li', 'Be',  'B',  'C',  'N',  'O',  'F', 'Ne', 
             'Na', 'Mg', 'Al', 'Si',  'P',  'S', 'Cl', 'Ar',
@@ -45,6 +46,7 @@ elements = [fixed_element,
             'Cs', 'Ba', 'La', 'Ce', 'Pr', 'Nd', 'Pm', 'Sm', 'Eu', 'Gd', 'Tb', 'Dy', 'Ho', 'Er', 'Tm', 'Yb', 'Lu', 
             'Hf', 'Ta',  'W', 'Re', 'Os', 'Ir', 'Pt', 'Au', 'Hg', 'Tl', 'Pb', 'Bi', 'Po', 'At', 'Ra',
             'Rn', 'Fr'] # <- Enter the element you want to calculate (Note: Time Consumption: Approx. 4 elements/hour)
+'''
 #elements = [fixed_element, 'Ac', 'Th', 'Pa',  'U', 'Np', 'Pu'] # Pairs with noble gases require careful calculations and must be calculated separately.
 #elements = [fixed_element, 'He', 'Ne', 'Ar', 'Kr', 'Xe', 'Ra'] # Pairs with noble gases require careful calculations and must be calculated separately.
 '''
@@ -95,6 +97,8 @@ primitive_flag = 1 # 0:conventional cell, 1:primitive cell, (default = 1)
 #------------------------------------------------------------------
 # max number of cycles for search optimized structure
 max_retries = 20 # default = 20
+#------------------------------------------------------------------
+Acceptable_values = 0.05 # calculate r at -Ec*Acceptable_values
 #------------------------------------------------------------------
 # User input section: END
 #----------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -222,7 +226,7 @@ def read_bader_charges(filename='ACF.dat'):
 
 
 
-def fit_rose_curve_erose_form_0(volumes_per_atom, cohesive_energies_per_atom, alpha, V0, Ec):
+def fit_rose_curve_erose_form_0(volumes_per_atom, cohesive_energies_per_atom, alpha, V0, Ec, nearest_neighbor_distance):
     """
     Fit the Rose's universal curve to DFT data to find the parameter a3.
 
@@ -253,21 +257,37 @@ def fit_rose_curve_erose_form_0(volumes_per_atom, cohesive_energies_per_atom, al
     # Fitted parameters
     repuls_fit, attrac_fit = popt
     
+    # Calculating rc from EOS
+    #Acceptable_values = 0.05 # -Ec*{Acceptable_values}
+    def equation(astar, d):
+        return (1 + astar + d * (astar**3)/((astar+1.0)/alpha)) * np.exp(-astar) - Acceptable_values
+    astar = alpha*(4.0/nearest_neighbor_distance - 1.0)
+    initial_guess = astar
+    solution = fsolve(equation, initial_guess, args=(attrac_fit))
+    astar = solution[0]
+    rc = (astar+1.0)*nearest_neighbor_distance/alpha
+    print(f"[erose_form = 0]: rc = {rc} at -Ec*{Acceptable_values}")
+    
     # Plotting the fit
     plt.figure()
     plt.scatter(volumes_per_atom, E_data, label='DFT Data (QE, PAW(pslibrary))')
     plt.plot(volumes_per_atom, rose_curve(volumes_per_atom, alpha, V0, Ec, repuls_fit, attrac_fit), 
-             label=f'Rose Curve Fit (repuls={repuls_fit:.4f}, attrac={attrac_fit:.4f})', color='red')
-    #----------
+             label=f'Fit (repuls={repuls_fit:.4f}, attrac={attrac_fit:.4f}), r={rc:.2f}@Ec{Acceptable_values*100.0:.1f}%', color='red')
+    solution = fsolve(equation, initial_guess, args=(0.00))
+    astar = solution[0]
+    rc = (astar+1.0)*nearest_neighbor_distance/alpha
     if repuls_fit < 0.0:
         plt.plot(volumes_per_atom, rose_curve(volumes_per_atom, alpha, V0, Ec, 0, 0), 
-             label=f'Rose Curve Fit (repuls=0, attrac=0)', color='blue')
+             label=f'Fit (repuls=0, attrac=0), r={rc:.2f}', color='blue')
     else:
         plt.plot(volumes_per_atom, rose_curve(volumes_per_atom, alpha, V0, Ec, repuls_fit, 0), 
-             label=f'Rose Curve Fit (repuls={repuls_fit:.4f}, attrac=0)', color='blue')
+             label=f'Fit (repuls={repuls_fit:.4f}, attrac=0), r={rc:.2f}@Ec{Acceptable_values*100.0:.1f}%', color='blue')
     #----------
+    solution = fsolve(equation, initial_guess, args=(0.05))
+    astar = solution[0]
+    rc = (astar+1.0)*nearest_neighbor_distance/alpha
     plt.plot(volumes_per_atom, rose_curve(volumes_per_atom, alpha, V0, Ec, 0.05, 0.05), 
-             label=f'Rose Curve Fit (repuls=0.05, attrac=0.05)', color='green')
+             label=f'Fit (repuls=0.05, attrac=0.05), r={rc:.2f}@Ec{Acceptable_values*100.0:.1f}%', color='green')
     plt.xlabel('Volume, V (A^3/atom)')
     plt.ylabel('Cohesive Energy, -Ec (eV/atom)')
     plt.legend()
@@ -315,11 +335,11 @@ def fit_rose_curve_erose_form_1(volumes_per_atom, cohesive_energies_per_atom, al
     plt.figure()
     plt.scatter(volumes_per_atom, E_data, label='DFT Data (QE, PAW(pslibrary))')
     plt.plot(volumes_per_atom, rose_curve(volumes_per_atom, alpha, V0, Ec, repuls_fit, attrac_fit, nearest_neighbor_distance), 
-             label=f'Rose Curve Fit (repuls={repuls_fit:.4f}, attrac={attrac_fit:.4f}, rc={repuls_fit/attrac_fit:.2f})', color='red')
+             label=f'Fit (repuls={repuls_fit:.4f}, attrac={attrac_fit:.4f}), r={repuls_fit/attrac_fit:.2f})', color='red')
     plt.plot(volumes_per_atom, rose_curve(volumes_per_atom, alpha, V0, Ec, 0, 0, nearest_neighbor_distance),  
-             label=f'Rose Curve Fit (repuls=0, attrac=0)', color='blue')
+             label=f'Fit (repuls=0, attrac=0)', color='blue')
     plt.plot(volumes_per_atom, rose_curve(volumes_per_atom, alpha, V0, Ec, 0.20, 0.05, nearest_neighbor_distance),  
-             label=f'Rose Curve Fit (repuls=0.20, attrac=0.05, rc=4.0)', color='green')
+             label=f'Fit (repuls=0.20, attrac=0.05), r=4.0', color='green')
     plt.xlabel('Volume, V (A^3/atom)')
     plt.ylabel('Cohesive Energy, -Ec (eV/atom)')
     plt.legend()
@@ -332,7 +352,7 @@ def fit_rose_curve_erose_form_1(volumes_per_atom, cohesive_energies_per_atom, al
 
 
 
-def fit_rose_curve_erose_form_2(volumes_per_atom, cohesive_energies_per_atom, alpha, V0, Ec):
+def fit_rose_curve_erose_form_2(volumes_per_atom, cohesive_energies_per_atom, alpha, V0, Ec, nearest_neighbor_distance):
     """
     Fit the Rose's universal curve to DFT data to find the parameter a3.
 
@@ -363,21 +383,38 @@ def fit_rose_curve_erose_form_2(volumes_per_atom, cohesive_energies_per_atom, al
     # Fitted parameters
     repuls_fit, attrac_fit = popt
     
+    # Calculating rc from EOS
+    #Acceptable_values = 0.05 # -Ec*{Acceptable_values}
+    def equation(astar, d):
+        return (1 + astar + d * (astar**3)) * np.exp(-astar) - Acceptable_values
+    astar = alpha*(4.0/nearest_neighbor_distance - 1.0)
+    initial_guess = astar
+    solution = fsolve(equation, initial_guess, args=(attrac_fit))
+    astar = solution[0]
+    rc = (astar+1.0)*nearest_neighbor_distance/alpha
+    print(f"[erose_form = 2]: rc = {rc} at -Ec*{Acceptable_values}")
+    
     # Plotting the fit
     plt.figure()
     plt.scatter(volumes_per_atom, E_data, label='DFT Data (QE, PAW(pslibrary))')
     plt.plot(volumes_per_atom, rose_curve(volumes_per_atom, alpha, V0, Ec, repuls_fit, attrac_fit), 
-             label=f'Rose Curve Fit (repuls={repuls_fit:.4f}, attrac={attrac_fit:.4f})', color='red')
+             label=f'Fit (repuls={repuls_fit:.4f}, attrac={attrac_fit:.4f}), r={rc:.2f}@Ec{Acceptable_values*100.0:.1f}%', color='red')
     #----------
+    solution = fsolve(equation, initial_guess, args=(0.00))
+    astar = solution[0]
+    rc = (astar+1.0)*nearest_neighbor_distance/alpha
     if repuls_fit < 0.0:
         plt.plot(volumes_per_atom, rose_curve(volumes_per_atom, alpha, V0, Ec, 0, 0), 
-             label=f'Rose Curve Fit (repuls=0, attrac=0)', color='blue')
+             label=f'Fit (repuls=0, attrac=0), r={rc:.2f}', color='blue')
     else:
         plt.plot(volumes_per_atom, rose_curve(volumes_per_atom, alpha, V0, Ec, repuls_fit, 0), 
-             label=f'Rose Curve Fit (repuls={repuls_fit:.4f}, attrac=0)', color='blue')
+             label=f'Fit (repuls={repuls_fit:.4f}, attrac=0), r={rc:.2f}@Ec{Acceptable_values*100.0:.1f}%', color='blue')
     #----------
+    solution = fsolve(equation, initial_guess, args=(0.05))
+    astar = solution[0]
+    rc = (astar+1.0)*nearest_neighbor_distance/alpha
     plt.plot(volumes_per_atom, rose_curve(volumes_per_atom, alpha, V0, Ec, 0.05, 0.05), 
-             label=f'Rose Curve Fit (repuls=0.05, attrac=0.05)', color='green')
+             label=f'Fit (repuls=0.05, attrac=0.05), r={rc:.2f}@Ec{Acceptable_values*100.0:.1f}%', color='green')
     plt.xlabel('Volume, V (A^3/atom)')
     plt.ylabel('Cohesive Energy, -Ec (eV/atom)')
     plt.legend()
@@ -922,9 +959,16 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
     scaled_cell = original_cell * scaling_factor
     atoms.set_cell(scaled_cell, scale_atoms=True)
     
-    print(f'start Cell([{original_cell[0,0]},{original_cell[1,1]},{original_cell[2,2]}])')
-    bovera = original_cell[1][1]/original_cell[0][0]
-    covera = original_cell[2][2]/original_cell[0][0]
+    if primitive_flag == 0:
+        print(f'Calculation: Conventional Cell')
+        print(f'start Cell([{original_cell[0,0]},{original_cell[1,1]},{original_cell[2,2]}])')
+        bovera = original_cell[1][1]/original_cell[0][0]
+        covera = original_cell[2][2]/original_cell[0][0]
+    else:
+        print(f'Calculation: Primitive Cells')
+        print(f'start {original_cell}')
+        bovera = 1.0
+        covera = 1.0
 
     #-----------------------------------------------------------------------------
     # search optimized structure with scf
@@ -1021,7 +1065,12 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
     skip_indices = []
     tries = 0
     ndata = 0
-    vrange = 0.01*(npoints-1)/2
+    if npoints == 7:
+        print(f'{npoints} points (same as SSSP)')
+        vrange = 0.06
+        print(f'Here, setting +/- {vrange*100}% for volume')
+    else:
+        vrange = 0.01*(npoints-1)/2
     for scale in np.linspace((1.0-vrange)**(1/3), (1.0+vrange)**(1/3), npoints):
         tries += 1
         if tries in skip_indices:
@@ -1168,9 +1217,15 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
         plt.clf()
         eos.plot(f'{directory}/{lattce}-{element1}-{element2}_eos.png')
         print("The notation of the ASE plot has not been changed. Note that the calculations are done with -Ec [eV/atom] and V [A^3/atom] (the volumes of b1 and dia are the volume of the primitive cell = the volume of the conventional cell / 4).")
-    except ValueError as e:
+    except (RuntimeError, ValueError) as e:
         with open("error_log.txt", "a") as file:
             file.write(f"Error fitting EOS: {e}.: in {lattce}-{element1}-{element2}\n")
+        return "Error-eos-1"
+    '''
+    except OptimizeWarning as w:
+        with open("error_log.txt", "a") as file:
+            file.write(f"Warning during fitting EOS: {w}.: in {lattce}-{element1}-{element2}\n")
+    '''
     
     cohesive_energy_per_atom = e0 * -1.0
     if primitive_flag == 1 and lattce in ['b1', 'dia', 'fcc', 'dia1']:
@@ -1203,7 +1258,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
     #-----------------------------------------------------------------
     # d = a3 = attrac = repuls
     plt.clf()
-    repuls_fit_erose_form_0, attrac_fit_erose_form_0 = fit_rose_curve_erose_form_0(volumes_per_atom, cohesive_energies_per_atom, alpha, v0, (e0*-1.0))
+    repuls_fit_erose_form_0, attrac_fit_erose_form_0 = fit_rose_curve_erose_form_0(volumes_per_atom, cohesive_energies_per_atom, alpha, v0, (e0*-1.0), nearest_neighbor_distance)
     print(f"Fitted parameter: repuls = {repuls_fit_erose_form_0}, attrac = {attrac_fit_erose_form_0} for erose_form=0")
     # Save the plot as PNG
     plt.savefig(f'{directory}/{lattce}-{element1}-{element2}_rose_curve_fit_erose_form_0.png')
@@ -1217,7 +1272,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
     #-------------------------
     # d = a3 = attrac = repuls
     plt.clf()
-    repuls_fit_erose_form_2, attrac_fit_erose_form_2 = fit_rose_curve_erose_form_2(volumes_per_atom, cohesive_energies_per_atom, alpha, v0, (e0*-1.0))
+    repuls_fit_erose_form_2, attrac_fit_erose_form_2 = fit_rose_curve_erose_form_2(volumes_per_atom, cohesive_energies_per_atom, alpha, v0, (e0*-1.0), nearest_neighbor_distance)
     print(f"Fitted parameter: repuls = {repuls_fit_erose_form_2}, attrac = {attrac_fit_erose_form_2} for erose_form=2")
     # Save the plot as PNG
     plt.savefig(f'{directory}/{lattce}-{element1}-{element2}_rose_curve_fit_erose_form_2.png')
@@ -1323,6 +1378,10 @@ for i, combination in enumerate(element_combinations):
     elif result == "Error-2":
         with open("error_log.txt", "a") as file:
             file.write(f"Error-2, It probably has not converged.: {element1}-{element2} in {DFT}{D_char}_{spin_char}_{lattce.upper()}\n")
+        continue
+    elif result == "Error-eos-1":
+        with open("error_log.txt", "a") as file:
+            file.write(f"Error-eos-1, RuntimeError: Optimal parameters not found: Number of calls to function has reached maxfev = 1000.: {element1}-{element2} in {DFT}{D_char}_{spin_char}_{lattce.upper()}\n")
         continue
     results.append(result)
 
