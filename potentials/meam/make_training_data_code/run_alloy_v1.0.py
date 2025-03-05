@@ -197,7 +197,7 @@ def fit_rose_curve_erose_form_0(volumes_per_atom, cohesive_energies_per_atom, al
     repuls_fit, attrac_fit = popt
     
     # Calculating rc from EOS
-    #Acceptable_values = 0.05 # -Ec*{Acceptable_values}
+    Acceptable_values = 0.05 # -Ec*{Acceptable_values}
     def equation(astar, d):
         return (1 + astar + d * (astar**3)/((astar+1.0)/alpha)) * np.exp(-astar) - Acceptable_values
     astar = alpha*(4.0/nearest_neighbor_distance - 1.0)
@@ -323,7 +323,7 @@ def fit_rose_curve_erose_form_2(volumes_per_atom, cohesive_energies_per_atom, al
     repuls_fit, attrac_fit = popt
     
     # Calculating rc from EOS
-    #Acceptable_values = 0.05 # -Ec*{Acceptable_values}
+    Acceptable_values = 0.05 # -Ec*{Acceptable_values}
     def equation(astar, d):
         return (1 + astar + d * (astar**3)) * np.exp(-astar) - Acceptable_values
     astar = alpha*(4.0/nearest_neighbor_distance - 1.0)

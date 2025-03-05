@@ -15,6 +15,8 @@ from scipy.optimize import curve_fit
 from scipy.optimize import fsolve
 import matplotlib.pyplot as plt
 
+import xml.etree.ElementTree as ET
+
 #----------------------------------------------------------------------------------------------------------------------------------------------------------
 #----------------------------------------------------------------------------------------------------------------------------------------------------------
 # User input section
@@ -98,8 +100,6 @@ primitive_flag = 1 # 0:conventional cell, 1:primitive cell, (default = 1)
 #------------------------------------------------------------------
 # max number of cycles for search optimized structure
 max_retries = 20 # default = 20
-#------------------------------------------------------------------
-Acceptable_values = 0.05 # calculate r at -Ec*Acceptable_values
 #------------------------------------------------------------------
 # User input section: END
 #----------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -204,6 +204,21 @@ def binary_search(original_cell, atoms, calc, scaling_factor, dsfactor, best_ene
     return new_scaling_factor, new_dsfactor, new_best_energy
 
 
+# Function to extract valence electron count from pseudopotential file
+def get_valence_electrons(pseudo_file):
+    tree = ET.parse(pseudo_file)
+    root = tree.getroot()
+    pp_header = root.find('.//PP_HEADER')
+    if pp_header is not None:
+        z_valence = pp_header.get('z_valence')
+        if z_valence is not None:
+            try:
+                return float(z_valence)
+            except ValueError:
+                pass
+    return None
+
+
 def update_prefix_in_file(filename, new_prefix):
     with open(filename, 'r') as file:
         lines = file.readlines()
@@ -259,7 +274,7 @@ def fit_rose_curve_erose_form_0(volumes_per_atom, cohesive_energies_per_atom, al
     repuls_fit, attrac_fit = popt
     
     # Calculating rc from EOS
-    #Acceptable_values = 0.05 # -Ec*{Acceptable_values}
+    Acceptable_values = 0.05 # -Ec*{Acceptable_values}
     def equation(astar, d):
         return (1 + astar + d * (astar**3)/((astar+1.0)/alpha)) * np.exp(-astar) - Acceptable_values
     astar = alpha*(4.0/nearest_neighbor_distance - 1.0)
@@ -385,7 +400,7 @@ def fit_rose_curve_erose_form_2(volumes_per_atom, cohesive_energies_per_atom, al
     repuls_fit, attrac_fit = popt
     
     # Calculating rc from EOS
-    #Acceptable_values = 0.05 # -Ec*{Acceptable_values}
+    Acceptable_values = 0.05 # -Ec*{Acceptable_values}
     def equation(astar, d):
         return (1 + astar + d * (astar**3)) * np.exp(-astar) - Acceptable_values
     astar = alpha*(4.0/nearest_neighbor_distance - 1.0)
@@ -1056,8 +1071,22 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
     isolated_atom_energy1 = pseudopotentials[element1]['total_psenergy'] * 13.605693
     isolated_atom_energy2 = pseudopotentials[element2]['total_psenergy'] * 13.605693
     
-    valence_electrons1 = pseudopotentials[element1]['z_valence']
-    valence_electrons2 = pseudopotentials[element2]['z_valence']
+    if PBEsol_flag == 0:
+        DFT = 'PBE'
+    else:
+        DFT = 'PBEsol'
+    if not element1 == "XX":
+        pseudo_file = os.path.join(f'./{DFT}', pseudopotentials[element1]['filename'])
+        valence_electrons1 = get_valence_electrons(pseudo_file)
+        print(f'valence_electrons of atom 1: {valence_electrons1}')
+    pseudo_file = os.path.join(f'./{DFT}', pseudopotentials[element2]['filename'])
+    valence_electrons2 = get_valence_electrons(pseudo_file)
+    print(f'valence_electrons of atom 2: {valence_electrons2}')
+    #-----------------------------------------------------------
+    # If the json file has data (old version, But this definitely works.)
+    #valence_electrons1 = pseudopotentials[element1]['z_valence']
+    #valence_electrons2 = pseudopotentials[element2]['z_valence']
+    #-----------------------------------------------------------
     
     volumes_per_atom = []
     energies_per_atom = []

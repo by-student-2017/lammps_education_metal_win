@@ -15,6 +15,8 @@ from scipy.optimize import curve_fit
 from scipy.optimize import fsolve
 import matplotlib.pyplot as plt
 
+import xml.etree.ElementTree as ET
+
 #----------------------------------------------------------------------------------------------------------------------------------------------------------
 #----------------------------------------------------------------------------------------------------------------------------------------------------------
 # User input section
@@ -166,6 +168,23 @@ def binary_search(original_cell, atoms, calc, scaling_factor, dsfactor, best_ene
     return new_scaling_factor, new_dsfactor, new_best_energy
 
 
+
+# Function to extract valence electron count from pseudopotential file
+def get_valence_electrons(pseudo_file):
+    tree = ET.parse(pseudo_file)
+    root = tree.getroot()
+    pp_header = root.find('.//PP_HEADER')
+    if pp_header is not None:
+        z_valence = pp_header.get('z_valence')
+        if z_valence is not None:
+            try:
+                return float(z_valence)
+            except ValueError:
+                pass
+    return None
+
+
+
 def update_prefix_in_file(filename, new_prefix):
     with open(filename, 'r') as file:
         lines = file.readlines()
@@ -221,7 +240,7 @@ def fit_rose_curve_erose_form_0(volumes_per_atom, cohesive_energies_per_atom, al
     repuls_fit, attrac_fit = popt
     
     # Calculating rc from EOS
-    #Acceptable_values = 0.05 # -Ec*{Acceptable_values}
+    Acceptable_values = 0.05 # -Ec*{Acceptable_values}
     def equation(astar, d):
         return (1 + astar + d * (astar**3)/((astar+1.0)/alpha)) * np.exp(-astar) - Acceptable_values
     astar = alpha*(4.0/nearest_neighbor_distance - 1.0)
@@ -307,6 +326,81 @@ def fit_rose_curve_erose_form_1(volumes_per_atom, cohesive_energies_per_atom, al
     plt.ylabel('Cohesive Energy, -Ec (eV/atom)')
     plt.legend()
     plt.title('Modified Rose energy function (erose_form = 1) Fit to DFT Data')
+    
+    # Save the plot as PNG
+    #plt.savefig('rose_curve_fit.png')
+    
+    return repuls_fit, attrac_fit
+
+
+
+def fit_rose_curve_erose_form_2(volumes_per_atom, cohesive_energies_per_atom, alpha, V0, Ec, nearest_neighbor_distance):
+    """
+    Fit the Rose's universal curve to DFT data to find the parameter a3.
+
+    Parameters:
+    volumes_per_atom (array): Array of volumes per atom from DFT calculations.
+    cohesive_energies_per_atom (array): Array of cohesive energies per atom from DFT calculations.
+    alpha (float): Constant alpha.
+    V0 (float): Equilibrium volume per atom.
+    Ec (float): Cohesive energy per atom.
+
+    Returns:
+    tuple: Fitted parameters repuls and attrac.
+    """
+    
+    # Convert cohesive energies to the form needed for fitting
+    E_data = np.array([-energy for energy in cohesive_energies_per_atom])
+    
+    # Rose's universal curve function
+    def rose_curve(V, alpha, V0, Ec, repuls, attrac):
+        astar = alpha * ((V/V0)**(1/3) - 1.0)
+        a3 = np.where(astar < 0, repuls, attrac)
+        return -Ec * (1 + astar + a3 * (astar**3)) * np.exp(-astar)
+    
+    # Fitting the parameters repuls and attrac
+    popt, _ = curve_fit(lambda V, repuls, attrac: rose_curve(V, alpha, V0, Ec, repuls, attrac), 
+                        volumes_per_atom, E_data, p0=[0.0, 0.0])  # Initial guesses for repuls and attrac
+    
+    # Fitted parameters
+    repuls_fit, attrac_fit = popt
+    
+    # Calculating rc from EOS
+    Acceptable_values = 0.05 # -Ec*{Acceptable_values}
+    def equation(astar, d):
+        return (1 + astar + d * (astar**3)) * np.exp(-astar) - Acceptable_values
+    astar = alpha*(4.0/nearest_neighbor_distance - 1.0)
+    initial_guess = astar
+    solution = fsolve(equation, initial_guess, args=(attrac_fit))
+    astar = solution[0]
+    rc = (astar+1.0)*nearest_neighbor_distance/alpha
+    print(f"[erose_form = 2]: rc = {rc} at -Ec*{Acceptable_values}")
+    
+    # Plotting the fit
+    plt.figure()
+    plt.scatter(volumes_per_atom, E_data, label='DFT Data (QE, PAW(pslibrary))')
+    plt.plot(volumes_per_atom, rose_curve(volumes_per_atom, alpha, V0, Ec, repuls_fit, attrac_fit), 
+             label=f'Fit (repuls={repuls_fit:.4f}, attrac={attrac_fit:.4f}), r={rc:.2f}@Ec{Acceptable_values*100.0:.1f}%', color='red')
+    #----------
+    solution = fsolve(equation, initial_guess, args=(0.00))
+    astar = solution[0]
+    rc = (astar+1.0)*nearest_neighbor_distance/alpha
+    if repuls_fit < 0.0:
+        plt.plot(volumes_per_atom, rose_curve(volumes_per_atom, alpha, V0, Ec, 0, 0), 
+             label=f'Fit (repuls=0, attrac=0), r={rc:.2f}', color='blue')
+    else:
+        plt.plot(volumes_per_atom, rose_curve(volumes_per_atom, alpha, V0, Ec, repuls_fit, 0), 
+             label=f'Fit (repuls={repuls_fit:.4f}, attrac=0), r={rc:.2f}@Ec{Acceptable_values*100.0:.1f}%', color='blue')
+    #----------
+    solution = fsolve(equation, initial_guess, args=(0.05))
+    astar = solution[0]
+    rc = (astar+1.0)*nearest_neighbor_distance/alpha
+    plt.plot(volumes_per_atom, rose_curve(volumes_per_atom, alpha, V0, Ec, 0.05, 0.05), 
+             label=f'Fit (repuls=0.05, attrac=0.05), r={rc:.2f}@Ec{Acceptable_values*100.0:.1f}%', color='green')
+    plt.xlabel('Volume, V (A^3/atom)')
+    plt.ylabel('Cohesive Energy, -Ec (eV/atom)')
+    plt.legend()
+    plt.title('Modified Rose energy function (erose_form = 2) Fit to DFT Data')
     
     # Save the plot as PNG
     #plt.savefig('rose_curve_fit.png')
@@ -824,8 +918,22 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
     isolated_atom_energy1 = pseudopotentials[element1]['total_psenergy'] * 13.605693
     isolated_atom_energy2 = pseudopotentials[element2]['total_psenergy'] * 13.605693
     
-    valence_electrons1 = pseudopotentials[element1]['z_valence']
-    valence_electrons2 = pseudopotentials[element2]['z_valence']
+    if PBEsol_flag == 0:
+        DFT = 'PBE'
+    else:
+        DFT = 'PBEsol'
+    if not element1 == "XX":
+        pseudo_file = os.path.join(f'./{DFT}', pseudopotentials[element1]['filename'])
+        valence_electrons1 = get_valence_electrons(pseudo_file)
+        print(f'valence_electrons of atom 1: {valence_electrons1}')
+    pseudo_file = os.path.join(f'./{DFT}', pseudopotentials[element2]['filename'])
+    valence_electrons2 = get_valence_electrons(pseudo_file)
+    print(f'valence_electrons of atom 2: {valence_electrons2}')
+    #-----------------------------------------------------------
+    # If the json file has data (old version, But this definitely works.)
+    #valence_electrons1 = pseudopotentials[element1]['z_valence']
+    #valence_electrons2 = pseudopotentials[element2]['z_valence']
+    #-----------------------------------------------------------
     
     volumes_per_atom = []
     energies_per_atom = []
