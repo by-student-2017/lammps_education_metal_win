@@ -14,12 +14,12 @@ DFT = 'PBE' # PBE or PBEsol
 json_file = f'PSlibrary_{DFT}.json'
 
 # cutoff [eV], 0:read PP file, (520 eV is the main in the Materials Project, except Boron (700 eV)), negative value (< 0): 520 eV
-cutoff = 900.0 # 550 eV = about 40 Ry, 900 eV = about 65 Ry
+cutoff = 0 # 550 eV = about 40 Ry, 900 eV = about 65 Ry
 
 spin_flag = 1 # 0:non-spin, 1:spin, (default = 1)
 
 # Set the number of OpenMP threads
-omp_num_threads = 8
+omp_num_threads = 4
 #------------------------------------------------------------------
 # User input section: END
 #--------------------------------------------------------------------------------
@@ -29,7 +29,8 @@ os.environ['OMP_NUM_THREADS'] = f'{omp_num_threads}'
 
 # Initialize MPI
 comm = MPI.COMM_WORLD
-mpi_num_procs = comm.Get_size()
+#mpi_num_procs = comm.Get_size()
+mpi_num_procs = 1
 rank = comm.Get_rank()
 
 # Load the pseudopotential data from the JSON file
