@@ -22,7 +22,7 @@ import matplotlib.pyplot as plt
 # b1: FCC_B1 (NaCl-type), b2:BCC_B2 (CsCl-type), dia:Diamond_B3 (Zinc Blende), l12: L12 (Cu3Au-type)
 # fcc: FCC (1 element), hcp: HCP (1 element), bcc: BCC (1 element), sc: SC (1 element), dia1: Daiamond
 # dim(dimer), ch4(binary system), dim1(1 element)
-lattce = 'b1'
+lattce = 'bcc'
 #------------------------------------------------------------------
 # lattice structure of reference configuration [Angstrom] (https://en.wikipedia.org/wiki/Lattice_constant)
 lat = ''     # In the case of '', the sum of covalent_radii (sum of concentration ratio in L12)
@@ -35,7 +35,9 @@ lat = ''     # In the case of '', the sum of covalent_radii (sum of concentratio
 npoints = 7 # >= 7 e.g., 7, 11, 17, 21, or 25, etc (Recommend >= 25), (default = 25) (SSSP: 7 points) (7 points:0.02 step, other:0.01 step)
 #------------------------------------------------------------------
 # Note: "fixed_element" becomes a dummy when a lattice of one element is selected (the atom in *.json is temporarily specified).
-fixed_element = 'Al'
+fixed_element = 'XX'
+elements = [fixed_element,'P']
+'''
 elements = [fixed_element,
              'H', 'He',
             'Li', 'Be',  'B',  'C',  'N',  'O',  'F', 'Ne', 
@@ -45,6 +47,7 @@ elements = [fixed_element,
             'Cs', 'Ba', 'La', 'Ce', 'Pr', 'Nd', 'Pm', 'Sm', 'Eu', 'Gd', 'Tb', 'Dy', 'Ho', 'Er', 'Tm', 'Yb', 'Lu', 
             'Hf', 'Ta',  'W', 'Re', 'Os', 'Ir', 'Pt', 'Au', 'Hg', 'Tl', 'Pb', 'Bi', 'Po', 'At', 'Ra',
             'Rn', 'Fr'] # <- Enter the element you want to calculate (Note: Time Consumption: Approx. 4 elements/hour)
+'''
 #elements = [fixed_element, 'Ac', 'Th', 'Pa',  'U', 'Np', 'Pu'] # Pairs with noble gases require careful calculations and must be calculated separately.
 #elements = [fixed_element, 'He', 'Ne', 'Ar', 'Kr', 'Xe', 'Ra'] # Pairs with noble gases require careful calculations and must be calculated separately.
 '''
@@ -1167,7 +1170,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
             print(f'Error for element 2 at position No.4: {(valence_electrons2-charge[2])/mean_elem1_charge*100-100} [%]')
             print(f'Error for element 2 at position No.5: {(valence_electrons2-charge[3])/mean_elem1_charge*100-100} [%]')
         else:
-           print(f"{idx}: This code does not provide other structures. (Possible structures: b1, b2, dia, l12, dim, ch4)")
+           print(f"This code does not provide other structures. (Possible structures: b1, b2, dia, l12, dim, ch4)")
         
         #print(f'Charges [e]: {charge}')
         print(f'Charges [e]: {charges[ndata-1][:]}')
