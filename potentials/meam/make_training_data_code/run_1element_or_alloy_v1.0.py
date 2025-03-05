@@ -32,7 +32,7 @@ lat = ''     # In the case of '', the sum of covalent_radii (sum of concentratio
 #lat = 5.640 # NaCl (e.g., FCC_B1 calculation)
 #----------------------------
 # making number of data (If the bulk modulus is approximately +/- 0.5 GPa or less, 11 points will suffice. However, for a3, 25 points or more is recommended to keep the accuracy at around +/- 0.005 or less.)
-npoints = 25 # >= 7 e.g., 7, 11, 17, 21, or 25, etc (Recommend >= 25), (default = 25) (SSSP: 7 points) (7 points:0.02 step, other:0.01 step)
+npoints = 7 # >= 7 e.g., 7, 11, 17, 21, or 25, etc (Recommend >= 25), (default = 25) (SSSP: 7 points) (7 points:0.02 step, other:0.01 step)
 #------------------------------------------------------------------
 # Note: "fixed_element" becomes a dummy when a lattice of one element is selected (the atom in *.json is temporarily specified).
 fixed_element = 'H'
