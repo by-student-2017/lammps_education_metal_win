@@ -83,7 +83,7 @@ def calculate_isolated_atom_energy(element, omp_num_threads):
         },
         'electrons': {
             'conv_thr': 1.0e-6/2,
-            'electron_maxstep': 1000,
+            'electron_maxstep': 5000,
         }
     }
     
