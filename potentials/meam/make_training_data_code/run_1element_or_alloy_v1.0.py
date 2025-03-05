@@ -884,10 +884,10 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
         pass
     elif cutoff > 0:
         input_data['system']['ecutwfc'] = f'{cutoff/Rydberg}'
-        input_data['system']['ecutwfc'] = f'{cutoff*4.0/Rydberg}'
+        input_data['system']['ecutrho'] = f'{cutoff*4.0/Rydberg}'
     else:
         input_data['system']['ecutwfc'] = f'{520/Rydberg}'
-        input_data['system']['ecutwfc'] = f'{520*4.0/Rydberg}'
+        input_data['system']['ecutrho'] = f'{520*4.0/Rydberg}'
     
     if lattce in ['dim', 'ch4', 'dim1']:
         calc = Espresso(pseudopotentials=pseudopotentials_dict, input_data=input_data, kpts=None, koffset=False, omp_num_threads=omp_num_threads, mpi_num_procs=mpi_num_procs, nspin=nspin)
@@ -1046,7 +1046,6 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
         if tries in skip_indices:
             continue
         print(f'{tries}/{npoints}:')
-        ndata += 1
         
         scaled_cell = original_cell * optimized_scaling_factor * scale
         atoms.set_cell(scaled_cell, scale_atoms=True)
@@ -1061,7 +1060,6 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
             print(f"Error-l1: The calculation may have stopped with [Error in routine electrons: charge is wrong].")
             with open("error_log.txt", "a") as file:
                 file.write(f"Error-l1: The calculation may have stopped with [Error in routine electrons: charge is wrong].: {lattce}-{element1}-{element2}\n")
-            ndata -= 1
             continue
         energies.append(energy)
 
@@ -1082,12 +1080,11 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
         print(f'    Volume = {volume/len(atoms)} [A^3/atom], Cohesive_energy = {cohesive_energy/len(atoms)} [eV/atom]')
         print(f'    Total energy = {energy} [eV]')
         
-        if spin_flag == 0:
-            print("-------------------------------------------------------------------------------------")
-        else:
+        if spin_flag == 1:
             magnetic_moments.append(atoms.get_magnetic_moments().tolist())
             print(f'    Magnetic moment = {magnetic_moments[ndata-1][:]}')
-            print("-------------------------------------------------------------------------------------")
+        ndata += 1
+        print("-------------------------------------------------------------------------------------")
 
     if D_flag == 0:
         D_char = ''

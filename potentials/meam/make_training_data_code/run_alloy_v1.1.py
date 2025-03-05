@@ -701,10 +701,10 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
         pass
     elif cutoff > 0:
         input_data['system']['ecutwfc'] = f'{cutoff/Rydberg}'
-        input_data['system']['ecutwfc'] = f'{cutoff*4.0/Rydberg}'
+        input_data['system']['ecutrho'] = f'{cutoff*4.0/Rydberg}'
     else:
         input_data['system']['ecutwfc'] = f'{520/Rydberg}'
-        input_data['system']['ecutwfc'] = f'{520*4.0/Rydberg}'
+        input_data['system']['ecutrho'] = f'{520*4.0/Rydberg}'
     
     calc = Espresso(pseudopotentials=pseudopotentials_dict, input_data=input_data, kpts=(kpt, kpt, kpt), koffset=True, omp_num_threads=omp_num_threads, mpi_num_procs=mpi_num_procs, nspin=nspin)
     #calc = Espresso(pseudopotentials=pseudopotentials_dict, input_data=input_data, kpts=(kpt, kpt, kpt), omp_num_threads=omp_num_threads, mpi_num_procs=mpi_num_procs, nspin=nspin)
@@ -840,7 +840,6 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
         if tries in skip_indices:
             continue
         print(f'{tries}/{npoints}:')
-        ndata += 1
         
         scaled_cell = original_cell * optimized_scaling_factor * scale
         atoms.set_cell(scaled_cell, scale_atoms=True)
@@ -855,7 +854,6 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
             print(f"Error-l1: The calculation may have stopped with [Error in routine electrons: charge is wrong].")
             with open("error_log.txt", "a") as file:
                 file.write(f"Error-l1: The calculation may have stopped with [Error in routine electrons: charge is wrong].: {lattce}-{element1}-{element2}\n")
-            ndata -= 1
             continue
         energies.append(energy)
 
@@ -876,12 +874,10 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
         print(f'    Volume = {volume/len(atoms)} [A^3/atom], Cohesive_energy = {cohesive_energy/len(atoms)} [eV/atom]')
         print(f'    Total energy = {energy} [eV]')
         
-        if spin_flag == 0:
-            print("-------------------------------------------------------------------------------------")
-        else:
+        if spin_flag == 1:
             magnetic_moments.append(atoms.get_magnetic_moments().tolist())
             print(f'    Magnetic moment = {magnetic_moments[ndata-1][:]}')
-            print("-------------------------------------------------------------------------------------")
+        print("-------------------------------------------------------------------------------------")
         
         new_prefix = f'{lattce}_{element1}_{element2}'
         
@@ -919,7 +915,8 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
             print(f'Error for element 1 at position No.2: {(valence_electrons1-charge[1])/mean_elem1_charge*100-100} [%]')
             print(f'Error for element 1 at position No.3: {(valence_electrons1-charge[2])/mean_elem1_charge*100-100} [%]')
         else:
-           print(f"{idx}: This code does not provide other structures. (Possible structures: b1, b2, dia, l12)")
+            charges.append([0.0])
+            print(f"This code does not provide other structures. (Possible structures: b1, b2, dia, l12)")
         
         #print(f'Charges [e]: {charge}')
         print(f'Charges [e]: {charges[ndata-1][:]}')
@@ -930,6 +927,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
             print(warning_message)
             with open('error_log.txt', 'a') as file:
                 file.write(warning_message + '\n')
+        ndata += 1
         print("-------------------------------------------------------------------------------------")
 
     if D_flag == 0:
