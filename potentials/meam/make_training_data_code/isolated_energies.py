@@ -82,7 +82,7 @@ def calculate_isolated_atom_energy(element, omp_num_threads):
             #'vdw_corr': 'dft-d', # DFT-D2 (Semiempirical Grimme's DFT-D2. Optional variables)
         },
         'electrons': {
-            'conv_thr': 1.0e-6/2
+            'conv_thr': 1.0e-6/2,
             'electron_maxstep': 1000,
         }
     }
