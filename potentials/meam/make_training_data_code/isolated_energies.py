@@ -12,8 +12,8 @@ DFT = 'PBE' # PBE or PBEsol
 
 json_file = f'PSlibrary_{DFT}.json'
 
-#cutoff = 0 # [eV], 0:read PP file, (520 eV is the main in the Materials Project, except Boron (700 eV)), negative value (< 0): 520 eV
-cutoff = 820.0 # 550 eV = about 40 Ry, 820 eV = about 60 Ry
+# cutoff [eV], 0:read PP file, (520 eV is the main in the Materials Project, except Boron (700 eV)), negative value (< 0): 520 eV
+cutoff = 900.0 # 550 eV = about 40 Ry, 900 eV = about 65 Ry
 
 spin_flag = 1 # 0:non-spin, 1:spin, (default = 1)
 
