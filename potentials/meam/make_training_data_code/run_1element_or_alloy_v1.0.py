@@ -883,11 +883,11 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
     if cutoff == 0:
         pass
     elif cutoff > 0:
-        input_data['system']['ecutwfc'] = f'{cutoff/Rydberg}'
-        input_data['system']['ecutrho'] = f'{cutoff*4.0/Rydberg}'
+        input_data['system']['ecutwfc'] = cutoff/Rydberg
+        input_data['system']['ecutrho'] = cutoff*4.0/Rydberg
     else:
-        input_data['system']['ecutwfc'] = f'{520/Rydberg}'
-        input_data['system']['ecutrho'] = f'{520*4.0/Rydberg}'
+        input_data['system']['ecutwfc'] = 520/Rydberg
+        input_data['system']['ecutrho'] = 520*4.0/Rydberg
     
     if lattce in ['dim', 'ch4', 'dim1']:
         calc = Espresso(pseudopotentials=pseudopotentials_dict, input_data=input_data, kpts=None, koffset=False, omp_num_threads=omp_num_threads, mpi_num_procs=mpi_num_procs, nspin=nspin)

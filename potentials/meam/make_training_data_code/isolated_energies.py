@@ -97,11 +97,11 @@ def calculate_isolated_atom_energy(element, omp_num_threads):
     if cutoff == 0:
         pass
     elif cutoff > 0:
-        input_data['system']['ecutwfc'] = f'{cutoff/Rydberg}'
-        input_data['system']['ecutrho'] = f'{cutoff*4.0/Rydberg}'
+        input_data['system']['ecutwfc'] = cutoff/Rydberg
+        input_data['system']['ecutrho'] = cutoff*4.0/Rydberg
     else:
-        input_data['system']['ecutwfc'] = f'{520/Rydberg}'
-        input_data['system']['ecutrho'] = f'{520*4.0/Rydberg}'
+        input_data['system']['ecutwfc'] = 520/Rydberg
+        input_data['system']['ecutrho'] = 520*4.0/Rydberg
 
     if spin_flag == 0:
         nspin = 1
