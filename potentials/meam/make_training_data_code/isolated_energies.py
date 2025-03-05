@@ -4,6 +4,7 @@ from ase import Atoms
 from ase.calculators.espresso import Espresso
 from ase.units import Bohr, Rydberg, kJ, kB, fs, Hartree, mol, kcal
 from mpi4py import MPI
+import xml.etree.ElementTree as ET
 
 #--------------------------------------------------------------------------------
 # User input section
@@ -47,14 +48,16 @@ pseudopotentials = comm.bcast(pseudopotentials, root=0)
 
 # Function to extract valence electron count from pseudopotential file
 def get_valence_electrons(pseudo_file):
-    with open(pseudo_file, 'r') as f:
-        for line in f:
-            if 'valence' in line.lower():
-                try:
-                    return int(line.split()[-1])
-                except ValueError:
-                    # Handle cases where the line does not end with an integer
-                    continue
+    tree = ET.parse(pseudo_file)
+    root = tree.getroot()
+    pp_header = root.find('.//PP_HEADER')
+    if pp_header is not None:
+        z_valence = pp_header.get('z_valence')
+        if z_valence is not None:
+            try:
+                return float(z_valence)
+            except ValueError:
+                pass
     return None
 
 # Function to calculate the energy of an isolated atom
@@ -66,6 +69,7 @@ def calculate_isolated_atom_energy(element, omp_num_threads):
     pseudo_file = os.path.join(f'./{DFT}', pseudopotentials[element]['filename'])
     valence_electrons = get_valence_electrons(pseudo_file)
     pseudopotentials[element]['valence_electrons'] = valence_electrons
+    print(f'valence_electrons = {valence_electrons}')
     
     pseudopotentials_dict = {
         element: pseudopotentials[element]['filename']
