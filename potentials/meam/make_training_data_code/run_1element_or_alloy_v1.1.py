@@ -1077,7 +1077,6 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
         if tries in skip_indices:
             continue
         print(f'{tries}/{npoints}:')
-        ndata += 1
         
         scaled_cell = original_cell * optimized_scaling_factor * scale
         atoms.set_cell(scaled_cell, scale_atoms=True)
@@ -1092,7 +1091,6 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
             print(f"Error-l1: The calculation may have stopped with [Error in routine electrons: charge is wrong].")
             with open("error_log.txt", "a") as file:
                 file.write(f"Error-l1: The calculation may have stopped with [Error in routine electrons: charge is wrong].: {lattce}-{element1}-{element2}\n")
-            ndata -= 1
             continue
         energies.append(energy)
 
@@ -1113,23 +1111,27 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
         print(f'    Volume = {volume/len(atoms)} [A^3/atom], Cohesive_energy = {cohesive_energy/len(atoms)} [eV/atom]')
         print(f'    Total energy = {energy} [eV]')
         
-        if spin_flag == 0:
-            print("-------------------------------------------------------------------------------------")
-        else:
+        if spin_flag == 1:
             magnetic_moments.append(atoms.get_magnetic_moments().tolist())
             print(f'    Magnetic moment = {magnetic_moments[ndata-1][:]}')
-            print("-------------------------------------------------------------------------------------")
+        print("-------------------------------------------------------------------------------------")
         
-        new_prefix = f'{lattce}_{element1}_{element2}'
+        if lattce in ['dim1', 'dia1', 'fcc', 'bcc', 'sc']:
+            print(f"Since dim1, dia1, fcc, bcc, and sc are one element, set them to 0.0.")
+            print(f"Skipped bader analysis")
+            charges.append([0.0])
+        else:
+            new_prefix = f'{lattce}_{element1}_{element2}'
+            #
+            update_prefix_in_file('val.pp.in', new_prefix)
+            update_prefix_in_file('all.pp.in', new_prefix)
+            #
+            os.system('pp.x < val.pp.in > val.pp.out')
+            os.system('pp.x < all.pp.in > all.pp.out')
+            #
+            os.system('./bader valence_density.cube -ref all_electron_density.cube')
+            charge = read_bader_charges()
         
-        update_prefix_in_file('val.pp.in', new_prefix)
-        update_prefix_in_file('all.pp.in', new_prefix)
-        
-        os.system('pp.x < val.pp.in > val.pp.out')
-        os.system('pp.x < all.pp.in > all.pp.out')
-        
-        os.system('./bader valence_density.cube -ref all_electron_density.cube')
-        charge = read_bader_charges()
         if lattce == 'b1' or lattce == 'dia':
             if primitive_flag == 0:
                 charges.append([valence_electrons1-charge[0],
@@ -1169,8 +1171,6 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
             print(f'Error for element 2 at position No.3: {(valence_electrons2-charge[1])/mean_elem1_charge*100-100} [%]')
             print(f'Error for element 2 at position No.4: {(valence_electrons2-charge[2])/mean_elem1_charge*100-100} [%]')
             print(f'Error for element 2 at position No.5: {(valence_electrons2-charge[3])/mean_elem1_charge*100-100} [%]')
-        else:
-           print(f"This code does not provide other structures. (Possible structures: b1, b2, dia, l12, dim, ch4)")
         
         #print(f'Charges [e]: {charge}')
         print(f'Charges [e]: {charges[ndata-1][:]}')
@@ -1181,6 +1181,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
             print(warning_message)
             with open('error_log.txt', 'a') as file:
                 file.write(warning_message + '\n')
+        ndata += 1
         print("-------------------------------------------------------------------------------------")
 
     if D_flag == 0:
