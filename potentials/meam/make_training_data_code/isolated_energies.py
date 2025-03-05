@@ -70,7 +70,7 @@ def calculate_isolated_atom_energy(element, omp_num_threads):
             'outdir': './out',
             'etot_conv_thr': 1.0e-4/2,  # 0.68 meV/atom <= about 1 meV/atom
             'wf_collect': False,
-            'disk_io': 'low',  # qe-7.2:'minimal', qe-7.3:'nowf'
+            'disk_io': 'none',  # qe-7.2:'minimal', qe-7.3:'nowf'
         },
         'system': {
             'ecutwfc': pseudopotentials[element]['cutoff_wfc'],
