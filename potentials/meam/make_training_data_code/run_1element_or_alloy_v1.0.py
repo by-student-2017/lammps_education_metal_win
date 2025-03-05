@@ -6,14 +6,14 @@ from ase.calculators.espresso import Espresso
 from ase.optimize import BFGS
 from ase.eos import EquationOfState
 from ase.units import Bohr, Rydberg, kJ, kB, fs, Hartree, mol, kcal
+from ase.dft.kpoints import monkhorst_pack
 import numpy as np
 import os
 
 # For Rose universal function
 from scipy.optimize import curve_fit
+from scipy.optimize import fsolve
 import matplotlib.pyplot as plt
-
-from ase.dft.kpoints import monkhorst_pack
 
 #----------------------------------------------------------------------------------------------------------------------------------------------------------
 #----------------------------------------------------------------------------------------------------------------------------------------------------------
