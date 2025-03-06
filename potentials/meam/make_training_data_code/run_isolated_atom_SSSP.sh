@@ -32,7 +32,7 @@ cd ${mode}
 upf_list=($(ls *.UPF | ls *.upf))
 cd ..
 for upf_name in "${upf_list[@]}"; do
-  element_name=$(echo ${upf_name} | awk '{print toupper(substr($0, 1, 1)) tolower(substr($0, 2, 1))}')
+  element_name=$(echo ${upf_name} | awk '{print toupper(substr($0, 1, 1)) tolower(substr($0, 2, 1))}' | sed 's/\..*//g' | sed 's/\_.*//g')
   echo $element_name
   #
   count=1
