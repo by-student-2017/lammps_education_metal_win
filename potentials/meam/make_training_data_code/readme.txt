@@ -64,8 +64,10 @@ STUDENT, B. (2025). SUGGESTED PSEUDOPOTENTIALS for PBE v.1.0.0 [Data set]. Zenod
 https://www.materialscloud.org/discover/sssp/table/efficiency
 
 # Usage (isolated atom energy) (SSSP-1.3.0)
-1. chmod +x run_isolated_atom_SSSP.sh
-2. ./run_isolated_atom_SSSP.sh
+1. sudo apt update
+2. sudo apt install jq
+3. chmod +x run_isolated_atom_SSSP.sh
+4. ./run_isolated_atom_SSSP.sh
 
 # Test
 - Ubuntu 20.04.3 LTS, ase-3.19.0 and qe-7.2
