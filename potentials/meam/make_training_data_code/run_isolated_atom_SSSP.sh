@@ -101,7 +101,7 @@ EOF
   echo "${element_name}, ${TOTEN_Ry}, ${upf_name}, ${cutoff_wfc}, ${cutoff_rho}, ${valence_electrons}, ${pstype}" >> ${outfile}
   Iter=$(grep "iteration #" isolated_atom.out | tail -1 | sed 's/ecut=.*//g')
   accuracy=$(grep "  estimated scf accuracy  " isolated_atom.out | tail -1)
-  echo ${element_name}:${Iter}:accuracy=${accuracy} >> log.txt
+  echo ${element_name}:${Iter}:${accuracy} >> log.txt
 cat << EOF >> ${jsonfile}
     "${element_name}": {
         "filename": "${upf_name}",
