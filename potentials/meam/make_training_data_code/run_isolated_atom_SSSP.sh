@@ -24,7 +24,7 @@ mass_list=(1.00794 4.00260 6.941 9.01218 10.81 12.01 14.007 16.00 18.9984 20.180
 date > log.txt
 echo -n "" > ${outfile}
 echo "{" > ${jsonfile}
-echo "Element, Total energy [Ry], filename, cutoff_wfc [Ry], cutoff_rho [Ry], valence_electrons, Type" >> ${outfile}
+echo "Element, Total energy [Ry], filename, cutoff_wfc [Ry], cutoff_rho [Ry], valence_electrons, Type, tot_mag [Bohr mag/cell], abs_mag [Bohr mag/cell]" >> ${outfile}
 
 mkdir -p work
 #-----------------------------------------------------------------------
@@ -97,11 +97,27 @@ EOF
   #TOTEN=$(echo "${TOTEN_Ry}*13.605693122990" | bc -l | awk '{printf "%15.10f",$0}')
   #TOTEN=$(echo "${TOTEN_Ry}*1.0" | bc -l | awk '{printf "%15.10f",$0}')
   echo "----------eV/atom for isolated atom----------"
-  echo "${element_name}:${TOTEN_Ry} [Ry]: ${upf_name}:${cutoff_wfc} [Ry]:${cutoff_rho} [Ry]:${valence_electrons}:${pstype}"
-  echo "${element_name}, ${TOTEN_Ry}, ${upf_name}, ${cutoff_wfc}, ${cutoff_rho}, ${valence_electrons}, ${pstype}" >> ${outfile}
-  Iter=$(grep "iteration #" isolated_atom.out | tail -1 | sed 's/ecut=.*//g')
-  accuracy=$(grep "  estimated scf accuracy  " isolated_atom.out | tail -1)
-  echo ${element_name}:${Iter}:${accuracy} >> log.txt
+  #
+  if [ "${nspin}" == 2 ]; then
+    tot_mag=$(grep "  total magnetization  " isolated_atom.out | tail -1 | sed 's/.*=//g' | sed 's/Bohr.*//g' | sed 's/ //g')
+    abs_mag=$(grep "  absolute magnetization  " isolated_atom.out | tail -1 | sed 's/.*=//g' | sed 's/Bohr.*//g' | sed 's/ //g')
+cat << EOF >> ${jsonfile}
+    "${element_name}": {
+        "filename": "${upf_name}",
+        "total_psenergy": ${TOTEN_Ry},
+        "pseudopotential": "${pstype}",
+        "relativistic": "scalar",
+        "cutoff_wfc": ${cutoff_wfc},
+        "cutoff_rho": ${cutoff_rho},
+        "z_valence": ${valence_electrons},
+        "total_magnetization": ${tot_mag},
+        "absolute_magnetization": ${abs_mag},
+        "md5": ""
+    },
+EOF
+  else
+    tot_mag = 0.0
+    abs_mag = 0.0
 cat << EOF >> ${jsonfile}
     "${element_name}": {
         "filename": "${upf_name}",
@@ -114,6 +130,14 @@ cat << EOF >> ${jsonfile}
         "md5": ""
     },
 EOF
+  fi
+  #
+  echo "${element_name}:${TOTEN_Ry} [Ry]: ${upf_name}:${cutoff_wfc} [Ry]:${cutoff_rho} [Ry]:${valence_electrons}:${pstype}:${tot_mag}:${abs_mag}"
+  echo "${element_name}, ${TOTEN_Ry}, ${upf_name}, ${cutoff_wfc}, ${cutoff_rho}, ${valence_electrons}, ${pstype}, ${tot_mag}, ${abs_mag}" >> ${outfile}
+  #
+  Iter=$(grep "iteration #" isolated_atom.out | tail -1 | sed 's/ecut=.*//g')
+  accuracy=$(grep "  estimated scf accuracy  " isolated_atom.out | tail -1)
+  echo ${element_name}:${Iter}:${accuracy} >> log.txt
 done
 #-----------------------------------------------------------------------
 cat << EOF >> ${jsonfile}
