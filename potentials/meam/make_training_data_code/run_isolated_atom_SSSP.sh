@@ -1,10 +1,13 @@
 #!/bin/bash
 
 #-----------------------------------------------------------------------
-NCPUs=16
+# Test: qe-7.2 and qe-7.3 on Ubuntu 22.04 LTS or Ubuntu 24.04 LTS
 
-DFT="PBE"
-mode="efficiency"
+#-----------------------------------------------------------------------
+NCPUs=8
+
+DFT="PBE" # PBE or PBEsol
+mode="efficiency" # efficiency or precision
 outfile="isolated_atom_energies_SSSP-1.3.0_${DFT}_${mode}.csv"
 
 export OMP_NUM_THREADS=1
@@ -38,7 +41,7 @@ for upf_name in "${upf_list[@]}"; do
     count=$((count + 1))
   done
 #-----------------------------------------------------------------------
-  # Extract cutoff values from SSSP-1.3.0_PBE_efficiency.json
+  # Extract cutoff values from SSSP-1.3.0_PBE_efficiency.json or SSSP-1.3.0_PBE_precision.json
   cutoff_wfc=$(jq -r --arg element "$element_name" '.[$element].cutoff_wfc' ./${mode}/SSSP-1.3.0_${DFT}_${mode}.json)
   cutoff_rho=$(jq -r --arg element "$element_name" '.[$element].cutoff_rho' ./${mode}/SSSP-1.3.0_${DFT}_${mode}.json)
   pstype=$(jq -r --arg element "$element_name" '.[$element].pseudopotential' ./${mode}/SSSP-1.3.0_${DFT}_${mode}.json)
