@@ -47,7 +47,7 @@ STUDENT, B. (2025). SUGGESTED PSEUDOPOTENTIALS for PBE v.1.0.0 [Data set]. Zenod
 1. gedit run_alloy_v1.1.py
 2. python3 run_alloy_v1.1.py
 
-# Usage (isolated atom energy)
+# Usage (isolated atom energy) (pslibrary)
 ## bash version
 1. chmod +x run_isolated_atom.sh
 2. ./run_isolated_atom.sh
@@ -55,6 +55,10 @@ STUDENT, B. (2025). SUGGESTED PSEUDOPOTENTIALS for PBE v.1.0.0 [Data set]. Zenod
 1. chmod +x run_isolated_atom.csh
 2. ./run_isolated_atom.csh
 ## I also tried "ASE", but the calculation stopped halfway through. I do not recommend to use "run_isolated_atom.py".
+
+# Usage (isolated atom energy) (SSSP-1.3.0)
+1. chmod +x run_isolated_atom.sh
+2. ./run_isolated_atom.sh
 
 # Test
 - Ubuntu 20.04.3 LTS, ase-3.19.0 and qe-7.2
