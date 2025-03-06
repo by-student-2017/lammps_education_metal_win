@@ -109,7 +109,7 @@ cat << EOF >> ${jsonfile}
         "relativistic": "scalar",
         "cutoff_wfc": ${cutoff_wfc},
         "cutoff_rho": ${cutoff_rho},
-        "z_valence": ${valence_electrons},
+        "valence_electrons": ${valence_electrons},
         "total_magnetization": ${tot_mag},
         "absolute_magnetization": ${abs_mag},
         "md5": ""
@@ -126,7 +126,7 @@ cat << EOF >> ${jsonfile}
         "relativistic": "scalar",
         "cutoff_wfc": ${cutoff_wfc},
         "cutoff_rho": ${cutoff_rho},
-        "z_valence": ${valence_electrons},
+        "valence_electrons": ${valence_electrons},
         "md5": ""
     },
 EOF
@@ -148,7 +148,7 @@ cat << EOF >> ${jsonfile}
         "relativistic": "none",
         "cutoff_wfc": 0.0,
         "cutoff_rho": 0.0,
-        "z_valence": 0.0,
+        "valence_electrons": 0.0,
         "md5": ""
     }
 }
