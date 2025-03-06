@@ -47,6 +47,14 @@ STUDENT, B. (2025). SUGGESTED PSEUDOPOTENTIALS for PBE v.1.0.0 [Data set]. Zenod
 1. gedit run_alloy_v1.1.py
 2. python3 run_alloy_v1.1.py
 
+# Usage (isolated atom energy)
+## bash version
+1. chmod +x run_isolated_atom.sh
+2. ./run_isolated_atom.sh
+## csh version
+1. chmod +x run_isolated_atom.csh
+2. ./run_isolated_atom.csh
+
 # Test
 - Ubuntu 20.04.3 LTS, ase-3.19.0 and qe-7.2
 - Ubuntu 22.04.5 LTS on WLS, ase-3.22.1 and qe-7.3
