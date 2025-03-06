@@ -60,6 +60,9 @@ STUDENT, B. (2025). SUGGESTED PSEUDOPOTENTIALS for PBE v.1.0.0 [Data set]. Zenod
 2. ./run_isolated_atom.csh
 ## I also tried "ASE", but the calculation stopped halfway through. I do not recommend to use "run_isolated_atom.py".
 
+# Get pseudo-potential
+https://www.materialscloud.org/discover/sssp/table/efficiency
+
 # Usage (isolated atom energy) (SSSP-1.3.0)
 1. chmod +x run_isolated_atom_SSSP.sh
 2. ./run_isolated_atom_SSSP.sh
