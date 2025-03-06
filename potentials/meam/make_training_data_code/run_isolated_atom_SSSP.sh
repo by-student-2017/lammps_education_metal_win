@@ -1,100 +1,124 @@
-#!/bin/bash
+import json
+import os
+from ase import Atoms
+from ase.calculators.espresso import Espresso
+from ase.units import Rydberg
+import xml.etree.ElementTree as ET
 
-#-----------------------------------------------------------------------
-# Test: qe-7.2 and qe-7.3 on Ubuntu 22.04 LTS or Ubuntu 24.04 LTS
+#--------------------------------------------------------------------------------
+# User input section
+#--------------------------------------------------------------------------------
+DFT = 'PBE'  # PBE or PBEsol
+mode = 'efficiency' # efficiency or precision
 
-#-----------------------------------------------------------------------
-NCPUs=8
+json_file = f'SSSP_1.3.0_{DFT}_efficiency.json'
 
-DFT="PBE" # PBE or PBEsol
-mode="efficiency" # efficiency or precision
-outfile="isolated_atom_energies_SSSP-1.3.0_${DFT}_${mode}.csv"
+# cutoff [eV], 0:read PP file, (520 eV is the main in the Materials Project, except Boron (700 eV)), negative value (< 0): 520 eV
+cutoff = 0  # 550 eV = about 40 Ry, 900 eV = about 65 Ry
 
-export OMP_NUM_THREADS=1
-nspin=2
-#-----------------------------------------------------------------------
+spin_flag = 1  # 0:non-spin, 1:spin, (default = 1)
 
-#-----------------------------------------------------------------------
-element_list=("H" "He" "Li" "Be" "B" "C" "N" "O" "F" "Ne" "Na" "Mg" "Al" "Si" "P" "S" "Cl" "Ar" "K" "Ca" "Sc" "Ti" "V" "Cr" "Mn" "Fe" "Co" "Ni" "Cu" "Zn" "Ga" "Ge" "As" "Se" "Br" "Kr" "Rb" "Sr" "Y" "Zr" "Nb" "Mo" "Tc" "Ru" "Rh" "Pd" "Ag" "Cd" "In" "Sn" "Sb" "Te" "I" "Xe" "Cs" "Ba" "La" "Ce" "Pr" "Nd" "Pm" "Sm" "Eu" "Gd" "Tb" "Dy" "Ho" "Er" "Tm" "Yb" "Lu" "Hf" "Ta" "W" "Re" "Os" "Ir" "Pt" "Au" "Hg" "Tl" "Pb" "Bi" "Po" "At" "Rn" "Fr" "Ra" "Ac" "Th" "Pa" "U" "Np" "Pu" "Am" "Cm" "Bk" "Cf" "Es" "Fm" "Md" "No" "Lr" "Rf" "Db" "Sg" "Bh" "Hs" "Mt" "Ds" "Rg" "Cn" "Nh" "Fl" "Mc" "Lv" "Ts" "Og")
-mass_list=(1.00794 4.00260 6.941 9.01218 10.81 12.01 14.007 16.00 18.9984 20.180 22.99 24.305 26.98 28.1 30.97 32.1 35.45 39.95 39.10 40.08 44.955912 47.867 50.9415 51.9961 54.938045 55.845 58.933195 58.6934 63.546 65.38 69.723 72.63 74.92160 78.96 79.904 83.798 85.4678 87.62 88.90585 91.224 92.90638 95.96 98 101.07 102.90550 106.42 107.8682 112.411 114.818 118.710 121.760 127.60 126.90447 131.293 132.9054519 137.33 138.90547 140.116 140.90765 144.242 145 150.36 151.964 157.25 158.92535 162.500 164.93032 167.259 168.93421 173.054 174.9668 178.49 180.94788 183.84 186.207 190.23 192.217 195.084 196.966569 200.59 204.3833 207.2 208.98040 209 210 222 223 226 227 232.0381 231.03588 238.02891 237 244 243 247 247 251 252 257 258 259 262 261.11 268 271 270 269 278 281 281 285 286 289 289 293 294 294)
-#-----------------------------------------------------------------------
+# Set the number of OpenMP threads
+omp_num_threads = 12
+#--------------------------------------------------------------------------------
+# User input section: END
+#--------------------------------------------------------------------------------
 
-#-----------------------------------------------------------------------
-echo -n "" > ${outfile}
-echo "Element, Total energy [Ry], filename, cutoff_wfc [Ry], cutoff_rho [Ry], valence_electrons, Type" >> ${outfile}
+# Set the number of OpenMP threads
+os.environ['OMP_NUM_THREADS'] = f'{omp_num_threads}'
+mpi_num_procs = 1
 
-mkdir -p work
-#-----------------------------------------------------------------------
-cd ${mode}
-upf_list=($(ls *.UPF | ls *.upf))
-cd ..
-for upf_name in "${upf_list[@]}"; do
-  element_name=$(echo ${upf_name} | awk '{print toupper(substr($0, 1, 1)) tolower(substr($0, 2, 1))}')
-  echo $element_name
-  #
-  count=1
-  for atom in "${element_list[@]}"; do
-    if [ "${atom}" == "${element_name}" ]; then
-      mass=$(echo ${mass_list[$count-1]} | awk '{printf("%9.5f",$1)}')
-      echo "${atom}:${mass}"
-    fi
-    count=$((count + 1))
-  done
-#-----------------------------------------------------------------------
-  # Extract cutoff values from SSSP-1.3.0_PBE_efficiency.json or SSSP-1.3.0_PBE_precision.json
-  cutoff_wfc=$(jq -r --arg element "$element_name" '.[$element].cutoff_wfc' ./${mode}/SSSP-1.3.0_${DFT}_${mode}.json)
-  cutoff_rho=$(jq -r --arg element "$element_name" '.[$element].cutoff_rho' ./${mode}/SSSP-1.3.0_${DFT}_${mode}.json)
-  pstype=$(jq -r --arg element "$element_name" '.[$element].pseudopotential' ./${mode}/SSSP-1.3.0_${DFT}_${mode}.json)
+# Load the pseudopotential data from the JSON file
+print("Loading pseudopotential data...")
+with open(f'./{mode}/{json_file}', 'r') as f:
+    pseudopotentials = json.load(f)
+print("Pseudopotential data loaded.")
 
-cat << EOF > isolated_atom.in
-&CONTROL 
-  calculation  = 'scf',
-  prefix  = '${element_name}',
-  outdir  = './work/${element_name}/',
-  pseudo_dir = './${mode}' , 
-  etot_conv_thr = 5.0e-5,
-  disk_io = 'none',
-/
-&SYSTEM 
-  ibrav=1,
-  celldm(1)=12.0,
-  nat=1,
-  ntyp=1,
-  nosym=.true.,
-  ecutwfc=${cutoff_wfc},
-  ecutrho=${cutoff_rho},
-EOF
-cat << EOF >> isolated_atom.in
-  occupations = 'smearing' , 
-  degauss  = 0.01 , 
-  smearing = 'mp', 
-  nspin = ${nspin},
-  starting_magnetization(1) = 1 ,
-  tot_magnetization = -1 ,
-/
-&ELECTRONS 
-  mixing_beta=0.3,
-  conv_thr=5.0E-7,
-  electron_maxstep = 5000,
-  diagonalization = 'rmm-davidson',
-/
-ATOMIC_SPECIES 
-${element_name} ${mass} ${upf_name}
-ATOMIC_POSITIONS alat
-${element_name} 0.0 0.0 0.0
-K_POINTS automatic
-1 1 1  0 0 0
-EOF
-#-----------------------------------------------------------------------
-  mpirun -np ${NCPUs} pw.x < isolated_atom.in | tee isolated_atom.out
-  #mpirun -np ${NCPUs} --allow-run-as-root $HOME/q-e-qe-*/bin/pw.x < isolated_atom.in | tee isolated_atom.out
-  #
-  TOTEN_Ry=$(grep "  total energy  " isolated_atom.out | tail -1 | sed 's/.*=//g' | sed 's/Ry//g' | sed 's/ //g')
-  valence_electrons=$(grep "  number of electrons  " isolated_atom.out | tail -1 | sed 's/.*=//g' | sed 's/(.*//g' |  sed 's/ //g')
-  #TOTEN=$(echo "${TOTEN_Ry}*13.605693122990" | bc -l | awk '{printf "%15.10f",$0}')
-  TOTEN=$(echo "${TOTEN_Ry}*1.0" | bc -l | awk '{printf "%15.10f",$0}')
-  echo "----------eV/atom for isolated atom----------"
-  echo "${element_name}:${TOTEN} [Ry]: ${upf_name}:${cutoff_wfc} [Ry]:${cutoff_rho} [Ry]:${valence_electrons}:${pstype}"
-  echo "${element_name}, ${TOTEN}, ${upf_name}, ${cutoff_wfc}, ${cutoff_rho}, ${valence_electrons}, ${pstype}" >> ${outfile}
-done
-#-----------------------------------------------------------------------
+# Function to extract valence electron count from pseudopotential file
+def get_valence_electrons(pseudo_file):
+    tree = ET.parse(pseudo_file)
+    root = tree.getroot()
+    pp_header = root.find('.//PP_HEADER')
+    if pp_header is not None:
+        z_valence = pp_header.get('z_valence')
+        if z_valence is not None:
+            return float(z_valence)
+        for line in pp_header.text.split('\n'):
+            if 'Z valence' in line:
+                z_valence = line.split()[0]
+                return float(z_valence)
+    return None
+
+# Function to calculate the energy of an isolated atom
+def calculate_isolated_atom_energy(element, omp_num_threads):
+    print(f"Calculating energy for isolated atom: {element}")
+    # Define a simple cubic cell with 12 A (6 * 2 = 12 [Angstrom])
+    atoms = Atoms(element, positions=[(0, 0, 0)], cell=[12, 12, 12])
+    
+    pseudo_file = os.path.join(f'./{mode}', pseudopotentials[element]['filename'])
+    valence_electrons = get_valence_electrons(pseudo_file)
+    pseudopotentials[element]['valence_electrons'] = valence_electrons
+    print(f'valence_electrons = {valence_electrons}')
+    
+    pseudopotentials_dict = {
+        element: pseudopotentials[element]['filename']
+    }
+    input_data = {
+        'control': {
+            'calculation': 'scf',
+            'restart_mode': 'from_scratch',
+            'prefix': f'isolated_{element}',
+            'pseudo_dir': f'./{mode}',
+            'outdir': './out',
+            'etot_conv_thr': 1.0e-4/2,  # 0.68 meV/atom <= about 1 meV/atom
+            'wf_collect': False,
+            'disk_io': 'low',  # qe-7.2:'minimal', qe-7.3:'nowf'
+        },
+        'system': {
+            'ecutwfc': pseudopotentials[element]['cutoff_wfc'],
+            'ecutrho': pseudopotentials[element]['cutoff_rho'],
+            #'occupations': 'tetrahedra_opt', # L12 A-N is failed
+            'occupations': 'smearing',
+            'smearing': 'mp',
+            'degauss': 0.01,  # 0.01 = about 150 K, 0.02 = about 300 K, 0.01 is better for Equation of states (eos).
+            #'vdw_corr': 'dft-d', # DFT-D2 (Semiempirical Grimme's DFT-D2. Optional variables)
+        },
+        'electrons': {
+            'conv_thr': 1.0e-6/2,
+            'electron_maxstep': 5000,
+            'mixing_beta': 0.35,
+            'diagonalization': 'rmm-davidson',
+        }
+    }
+    
+    if cutoff == 0:
+        pass
+    elif cutoff > 0:
+        input_data['system']['ecutwfc'] = cutoff / Rydberg
+        input_data['system']['ecutrho'] = cutoff * 4.0 / Rydberg
+    else:
+        input_data['system']['ecutwfc'] = 520 / Rydberg
+        input_data['system']['ecutrho'] = 520 * 4.0 / Rydberg
+
+    input_data['system']['nspin'] = 2 if spin_flag else 1
+
+    # The gamma (k-point setting) is failed for Ti or Mn, etc.
+    calc = Espresso(pseudopotentials=pseudopotentials_dict, input_data=input_data, kpts=(1,1,1), omp_num_threads=omp_num_threads, mpi_num_procs=mpi_num_procs)
+    atoms.set_calculator(calc)
+    
+    energy = atoms.get_potential_energy()
+    print(f"Energy for {element}: {energy} eV")
+    return energy
+
+# Calculate and add isolated atom energies to the pseudopotentials dictionary
+print("Starting energy calculations for isolated atoms...")
+elements = list(pseudopotentials.keys())
+for i, element in enumerate(elements):
+    isolated_atom_energy = calculate_isolated_atom_energy(element, omp_num_threads)
+    pseudopotentials[element]['isolated_atom_energy'] = isolated_atom_energy
+
+# Save the updated pseudopotential data to a new JSON file
+print("Saving updated pseudopotential data...")
+with open(f'{DFT}/new_{json_file}', 'w') as f:
+    json.dump(pseudopotentials, f, indent=4)
+print("Isolated atom energies and valence electrons have been calculated and added to the new JSON file.")
