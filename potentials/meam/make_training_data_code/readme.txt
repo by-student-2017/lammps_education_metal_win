@@ -19,6 +19,10 @@ The following libraries have been found:
 9. sudo make install
 #Note: sudo apt install quantum-espresso # In my case, the calculation of pw.x failed in ubuntu 22.04 qe. I recommend using qe-7.2 or qe-7.3 (not qe-7.3.1 !!!).
 
+# Installation dos2unix
+1. sudo apt update
+2. sudo apt install dos2unix
+
 # Installation of ASE
 1. sudo apt update
 2. sudo apt -y install python3-ase
@@ -57,8 +61,8 @@ STUDENT, B. (2025). SUGGESTED PSEUDOPOTENTIALS for PBE v.1.0.0 [Data set]. Zenod
 ## I also tried "ASE", but the calculation stopped halfway through. I do not recommend to use "run_isolated_atom.py".
 
 # Usage (isolated atom energy) (SSSP-1.3.0)
-1. chmod +x run_isolated_atom.sh
-2. ./run_isolated_atom.sh
+1. chmod +x run_isolated_atom_SSSP.sh
+2. ./run_isolated_atom_SSSP.sh
 
 # Test
 - Ubuntu 20.04.3 LTS, ase-3.19.0 and qe-7.2
