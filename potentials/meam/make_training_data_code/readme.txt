@@ -54,6 +54,7 @@ STUDENT, B. (2025). SUGGESTED PSEUDOPOTENTIALS for PBE v.1.0.0 [Data set]. Zenod
 ## csh version
 1. chmod +x run_isolated_atom.csh
 2. ./run_isolated_atom.csh
+## I also tried "ASE", but the calculation stopped halfway through.
 
 # Test
 - Ubuntu 20.04.3 LTS, ase-3.19.0 and qe-7.2
