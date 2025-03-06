@@ -9,9 +9,9 @@ import xml.etree.ElementTree as ET
 # User input section
 #--------------------------------------------------------------------------------
 DFT = 'PBE'  # PBE or PBEsol
-mode = 'precision' # efficiency or precision
+mode = 'efficiency' # efficiency or precision
 
-json_file = f'SSSP-1.3.0_{DFT}_{mode}.json'
+json_file = f'SSSP_1.3.0_{DFT}_efficiency.json'
 
 # cutoff [eV], 0:read PP file, (520 eV is the main in the Materials Project, except Boron (700 eV)), negative value (< 0): 520 eV
 cutoff = 0  # 550 eV = about 40 Ry, 900 eV = about 65 Ry
@@ -42,10 +42,11 @@ def get_valence_electrons(pseudo_file):
     if pp_header is not None:
         z_valence = pp_header.get('z_valence')
         if z_valence is not None:
-            try:
+            return float(z_valence)
+        for line in pp_header.text.split('\n'):
+            if 'Z valence' in line:
+                z_valence = line.split()[0]
                 return float(z_valence)
-            except ValueError:
-                pass
     return None
 
 # Function to calculate the energy of an isolated atom
