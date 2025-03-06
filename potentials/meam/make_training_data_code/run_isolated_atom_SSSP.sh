@@ -1,8 +1,11 @@
 #!/bin/bash
 
 #-----------------------------------------------------------------------
+NCPUs=16
+
 DFT="PBE"
-NCPUs=8
+mode="efficiency"
+outfile="isolated_atom_energies_SSSP-1.3.0_${DFT}_${mode}.csv"
 
 export OMP_NUM_THREADS=1
 nspin=2
@@ -14,17 +17,16 @@ mass_list=(1.00794 4.00260 6.941 9.01218 10.81 12.01 14.007 16.00 18.9984 20.180
 #-----------------------------------------------------------------------
 
 #-----------------------------------------------------------------------
-outfile="isolated_atom_energy.csv"
 echo -n "" > ${outfile}
-echo "Element, Total energy [Ry], filename" >> ${outfile}
+echo "Element, Total energy [Ry], filename, cutoff_wfc [Ry], cutoff_rho [Ry], valence_electrons, Type" >> ${outfile}
 
 mkdir -p work
 #-----------------------------------------------------------------------
-cd ${DFT}
-upf_list=($(ls *.UPF))
+cd ${mode}
+upf_list=($(ls *.UPF | ls *.upf))
 cd ..
 for upf_name in "${upf_list[@]}"; do
-  element_name=$(echo ${upf_name} | sed 's/\..*//g' | sed 's/\_.*//g' | awk '{print toupper(substr($0, 1, 1)) tolower(substr($0, 2))}')
+  element_name=$(echo ${upf_name} | awk '{print toupper(substr($0, 1, 1)) tolower(substr($0, 2, 1))}')
   echo $element_name
   #
   count=1
@@ -36,16 +38,17 @@ for upf_name in "${upf_list[@]}"; do
     count=$((count + 1))
   done
 #-----------------------------------------------------------------------
-  # Extract cutoff values from PSlibrary_PBE.json
-  cutoff_wfc=$(jq -r --arg element "$element_name" '.[$element].cutoff_wfc' PSlibrary_PBE.json)
-  cutoff_rho=$(jq -r --arg element "$element_name" '.[$element].cutoff_rho' PSlibrary_PBE.json)
+  # Extract cutoff values from SSSP-1.3.0_PBE_efficiency.json
+  cutoff_wfc=$(jq -r --arg element "$element_name" '.[$element].cutoff_wfc' ./${mode}/SSSP-1.3.0_${DFT}_${mode}.json)
+  cutoff_rho=$(jq -r --arg element "$element_name" '.[$element].cutoff_rho' ./${mode}/SSSP-1.3.0_${DFT}_${mode}.json)
+  pstype=$(jq -r --arg element "$element_name" '.[$element].pseudopotential' ./${mode}/SSSP-1.3.0_${DFT}_${mode}.json)
 
 cat << EOF > isolated_atom.in
 &CONTROL 
   calculation  = 'scf',
   prefix  = '${element_name}',
   outdir  = './work/${element_name}/',
-  pseudo_dir = './${DFT}' , 
+  pseudo_dir = './${mode}' , 
   etot_conv_thr = 5.0e-5,
   disk_io = 'none',
 /
@@ -58,9 +61,6 @@ cat << EOF > isolated_atom.in
   ecutwfc=${cutoff_wfc},
   ecutrho=${cutoff_rho},
 EOF
-if [ "$1" != "" ]; then
-  echo "  ecutwfc=$1," >> isolated_atom.in
-fi
 cat << EOF >> isolated_atom.in
   occupations = 'smearing' , 
   degauss  = 0.01 , 
@@ -86,11 +86,12 @@ EOF
   mpirun -np ${NCPUs} pw.x < isolated_atom.in | tee isolated_atom.out
   #mpirun -np ${NCPUs} --allow-run-as-root $HOME/q-e-qe-*/bin/pw.x < isolated_atom.in | tee isolated_atom.out
   #
-  TOTEN_Ry=$(grep "  total energy  " isolated_atom.out | tail -1 | sed 's/.*=//g' | sed 's/Ry//g')
+  TOTEN_Ry=$(grep "  total energy  " isolated_atom.out | tail -1 | sed 's/.*=//g' | sed 's/Ry//g' | sed 's/ //g')
+  valence_electrons=$(grep "  number of electrons  " isolated_atom.out | tail -1 | sed 's/.*=//g' | sed 's/(.*//g' |  sed 's/ //g')
   #TOTEN=$(echo "${TOTEN_Ry}*13.605693122990" | bc -l | awk '{printf "%15.10f",$0}')
-  TOTEN=$(echo "${TOTEN_Ry}" | bc -l | awk '{printf "%15.10f",$0}')
+  TOTEN=$(echo "${TOTEN_Ry}*1.0" | bc -l | awk '{printf "%15.10f",$0}')
   echo "----------eV/atom for isolated atom----------"
-  echo "${element_name}:${TOTEN} eV: ${upf_name}"
-  echo "${element_name}, ${TOTEN}, ${upf_name}" >> ${outfile}
+  echo "${element_name}:${TOTEN} [Ry]: ${upf_name}:${cutoff_wfc} [Ry]:${cutoff_rho} [Ry]:${valence_electrons}:${pstype}"
+  echo "${element_name}, ${TOTEN}, ${upf_name}, ${cutoff_wfc}, ${cutoff_rho}, ${valence_electrons}, ${pstype}" >> ${outfile}
 done
 #-----------------------------------------------------------------------
