@@ -76,7 +76,7 @@ cat << EOF >> isolated_atom.in
   tot_magnetization = -10000 ,
 /
 &ELECTRONS 
-  mixing_beta=0.3,
+  mixing_beta=0.7,
   conv_thr=1.0E-6,
   electron_maxstep = 1000,
   diagonalization = 'davidson',
