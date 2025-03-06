@@ -79,7 +79,7 @@ cat << EOF >> isolated_atom.in
   mixing_beta=0.7,
   conv_thr=1.0E-6,
   electron_maxstep = 1000,
-  diagonalization = 'davidson',
+  diagonalization = 'david',
 /
 ATOMIC_SPECIES 
 ${element_name} ${mass} ${upf_name}
