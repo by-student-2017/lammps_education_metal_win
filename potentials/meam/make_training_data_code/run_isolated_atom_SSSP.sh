@@ -21,6 +21,7 @@ mass_list=(1.00794 4.00260 6.941 9.01218 10.81 12.01 14.007 16.00 18.9984 20.180
 #-----------------------------------------------------------------------
 
 #-----------------------------------------------------------------------
+date > log.txt
 echo -n "" > ${outfile}
 echo "{" > ${jsonfile}
 echo "Element, Total energy [Ry], filename, cutoff_wfc [Ry], cutoff_rho [Ry], valence_electrons, Type" >> ${outfile}
@@ -75,10 +76,10 @@ cat << EOF >> isolated_atom.in
   tot_magnetization = -10000 ,
 /
 &ELECTRONS 
-  mixing_beta=0.7,
+  mixing_beta=0.3,
   conv_thr=1.0E-6,
   electron_maxstep = 1000,
-  diagonalization = 'david',
+  diagonalization = 'davidson',
 /
 ATOMIC_SPECIES 
 ${element_name} ${mass} ${upf_name}
@@ -98,6 +99,8 @@ EOF
   echo "----------eV/atom for isolated atom----------"
   echo "${element_name}:${TOTEN_Ry} [Ry]: ${upf_name}:${cutoff_wfc} [Ry]:${cutoff_rho} [Ry]:${valence_electrons}:${pstype}"
   echo "${element_name}, ${TOTEN_Ry}, ${upf_name}, ${cutoff_wfc}, ${cutoff_rho}, ${valence_electrons}, ${pstype}" >> ${outfile}
+  Iter=$(grep "iteration #" isolated_atom.out | tail -1 | sed 's/ecut=.*//g')
+  echo ${element_name}:${Iter} >> log.txt
 cat << EOF >> ${jsonfile}
     "${element_name}": {
         "filename": "${upf_name}",
