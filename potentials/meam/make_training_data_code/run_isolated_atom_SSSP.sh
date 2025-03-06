@@ -54,7 +54,7 @@ cat << EOF > isolated_atom.in
   prefix  = '${element_name}',
   outdir  = './work/${element_name}/',
   pseudo_dir = './${mode}' , 
-  etot_conv_thr = 5.0e-5,
+  etot_conv_thr = 1.0e-4,
   disk_io = 'none',
 /
 &SYSTEM 
@@ -71,14 +71,14 @@ cat << EOF >> isolated_atom.in
   degauss  = 0.01 , 
   smearing = 'mp', 
   nspin = ${nspin},
-  starting_magnetization(1) = 1 ,
-  tot_magnetization = -1 ,
+  starting_magnetization(1) = 0 ,
+  tot_magnetization = -10000 ,
 /
 &ELECTRONS 
   mixing_beta=0.3,
-  conv_thr=5.0E-7,
-  electron_maxstep = 5000,
-  diagonalization = 'rmm-davidson',
+  conv_thr=1.0E-6,
+  electron_maxstep = 1000,
+  diagonalization = 'davidson',
 /
 ATOMIC_SPECIES 
 ${element_name} ${mass} ${upf_name}
