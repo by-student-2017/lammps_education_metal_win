@@ -74,6 +74,7 @@ https://www.materialscloud.org/discover/sssp/table/efficiency
 restart_mode = 'restart',
 diagonalization = 'rmm-davidson',
 -----
+# Note: For example, for a system with poor convergence such as Cu, calculations may be performed with mp 0.02, and then recalculated later with mp 0.01, including for confirmation.
 
 # Test
 - Ubuntu 20.04.3 LTS, ase-3.19.0 and qe-7.2
