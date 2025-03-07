@@ -56,7 +56,7 @@ cat << EOF > isolated_atom.in
   outdir  = './work/${element_name}/',
   pseudo_dir = './${mode}' , 
   etot_conv_thr = 1.0e-4,
-  disk_io = 'none',
+  disk_io = 'low',
 /
 &SYSTEM 
   ibrav=1,
@@ -73,10 +73,9 @@ cat << EOF >> isolated_atom.in
   smearing = 'mp', 
   nspin = ${nspin},
   starting_magnetization(1) = 0 ,
-  tot_magnetization = -10000 ,
 /
 &ELECTRONS 
-  mixing_beta=0.7,
+  mixing_beta=0.3,
   conv_thr=1.0E-6,
   electron_maxstep = 1000,
   diagonalization = 'david',
