@@ -68,6 +68,12 @@ https://www.materialscloud.org/discover/sssp/table/efficiency
 2. sudo apt install jq
 3. chmod +x run_isolated_atom_SSSP.sh
 4. ./run_isolated_atom_SSSP.sh
+# Note: Once a calculation is complete, you want to recalculate it under different conditions.
+5. gedit run_isolated_atom_SSSP.sh
+-----
+restart_mode = 'restart',
+diagonalization = 'rmm-davidson',
+-----
 
 # Test
 - Ubuntu 20.04.3 LTS, ase-3.19.0 and qe-7.2
