@@ -783,7 +783,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
         lattice_type = 'ch4'
         a = 12.0
         re2a = a/re
-        atoms = Atoms(f'{element1}{element2}3', 
+        atoms = Atoms(f'{element1}{element2}4', 
                 positions=[(0.5*a,    0.5*a,    0.5*a   ),  # Carbon atom
                            (0.5*a+re, 0.5*a+re, 0.5*a+re),  # Hydrogen atoms
                            (0.5*a-re, 0.5*a-re, 0.5*a+re),  # Hydrogen atoms
@@ -792,7 +792,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
                 cell=[a+re*np.sqrt(2/3), a+re*np.sqrt(2/3), a+re*np.sqrt(2/3)], 
                 pbc=True)
         Nelem1 = 1
-        Nelem2 = 3
+        Nelem2 = 4
     #------------------------------------------------------------------------------
     elif lattce == 'dim1':
         print("Create the dimer structure (1 element)")
@@ -1576,7 +1576,7 @@ for i, combination in enumerate(element_combinations):
            Y = [0,  ac, 0 ]
            Z = [0,  0,  cc]
         elif lattce == 'ch4':
-           types=[0,1,1,1]
+           types=[0,1,1,1,1]
            positions=[(0.5*ac,     0.5*ac,     0.5*ac    ),  # Carbon atom
                       (0.5*ac+ren, 0.5*ac+ren, 0.5*ac+ren),  # Hydrogen atoms
                       (0.5*ac-ren, 0.5*ac-ren, 0.5*ac+ren),  # Hydrogen atoms
