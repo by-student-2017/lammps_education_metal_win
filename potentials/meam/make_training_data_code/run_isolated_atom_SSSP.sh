@@ -12,7 +12,15 @@ outfile="isolated_atom_energies_SSSP-1.3.0_${DFT}_${mode}.csv"
 jsonfile="SSSP-1.3.0_${DFT}_${mode}.json"
 
 export OMP_NUM_THREADS=1
-nspin=2
+nspin=2 # 1:non-spin, 2:spin
+
+degauss=0.02
+smearing=gauss # gauss or mp
+mixing_beta=0.7
+diagonalization=rmm-davidson # david or rmm-davidson
+electron_maxstep=1000
+
+restart_mode=from_scratch # from_scratch or restart
 #-----------------------------------------------------------------------
 
 #-----------------------------------------------------------------------
@@ -22,6 +30,12 @@ mass_list=(1.00794 4.00260 6.941 9.01218 10.81 12.01 14.007 16.00 18.9984 20.180
 
 #-----------------------------------------------------------------------
 date > log.txt
+echo "#-----------------------------------------------------------------" >> log.txt
+echo "# DFT:${DFT}, mode:${mode}, spin:${nspin}" >> log.txt
+echo "# degauss:${degauss}, smearing:${smearing}, mixing_beta:${mixing_beta}" >> log.txt
+echo "# diagonalization:${diagonalization}, electron_maxstep:${electron_maxstep}" >> log.txt
+echo "# restart_mode:${restart_mode}" >> log.txt
+echo "#-----------------------------------------------------------------" >> log.txt
 echo -n "" > ${outfile}
 echo "{" > ${jsonfile}
 echo "Element, Total energy [Ry], filename, cutoff_wfc [Ry], cutoff_rho [Ry], valence_electrons, Type, tot_mag [Bohr mag/cell], abs_mag [Bohr mag/cell]" >> ${outfile}
@@ -57,6 +71,7 @@ cat << EOF > isolated_atom.in
   pseudo_dir = './${mode}' , 
   etot_conv_thr = 1.0e-4,
   disk_io = 'low',
+  restart_mode = '${restart_mode}',
 /
 &SYSTEM 
   ibrav=1,
@@ -69,16 +84,16 @@ cat << EOF > isolated_atom.in
 EOF
 cat << EOF >> isolated_atom.in
   occupations = 'smearing' , 
-  degauss  = 0.02 , 
-  smearing = 'gauss', 
+  degauss  = ${degauss} , 
+  smearing = '${smearing}', 
   nspin = ${nspin},
   starting_magnetization(1) = 0 ,
 /
 &ELECTRONS 
-  mixing_beta=0.7,
+  mixing_beta=${mixing_beta},
   conv_thr=1.0E-6,
-  electron_maxstep = 1000,
-  diagonalization = 'rmm-davidson',
+  electron_maxstep = ${electron_maxstep},
+  diagonalization = '${diagonalization}',
 /
 ATOMIC_SPECIES 
 ${element_name} ${mass} ${upf_name}
