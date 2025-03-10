@@ -185,7 +185,7 @@ CN = {
       "b1":  6,  "b2": 8, "l12": 12,
      "fcc": 12, "bcc": 8, "hcp": 12, "sc": 6, "dia": 4,
      "dim":  1, "ch4": 4,
-     "dim1": 1, "dia1": 1
+     "dim1": 1, "dia1": 4
 }
 
 def binary_search(original_cell, atoms, calc, scaling_factor, dsfactor, best_energy):
@@ -707,7 +707,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
             kpt = 6 # 4 or 6
             kptc = kpt
             Nelem1 = 0
-            Nelem2 = 1
+            Nelem2 = 4
         else:
             print("# primitive cell")
             atoms = Atoms(f'{element2}',
@@ -734,7 +734,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
         kpt = 9 # 6 or 8
         kptc = 6
         Nelem1 = 0
-        Nelem2 = 1
+        Nelem2 = 2
     elif lattce == 'bcc':
         print("Create the BCC structure (1 element)")
         lattice_type = 'BCC'
@@ -751,7 +751,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
             kpt = 8 # 6 or 8
             kptc = kpt
             Nelem1 = 0
-            Nelem2 = 1
+            Nelem2 = 2
         else:
             atoms = Atoms(f'{element2}', 
                     positions=[(0, 0, 0)], 
@@ -788,15 +788,14 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
             #atoms = bulk('{element2}', 'diamond', a)
             atoms = Atoms(f'{element2}8', 
                     positions=[(0, 0, 0), (0.5*a, 0.5*a, 0), (0.5*a, 0, 0.5*a), (0, 0.5*a, 0.5*a), 
-                               (0.25*a, 0.75*a, 0.75*a), (0.25*a, 0.25*a, 0.25*a), (0.75*a, 0.75*a, 0.25*a), 
-                               (0.75*a, 0.25*a, 0.75*a)], 
+                               (0.25*a, 0.75*a, 0.75*a), (0.25*a, 0.25*a, 0.25*a), (0.75*a, 0.75*a, 0.25*a), (0.75*a, 0.25*a, 0.75*a)], 
                     cell=[a, a, a], 
                     pbc=True)
             #kpt = 5
             kpt = 6 # 4 or 6
             kptc = kpt
             Nelem1 = 0
-            Nelem2 = 1
+            Nelem2 = 8
         else:
             print("# primitive cell")
             atoms = Atoms(f'{element2}2',
@@ -806,7 +805,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
             kpt = 9 # 4 or 6
             kptc = kpt
             Nelem1 = 0
-            Nelem2 = 1
+            Nelem2 = 2
     #------------------------------------------------------------------------------
     elif lattce == 'dim':
         print("Create the dimer structure")
@@ -848,7 +847,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
                 cell=[a, a, a+re], 
                 pbc=True)
         Nelem1 = 0
-        Nelem2 = 1
+        Nelem2 = 2
     else:
         print("This code does not provide other structures. (Possible structures: b1, b2, dia, l12, or fcc, bcc, hcp, dia1, dim, ch4, dim1)")
     
