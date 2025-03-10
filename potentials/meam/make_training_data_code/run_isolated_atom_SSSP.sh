@@ -17,7 +17,7 @@ nspin=2 # 1:non-spin, 2:spin
 degauss=0.02
 smearing=gauss # gauss or mp
 mixing_beta=0.7
-diagonalization=rmm-davidson # david or rmm-davidson
+diagonalization=david # david or rmm-davidson
 electron_maxstep=1000
 
 restart_mode=from_scratch # from_scratch or restart
@@ -43,7 +43,11 @@ echo "Element, Total energy [Ry], filename, cutoff_wfc [Ry], cutoff_rho [Ry], va
 mkdir -p work
 #-----------------------------------------------------------------------
 cd ${mode}
-upf_list=($(ls *.UPF *.upf 2>/dev/null | sort))
+#upf_list=($(ls *.UPF *.upf 2>/dev/null | sort)) # Linux is OK
+upf_list=($(ls *.[Uu][Pp][Ff] | sort -f)) # Windows is OK
+#for upf_name in "${upf_list[@]}"; do
+#  echo ${upf_name}
+#done
 cd ..
 for upf_name in "${upf_list[@]}"; do
   element_name=$(echo ${upf_name} | awk '{print toupper(substr($0, 1, 1)) tolower(substr($0, 2, 1))}' | sed 's/\..*//g' | sed 's/\_.*//g')
