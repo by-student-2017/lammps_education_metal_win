@@ -1514,19 +1514,19 @@ for i, combination in enumerate(element_combinations):
         #--------------------------------------------------------------------------
         elif lattce == 'fcc':
            if primitive_flag == 0:
-               types=[0,0,0,0]
+               types=[1,1,1,1]
                positions=[(0, 0, 0),(0, 0.5*ac, 0.5*ac),(0.5*ac, 0, 0.5*ac),(0.5*ac, 0.5*ac, 0)]
                X = [ac, 0,  0 ]
                Y = [0,  ac, 0 ]
                Z = [0,  0,  ac]
            else:
-               types=[0]
+               types=[1]
                positions=[(0, 0, 0)]
                X = [0, 0.5*ap, 0.5*ap]
                Y = [0.5*ap, 0, 0.5*ap]
                Z = [0.5*ap, 0.5*ap, 0]
         elif lattce == 'hcp':
-           types=[0,0]
+           types=[1,1]
            cc = ac*np.sqrt(8/3) # c = a*np.sqrt(8/3) case: re = 1.0 (atomic distance = 1.0)
            positions=[(a, np.sqrt(3)/3*2*ac, 0.75*cc), (0, np.sqrt(3)/3*ac, 0.25*cc)]
            X = [ac, 0,  0 ]
@@ -1534,26 +1534,26 @@ for i, combination in enumerate(element_combinations):
            Z = [0,  0,  cc]
         elif lattce == 'bcc':
            if primitive_flag == 0:
-               types=[0,0]
+               types=[1,1]
                positions=[(0, 0, 0),(0.5*ac, 0.5*ac, 0.5*ac)]
                X = [ac, 0,  0 ]
                Y = [0,  ac, 0 ]
                Z = [0,  0,  ac]
            else:
-               types=[0]
+               types=[1]
                positions=[(0, 0, 0)]
                X = [-0.5*ap,  0.5*ap,  0.5*ap]
                Y = [ 0.5*ap, -0.5*ap,  0.5*ap]
                Z = [ 0.5*ap,  0.5*ap, -0.5*ap]
         elif lattce == 'sc':
-           types=[0]
+           types=[1]
            positions=[(0, 0, 0)]
            X = [ac, 0,  0 ]
            Y = [0,  ac, 0 ]
            Z = [0,  0,  ac]
         elif lattce == 'dia1':
            if primitive_flag == 0:
-               types=[0,0,0,0,0,0,0,0]
+               types=[1,1,1,1,1,1,1,1]
                positions=[(0, 0, 0), (0.5*ac, 0.5*ac, 0), (0.5*ac, 0, 0.5*ac), (0, 0.5*ac, 0.5*ac), 
                           (0.25*ac, 0.75*ac, 0.75*ac), (0.25*ac, 0.25*ac, 0.25*ac), (0.75*ac, 0.75*ac, 0.25*ac), 
                           (0.75*ac, 0.25*ac, 0.75*ac)]
@@ -1561,7 +1561,7 @@ for i, combination in enumerate(element_combinations):
                Y = [0,  ac, 0 ]
                Z = [0,  0,  ac]
            else:
-               types=[0,0]
+               types=[1,1]
                positions=[(0, 0, 0),(0.25*ap, 0.25*ap, 0.25*ap)]
                X = [0, 0.5*ap, 0.5*ap]
                Y = [0.5*ap, 0, 0.5*ap]
@@ -1586,7 +1586,7 @@ for i, combination in enumerate(element_combinations):
            Z = [0,  0,  ac]
         #------------------------------------------------------------------------------
         elif lattce == 'dim1':
-           types=[0]
+           types=[1,1]
            positions=[(0.5*ac, 0.5*ac, 0.5*ac+ren/2),(0.5*ac, 0.5*ac, 0.5*ac-ren/2)]
            X = [ac, 0,  0 ]
            Y = [0,  ac, 0 ]
