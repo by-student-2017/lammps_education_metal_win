@@ -39,7 +39,7 @@ lat = ''     # In the case of '', the sum of covalent_radii (sum of concentratio
 #lat = 5.640 # NaCl (e.g., FCC_B1 calculation)
 #----------------------------
 # making number of data (If the bulk modulus is approximately +/- 0.5 GPa or less, 11 points will suffice. However, for a3, 25 points or more is recommended to keep the accuracy at around +/- 0.005 or less.)
-npoints = 7 # >= 7 e.g., 7, 11, 17, 21, or 25, etc (Recommend >= 25), (default = 25) (SSSP: 7 points) (7 points:0.02 step, other:0.01 step)
+npoints = 7 # >= 7 e.g., 7, 11, 17, 21, or 25, etc (Recommend >= 25), (default = 25) (SSSP: 7 points) (7 points:0.02 step (dim1:0.5/7), other:0.01 stepm)
 #------------------------------------------------------------------
 # Note: "fixed_element" becomes a dummy when a lattice of one element is selected (the atom in *.json is temporarily specified).
 fixed_element = 'XX'
@@ -184,7 +184,8 @@ atomic_masses = {
 CN = {
       "b1":  6,  "b2": 8, "l12": 12,
      "fcc": 12, "bcc": 8, "hcp": 12, "sc": 6, "dia": 4,
-     "dim":  1, "ch4": 4
+     "dim":  1, "ch4": 4,
+     "dim1": 1, "dia1": 1
 }
 
 def binary_search(original_cell, atoms, calc, scaling_factor, dsfactor, best_energy):
@@ -1116,7 +1117,10 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
     ndata = 0
     if npoints == 7:
         print(f'{npoints} points (same as SSSP)')
-        vrange = 0.06
+        if lattce in ['dim1']:
+            vrange = 0.50
+        else:
+            vrange = 0.06
         print(f'Here, setting +/- {vrange*100}% for volume')
     else:
         vrange = 0.01*(npoints-1)/2
