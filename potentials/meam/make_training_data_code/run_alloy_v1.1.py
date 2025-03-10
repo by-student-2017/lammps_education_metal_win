@@ -764,7 +764,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
             #'smearing': 'mp',
             'smearing': 'gauss', # More robust than mp
             #'degauss': 0.01, # 0.01 = about 150 K, 0.01 is better for mp + Equation of states (eos).
-            'degauss': 0.01, # 0.02 = about 300 K
+            'degauss': 0.02, # 0.02 = about 300 K
             #
             #'vdw_corr': 'dft-d', # DFT-D2 (Semiempirical Grimme's DFT-D2. Optional variables)
             #'vdw_corr': 'dft-d3',
