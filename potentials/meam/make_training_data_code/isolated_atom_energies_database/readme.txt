@@ -46,10 +46,7 @@ K_POINTS automatic
 "iteration #***" indicates that the algorithm did not converge even after 1000 cycles.
 #---------------------------------------------------------------------
 # occupations = 'tetrahedra_opt'
-# In tetrahedra_opt, 6x6x6 or more is recommended for calculation of isolated atoms.
-In spin, tetrahedra_opt runs, but there seems to be a problem with total magnetization. 
-This is probably because the k-point is set to gamma points only. In non-spin, 
-the k-point must be set to 6x6x6 for stable convergence.
+In tetrahedra_opt, 6x6x6 or more is recommended for calculation of isolated atoms.
 #---------------------------------------------------------------------
 # diagonalization = 'rmm-davidson'
 With the above settings, the difference in total energy between 'david' and 'rmm-davidson' is about 1e-5 Ry (13.6058e-4 eV). 
