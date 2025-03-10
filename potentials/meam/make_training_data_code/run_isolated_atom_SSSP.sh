@@ -4,7 +4,7 @@
 # Test: qe-7.2 and qe-7.3 on Ubuntu 22.04 LTS or Ubuntu 24.04 LTS
 
 #-----------------------------------------------------------------------
-NCPUs=8
+NCPUs=12
 
 DFT="PBE" # PBE or PBEsol
 mode="efficiency" # efficiency or precision
@@ -29,7 +29,7 @@ echo "Element, Total energy [Ry], filename, cutoff_wfc [Ry], cutoff_rho [Ry], va
 mkdir -p work
 #-----------------------------------------------------------------------
 cd ${mode}
-upf_list=($(ls *.UPF | ls *.upf))
+upf_list=($(ls *.UPF 2>/dev/null) $(ls *.upf 2>/dev/null))
 cd ..
 for upf_name in "${upf_list[@]}"; do
   element_name=$(echo ${upf_name} | awk '{print toupper(substr($0, 1, 1)) tolower(substr($0, 2, 1))}' | sed 's/\..*//g' | sed 's/\_.*//g')
@@ -69,16 +69,16 @@ cat << EOF > isolated_atom.in
 EOF
 cat << EOF >> isolated_atom.in
   occupations = 'smearing' , 
-  degauss  = 0.01 , 
-  smearing = 'mp', 
+  degauss  = 0.02 , 
+  smearing = 'gauss', 
   nspin = ${nspin},
   starting_magnetization(1) = 0 ,
 /
 &ELECTRONS 
-  mixing_beta=0.3,
+  mixing_beta=0.7,
   conv_thr=1.0E-6,
   electron_maxstep = 1000,
-  diagonalization = 'david',
+  diagonalization = 'rmm-davidson',
 /
 ATOMIC_SPECIES 
 ${element_name} ${mass} ${upf_name}
