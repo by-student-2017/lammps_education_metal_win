@@ -862,7 +862,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
         'electrons': {
             'conv_thr': 1.0e-6/2*len(atoms),
             'electron_maxstep': 1000,
-            'mixing_beta': 0.35,
+            'mixing_beta': 0.7,
             'diagonalization': 'rmm-davidson',
         },
         'ions': {
