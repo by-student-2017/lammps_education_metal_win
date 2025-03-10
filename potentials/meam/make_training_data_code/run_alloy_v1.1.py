@@ -17,6 +17,11 @@ import matplotlib.pyplot as plt
 
 import xml.etree.ElementTree as ET
 
+#from mpi4py import MPI
+#comm = MPI.COMM_WORLD
+#rank = comm.Get_rank()
+#size = comm.Get_size()
+
 #----------------------------------------------------------------------------------------------------------------------------------------------------------
 #----------------------------------------------------------------------------------------------------------------------------------------------------------
 # User input section
@@ -85,13 +90,11 @@ D_flag = 1 # 0:non-dispersion (non-vdW), 1:DFT-D2, 2: DFT-D3 (no three-body), 3:
 #------------------------------------------------------------------
 spin_flag = 1 # 0:non-spin, 1:spin, (default = 1)
 #------------------------------------------------------------------
-# Explicitly set OMP_NUM_THREADS
-os.environ['OMP_NUM_THREADS'] = '8' # Test CPU: 12th Gen Intel(R) Core(TM) i7-12700
-#------------------------------------------------------------------
 # Set the number of OpenMP/MPI settings (This is not working.)
+mpi_num_procs = 8 # Test CPU: 12th Gen Intel(R) Core(TM) i7-12700
 omp_num_threads = 1
-mpi_num_procs = 1
-#----------------------------
+os.environ['OMP_NUM_THREADS'] = f'{omp_num_threads}'
+#------------------------------------------------------------------
 primitive_flag = 1 # 0:conventional cell, 1:primitive cell, (default = 1)
 #------------------------------------------------------------------
 # max number of cycles for search optimized structure
@@ -751,7 +754,6 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
             'nstep': 1000,   # for MD or structure optimization
             'etot_conv_thr': 1.0e-4/2*len(atoms), # 0.68 meV/atom <= about 1 meV/atom
             #'forc_conv_thr': 1.0e-3 # dafault value
-            'wf_collect': False,
             'disk_io': 'low', # qe-7.2:'minimal', qe-7.3:'nowf'
         },
         'system': {
@@ -806,8 +808,8 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
         input_data['system']['ecutwfc'] = 520/Rydberg
         input_data['system']['ecutrho'] = 520*4.0/Rydberg
     
-    calc = Espresso(pseudopotentials=pseudopotentials_dict, input_data=input_data, kpts=(kpt, kpt, kpt), koffset=True, omp_num_threads=omp_num_threads, mpi_num_procs=mpi_num_procs, nspin=nspin)
-    #calc = Espresso(pseudopotentials=pseudopotentials_dict, input_data=input_data, kpts=(kpt, kpt, kpt), omp_num_threads=omp_num_threads, mpi_num_procs=mpi_num_procs, nspin=nspin)
+    calc = Espresso(pseudopotentials=pseudopotentials_dict, input_data=input_data, kpts=(kpt, kpt, kpt), koffset=True, nspin=nspin, command=f'mpirun -np {mpi_num_procs} pw.x < espresso.pwi > espresso.pwo')
+    #calc = Espresso(pseudopotentials=pseudopotentials_dict, input_data=input_data, kpts=(kpt, kpt, kpt), nspin=nspin, command=f'mpirun -np {mpi_num_procs} pw.x < espresso.pwi > espresso.pwo')
     atoms.set_calculator(calc)
 
     #-----------------------------------------------------------------------------

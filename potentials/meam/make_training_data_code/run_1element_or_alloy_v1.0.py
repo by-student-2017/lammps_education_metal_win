@@ -15,6 +15,11 @@ from scipy.optimize import curve_fit
 from scipy.optimize import fsolve
 import matplotlib.pyplot as plt
 
+#from mpi4py import MPI
+#comm = MPI.COMM_WORLD
+#rank = comm.Get_rank()
+#size = comm.Get_size()
+
 #----------------------------------------------------------------------------------------------------------------------------------------------------------
 #----------------------------------------------------------------------------------------------------------------------------------------------------------
 # User input section
@@ -22,7 +27,7 @@ import matplotlib.pyplot as plt
 # b1: FCC_B1 (NaCl-type), b2:BCC_B2 (CsCl-type), dia:Diamond_B3 (Zinc Blende), l12: L12 (Cu3Au-type)
 # fcc: FCC (1 element), hcp: HCP (1 element), bcc: BCC (1 element), sc: SC (1 element), dia1: Daiamond
 # dim(dimer), ch4(binary system), dim1(1 element)
-lattce = 'dim'
+lattce = 'dim1'
 #------------------------------------------------------------------
 # lattice structure of reference configuration [Angstrom] (https://en.wikipedia.org/wiki/Lattice_constant)
 lat = ''     # In the case of '', the sum of covalent_radii (sum of concentration ratio in L12)
@@ -32,10 +37,10 @@ lat = ''     # In the case of '', the sum of covalent_radii (sum of concentratio
 #lat = 5.640 # NaCl (e.g., FCC_B1 calculation)
 #----------------------------
 # making number of data (If the bulk modulus is approximately +/- 0.5 GPa or less, 11 points will suffice. However, for a3, 25 points or more is recommended to keep the accuracy at around +/- 0.005 or less.)
-npoints = 7 # >= 7 e.g., 7, 11, 17, 21, or 25, etc (Recommend >= 25), (default = 25) (SSSP: 7 points) (7 points:0.02 step, other:0.01 step)
+npoints = 25 # >= 7 e.g., 7, 11, 17, 21, or 25, etc (Recommend >= 25), (default = 25) (SSSP: 7 points) (7 points:0.02 step, other:0.01 step)
 #------------------------------------------------------------------
 # Note: "fixed_element" becomes a dummy when a lattice of one element is selected (the atom in *.json is temporarily specified).
-fixed_element = 'H'
+fixed_element = 'XX'
 elements = [fixed_element,
              'H', 'He',
             'Li', 'Be',  'B',  'C',  'N',  'O',  'F', 'Ne', 
@@ -86,13 +91,11 @@ D_flag = 1 # 0:non-dispersion (non-vdW), 1:DFT-D2, 2: DFT-D3 (no three-body), 3:
 #------------------------------------------------------------------
 spin_flag = 1 # 0:non-spin, 1:spin, (default = 1)
 #------------------------------------------------------------------
-# Explicitly set OMP_NUM_THREADS
-os.environ['OMP_NUM_THREADS'] = '8' # Test CPU: 12th Gen Intel(R) Core(TM) i7-12700
-#------------------------------------------------------------------
 # Set the number of OpenMP/MPI settings (This is not working.)
+mpi_num_procs = 8 # Test CPU: 12th Gen Intel(R) Core(TM) i7-12700
 omp_num_threads = 1
-mpi_num_procs = 1
-#----------------------------
+os.environ['OMP_NUM_THREADS'] = f'{omp_num_threads}'
+#------------------------------------------------------------------
 primitive_flag = 1 # 0:conventional cell, 1:primitive cell, (default = 1)
 #------------------------------------------------------------------
 # max number of cycles for search optimized structure
@@ -837,7 +840,6 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
             'nstep': 1000,   # for MD or structure optimization
             'etot_conv_thr': 1.0e-4/2*len(atoms), # 0.68 meV/atom <= about 1 meV/atom
             #'forc_conv_thr': 1.0e-3 # dafault value
-            'wf_collect': False,
             'disk_io': 'none',
         },
         'system': {
@@ -898,10 +900,10 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
         input_data['system']['ecutrho'] = 520*4.0/Rydberg
     
     if lattce in ['dim', 'ch4', 'dim1']:
-        calc = Espresso(pseudopotentials=pseudopotentials_dict, input_data=input_data, kpts=(1,1,1), koffset=False, omp_num_threads=omp_num_threads, mpi_num_procs=mpi_num_procs, nspin=nspin)
+        calc = Espresso(pseudopotentials=pseudopotentials_dict, input_data=input_data, kpts=None, koffset=False, nspin=nspin, command=f'mpirun -np {mpi_num_procs} pw.x < espresso.pwi > espresso.pwo')
     else:
-        calc = Espresso(pseudopotentials=pseudopotentials_dict, input_data=input_data, kpts=(kpt, kpt, kptc), koffset=True, omp_num_threads=omp_num_threads, mpi_num_procs=mpi_num_procs, nspin=nspin)
-        #calc = Espresso(pseudopotentials=pseudopotentials_dict, input_data=input_data, kpts=(kpt, kpt, kptc), omp_num_threads=omp_num_threads, mpi_num_procs=mpi_num_procs, nspin=nspin)
+        calc = Espresso(pseudopotentials=pseudopotentials_dict, input_data=input_data, kpts=(kpt, kpt, kptc), koffset=True, nspin=nspin, command=f'mpirun -np {mpi_num_procs} pw.x < espresso.pwi > espresso.pwo')
+        #calc = Espresso(pseudopotentials=pseudopotentials_dict, input_data=input_data, kpts=(kpt, kpt, kptc), nspin=nspin, command=f'mpirun -np {mpi_num_procs} pw.x < espresso.pwi > espresso.pwo')
     atoms.set_calculator(calc)
     
     # BCC: P
