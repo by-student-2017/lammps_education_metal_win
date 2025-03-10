@@ -42,6 +42,9 @@ Cf 0.0 0.0 0.0
 K_POINTS automatic
 1 1 1  0 0 0
 #---------------------------------------------------------------------
+# log.txt
+"iteration #***" indicates that the algorithm did not converge even after 1000 cycles.
+#---------------------------------------------------------------------
 # occupations = 'tetrahedra_opt'
 # In tetrahedra_opt, 6x6x6 or more is recommended for calculation of isolated atoms.
 In spin, tetrahedra_opt runs, but there seems to be a problem with total magnetization. 
