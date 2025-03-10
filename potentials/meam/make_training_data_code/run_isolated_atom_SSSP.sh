@@ -4,7 +4,7 @@
 # Test: qe-7.2 and qe-7.3 on Ubuntu 22.04 LTS or Ubuntu 24.04 LTS
 
 #-----------------------------------------------------------------------
-NCPUs=12
+NCPUs=8
 
 DFT="PBE" # PBE or PBEsol
 mode="efficiency" # efficiency or precision
