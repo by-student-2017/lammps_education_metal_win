@@ -104,7 +104,7 @@ os.environ['OMP_NUM_THREADS'] = f'{omp_num_threads}'
 primitive_flag = 1 # 0:conventional cell, 1:primitive cell, (default = 1)
 #------------------------------------------------------------------
 # max number of cycles for search optimized structure
-max_retries = 20 # default = 20
+max_retries = 100 # default = 100
 #------------------------------------------------------------------
 #Acceptable_values = 0.05 # calculate r at -Ec*Acceptable_values
 #------------------------------------------------------------------
@@ -568,7 +568,7 @@ def calculate_elastic_constants(atoms, calc, shear_strains, normal_strains):
 
 
 
-def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, max_retries=20, lattce='', lat='', npoints=25, primitive_flag=1, PBEsol_flag=0, spin_flag=1, D_flag=1, cutoff=520):
+def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, max_retries=100, lattce='', lat='', npoints=25, primitive_flag=1, PBEsol_flag=0, spin_flag=1, D_flag=1, cutoff=520):
     element1, element2 = elements_combination
     
     if lattce in ['fcc', 'bcc', 'hcp', 'sc', 'dia1', 'dim1']:

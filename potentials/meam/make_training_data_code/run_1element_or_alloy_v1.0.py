@@ -27,7 +27,7 @@ import matplotlib.pyplot as plt
 # b1: FCC_B1 (NaCl-type), b2:BCC_B2 (CsCl-type), dia:Diamond_B3 (Zinc Blende), l12: L12 (Cu3Au-type)
 # fcc: FCC (1 element), hcp: HCP (1 element), bcc: BCC (1 element), sc: SC (1 element), dia1: Daiamond
 # dim(dimer), ch4(binary system), dim1(1 element)
-lattce = 'dim1'
+lattce = 'sc'
 #------------------------------------------------------------------
 # lattice structure of reference configuration [Angstrom] (https://en.wikipedia.org/wiki/Lattice_constant)
 lat = ''     # In the case of '', the sum of covalent_radii (sum of concentration ratio in L12)
@@ -99,7 +99,7 @@ os.environ['OMP_NUM_THREADS'] = f'{omp_num_threads}'
 primitive_flag = 1 # 0:conventional cell, 1:primitive cell, (default = 1)
 #------------------------------------------------------------------
 # max number of cycles for search optimized structure
-max_retries = 20 # default = 20
+max_retries = 100 # default = 100
 #------------------------------------------------------------------
 #Acceptable_values = 0.05 # calculate r at -Ec*Acceptable_values
 #------------------------------------------------------------------
@@ -526,7 +526,7 @@ def calculate_elastic_constants(atoms, calc, shear_strains, normal_strains):
 
 
 
-def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, max_retries=20, lattce='', lat='', npoints=25, primitive_flag=1, PBEsol_flag=0, spin_flag=1, D_flag=1, cutoff=520):
+def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, max_retries=100, lattce='', lat='', npoints=25, primitive_flag=1, PBEsol_flag=0, spin_flag=1, D_flag=1, cutoff=520):
     element1, element2 = elements_combination
     
     if lattce in ['fcc', 'bcc', 'hcp', 'sc', 'dia1', 'dim1']:
