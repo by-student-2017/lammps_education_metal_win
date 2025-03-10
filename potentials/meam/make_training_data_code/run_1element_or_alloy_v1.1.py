@@ -940,7 +940,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
         input_data['system']['ecutrho'] = 520*4.0/Rydberg
     
     if lattce in ['dim', 'ch4', 'dim1']:
-        calc = Espresso(pseudopotentials=pseudopotentials_dict, input_data=input_data, kpts=None, koffset=False, omp_num_threads=omp_num_threads, mpi_num_procs=mpi_num_procs, nspin=nspin)
+        calc = Espresso(pseudopotentials=pseudopotentials_dict, input_data=input_data, kpts=(1,1,1), koffset=False, omp_num_threads=omp_num_threads, mpi_num_procs=mpi_num_procs, nspin=nspin)
     else:
         calc = Espresso(pseudopotentials=pseudopotentials_dict, input_data=input_data, kpts=(kpt, kpt, kptc), koffset=True, omp_num_threads=omp_num_threads, mpi_num_procs=mpi_num_procs, nspin=nspin)
         #calc = Espresso(pseudopotentials=pseudopotentials_dict, input_data=input_data, kpts=(kpt, kpt, kptc), omp_num_threads=omp_num_threads, mpi_num_procs=mpi_num_procs, nspin=nspin)
