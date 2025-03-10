@@ -29,7 +29,7 @@ echo "Element, Total energy [Ry], filename, cutoff_wfc [Ry], cutoff_rho [Ry], va
 mkdir -p work
 #-----------------------------------------------------------------------
 cd ${mode}
-upf_list=($(ls *.UPF 2>/dev/null) $(ls *.upf 2>/dev/null))
+upf_list=($(ls *.UPF *.upf 2>/dev/null | sort))
 cd ..
 for upf_name in "${upf_list[@]}"; do
   element_name=$(echo ${upf_name} | awk '{print toupper(substr($0, 1, 1)) tolower(substr($0, 2, 1))}' | sed 's/\..*//g' | sed 's/\_.*//g')
