@@ -71,12 +71,14 @@ cutoff = 0 # [eV], 0:read PP file, (520 eV is the main in the Materials Project,
 PBEsol_flag = 1 # 0:PBE, 1:PBEsol, (default = 0)
 # Load the pseudopotential data from the JSON file
 if PBEsol_flag == 0:
-    #with open('PBE/PSlibrary_PBE.json', 'r') as f:
-    with open('PBE/PSlibrary_PBE_valence_charge.json', 'r') as f:
+    #with open('PBE/PSlibrary_PBE_valence_charge.json', 'r') as f:
+    #with open('PBE/SSSP-1.3.0_PBE_efficiency.json', 'r') as f:
+    with open('PBE/SSSP-1.3.0_PBE_precision.json', 'r') as f:
         pseudopotentials = json.load(f)
 else:
-    #with open('PBEsol/PSlibrary_PBEsol.json', 'r') as f:
-    with open('PBEsol/PSlibrary_PBEsol_valence_charge.json', 'r') as f:
+    #with open('PBEsol/PSlibrary_PBEsol_valence_charge.json', 'r') as f:
+    #with open('PBEsol/SSSP-1.3.0_PBEsol_efficiency.json', 'r') as f:
+    with open('PBEsol/SSSP-1.3.0_PBEsol_precision.json', 'r') as f:
         pseudopotentials = json.load(f)
 #------------------------------------------------------------------
 D_flag = 1 # 0:non-dispersion (non-vdW), 1:DFT-D2, 2: DFT-D3 (no three-body), 3: DFT-D3, (default: 1) (Fr-Pu: 0, 2, or 3)
@@ -757,8 +759,10 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
             'ecutrho': max(pseudopotentials[element1]['cutoff_rho'], pseudopotentials[element2]['cutoff_rho']),
             #'occupations': 'tetrahedra_opt', # L12 A-N is failed
             'occupations': 'smearing',
-            'smearing': 'mp',
-            'degauss': 0.01, # 0.01 = about 150 K, 0.02 = about 300 K, 0.01 is better for Equation of states (eos).
+            #'smearing': 'mp',
+            'smearing': 'gauss', # More robust than mp
+            #'degauss': 0.01, # 0.01 = about 150 K, 0.01 is better for mp + Equation of states (eos).
+            'degauss': 0.01, # 0.02 = about 300 K
             #
             #'vdw_corr': 'dft-d', # DFT-D2 (Semiempirical Grimme's DFT-D2. Optional variables)
             #'vdw_corr': 'dft-d3',
@@ -772,6 +776,8 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
         'electrons': {
             'conv_thr': 1.0e-6/2*len(atoms),
             'electron_maxstep': 1000,
+            'mixing_beta': 0.35,
+            'diagonalization': 'rmm-davidson',
         },
         'ions': {
             'ion_dynamics': 'bfgs',
@@ -915,9 +921,21 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
     forces = []
     charges = []
     magnetic_moments = []
+    
+    '''
+    # old version
+    isolated_atom_energy1 = pseudopotentials[element1]['total_psenergy'] * 13.605693
+    isolated_atom_energy2 = pseudopotentials[element2]['total_psenergy'] * 13.605693
+    '''
     isolated_atom_energy1 = pseudopotentials[element1]['total_psenergy'] * 13.605693
     isolated_atom_energy2 = pseudopotentials[element2]['total_psenergy'] * 13.605693
     
+    '''
+    # If the json file has data (old version, But this definitely works.)
+    valence_electrons1 = pseudopotentials[element1]['z_valence']
+    valence_electrons2 = pseudopotentials[element2]['z_valence']
+    '''
+    '''
     if PBEsol_flag == 0:
         DFT = 'PBE'
     else:
@@ -929,11 +947,9 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
     pseudo_file = os.path.join(f'./{DFT}', pseudopotentials[element2]['filename'])
     valence_electrons2 = get_valence_electrons(pseudo_file)
     print(f'valence_electrons of atom 2: {valence_electrons2}')
-    #-----------------------------------------------------------
-    # If the json file has data (old version, But this definitely works.)
-    #valence_electrons1 = pseudopotentials[element1]['z_valence']
-    #valence_electrons2 = pseudopotentials[element2]['z_valence']
-    #-----------------------------------------------------------
+    '''
+    valence_electrons1 = pseudopotentials[element1]['valence_electrons']
+    valence_electrons2 = pseudopotentials[element2]['valence_electrons']
     
     volumes_per_atom = []
     energies_per_atom = []

@@ -72,10 +72,14 @@ cutoff = 0 # [eV], 0:read PP file, (520 eV is the main in the Materials Project,
 PBEsol_flag = 1 # 0:PBE, 1:PBEsol, (default = 0)
 # Load the pseudopotential data from the JSON file
 if PBEsol_flag == 0:
-    with open('PBE/PSlibrary_PBE.json', 'r') as f:
+    #with open('PBE/PSlibrary_PBE.json', 'r') as f:
+    #with open('PBE/SSSP-1.3.0_PBE_efficiency.json', 'r') as f:
+    with open('PBE/SSSP-1.3.0_PBE_precision.json', 'r') as f:
         pseudopotentials = json.load(f)
 else:
-    with open('PBEsol/PSlibrary_PBEsol.json', 'r') as f:
+    #with open('PBEsol/PSlibrary_PBEsol.json', 'r') as f:
+    #with open('PBEsol/SSSP-1.3.0_PBEsol_efficiency.json', 'r') as f:
+    with open('PBEsol/SSSP-1.3.0_PBEsol_precision.json', 'r') as f:
         pseudopotentials = json.load(f)
 #------------------------------------------------------------------
 D_flag = 1 # 0:non-dispersion (non-vdW), 1:DFT-D2, 2: DFT-D3 (no three-body), 3: DFT-D3, (default: 1) (Fr-Pu: 0, 2, or 3)
@@ -841,8 +845,10 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
             'ecutrho': max(pseudopotentials[element1]['cutoff_rho'], pseudopotentials[element2]['cutoff_rho']),
             #'occupations': 'tetrahedra_opt', # L12 A-N is failed
             'occupations': 'smearing',
-            'smearing': 'mp',
-            'degauss': 0.01, # 0.01 = about 150 K, 0.02 = about 300 K, 0.01 is better for Equation of states (eos).
+            #'smearing': 'mp',
+            'smearing': 'gauss', # More robust than mp
+            #'degauss': 0.01, # 0.01 = about 150 K, 0.01 is better for mp + Equation of states (eos).
+            'degauss': 0.01, # 0.02 = about 300 K
             #
             #'vdw_corr': 'dft-d', # DFT-D2 (Semiempirical Grimme's DFT-D2. Optional variables)
             #'vdw_corr': 'dft-d3',
@@ -856,6 +862,8 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
         'electrons': {
             'conv_thr': 1.0e-6/2*len(atoms),
             'electron_maxstep': 1000,
+            'mixing_beta': 0.35,
+            'diagonalization': 'rmm-davidson',
         },
         'ions': {
             'ion_dynamics': 'bfgs',
