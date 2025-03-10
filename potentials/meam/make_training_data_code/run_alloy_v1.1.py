@@ -97,7 +97,7 @@ primitive_flag = 1 # 0:conventional cell, 1:primitive cell, (default = 1)
 # max number of cycles for search optimized structure
 max_retries = 20 # default = 20
 #------------------------------------------------------------------
-Acceptable_values = 0.05 # calculate r at -Ec*Acceptable_values
+#Acceptable_values = 0.05 # calculate r at -Ec*Acceptable_values
 #------------------------------------------------------------------
 # User input section: END
 #----------------------------------------------------------------------------------------------------------------------------------------------------------
