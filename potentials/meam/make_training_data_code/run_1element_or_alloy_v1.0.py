@@ -1585,10 +1585,10 @@ for i, combination in enumerate(element_combinations):
         elif lattce == 'hcp':
            types=[0,0]
            cc = ac*np.sqrt(8/3) # c = a*np.sqrt(8/3) case: re = 1.0 (atomic distance = 1.0)
-           positions=[(a, np.sqrt(3)/3*2*ac, 0.75*cc), (0, np.sqrt(3)/3*ac, 0.25*cc)]
-           X = [ac, 0,  0 ]
-           Y = [-ac/2,  np.sqrt(3)*ac/2, 0 ]
-           Z = [0,  0,  cc]
+           positions=[(la, np.sqrt(3)/3*2*la, 0.75*lc), (0, np.sqrt(3)/3*la, 0.25*lc)]
+           X = [la, 0,  0 ]
+           Y = [-la/2,  np.sqrt(3)*la/2, 0 ]
+           Z = [0,  0,  lc]
         elif lattce == 'bcc':
            if primitive_flag == 0:
                types=[0,0]
