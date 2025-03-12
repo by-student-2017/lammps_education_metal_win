@@ -27,7 +27,7 @@ import matplotlib.pyplot as plt
 # b1: FCC_B1 (NaCl-type), b2:BCC_B2 (CsCl-type), dia:Diamond_B3 (Zinc Blende), l12: L12 (Cu3Au-type)
 # fcc: FCC (1 element), hcp: HCP (1 element), bcc: BCC (1 element), sc: SC (1 element), dia1: Daiamond
 # dim(dimer), ch4(binary system), dim1(1 element)
-lattce = 'sc'
+lattce = 'bcc'
 #------------------------------------------------------------------
 # lattice structure of reference configuration [Angstrom] (https://en.wikipedia.org/wiki/Lattice_constant)
 lat = ''     # In the case of '', the sum of covalent_radii (sum of concentration ratio in L12)
@@ -74,7 +74,7 @@ cutoff = 0 # [eV], 0:read PP file, (520 eV is the main in the Materials Project,
 #------------------------------------------------------------------
 # Note: In the field of phonons, the accuracy of lattice constant prediction is important, so PBEsol is generally used. 
 # However, since there are elements for which calculations do not go well, we recommend using PBE, which has been extensively verified as a database.
-PBEsol_flag = 1 # 0:PBE, 1:PBEsol, (default = 0)
+PBEsol_flag = 0 # 0:PBE, 1:PBEsol, (default = 0)
 # Load the pseudopotential data from the JSON file
 if PBEsol_flag == 0:
     #with open('PBE/PSlibrary_PBE.json', 'r') as f:
@@ -87,12 +87,12 @@ else:
     with open('PBEsol/SSSP-1.3.0_PBEsol_precision.json', 'r') as f:
         pseudopotentials = json.load(f)
 #------------------------------------------------------------------
-D_flag = 1 # 0:non-dispersion (non-vdW), 1:DFT-D2, 2: DFT-D3 (no three-body), 3: DFT-D3, (default: 1) (Fr-Pu: 0, 2, or 3)
+D_flag = 0 # 0:non-dispersion (non-vdW), 1:DFT-D2, 2: DFT-D3 (no three-body), 3: DFT-D3, (default: 1) (Fr-Pu: 0, 2, or 3)
 #------------------------------------------------------------------
 spin_flag = 1 # 0:non-spin, 1:spin, (default = 1)
 #------------------------------------------------------------------
 # Set the number of OpenMP/MPI settings (This is not working.)
-mpi_num_procs = 12 # Test CPU: 12th Gen Intel(R) Core(TM) i7-12700
+mpi_num_procs = 8 # Test CPU: 12th Gen Intel(R) Core(TM) i7-12700
 omp_num_threads = 1
 os.environ['OMP_NUM_THREADS'] = f'{omp_num_threads}'
 #------------------------------------------------------------------

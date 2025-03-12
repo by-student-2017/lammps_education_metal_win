@@ -89,7 +89,7 @@ D_flag = 1 # 0:non-dispersion (non-vdW), 1:DFT-D2, 2: DFT-D3 (no three-body), 3:
 spin_flag = 1 # 0:non-spin, 1:spin, (default = 1)
 #------------------------------------------------------------------
 # Set the number of OpenMP/MPI settings (This is not working.)
-mpi_num_procs = 12 # Test CPU: 12th Gen Intel(R) Core(TM) i7-12700
+mpi_num_procs = 8 # Test CPU: 12th Gen Intel(R) Core(TM) i7-12700
 omp_num_threads = 1
 os.environ['OMP_NUM_THREADS'] = f'{omp_num_threads}'
 #------------------------------------------------------------------
