@@ -1325,31 +1325,39 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
         optimized_c = optimized_a
     nearest_neighbor_distance = optimized_a / re2a
     
-    #alpha = (9.0*B*((nearest_neighbor_distance*re2a)**3/len(atoms))/cohesive_energy_per_atom)**0.5
-    alpha = (9.0*B*v0/(e0*-1.0))**0.5
-    
-    #-----------------------------------------------------------------
-    # d = a3 = attrac = repuls
-    plt.clf()
-    repuls_fit_erose_form_0, attrac_fit_erose_form_0 = fit_rose_curve_erose_form_0(volumes_per_atom, cohesive_energies_per_atom, alpha, v0, (e0*-1.0), nearest_neighbor_distance)
-    print(f"Fitted parameter: repuls = {repuls_fit_erose_form_0}, attrac = {attrac_fit_erose_form_0} for erose_form=0")
-    # Save the plot as PNG
-    plt.savefig(f'{directory}/{lattce}-{element1}-{element2}_rose_curve_fit_erose_form_0.png')
-    #-------------------------
-    # d = a3 = attrac = repuls
-    plt.clf()
-    repuls_fit_erose_form_1, attrac_fit_erose_form_1 = fit_rose_curve_erose_form_1(volumes_per_atom, cohesive_energies_per_atom, alpha, v0, (e0*-1.0), nearest_neighbor_distance)
-    print(f"Fitted parameter: repuls = {repuls_fit_erose_form_1}, attrac = {attrac_fit_erose_form_1} for erose_form=1")
-    # Save the plot as PNG
-    plt.savefig(f'{directory}/{lattce}-{element1}-{element2}_rose_curve_fit_erose_form_1.png')
-    #-------------------------
-    # d = a3 = attrac = repuls
-    plt.clf()
-    repuls_fit_erose_form_2, attrac_fit_erose_form_2 = fit_rose_curve_erose_form_2(volumes_per_atom, cohesive_energies_per_atom, alpha, v0, (e0*-1.0), nearest_neighbor_distance)
-    print(f"Fitted parameter: repuls = {repuls_fit_erose_form_2}, attrac = {attrac_fit_erose_form_2} for erose_form=2")
-    # Save the plot as PNG
-    plt.savefig(f'{directory}/{lattce}-{element1}-{element2}_rose_curve_fit_erose_form_2.png')
-    #-----------------------------------------------------------------
+    if e0 > 0.0:
+        #alpha = (9.0*B*((nearest_neighbor_distance*re2a)**3/len(atoms))/cohesive_energy_per_atom)**0.5
+        alpha = (9.0*B*v0/(e0*-1.0))**0.5
+        
+        #-----------------------------------------------------------------
+        # d = a3 = attrac = repuls
+        plt.clf()
+        repuls_fit_erose_form_0, attrac_fit_erose_form_0 = fit_rose_curve_erose_form_0(volumes_per_atom, cohesive_energies_per_atom, alpha, v0, (e0*-1.0), nearest_neighbor_distance)
+        print(f"Fitted parameter: repuls = {repuls_fit_erose_form_0}, attrac = {attrac_fit_erose_form_0} for erose_form=0")
+        # Save the plot as PNG
+        plt.savefig(f'{directory}/{lattce}-{element1}-{element2}_rose_curve_fit_erose_form_0.png')
+        #-------------------------
+        # d = a3 = attrac = repuls
+        plt.clf()
+        repuls_fit_erose_form_1, attrac_fit_erose_form_1 = fit_rose_curve_erose_form_1(volumes_per_atom, cohesive_energies_per_atom, alpha, v0, (e0*-1.0), nearest_neighbor_distance)
+        print(f"Fitted parameter: repuls = {repuls_fit_erose_form_1}, attrac = {attrac_fit_erose_form_1} for erose_form=1")
+        # Save the plot as PNG
+        plt.savefig(f'{directory}/{lattce}-{element1}-{element2}_rose_curve_fit_erose_form_1.png')
+        #-------------------------
+        # d = a3 = attrac = repuls
+        plt.clf()
+        repuls_fit_erose_form_2, attrac_fit_erose_form_2 = fit_rose_curve_erose_form_2(volumes_per_atom, cohesive_energies_per_atom, alpha, v0, (e0*-1.0), nearest_neighbor_distance)
+        print(f"Fitted parameter: repuls = {repuls_fit_erose_form_2}, attrac = {attrac_fit_erose_form_2} for erose_form=2")
+        # Save the plot as PNG
+        plt.savefig(f'{directory}/{lattce}-{element1}-{element2}_rose_curve_fit_erose_form_2.png')
+        #-----------------------------------------------------------------
+    else:
+        with open("error_log.txt", "a") as file:
+            file.write(f"Error-e0, e0 <= 0: {element1}-{element2} in {DFT}{D_char}_{spin_char}_{lattce.upper()}\n")
+        alpha = None
+        repuls_fit_erose_form_0 = attrac_fit_erose_form_0 = None
+        repuls_fit_erose_form_1 = attrac_fit_erose_form_1 = None
+        repuls_fit_erose_form_2 = attrac_fit_erose_form_2 = None
     
     #print("---------------------------------")
     #print("initial stress tensor calculation")
