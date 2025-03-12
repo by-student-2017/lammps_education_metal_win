@@ -27,7 +27,7 @@ import matplotlib.pyplot as plt
 # b1: FCC_B1 (NaCl-type), b2:BCC_B2 (CsCl-type), dia:Diamond_B3 (Zinc Blende), l12: L12 (Cu3Au-type)
 # fcc: FCC (1 element), hcp: HCP (1 element), bcc: BCC (1 element), sc: SC (1 element), dia1: Daiamond
 # dim(dimer), ch4(binary system), dim1(1 element)
-lattce = 'bcc'
+lattce = 'hcp'
 #------------------------------------------------------------------
 # lattice structure of reference configuration [Angstrom] (https://en.wikipedia.org/wiki/Lattice_constant)
 lat = ''     # In the case of '', the sum of covalent_radii (sum of concentration ratio in L12)
@@ -1209,7 +1209,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
         optimized_c = optimized_a
     nearest_neighbor_distance = optimized_a / re2a
     
-    if e0 > 0.0:
+    if e0 < 0.0:
         #alpha = (9.0*B*((nearest_neighbor_distance*re2a)**3/len(atoms))/cohesive_energy_per_atom)**0.5
         alpha = (9.0*B*v0/(e0*-1.0))**0.5
         
@@ -1237,7 +1237,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
         #-----------------------------------------------------------------
     else:
         with open("error_log.txt", "a") as file:
-            file.write(f"Error-e0, e0 <= 0: {element1}-{element2} in {DFT}{D_char}_{spin_char}_{lattce.upper()}\n")
+            file.write(f"Error-e0, unstable phase (Ec <= 0): {element1}-{element2} in {DFT}{D_char}_{spin_char}_{lattce.upper()}\n")
         alpha = None
         repuls_fit_erose_form_0 = attrac_fit_erose_form_0 = None
         repuls_fit_erose_form_1 = attrac_fit_erose_form_1 = None

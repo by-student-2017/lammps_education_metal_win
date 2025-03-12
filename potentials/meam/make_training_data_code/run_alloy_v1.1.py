@@ -1046,7 +1046,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
         optimized_a = (v0 * len(atoms))**(1/3)
     nearest_neighbor_distance = optimized_a / re2a
     
-    if e0 > 0.0:
+    if e0 < 0.0:
         #alpha = (9.0*B*((nearest_neighbor_distance*re2a)**3/len(atoms))/cohesive_energy_per_atom)**0.5
         alpha = (9.0*B*v0/(e0*-1.0))**0.5
         
@@ -1074,7 +1074,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
         #-----------------------------------------------------------------
     else:
         with open("error_log.txt", "a") as file:
-            file.write(f"Error-e0, e0 <= 0: {element1}-{element2} in {DFT}{D_char}_{spin_char}_{lattce.upper()}\n")
+            file.write(f"Error-e0, unstable phase (Ec <= 0): {element1}-{element2} in {DFT}{D_char}_{spin_char}_{lattce.upper()}\n")
         alpha = None
         repuls_fit_erose_form_0 = attrac_fit_erose_form_0 = None
         repuls_fit_erose_form_1 = attrac_fit_erose_form_1 = None
