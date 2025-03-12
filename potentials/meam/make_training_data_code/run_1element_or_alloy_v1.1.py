@@ -1070,15 +1070,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
     print("----------------------------------------")
     print("making data and equation of states (eos)")
     print("----------------------------------------")
-
-    volumes = []
-    energies = []
-    cohesive_energies = []
-    elastic_constants = []
-    stress_tensor = []
-    forces = []
-    charges = []
-    magnetic_moments = []
+    
     '''
     # old version
     isolated_atom_energy1 = pseudopotentials[element1]['total_psenergy'] * 13.605693
@@ -1108,6 +1100,15 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
     valence_electrons1 = pseudopotentials[element1]['valence_electrons']
     valence_electrons2 = pseudopotentials[element2]['valence_electrons']
     
+    volumes = []
+    energies = []
+    cohesive_energies = []
+    elastic_constants = []
+    stress_tensor = []
+    forces = []
+    charges = []
+    magnetic_moments = []
+
     volumes_per_atom = []
     energies_per_atom = []
     cohesive_energies_per_atom = []

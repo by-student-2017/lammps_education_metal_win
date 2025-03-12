@@ -800,6 +800,35 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
     print("making data and equation of states (eos)")
     print("----------------------------------------")
 
+    '''
+    # old version
+    isolated_atom_energy1 = pseudopotentials[element1]['total_psenergy'] * 13.605693
+    isolated_atom_energy2 = pseudopotentials[element2]['total_psenergy'] * 13.605693
+    '''
+    isolated_atom_energy1 = pseudopotentials[element1]['total_psenergy'] * 13.605693
+    isolated_atom_energy2 = pseudopotentials[element2]['total_psenergy'] * 13.605693
+    
+    '''
+    # If the json file has data (old version, But this definitely works.)
+    valence_electrons1 = pseudopotentials[element1]['z_valence']
+    valence_electrons2 = pseudopotentials[element2]['z_valence']
+    '''
+    '''
+    if PBEsol_flag == 0:
+        DFT = 'PBE'
+    else:
+        DFT = 'PBEsol'
+    if not element1 == "XX":
+        pseudo_file = os.path.join(f'./{DFT}', pseudopotentials[element1]['filename'])
+        valence_electrons1 = get_valence_electrons(pseudo_file)
+        print(f'valence_electrons of atom 1: {valence_electrons1}')
+    pseudo_file = os.path.join(f'./{DFT}', pseudopotentials[element2]['filename'])
+    valence_electrons2 = get_valence_electrons(pseudo_file)
+    print(f'valence_electrons of atom 2: {valence_electrons2}')
+    '''
+    valence_electrons1 = pseudopotentials[element1]['valence_electrons']
+    valence_electrons2 = pseudopotentials[element2]['valence_electrons']
+
     volumes = []
     energies = []
     cohesive_energies = []
@@ -807,8 +836,6 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
     stress_tensor = []
     forces = []
     magnetic_moments = []
-    isolated_atom_energy1 = pseudopotentials[element1]['total_psenergy'] * 13.605693
-    isolated_atom_energy2 = pseudopotentials[element2]['total_psenergy'] * 13.605693
     
     volumes_per_atom = []
     energies_per_atom = []
