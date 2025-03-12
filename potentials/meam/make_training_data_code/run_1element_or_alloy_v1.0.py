@@ -948,13 +948,15 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
             print(f'E = {energy} [eV]')
             opt_cell = atoms.get_cell()
             print(f'optimized cell = {opt_cell}')
+            #-------------------------------------
+            positions = atoms.get_positions()
+            re = np.linalg.norm(positions[0] - positions[1])
+            re2a = opt_cell[0][0]/re
+            print(f'Distance, re [A] = {re}')
         except Exception as e:
             print(f"Optimization failed: {e}")
-        #-------------------------------------
-        positions = atoms.get_positions()
-        re = np.linalg.norm(positions[0] - positions[1])
-        re2a = opt_cell[0][0]/re
-        print(f'Distance, re [A] = {re}')
+            with open("error_log.txt", "a") as file:
+                file.write(f"Optimization failed: {e}: {lattce}-{element1}-{element2}\n")
     #-----------------------------------------------------------------------------
     
     dsfactor = 0.15
@@ -1584,7 +1586,7 @@ for i, combination in enumerate(element_combinations):
                Z = [0.5*ap, 0.5*ap, 0]
         elif lattce == 'hcp':
            types=[0,0]
-           cc = ac*np.sqrt(8/3) # c = a*np.sqrt(8/3) case: re = 1.0 (atomic distance = 1.0)
+           #cc = ac*np.sqrt(8/3) # c = a*np.sqrt(8/3) case: re = 1.0 (atomic distance = 1.0)
            positions=[(la, np.sqrt(3)/3*2*la, 0.75*lc), (0, np.sqrt(3)/3*la, 0.25*lc)]
            X = [la, 0,  0 ]
            Y = [-la/2,  np.sqrt(3)*la/2, 0 ]
