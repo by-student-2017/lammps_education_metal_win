@@ -101,7 +101,7 @@ primitive_flag = 1 # 0:conventional cell, 1:primitive cell, (default = 1)
 # max number of cycles for search optimized structure
 max_retries = 100 # default = 100
 #------------------------------------------------------------------
-#Acceptable_values = 0.05 # calculate r at -Ec*Acceptable_values
+#Acceptable_values = 0.025 # calculate r at -Ec*Acceptable_values
 #------------------------------------------------------------------
 # User input section: END
 #----------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -233,14 +233,21 @@ def fit_rose_curve_erose_form_0(volumes_per_atom, cohesive_energies_per_atom, al
         return -Ec * (1 + astar + a3 * (astar**3)/(V/V0)**(1/3)) * np.exp(-astar)
     
     # Fitting the parameters repuls and attrac
-    popt, _ = curve_fit(lambda V, repuls, attrac: rose_curve(V, alpha, V0, Ec, repuls, attrac), 
-                        volumes_per_atom, E_data, p0=[0.0, 0.0])  # Initial guesses for repuls and attrac
+    try:
+        popt, _ = curve_fit(lambda V, repuls, attrac: rose_curve(V, alpha, V0, Ec, repuls, attrac), 
+                            volumes_per_atom, E_data, p0=[0.0, 0.0])  # Initial guesses for repuls and attrac
+    except Exception as e:
+        print(f"An unexpected error occurred: {e}")
+        with open("error_log.txt", "a") as file:
+                file.write(f"An unexpected error occurred: {e} at fit_rose_curve_erose_form_0 \n")
+        repuls_fit = attrac_fit = None
+        return repuls_fit, attrac_fit
     
     # Fitted parameters
     repuls_fit, attrac_fit = popt
     
     # Calculating rc from EOS
-    Acceptable_values = 0.05 # -Ec*{Acceptable_values}
+    Acceptable_values = 0.025 # -Ec*{Acceptable_values}
     def equation(astar, d):
         return (1 + astar + d * (astar**3)/((astar+1.0)/alpha)) * np.exp(-astar) - Acceptable_values
     astar = alpha*(4.0/nearest_neighbor_distance - 1.0)
@@ -308,8 +315,15 @@ def fit_rose_curve_erose_form_1(volumes_per_atom, cohesive_energies_per_atom, al
         return -Ec * (1 + astar + (-attrac+repuls/r)*(astar**3)) * np.exp(-astar)
     
     # Fitting the parameters repuls and attrac
-    popt, _ = curve_fit(lambda V, repuls, attrac: rose_curve(V, alpha, V0, Ec, repuls, attrac, nearest_neighbor_distance), 
-                        volumes_per_atom, E_data, p0=[0.0, 0.0])  # Initial guesses for repuls and attrac
+    try:
+        popt, _ = curve_fit(lambda V, repuls, attrac: rose_curve(V, alpha, V0, Ec, repuls, attrac, nearest_neighbor_distance), 
+                            volumes_per_atom, E_data, p0=[0.0, 0.0])  # Initial guesses for repuls and attrac
+    except Exception as e:
+        print(f"An unexpected error occurred: {e}")
+        with open("error_log.txt", "a") as file:
+            file.write(f"An unexpected error occurred: {e} at fit_rose_curve_erose_form_1 \n")
+        repuls_fit = attrac_fit = None
+        return repuls_fit, attrac_fit
     
     # Fitted parameters
     repuls_fit, attrac_fit = popt
@@ -360,14 +374,21 @@ def fit_rose_curve_erose_form_2(volumes_per_atom, cohesive_energies_per_atom, al
         return -Ec * (1 + astar + a3 * (astar**3)) * np.exp(-astar)
     
     # Fitting the parameters repuls and attrac
-    popt, _ = curve_fit(lambda V, repuls, attrac: rose_curve(V, alpha, V0, Ec, repuls, attrac), 
-                        volumes_per_atom, E_data, p0=[0.0, 0.0])  # Initial guesses for repuls and attrac
+    try:
+        popt, _ = curve_fit(lambda V, repuls, attrac: rose_curve(V, alpha, V0, Ec, repuls, attrac), 
+                            volumes_per_atom, E_data, p0=[0.0, 0.0])  # Initial guesses for repuls and attrac
+    except Exception as e:
+        print(f"An unexpected error occurred: {e}")
+        with open("error_log.txt", "a") as file:
+            file.write(f"An unexpected error occurred: {e} at fit_rose_curve_erose_form_2 \n")
+        repuls_fit = attrac_fit = None
+        return repuls_fit, attrac_fit
     
     # Fitted parameters
     repuls_fit, attrac_fit = popt
     
     # Calculating rc from EOS
-    Acceptable_values = 0.05 # -Ec*{Acceptable_values}
+    Acceptable_values = 0.025 # -Ec*{Acceptable_values}
     def equation(astar, d):
         return (1 + astar + d * (astar**3)) * np.exp(-astar) - Acceptable_values
     astar = alpha*(4.0/nearest_neighbor_distance - 1.0)
