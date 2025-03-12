@@ -1260,7 +1260,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
         element1 = '1element'
 
     # eos: sjeos, taylor, murnaghan, birch, birchmurnaghan, pouriertarantola, vinet, antonschmidt, p3
-    eos = EquationOfState(volumes_per_atom, [energy * -1.0 for energy in cohesive_energies_per_atom], eos='murnaghan')
+    eos = EquationOfState(volumes_per_atom, [energy * -1.0 for energy in cohesive_energies_per_atom], eos='birchmurnaghan')
     try:
         v0, e0, B = eos.fit()
         print(B / kJ * 1.0e24, 'GPa')
