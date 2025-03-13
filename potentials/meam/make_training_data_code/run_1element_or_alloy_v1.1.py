@@ -990,8 +990,8 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
         atoms.set_cell(scaled_cell, scale_atoms=True)
         try:
             opt = BFGS(atoms)
-            #opt.run(fmax=0.0514) # 1e-3*51.422 [eV/A]
-            opt.run(fmax=0.02) # max force <= 0.02 [eV/A]
+            opt.run(fmax=0.0514) # 1e-3*51.422 [eV/A]
+            #opt.run(fmax=0.02) # max force <= 0.02 [eV/A]
             energy = atoms.get_total_energy()
             print(f'E = {energy} [eV]')
             opt_cell = atoms.get_cell()
