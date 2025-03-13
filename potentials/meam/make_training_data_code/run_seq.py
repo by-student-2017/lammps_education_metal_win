@@ -1,15 +1,15 @@
 import os
 
 # 1 elements
-lattices = ['fcc', 'hcp', 'bcc', 'sc', 'dia1']
+lattices = ['fcc', 'bcc', 'sc', 'dia1', 'hcp']
 file_path = 'run_1element_or_alloy_v1.0.py'
 
 # 2 pair
-#lattices = ['b1', 'b2', 'dia', 'l12']
+#lattices = ['b1', 'b2', 'l12', 'dia']
 #file_path = 'run_alloy_v1.1.py'
 
 # 2 pair
-#lattices = ['b1', 'b2', 'dia', 'l12', 'ch4']
+#lattices = ['b1', 'b2', 'l12', 'dia', 'ch4']
 #file_path = 'run_1element_or_alloy_v1.1.py'
 
 for lattice in lattices:
