@@ -22,7 +22,8 @@ import xml.etree.ElementTree as ET
 from datetime import datetime
 with open("error_log.txt","a") as file:
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    file.write(f"\n[{timestamp}]\n")
+    file.write(f"#------------------------------------------------------------------\n")
+    file.write(f"[{timestamp}]\n")
 
 #from mpi4py import MPI
 #comm = MPI.COMM_WORLD
