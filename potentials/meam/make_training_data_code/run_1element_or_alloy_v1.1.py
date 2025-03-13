@@ -957,7 +957,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
     elif D_flag == 3:
         input_data['system']['vdw_corr'] = 'dft-d3'
     
-    if lattce == 'fcc' or lattce == 'bcc' or lattce == 'hcp' or lattce == 'dia1':
+    if lattce in ['fcc', 'hcp', 'bcc', 'sc', 'dia1', 'dim1']:
         input_data['control']['prefix'] = f'{lattce}_{element2}'
         input_data['system']['ecutwfc'] = pseudopotentials[element2]['cutoff_wfc']
         input_data['system']['ecutrho'] = pseudopotentials[element2]['cutoff_rho']
