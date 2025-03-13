@@ -26,7 +26,7 @@ for lattice in lattices:
     
     # Execute the temporary file
     print(f"Running with lattice: {lattice}")
-    os.system(f"python {temp_file_path}")
+    os.system(f"python3 {temp_file_path}")
     
     # Remove the temporary file
     os.remove(temp_file_path)

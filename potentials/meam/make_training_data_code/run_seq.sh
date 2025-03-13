@@ -11,7 +11,7 @@ do
     
     # Execute the temporary file
     echo "Running with lattice: $lattice"
-    python $temp_file_path
+    python3 $temp_file_path
     
     # Optionally, remove the temporary file
     rm $temp_file_path
