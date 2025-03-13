@@ -55,7 +55,7 @@ elements = [fixed_element,
             'Na', 'Mg', 'Al', 'Si',  'P',  'S', 'Cl', 'Ar',
              'K', 'Ca', 'Sc', 'Ti',  'V', 'Cr', 'Mn', 'Fe', 'Co', 'Ni', 'Cu', 'Zn', 'Ga', 'Ge', 'As', 'Se', 'Br', 'Kr',
             'Rb', 'Sr',  'Y', 'Zr', 'Nb', 'Mo', 'Tc', 'Ru', 'Rh', 'Pd', 'Ag', 'Cd', 'In', 'Sn', 'Sb', 'Te',  'I', 'Xe',
-            'Cs', 'Ba', 'La', 
+            'Cs', 'Ba', 'La', 'Ce', 'Pr', 'Nd', 'Pm', 'Sm', 'Eu', 'Gd', 'Tb', 'Dy', 'Ho', 'Er', 'Tm', 'Yb', 'Lu',
             'Hf', 'Ta',  'W', 'Re', 'Os', 'Ir', 'Pt', 'Au', 'Hg', 'Tl', 'Pb', 'Bi'
             ] # <- Enter the element you want to calculate (Note: Time Consumption: Approx. 4 elements/hour)
 #elements = [fixed_element, 'Ce', 'Pr', 'Nd', 'Pm', 'Sm', 'Eu', 'Gd', 'Tb', 'Dy', 'Ho', 'Er', 'Tm', 'Yb', 'Lu'] # Pairs with noble gases require careful calculations and must be calculated separately.
@@ -96,7 +96,7 @@ else:
     #with open('PBEsol/SSSP-1.3.0_PBEsol_precision.json', 'r') as f:
         pseudopotentials = json.load(f)
 #------------------------------------------------------------------
-D_flag = 1 # 0:non-dispersion (non-vdW), 1:DFT-D2, 2: DFT-D3 (no three-body), 3: DFT-D3, (default: 1) (Fr-Pu: 0, 2, or 3)
+D_flag = 0 # 0:non-dispersion (non-vdW), 1:DFT-D2, 2: DFT-D3 (no three-body), 3: DFT-D3, (default: 1) (Fr-Pu: 0, 2, or 3)
 #------------------------------------------------------------------
 spin_flag = 1 # 0:non-spin, 1:spin, (default = 1)
 #------------------------------------------------------------------
