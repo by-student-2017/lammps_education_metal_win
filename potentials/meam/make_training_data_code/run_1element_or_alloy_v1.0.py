@@ -56,8 +56,8 @@ elements = [fixed_element,
             'Rb', 'Sr',  'Y', 'Zr', 'Nb', 'Mo', 'Tc', 'Ru', 'Rh', 'Pd', 'Ag', 'Cd', 'In', 'Sn', 'Sb', 'Te',  'I', 'Xe',
             'Cs', 'Ba', 'La', 'Ce', 'Pr', 'Nd', 'Pm', 'Sm', 'Eu', 'Gd', 'Tb', 'Dy', 'Ho', 'Er', 'Tm', 'Yb', 'Lu', 
             'Hf', 'Ta',  'W', 'Re', 'Os', 'Ir', 'Pt', 'Au', 'Hg', 'Tl', 'Pb', 'Bi', 'Po', 'At', 'Ra',
-            'Rn', 'Fr'] # <- Enter the element you want to calculate (Note: Time Consumption: Approx. 4 elements/hour)
-#elements = [fixed_element, 'Ac', 'Th', 'Pa',  'U', 'Np', 'Pu'] # Pairs with noble gases require careful calculations and must be calculated separately.
+            ] # <- Enter the element you want to calculate (Note: Time Consumption: Approx. 4 elements/hour)
+#elements = [fixed_element, 'Rn', 'Fr', 'Ac', 'Th', 'Pa',  'U', 'Np', 'Pu'] # Pairs with noble gases require careful calculations and must be calculated separately.
 #elements = [fixed_element, 'He', 'Ne', 'Ar', 'Kr', 'Xe', 'Ra'] # Pairs with noble gases require careful calculations and must be calculated separately.
 '''
 elements = [fixed_element,
@@ -85,16 +85,16 @@ PBEsol_flag = 0 # 0:PBE, 1:PBEsol, (default = 0)
 # Load the pseudopotential data from the JSON file
 if PBEsol_flag == 0:
     #with open('PBE/PSlibrary_PBE.json', 'r') as f:
-    #with open('PBE/SSSP-1.3.0_PBE_efficiency.json', 'r') as f:
-    with open('PBE/SSSP-1.3.0_PBE_precision.json', 'r') as f:
+    with open('PBE/SSSP-1.3.0_PBE_efficiency.json', 'r') as f:
+    #with open('PBE/SSSP-1.3.0_PBE_precision.json', 'r') as f:
         pseudopotentials = json.load(f)
 else:
     #with open('PBEsol/PSlibrary_PBEsol.json', 'r') as f:
-    #with open('PBEsol/SSSP-1.3.0_PBEsol_efficiency.json', 'r') as f:
-    with open('PBEsol/SSSP-1.3.0_PBEsol_precision.json', 'r') as f:
+    with open('PBEsol/SSSP-1.3.0_PBEsol_efficiency.json', 'r') as f:
+    #with open('PBEsol/SSSP-1.3.0_PBEsol_precision.json', 'r') as f:
         pseudopotentials = json.load(f)
 #------------------------------------------------------------------
-D_flag = 0 # 0:non-dispersion (non-vdW), 1:DFT-D2, 2: DFT-D3 (no three-body), 3: DFT-D3, (default: 1) (Fr-Pu: 0, 2, or 3)
+D_flag = 1 # 0:non-dispersion (non-vdW), 1:DFT-D2, 2: DFT-D3 (no three-body), 3: DFT-D3, (default: 1) (Fr-Pu: 0, 2, or 3)
 #------------------------------------------------------------------
 spin_flag = 1 # 0:non-spin, 1:spin, (default = 1)
 #------------------------------------------------------------------
@@ -866,7 +866,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
             'outdir': './out',
             'tprnfor': True, # Forces will be printed
             'tstress': True, # Stress will be printed
-            'nstep': 1000,   # for MD or structure optimization
+            'nstep': 50,   # for MD or structure optimization (default = 50)
             'etot_conv_thr': 1.0e-4*len(atoms), # 1.36 meV/atom = about 1 meV/atom
             #'forc_conv_thr': 1.0e-3 # dafault value
             'disk_io': 'none',
@@ -878,8 +878,8 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
             'occupations': 'smearing',
             #'smearing': 'mp',
             'smearing': 'gauss', # More robust than mp
-            #'degauss': 0.01, # 0.01 = about 150 K, 0.01 is better for mp + Equation of states (eos).
-            'degauss': 0.02, # 0.02 = about 300 K
+            'degauss': 0.01, # 0.01 = about 150 K, 0.01 is better for mp + Equation of states (eos).
+            #'degauss': 0.02, # 0.02 = about 300 K
             #
             #'vdw_corr': 'dft-d', # DFT-D2 (Semiempirical Grimme's DFT-D2. Optional variables)
             #'vdw_corr': 'dft-d3',
@@ -892,9 +892,9 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
         },
         'electrons': {
             'conv_thr': 1.0e-6*len(atoms),
-            'electron_maxstep': 1000,
+            'electron_maxstep': 100, # default = 100
             'mixing_beta': 0.7,
-            'diagonalization': 'david', # 'david' or 'rmm-davidson'
+            'diagonalization': 'rmm-davidson', # 'david' or 'rmm-davidson'
         },
         'ions': {
             'ion_dynamics': 'bfgs',
