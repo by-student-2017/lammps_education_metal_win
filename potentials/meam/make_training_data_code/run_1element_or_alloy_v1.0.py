@@ -34,7 +34,8 @@ with open("error_log.txt","a") as file:
 # b1: FCC_B1 (NaCl-type), b2:BCC_B2 (CsCl-type), dia:Diamond_B3 (Zinc Blende), l12: L12 (Cu3Au-type)
 # fcc: FCC (1 element), hcp: HCP (1 element), bcc: BCC (1 element), sc: SC (1 element), dia1: Daiamond
 # dim(dimer), ch4(binary system), dim1(1 element)
-lattce = 'hcp'
+lattce = 'dim1'
+#lattce = 'XXXXXXXXXX' # for run_seq.py
 #------------------------------------------------------------------
 # lattice structure of reference configuration [Angstrom] (https://en.wikipedia.org/wiki/Lattice_constant)
 lat = ''     # In the case of '', the sum of covalent_radii (sum of concentration ratio in L12)
