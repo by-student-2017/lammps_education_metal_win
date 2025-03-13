@@ -15,6 +15,12 @@ from scipy.optimize import curve_fit
 from scipy.optimize import fsolve
 import matplotlib.pyplot as plt
 
+# For error
+from datetime import datetime
+with open("error_log.txt","a") as file:
+    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    file.write(f"\n[{timestamp}]\n")
+
 #from mpi4py import MPI
 #comm = MPI.COMM_WORLD
 #rank = comm.Get_rank()
