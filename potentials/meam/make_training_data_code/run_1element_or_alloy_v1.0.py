@@ -867,7 +867,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
             'tprnfor': True, # Forces will be printed
             'tstress': True, # Stress will be printed
             'nstep': 1000,   # for MD or structure optimization
-            'etot_conv_thr': 1.0e-4/2*len(atoms), # 0.68 meV/atom <= about 1 meV/atom
+            'etot_conv_thr': 1.0e-4*len(atoms), # 1.36 meV/atom = about 1 meV/atom
             #'forc_conv_thr': 1.0e-3 # dafault value
             'disk_io': 'none',
         },
@@ -891,7 +891,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
             #'lspinorb': True,
         },
         'electrons': {
-            'conv_thr': 1.0e-6/2*len(atoms),
+            'conv_thr': 1.0e-6*len(atoms),
             'electron_maxstep': 1000,
             'mixing_beta': 0.7,
             'diagonalization': 'david', # 'david' or 'rmm-davidson'
