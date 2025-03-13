@@ -1191,6 +1191,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
     except (ValueError, RuntimeError) as e:
         with open("error_log.txt", "a") as file:
             file.write(f"Error fitting EOS: {e}.: in {lattce}-{element1}-{element2}\n")
+        return "Error-eos-1"
     
     cohesive_energy_per_atom = e0 * -1.0
     if primitive_flag == 1 and lattce in ['b1', 'dia', 'fcc', 'dia1']:
@@ -1351,6 +1352,10 @@ for i, combination in enumerate(element_combinations):
     elif result == "Error-2":
         with open("error_log.txt", "a") as file:
             file.write(f"Error-2, It probably has not converged.: {element1}-{element2} in {DFT}{D_char}_{spin_char}_{lattce.upper()}\n")
+        continue
+    elif result == "Error-eos-1":
+        with open("error_log.txt", "a") as file:
+            file.write(f"Error-eos-1, RuntimeError: Optimal parameters not found: Number of calls to function has reached maxfev = 1000.: {element1}-{element2} in {DFT}{D_char}_{spin_char}_{lattce.upper()}\n")
         continue
     results.append(result)
 
