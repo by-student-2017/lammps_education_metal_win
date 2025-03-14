@@ -41,6 +41,7 @@ Note: "Can't you see the results of Dy on the website ?" he asked. The organizer
 # Get pseudo-potential
 STUDENT, B. (2025). SUGGESTED PSEUDOPOTENTIALS for PBEsol v.1.0.0 [Data set]. Zenodo. https://doi.org/10.5281/zenodo.14912399
 STUDENT, B. (2025). SUGGESTED PSEUDOPOTENTIALS for PBE v.1.0.0 [Data set]. Zenodo. https://doi.org/10.5281/zenodo.14912402
+1. python3 get_zenodo_data.py
 
 # Usage
 1. gedit run_alloy_v1.0.py
