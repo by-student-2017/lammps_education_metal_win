@@ -8,7 +8,7 @@ NCPUs=8
 
 DFT="PBE" # PBE or PBEsol
 outfile="isolated_atom_energies_pslibrary-1.0.0_${DFT}.csv"
-jsonfile="pslibrary-1.0.0_${DFT}.json"
+jsonfile="PSlibrary-1.0.0_${DFT}.json"
 
 export OMP_NUM_THREADS=1
 nspin=2 # 1:non-spin, 2:spin
