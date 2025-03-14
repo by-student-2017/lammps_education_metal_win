@@ -38,10 +38,19 @@ I asked the SSSP management, and they told me the following:
 「Also, we dediced to take the Wentz. library as a whole for the lanthanides, for consistency.」
 Note: "Can't you see the results of Dy on the website ?" he asked. The organizers are funny !  They didn't show the above in the paper. I'm not smart enough to know if it was a simple mistake or another reason.
 
+
 # Get pseudo-potential
 STUDENT, B. (2025). SUGGESTED PSEUDOPOTENTIALS for PBEsol v.1.0.0 [Data set]. Zenodo. https://doi.org/10.5281/zenodo.14912399
 STUDENT, B. (2025). SUGGESTED PSEUDOPOTENTIALS for PBE v.1.0.0 [Data set]. Zenodo. https://doi.org/10.5281/zenodo.14912402
 1. python3 get_zenodo_data.py
+
+# PSlibrary (recommend)
+0.1: Si
+0.2.1: Fe
+0.2.3: Sc, V, Cr
+0.3.0: Au
+0.3.1: Ti, Mn
+1.0.0: La(US), Ce(US), Pr(US), Nd(US), Pm(US), Sm(US), Eu(US or PAW), Gd(PAW), Tb(PAW, US), Dy(PAW, US), Ho(US), Er(US), Tm(PAW), Yb(PAW), Lu(US)
 
 # Usage
 1. gedit run_alloy_v1.0.py
