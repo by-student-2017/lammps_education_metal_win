@@ -33,6 +33,11 @@ The following libraries have been found:
 7. Change "mag_line.split()[5]" to "mag_line.split()[-1]".
 8. ESC -> wq
 
+# On the SSSP potential of Dy
+I asked the SSSP management, and they told me the following:
+「Also, we dediced to take the Wentz. library as a whole for the lanthanides, for consistency.」
+Note: "Can't you see the results of Dy on the website?" he asked. The organizers are funny!
+
 # Get pseudo-potential
 STUDENT, B. (2025). SUGGESTED PSEUDOPOTENTIALS for PBEsol v.1.0.0 [Data set]. Zenodo. https://doi.org/10.5281/zenodo.14912399
 STUDENT, B. (2025). SUGGESTED PSEUDOPOTENTIALS for PBE v.1.0.0 [Data set]. Zenodo. https://doi.org/10.5281/zenodo.14912402
