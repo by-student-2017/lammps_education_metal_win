@@ -117,7 +117,7 @@ EOF
 cat << EOF >> ${jsonfile}
     "${element_name}": {
         "filename": "${upf_name}",
-        "total_psenergy": ${TOTEN_Ry},
+        "total_energy": ${TOTEN_Ry},
         "pseudopotential": "PSlibrary",
         "relativistic": "scalar",
         "cutoff_wfc": ${cutoff_wfc},
@@ -134,7 +134,7 @@ EOF
 cat << EOF >> ${jsonfile}
     "${element_name}": {
         "filename": "${upf_name}",
-        "total_psenergy": ${TOTEN_Ry},
+        "total_energy": ${TOTEN_Ry},
         "pseudopotential": "PSlibrary",
         "relativistic": "scalar",
         "cutoff_wfc": ${cutoff_wfc},
@@ -157,6 +157,7 @@ cat << EOF >> ${jsonfile}
     "XX": {
         "filename": "",
         "total_psenergy": 0.0,
+        "total_energy": 0.0,
         "pseudopotential": "none",
         "relativistic": "none",
         "cutoff_wfc": 0.0,
