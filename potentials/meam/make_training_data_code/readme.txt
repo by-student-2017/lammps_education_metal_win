@@ -48,7 +48,7 @@ STUDENT, B. (2025). SUGGESTED PSEUDOPOTENTIALS for PBE v.1.0.0 [Data set]. Zenod
 0.1: Si
 0.2: I
 0.2.1: Fe
-0.2.3: Sc, V, Cr
+0.2.3: Sc, V, Cr, Cs
 0.3.0: Au
 0.3.1: Ti, Mn
 1.0.0: La(US), Ce(US), Pr(US), Nd(US), Pm(US), Sm(US), Eu(US or PAW), Gd(PAW), Tb(PAW, US), Dy(PAW, US), Ho(US), Er(US), Tm(PAW), Yb(PAW), Lu(US)
