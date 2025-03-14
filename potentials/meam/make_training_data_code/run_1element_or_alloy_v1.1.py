@@ -1150,7 +1150,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
     if npoints == 7:
         print(f'{npoints} points (same as SSSP)')
         vrange = 0.06
-        print(f'Here, setting +/- {vrange*100}% for volume')
+        print(f'Here, setting +/- {vrange*100}% for volume same as delta-value and SSSP)')
     else:
         vrange = 0.01*(npoints-1)/2
     for scale in np.linspace((1.0-vrange)**(1/3), (1.0+vrange)**(1/3), npoints):

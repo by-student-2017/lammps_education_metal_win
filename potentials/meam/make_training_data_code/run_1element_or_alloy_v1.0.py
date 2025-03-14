@@ -83,7 +83,7 @@ cutoff = 0 # [eV], 0:read PP file, (520 eV is the main in the Materials Project,
 #------------------------------------------------------------------
 # Note: In the field of phonons, the accuracy of lattice constant prediction is important, so PBEsol is generally used. 
 # However, since there are elements for which calculations do not go well, we recommend using PBE, which has been extensively verified as a database.
-PBEsol_flag = 0 # 0:PBE, 1:PBEsol, (default = 0)
+PBEsol_flag = 1 # 0:PBE, 1:PBEsol, (default = 0)
 # Load the pseudopotential data from the JSON file
 if PBEsol_flag == 0:
     with open('PBE/PSlibrary_PBE.json', 'r') as f:
@@ -1109,7 +1109,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
     if npoints == 7:
         print(f'{npoints} points (same as SSSP)')
         vrange = 0.06
-        print(f'Here, setting +/- {vrange*100}% for volume')
+        print(f'Here, setting +/- {vrange*100}% for volume same as delta-value and SSSP)')
     else:
         vrange = 0.01*(npoints-1)/2
     for scale in np.linspace((1.0-vrange)**(1/3), (1.0+vrange)**(1/3), npoints):
