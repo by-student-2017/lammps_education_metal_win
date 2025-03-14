@@ -45,7 +45,7 @@ STUDENT, B. (2025). SUGGESTED PSEUDOPOTENTIALS for PBE v.1.0.0 [Data set]. Zenod
 1. python3 get_zenodo_data.py
 
 # PSlibrary (recommend)
-0.1: Si
+0.1: F, Si
 0.2: I(US)
 0.2.1: Fe
 0.2.3: Sc, V(US), Cr, Cs(US), Rb(US), Sr(US)
