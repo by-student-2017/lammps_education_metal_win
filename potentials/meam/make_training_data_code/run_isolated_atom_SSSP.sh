@@ -114,6 +114,7 @@ EOF
   valence_electrons=$(grep "  number of electrons  " isolated_atom.out | tail -1 | sed 's/.*=//g' | sed 's/(.*//g' |  sed 's/ //g')
   #TOTEN=$(echo "${TOTEN_Ry}*13.605693122990" | bc -l | awk '{printf "%15.10f",$0}')
   #TOTEN=$(echo "${TOTEN_Ry}*1.0" | bc -l | awk '{printf "%15.10f",$0}')
+  md5=$(grep "MD5 check sum" isolated_atom.out | sed 's/.*://g' | sed 's/ //g')
   echo "----------eV/atom for isolated atom----------"
   #
   if [ "${nspin}" == 2 ]; then
@@ -130,7 +131,7 @@ cat << EOF >> ${jsonfile}
         "valence_electrons": ${valence_electrons},
         "total_magnetization": ${tot_mag},
         "absolute_magnetization": ${abs_mag},
-        "md5": ""
+        "md5": "${md5}"
     },
 EOF
   else
@@ -145,7 +146,7 @@ cat << EOF >> ${jsonfile}
         "cutoff_wfc": ${cutoff_wfc},
         "cutoff_rho": ${cutoff_rho},
         "valence_electrons": ${valence_electrons},
-        "md5": ""
+        "md5": "${md5}"
     },
 EOF
   fi
