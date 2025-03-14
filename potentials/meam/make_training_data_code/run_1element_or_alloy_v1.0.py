@@ -34,7 +34,7 @@ with open("error_log.txt","a") as file:
 # b1: FCC_B1 (NaCl-type), b2:BCC_B2 (CsCl-type), dia:Diamond_B3 (Zinc Blende), l12: L12 (Cu3Au-type)
 # fcc: FCC (1 element), hcp: HCP (1 element), bcc: BCC (1 element), sc: SC (1 element), dia1: Daiamond
 # dim(dimer), ch4(binary system), dim1(1 element)
-lattce = 'dim1'
+lattce = 'bcc'
 #lattce = 'XXXXXXXXXX' # for run_seq.py
 #------------------------------------------------------------------
 # lattice structure of reference configuration [Angstrom] (https://en.wikipedia.org/wiki/Lattice_constant)
@@ -55,9 +55,9 @@ elements = [fixed_element,
             'Na', 'Mg', 'Al', 'Si',  'P',  'S', 'Cl', 'Ar',
              'K', 'Ca', 'Sc', 'Ti',  'V', 'Cr', 'Mn', 'Fe', 'Co', 'Ni', 'Cu', 'Zn', 'Ga', 'Ge', 'As', 'Se', 'Br', 'Kr',
             'Rb', 'Sr',  'Y', 'Zr', 'Nb', 'Mo', 'Tc', 'Ru', 'Rh', 'Pd', 'Ag', 'Cd', 'In', 'Sn', 'Sb', 'Te',  'I', 'Xe',
-            'Cs', 'Ba', 'La', 'Ce', 'Pr', 'Nd', 'Pm', 'Sm', 'Eu', 'Gd', 'Tb', 'Dy', 'Ho', 'Er', 'Tm', 'Yb', 'Lu',
-            'Hf', 'Ta',  'W', 'Re', 'Os', 'Ir', 'Pt', 'Au', 'Hg', 'Tl', 'Pb', 'Bi'
-            ] # <- Enter the element you want to calculate (Note: Time Consumption: Approx. 4 elements/hour)
+            'Cs', 'Ba', 'La', 'Ce', 'Pr', 'Nd', 'Pm', 'Sm', 'Eu', 'Gd', 'Tb', 'Dy', 'Ho', 'Er', 'Tm', 'Yb', 'Lu', 
+            'Hf', 'Ta',  'W', 'Re', 'Os', 'Ir', 'Pt', 'Au', 'Hg', 'Tl', 'Pb', 'Bi', 'Po', 'At', 'Ra',
+            'Rn', 'Fr', 'Ac', 'Th', 'Pa',  'U', 'Np', 'Pu'] # <- Enter the element you want to calculate (Note: Time Consumption: Approx. 4 elements/hour)
 #elements = [fixed_element, 'Ce', 'Pr', 'Nd', 'Pm', 'Sm', 'Eu', 'Gd', 'Tb', 'Dy', 'Ho', 'Er', 'Tm', 'Yb', 'Lu'] # Pairs with noble gases require careful calculations and must be calculated separately.
 #elements = [fixed_element, 'Po', 'At', 'Ra', 'Rn', 'Fr', 'Ac', 'Th', 'Pa',  'U', 'Np', 'Pu'] # Pairs with noble gases require careful calculations and must be calculated separately.
 #elements = [fixed_element, 'He', 'Ne', 'Ar', 'Kr', 'Xe', 'Ra'] # Pairs with noble gases require careful calculations and must be calculated separately.
@@ -86,13 +86,13 @@ cutoff = 0 # [eV], 0:read PP file, (520 eV is the main in the Materials Project,
 PBEsol_flag = 0 # 0:PBE, 1:PBEsol, (default = 0)
 # Load the pseudopotential data from the JSON file
 if PBEsol_flag == 0:
-    #with open('PBE/PSlibrary_PBE.json', 'r') as f:
-    with open('PBE/SSSP-1.3.0_PBE_efficiency.json', 'r') as f:
+    with open('PBE/PSlibrary_PBE.json', 'r') as f:
+    #with open('PBE/SSSP-1.3.0_PBE_efficiency.json', 'r') as f:
     #with open('PBE/SSSP-1.3.0_PBE_precision.json', 'r') as f:
         pseudopotentials = json.load(f)
 else:
-    #with open('PBEsol/PSlibrary_PBEsol.json', 'r') as f:
-    with open('PBEsol/SSSP-1.3.0_PBEsol_efficiency.json', 'r') as f:
+    with open('PBEsol/PSlibrary_PBEsol.json', 'r') as f:
+    #with open('PBEsol/SSSP-1.3.0_PBEsol_efficiency.json', 'r') as f:
     #with open('PBEsol/SSSP-1.3.0_PBEsol_precision.json', 'r') as f:
         pseudopotentials = json.load(f)
 #------------------------------------------------------------------
@@ -746,7 +746,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
                     positions=[(0, 0, 0)], 
                     cell=[(-0.5*a, 0.5*a, 0.5*a), (0.5*a, -0.5*a, 0.5*a), (0.5*a, 0.5*a, -0.5*a)],
                     pbc=True)
-            kpt = 9 # 6 or 8
+            kpt = 9 # 6 or 8 (Note: For K, kpt=9 and 20 gave the same results.)
             kptc = kpt
             Nelem1 = 0
             Nelem2 = 1
@@ -966,6 +966,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
             print(f"Optimization failed: {e}")
             with open("error_log.txt", "a") as file:
                 file.write(f"Optimization failed: {e}: {lattce}-{element1}-{element2}\n")
+                file.write(f"  -> use c = sqrt(8/3) * a = 1.633 * a \n")
     #-----------------------------------------------------------------------------
     
     dsfactor = 0.12
