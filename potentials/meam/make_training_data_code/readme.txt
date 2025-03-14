@@ -49,10 +49,11 @@ STUDENT, B. (2025). SUGGESTED PSEUDOPOTENTIALS for PBE v.1.0.0 [Data set]. Zenod
 0.2: I(US)
 0.2.1: Fe
 0.2.3: Sc, V(US), Cr, Cs(US), Rb(US), Sr(US)
-0.3.0: Au, Ar, Ne
-0.3.1: Ti, Mn, Xe(US)
+0.3.0: Au
+0.3.1: Ti, Mn
 1.0.0: K(US)
 1.0.0: La(US), Ce(US), Pr(US), Nd(US), Pm(US), Sm(US), Eu(US or PAW), Gd(PAW), Tb(PAW, US), Dy(PAW, US), Ho(US), Er(US), Tm(PAW), Yb(PAW), Lu(US)
+Note: Ar, Ne, Kr, Xe: ONCV in SSSP efficiency
 
 # Usage
 1. gedit run_alloy_v1.0.py
