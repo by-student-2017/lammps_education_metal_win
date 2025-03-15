@@ -56,6 +56,7 @@ STUDENT, B. (2025). SUGGESTED PSEUDOPOTENTIALS for PBE v.1.0.0 [Data set]. Zenod
 Note: Ar, Ne, Kr, Xe: ONCV in SSSP efficiency
 Note: Ge, Li, Ni: GBRV
 Note: La: wentzcovitch
+Note: Np, Pa, Th, U: marburg
 
 # Usage
 1. gedit run_alloy_v1.0.py
