@@ -51,8 +51,7 @@ npoints = 7 # >= 7 e.g., 7, 11, 17, 21, or 25, etc (Recommend >= 25), (default =
 #------------------------------------------------------------------
 # Note: "fixed_element" becomes a dummy when a lattice of one element is selected (the atom in *.json is temporarily specified).
 fixed_element = 'XX'
-elements = [fixed_element, 'K', 'Ca', 'Sc', 'Ti']
-'''
+elements = [fixed_element,
              'H', 'He',
             'Li', 'Be',  'B',  'C',  'N',  'O',  'F', 'Ne', 
             'Na', 'Mg', 'Al', 'Si',  'P',  'S', 'Cl', 'Ar',
@@ -61,7 +60,6 @@ elements = [fixed_element, 'K', 'Ca', 'Sc', 'Ti']
             'Cs', 'Ba', 'La', 'Ce', 'Pr', 'Nd', 'Pm', 'Sm', 'Eu', 'Gd', 'Tb', 'Dy', 'Ho', 'Er', 'Tm', 'Yb', 'Lu', 
             'Hf', 'Ta',  'W', 'Re', 'Os', 'Ir', 'Pt', 'Au', 'Hg', 'Tl', 'Pb', 'Bi', 'Po', 'At', 'Ra',
             'Rn', 'Fr', 'Ac', 'Th', 'Pa',  'U', 'Np', 'Pu'] # <- Enter the element you want to calculate (Note: Time Consumption: Approx. 4 elements/hour)
-'''
 #elements = [fixed_element, 'Ce', 'Pr', 'Nd', 'Pm', 'Sm', 'Eu', 'Gd', 'Tb', 'Dy', 'Ho', 'Er', 'Tm', 'Yb', 'Lu'] # Pairs with noble gases require careful calculations and must be calculated separately.
 #elements = [fixed_element, 'Po', 'At', 'Ra', 'Rn', 'Fr', 'Ac', 'Th', 'Pa',  'U', 'Np', 'Pu'] # Pairs with noble gases require careful calculations and must be calculated separately.
 #elements = [fixed_element, 'He', 'Ne', 'Ar', 'Kr', 'Xe', 'Ra'] # Pairs with noble gases require careful calculations and must be calculated separately.
@@ -90,12 +88,14 @@ cutoff = 0 # [eV], 0:read PP file, (520 eV is the main in the Materials Project,
 PBEsol_flag = 1 # 0:PBE, 1:PBEsol, (default = 0)
 # Load the pseudopotential data from the JSON file
 if PBEsol_flag == 0:
-    with open('PBE/PSlibrary_PBE.json', 'r') as f:
+    #with open('PBE/PSlibrary_PBE.json', 'r') as f:
+    with open('PBE/PSlibrary_ONCV_GBRV_mix_PBE.json', 'r') as f:
     #with open('PBE/SSSP-1.3.0_PBE_efficiency.json', 'r') as f:
     #with open('PBE/SSSP-1.3.0_PBE_precision.json', 'r') as f:
         pseudopotentials = json.load(f)
 else:
-    with open('PBEsol/PSlibrary_PBEsol.json', 'r') as f:
+    #with open('PBEsol/PSlibrary_PBEsol.json', 'r') as f:
+    with open('PBEsol/PSlibrary_ONCV_GBRV_mix_PBEsol.json', 'r') as f:
     #with open('PBEsol/SSSP-1.3.0_PBEsol_efficiency.json', 'r') as f:
     #with open('PBEsol/SSSP-1.3.0_PBEsol_precision.json', 'r') as f:
         pseudopotentials = json.load(f)

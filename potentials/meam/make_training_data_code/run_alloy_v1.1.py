@@ -88,12 +88,14 @@ cutoff = 0 # [eV], 0:read PP file, (520 eV is the main in the Materials Project,
 PBEsol_flag = 0 # 0:PBE, 1:PBEsol, (default = 0)
 # Load the pseudopotential data from the JSON file
 if PBEsol_flag == 0:
-    with open('PBE/PSlibrary_PBE.json', 'r') as f:
+    #with open('PBE/PSlibrary_PBE.json', 'r') as f:
+    with open('PBE/PSlibrary_ONCV_GBRV_mix_PBE.json', 'r') as f:
     #with open('PBE/SSSP-1.3.0_PBE_efficiency.json', 'r') as f:
     #with open('PBE/SSSP-1.3.0_PBE_precision.json', 'r') as f:
         pseudopotentials = json.load(f)
 else:
-    with open('PBEsol/PSlibrary_PBEsol.json', 'r') as f:
+    #with open('PBEsol/PSlibrary_PBEsol.json', 'r') as f:
+    with open('PBEsol/PSlibrary_ONCV_GBRV_mix_PBEsol.json', 'r') as f:
     #with open('PBEsol/SSSP-1.3.0_PBEsol_efficiency.json', 'r') as f:
     #with open('PBEsol/SSSP-1.3.0_PBEsol_precision.json', 'r') as f:
         pseudopotentials = json.load(f)
