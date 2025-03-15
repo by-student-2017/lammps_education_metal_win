@@ -22,6 +22,7 @@ with open("error_log.txt","a") as file:
     file.write(f"#------------------------------------------------------------------\n")
     file.write(f"[{timestamp}]\n")
 
+# For clear memory (use gc.collect())
 import gc
 
 #from mpi4py import MPI
