@@ -15,4 +15,5 @@ do
     
     # Optionally, remove the temporary file
     rm $temp_file_path
+    rm -r out
 done

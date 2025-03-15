@@ -22,6 +22,8 @@ with open("error_log.txt","a") as file:
     file.write(f"#------------------------------------------------------------------\n")
     file.write(f"[{timestamp}]\n")
 
+import gc
+
 #from mpi4py import MPI
 #comm = MPI.COMM_WORLD
 #rank = comm.Get_rank()
@@ -49,7 +51,8 @@ npoints = 7 # >= 7 e.g., 7, 11, 17, 21, or 25, etc (Recommend >= 25), (default =
 #------------------------------------------------------------------
 # Note: "fixed_element" becomes a dummy when a lattice of one element is selected (the atom in *.json is temporarily specified).
 fixed_element = 'XX'
-elements = [fixed_element,
+elements = [fixed_element, 'K', 'Ca', 'Sc', 'Ti']
+'''
              'H', 'He',
             'Li', 'Be',  'B',  'C',  'N',  'O',  'F', 'Ne', 
             'Na', 'Mg', 'Al', 'Si',  'P',  'S', 'Cl', 'Ar',
@@ -58,6 +61,7 @@ elements = [fixed_element,
             'Cs', 'Ba', 'La', 'Ce', 'Pr', 'Nd', 'Pm', 'Sm', 'Eu', 'Gd', 'Tb', 'Dy', 'Ho', 'Er', 'Tm', 'Yb', 'Lu', 
             'Hf', 'Ta',  'W', 'Re', 'Os', 'Ir', 'Pt', 'Au', 'Hg', 'Tl', 'Pb', 'Bi', 'Po', 'At', 'Ra',
             'Rn', 'Fr', 'Ac', 'Th', 'Pa',  'U', 'Np', 'Pu'] # <- Enter the element you want to calculate (Note: Time Consumption: Approx. 4 elements/hour)
+'''
 #elements = [fixed_element, 'Ce', 'Pr', 'Nd', 'Pm', 'Sm', 'Eu', 'Gd', 'Tb', 'Dy', 'Ho', 'Er', 'Tm', 'Yb', 'Lu'] # Pairs with noble gases require careful calculations and must be calculated separately.
 #elements = [fixed_element, 'Po', 'At', 'Ra', 'Rn', 'Fr', 'Ac', 'Th', 'Pa',  'U', 'Np', 'Pu'] # Pairs with noble gases require careful calculations and must be calculated separately.
 #elements = [fixed_element, 'He', 'Ne', 'Ar', 'Kr', 'Xe', 'Ra'] # Pairs with noble gases require careful calculations and must be calculated separately.
@@ -937,11 +941,6 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
         #calc = Espresso(pseudopotentials=pseudopotentials_dict, input_data=input_data, kpts=(kpt, kpt, kptc), nspin=nspin, command=f'mpirun -np {mpi_num_procs} pw.x < espresso.pwi > espresso.pwo')
     atoms.set_calculator(calc)
     
-    # BCC: P
-    #     Error in routine electrons (1):
-    # charge is wrong
-    #input_data['system']['starting_magnetization(1)'] = 1.0
-
     #-----------------------------------------------------------------------------
     # search optimized structure with vc-relax
     if lattce in ['hcp', 'dim', 'ch4', 'dim1']:
@@ -999,6 +998,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
     good_flag = 0
     print("search optimized structure with scf")
     while retries < max_retries:
+        gc.collect()
         retries += 1
         print("---------------------------------")
         print(f'{retries}/{max_retries}:')
@@ -1025,6 +1025,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
                 print("--------------------------------------------")
                 step = 1
                 while step <= 5:
+                    gc.collect()
                     try:
                         scaling_factor, dsfactor, best_energy = binary_search(original_cell, atoms, calc, scaling_factor, dsfactor, best_energy)
                     except Exception as e:
@@ -1113,6 +1114,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
     else:
         vrange = 0.01*(npoints-1)/2
     for scale in np.linspace((1.0-vrange)**(1/3), (1.0+vrange)**(1/3), npoints):
+        gc.collect()
         tries += 1
         if tries in skip_indices:
             continue
@@ -1320,7 +1322,8 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
 
 # Process the combinations sequentially and store results
 for i, combination in enumerate(element_combinations):
-
+    gc.collect()
+    
     if D_flag == 0:
         D_char = ''
     elif D_flag == 1:
@@ -1357,6 +1360,10 @@ for i, combination in enumerate(element_combinations):
         with open("error_log.txt", "a") as file:
             file.write(f"Error-2, It probably has not converged.: {element1}-{element2} in {DFT}{D_char}_{spin_char}_{lattce.upper()}\n")
         continue
+    #elif result == "Error-3":
+    #    with open("error_log.txt", "a") as file:
+    #        file.write(f"Error-3, No update in output file for 10 minutes, proceeding to next step.: {element1}-{element2} in {DFT}{D_char}_{spin_char}_{lattce.upper()}\n")
+    #    continue
     elif result == "Error-eos-1":
         with open("error_log.txt", "a") as file:
             file.write(f"Error-eos-1, RuntimeError: Optimal parameters not found: Number of calls to function has reached maxfev = 1000.: {element1}-{element2} in {DFT}{D_char}_{spin_char}_{lattce.upper()}\n")

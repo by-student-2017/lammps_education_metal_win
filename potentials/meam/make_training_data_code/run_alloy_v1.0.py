@@ -22,6 +22,8 @@ with open("error_log.txt","a") as file:
     file.write(f"#------------------------------------------------------------------\n")
     file.write(f"[{timestamp}]\n")
 
+import gc
+
 #from mpi4py import MPI
 #comm = MPI.COMM_WORLD
 #rank = comm.Get_rank()
@@ -737,6 +739,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
     good_flag = 0
     print("search optimized structure with scf")
     while retries < max_retries:
+        gc.collect()
         retries += 1
         print("---------------------------------")
         print(f'{retries}/{max_retries}:')
@@ -763,6 +766,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
                 print("--------------------------------------------")
                 step = 1
                 while step <= 5:
+                    gc.collect()
                     try:
                         scaling_factor, dsfactor, best_energy = binary_search(original_cell, atoms, calc, scaling_factor, dsfactor, best_energy)
                     except Exception as e:
@@ -880,6 +884,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
     else:
         vrange = 0.01*(npoints-1)/2
     for scale in np.linspace((1.0-vrange)**(1/3), (1.0+vrange)**(1/3), npoints):
+        gc.collect()
         tries += 1
         if tries in skip_indices:
             continue
@@ -1066,6 +1071,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
 
 # Process the combinations sequentially and store results
 for i, combination in enumerate(element_combinations):
+    gc.collect()
 
     if D_flag == 0:
         D_char = ''
