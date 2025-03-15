@@ -196,6 +196,13 @@ CN = {
      "dim1": 1, "dia1": 4
 }
 
+
+
+def handler(signum, frame):
+    raise Exception("Calculation timed out")
+
+
+
 def binary_search(original_cell, atoms, calc, scaling_factor, dsfactor, best_energy):
     scaling_factor += dsfactor/2.0
     scaled_cell = original_cell * scaling_factor
@@ -900,7 +907,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
             'conv_thr': 1.0e-6*len(atoms),
             'electron_maxstep': 100, # default = 100
             'mixing_beta': 0.7,
-            'diagonalization': 'rmm-davidson', # 'david' or 'rmm-davidson'
+            'diagonalization': 'rmm-davidson', # 'cg', 'david' or 'rmm-davidson'
         },
         'ions': {
             'ion_dynamics': 'bfgs',
@@ -968,9 +975,9 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
                 file.write(f"  -> use c = sqrt(8/3) * a = 1.633 * a \n")
     #-----------------------------------------------------------------------------
     
-    dsfactor = 0.12
-    #scaling_factor = 1.0 - dsfactor*3.0 # The minimum setting for a downward convex search is "scaling_factor = 1.0 - dsfactor*1.0".
-    scaling_factor = 1.0 - dsfactor*3.0
+    dsfactor = 0.15
+    # The minimum setting for a downward convex search is "scaling_factor = 1.0 - dsfactor*1.0".
+    scaling_factor = 1.0 - dsfactor*2.0 # Note: stop caluclation at Ga for dsfactor = 0.12 and scaling_factor = 1.0 - dsfactor*3.0.
     
     original_cell = atoms.get_cell()
     scaled_cell = original_cell * scaling_factor
@@ -986,7 +993,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
         print(f'start {original_cell}')
         bovera = 1.0
         covera = 1.0
-
+    
     #-----------------------------------------------------------------------------
     # search optimized structure with scf
     input_data['control']['calculation'] = 'scf'

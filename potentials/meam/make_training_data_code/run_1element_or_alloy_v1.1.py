@@ -1013,9 +1013,9 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
                 file.write(f"  -> use c = sqrt(8/3) * a = 1.633 * a \n")
     #-----------------------------------------------------------------------------
     
-    dsfactor = 0.12
-    #scaling_factor = 1.0 - dsfactor*3.0 # The minimum setting for a downward convex search is "scaling_factor = 1.0 - dsfactor*1.0".
-    scaling_factor = 1.0 - dsfactor*3.0
+    dsfactor = 0.15
+    # The minimum setting for a downward convex search is "scaling_factor = 1.0 - dsfactor*1.0".
+    scaling_factor = 1.0 - dsfactor*2.0 # Note: stop caluclation at Ga for dsfactor = 0.12 and scaling_factor = 1.0 - dsfactor*3.0.
     
     original_cell = atoms.get_cell()
     scaled_cell = original_cell * scaling_factor
