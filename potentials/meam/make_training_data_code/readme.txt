@@ -61,7 +61,7 @@ Ge, Li, Ni: GBRV in SSSP efficiency
 La: wentzcovitch in SSSP efficiency
 Np, Pa, Th, U: marburg in SSSP efficiency
 
-# Energy of an isolated atom (PBE or PBEsol)
+# Energy of an isolated atom (PBE or PBEsol) (v2)
 PSlibrary: total_psenergy
 calculate: box (6 A), Gauss 0.02 Ry
 Cs: BCC (re = 6 A), Gauss 0.02 Ry (PBE only)
