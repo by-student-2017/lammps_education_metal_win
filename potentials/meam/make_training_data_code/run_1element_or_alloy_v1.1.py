@@ -93,13 +93,15 @@ PBEsol_flag = 0 # 0:PBE, 1:PBEsol, (default = 0)
 # Load the pseudopotential data from the JSON file
 if PBEsol_flag == 0:
     #with open('PBE/PSlibrary_PBE.json', 'r') as f:
-    with open('PBE/PSlibrary_ONCV_GBRV_mix_PBE.json', 'r') as f:
+    #with open('PBE/PSlibrary_ONCV_GBRV_mix_PBE.json', 'r') as f:
+    with open('PBE/PSlibrary_ONCV_GBRV_mix_PBE_v2.json', 'r') as f:
     #with open('PBE/SSSP-1.3.0_PBE_efficiency.json', 'r') as f:
     #with open('PBE/SSSP-1.3.0_PBE_precision.json', 'r') as f:
         pseudopotentials = json.load(f)
 else:
     #with open('PBEsol/PSlibrary_PBEsol.json', 'r') as f:
-    with open('PBEsol/PSlibrary_ONCV_GBRV_mix_PBEsol.json', 'r') as f:
+    #with open('PBEsol/PSlibrary_ONCV_GBRV_mix_PBEsol.json', 'r') as f:
+    with open('PBEsol/PSlibrary_ONCV_GBRV_mix_PBEsol_v2.json', 'r') as f:
     #with open('PBEsol/SSSP-1.3.0_PBEsol_efficiency.json', 'r') as f:
     #with open('PBEsol/SSSP-1.3.0_PBEsol_precision.json', 'r') as f:
         pseudopotentials = json.load(f)
@@ -1116,6 +1118,15 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
     '''
     isolated_atom_energy1 = pseudopotentials[element1]['total_psenergy'] * 13.605693
     isolated_atom_energy2 = pseudopotentials[element2]['total_psenergy'] * 13.605693
+    
+    '''
+    scaled_cell = original_cell * (6.0/re)
+    atoms.set_cell(scaled_cell, scale_atoms=True)
+    isolated_atom_energy2 = atoms.get_total_energy()
+    dff_energy = isolated_atom_energy2 - pseudopotentials[element2]['total_psenergy'] * 13.605693
+    with open(f"isolated_atom_energy_{lattce}.csv", "a") as file:
+        file.write(f"{element2}, {isolated_atom_energy2}, {dff_energy}\n")
+    '''
     
     '''
     # If the json file has data (old version, But this definitely works.)
