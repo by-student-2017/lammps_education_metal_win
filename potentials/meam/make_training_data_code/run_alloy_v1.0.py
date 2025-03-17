@@ -820,8 +820,8 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
             good_flag = 1
         except Exception as e:
             print(f"Optimization failed for {element1}-{element2} with error: {e}")
-            with open("error_log.txt", "a") as file:
-                file.write(f"Optimization failed for {element2} with error: {e} \n")
+            #with open("error_log.txt", "a") as file:
+            #    file.write(f"Optimization failed for {element1}-{element2} with error: {e} \n")
             if good_flag == 1:
                 return "Error-3"
             if retries >= max_retries:
