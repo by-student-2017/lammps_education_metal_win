@@ -168,6 +168,24 @@ vdw_radii = {
 }
 
 
+def check_file_update(file_path, timeout):
+    last_mod_time = os.path.getmtime(file_path)
+    start_time = time.time()
+    while time.time() - start_time < timeout:
+        time.sleep(10)
+        current_mod_time = os.path.getmtime(file_path)
+        if current_mod_time != last_mod_time:
+            last_mod_time = current_mod_time
+            start_time = time.time()
+        with open(file_path, 'r') as file:
+            content = file.read()
+            if "JOB DONE." in content:
+                print("Calculation completed successfully.")
+                return "Calculation completed"
+    print(f"File not updated for more than {timeout/60} minutes, stopping calculation.")
+    os.kill(os.getpid(), signal.SIGTERM)
+
+
 def binary_search(original_cell, atoms, calc, scaling_factor, dsfactor, best_energy):
     scaling_factor += dsfactor/2.0
     scaled_cell = original_cell * scaling_factor
