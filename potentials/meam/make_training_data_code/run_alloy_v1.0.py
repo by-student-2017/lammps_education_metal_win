@@ -24,6 +24,8 @@ with open("error_log.txt","a") as file:
 
 # For clear memory (use gc.collect())
 import gc
+import signal
+import time
 
 #from mpi4py import MPI
 #comm = MPI.COMM_WORLD
@@ -160,6 +162,24 @@ vdw_radii = {
     "Tl": 1.96, "Pb": 2.02, "Bi": 2.07, "Po": 2.00, "At": 2.00, "Rn": 2.20, "Fr": 2.00, "Ra": 2.00, "Ac": 2.00, "Th": 2.00,
     "Pa": 2.00,  "U": 1.96, "Np": 1.90, "Pu": 1.87
 }
+
+
+def check_file_update(file_path, timeout):
+    last_mod_time = os.path.getmtime(file_path)
+    start_time = time.time()
+    while time.time() - start_time < timeout:
+        time.sleep(10)
+        current_mod_time = os.path.getmtime(file_path)
+        if current_mod_time != last_mod_time:
+            last_mod_time = current_mod_time
+            start_time = time.time()
+        with open(file_path, 'r') as file:
+            content = file.read()
+            if "JOB DONE." in content:
+                print("Calculation completed successfully.")
+                return "Calculation completed"
+    print(f"File not updated for more than {timeout/60} minutes, stopping calculation.")
+    os.kill(os.getpid(), signal.SIGTERM)
 
 
 def binary_search(original_cell, atoms, calc, scaling_factor, dsfactor, best_energy):
@@ -734,6 +754,12 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
     atoms.set_calculator(calc)
 
     #-----------------------------------------------------------------------------
+    if lattce in ['fcc', 'bcc', 'sc', 'dia1']:
+        timeout=60*3
+    else:
+        timeout=60*10
+    file_path='espresso.pwo'
+    #-----------------------------------------------------------------------------
     # search optimized structure with scf
     input_data['control']['calculation'] = 'scf'
     best_energy = float('inf')
@@ -754,6 +780,13 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
         try:
             atoms.set_calculator(calc)
             energy = atoms.get_total_energy()
+            try:
+                check_file_update(file_path, timeout)
+            except Exception as e:
+                print(f"The output file has not been updated for more than {timeout/60} minutes.")
+                with open("error_log.txt", "a") as file:
+                    file.write(f"The output file has not been updated for more than {timeout/60} minutes.\n")
+                return "Error-3"
             print(f'    scaling factor = {scaling_factor}')
             print(f'    Total energy = {energy} [eV]')
             print("cell = ", scaled_cell)
@@ -787,6 +820,10 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
             good_flag = 1
         except Exception as e:
             print(f"Optimization failed for {element1}-{element2} with error: {e}")
+            with open("error_log.txt", "a") as file:
+                file.write(f"Optimization failed for {element2} with error: {e} \n")
+            if good_flag == 1:
+                return "Error-3"
             if retries >= max_retries:
                 print("Max retries reached. Skipping this combination.")
                 return "Error-1"
@@ -849,10 +886,9 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
     '''
     scaled_cell = original_cell * (6.0/re)
     atoms.set_cell(scaled_cell, scale_atoms=True)
-    isolated_atom_energy2 = atoms.get_total_energy()
-    dff_energy = isolated_atom_energy2 - pseudopotentials[element2]['total_psenergy'] * 13.605693
+    isolated_atom_energy2 = atoms.get_total_energy()/13.605693
     with open(f"isolated_atom_energy_{lattce}.csv", "a") as file:
-        file.write(f"{element2}, {isolated_atom_energy2}, {dff_energy}\n")
+        file.write(f"{element2}, {isolated_atom_energy2}\n")
     '''
     
     '''
@@ -1120,6 +1156,10 @@ for i, combination in enumerate(element_combinations):
     elif result == "Error-2":
         with open("error_log.txt", "a") as file:
             file.write(f"Error-2, It probably has not converged.: {element1}-{element2} in {DFT}{D_char}_{spin_char}_{lattce.upper()}\n")
+        continue
+    elif result == "Error-3":
+        with open("error_log.txt", "a") as file:
+            file.write(f"Error-3, Possibly an error related to output files not being updated.: {element1}-{element2} in {DFT}{D_char}_{spin_char}_{lattce.upper()}\n")
         continue
     elif result == "Error-eos-1":
         with open("error_log.txt", "a") as file:

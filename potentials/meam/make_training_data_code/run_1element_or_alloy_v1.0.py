@@ -24,6 +24,8 @@ with open("error_log.txt","a") as file:
 
 # For clear memory (use gc.collect())
 import gc
+import signal
+import time
 
 #from mpi4py import MPI
 #comm = MPI.COMM_WORLD
@@ -37,8 +39,8 @@ import gc
 # b1: FCC_B1 (NaCl-type), b2:BCC_B2 (CsCl-type), dia:Diamond_B3 (Zinc Blende), l12: L12 (Cu3Au-type)
 # fcc: FCC (1 element), hcp: HCP (1 element), bcc: BCC (1 element), sc: SC (1 element), dia1: Daiamond
 # dim(dimer), ch4(binary system), dim1(1 element)
-#lattce = 'fcc'
-lattce = 'XXXXXXXXXX' # for run_seq.py
+lattce = 'fcc'
+#lattce = 'XXXXXXXXXX' # for run_seq.py
 #------------------------------------------------------------------
 # lattice structure of reference configuration [Angstrom] (https://en.wikipedia.org/wiki/Lattice_constant)
 lat = ''     # In the case of '', the sum of covalent_radii (sum of concentration ratio in L12)
@@ -52,7 +54,7 @@ npoints = 7 # >= 7 e.g., 7, 11, 17, 21, or 25, etc (Recommend >= 25), (default =
 #------------------------------------------------------------------
 # Note: "fixed_element" becomes a dummy when a lattice of one element is selected (the atom in *.json is temporarily specified).
 fixed_element = 'XX'
-elements = [fixed_element,
+elements = [fixed_element, 
              'H', 'He',
             'Li', 'Be',  'B',  'C',  'N',  'O',  'F', 'Ne', 
             'Na', 'Mg', 'Al', 'Si',  'P',  'S', 'Cl', 'Ar',
@@ -200,10 +202,22 @@ CN = {
 }
 
 
-
-def handler(signum, frame):
-    raise Exception("Calculation timed out")
-
+def check_file_update(file_path, timeout):
+    last_mod_time = os.path.getmtime(file_path)
+    start_time = time.time()
+    while time.time() - start_time < timeout:
+        time.sleep(10)
+        current_mod_time = os.path.getmtime(file_path)
+        if current_mod_time != last_mod_time:
+            last_mod_time = current_mod_time
+            start_time = time.time()
+        with open(file_path, 'r') as file:
+            content = file.read()
+            if "JOB DONE." in content:
+                print("Calculation completed successfully.")
+                return "Calculation completed"
+    print(f"File not updated for more than {timeout/60} minutes, stopping calculation.")
+    os.kill(os.getpid(), signal.SIGTERM)
 
 
 def binary_search(original_cell, atoms, calc, scaling_factor, dsfactor, best_energy):
@@ -998,6 +1012,12 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
         covera = 1.0
     
     #-----------------------------------------------------------------------------
+    if lattce in ['fcc', 'bcc', 'sc', 'dia1']:
+        timeout=60*3
+    else:
+        timeout=60*10
+    file_path='espresso.pwo'
+    #-----------------------------------------------------------------------------
     # search optimized structure with scf
     input_data['control']['calculation'] = 'scf'
     best_energy = float('inf')
@@ -1018,6 +1038,13 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
         try:
             atoms.set_calculator(calc)
             energy = atoms.get_total_energy()
+            try:
+                check_file_update(file_path, timeout)
+            except Exception as e:
+                print(f"The output file has not been updated for more than {timeout/60} minutes.")
+                with open("error_log.txt", "a") as file:
+                    file.write(f"The output file has not been updated for more than {timeout/60} minutes.\n")
+                return "Error-3"
             print(f'    scaling factor = {scaling_factor}')
             print(f'    Total energy = {energy} [eV]')
             print("cell = ", scaled_cell)
@@ -1052,8 +1079,14 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
         except Exception as e:
             if lattce in ['fcc', 'bcc', 'hcp', 'sc', 'dia1']:
                 print(f"Optimization failed for {element2} with error: {e}")
+                with open("error_log.txt", "a") as file:
+                    file.write(f"Optimization failed for {element2} with error: {e} \n")
             else:
                 print(f"Optimization failed for {element1}-{element2} with error: {e}")
+                with open("error_log.txt", "a") as file:
+                    file.write(f"Optimization failed for {element2} with error: {e} \n")
+            if good_flag == 1:
+                return "Error-3"
             if retries >= max_retries:
                 print("Max retries reached. Skipping this combination.")
                 return "Error-1"
@@ -1378,10 +1411,10 @@ for i, combination in enumerate(element_combinations):
         with open("error_log.txt", "a") as file:
             file.write(f"Error-2, It probably has not converged.: {element1}-{element2} in {DFT}{D_char}_{spin_char}_{lattce.upper()}\n")
         continue
-    #elif result == "Error-3":
-    #    with open("error_log.txt", "a") as file:
-    #        file.write(f"Error-3, No update in output file for 10 minutes, proceeding to next step.: {element1}-{element2} in {DFT}{D_char}_{spin_char}_{lattce.upper()}\n")
-    #    continue
+    elif result == "Error-3":
+        with open("error_log.txt", "a") as file:
+            file.write(f"Error-3, Possibly an error related to output files not being updated.: {element1}-{element2} in {DFT}{D_char}_{spin_char}_{lattce.upper()}\n")
+        continue
     elif result == "Error-eos-1":
         with open("error_log.txt", "a") as file:
             file.write(f"Error-eos-1, RuntimeError: Optimal parameters not found: Number of calls to function has reached maxfev = 1000.: {element1}-{element2} in {DFT}{D_char}_{spin_char}_{lattce.upper()}\n")
