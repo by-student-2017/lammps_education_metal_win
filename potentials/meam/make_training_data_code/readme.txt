@@ -56,7 +56,7 @@ STUDENT, B. (2025). SUGGESTED PSEUDOPOTENTIALS for PBE v.1.0.0 [Data set]. Zenod
 
 # PSlibrary_ONCV_GBRV_mix
 main PSlibrary
-Ne, Kr, Xe: ONCV in SSSP efficiency (Not He and Ar. Ar for PBE)
+Ne, Kr, Xe: ONCV in SSSP efficiency (Not He and Ar)
 Ge, Li, Ni: GBRV in SSSP efficiency
 La: wentzcovitch in SSSP efficiency (failed Ni-La)
 Np, Pa, Th, U: marburg in SSSP efficiency (failed Cu-X, Ni-X, Al-Np))
