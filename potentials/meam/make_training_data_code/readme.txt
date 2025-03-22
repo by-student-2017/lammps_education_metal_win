@@ -60,7 +60,7 @@ Ne, Kr, Xe: ONCV in SSSP efficiency (Not He and Ar)
 Ge, Li, Ni: GBRV in SSSP efficiency
 La: wentzcovitch in SSSP efficiency (failed Ni-La)
 Th, Pa, U, Np: marburg in SSSP efficiency (failed Cu-X, Ni-X, Al-Np))
-Note: Ra, Rn, Th, U, Np, Pu -> Is PSlibrary soso for alloys ?
+Note: La, Ra, Rn, Th, U, Np, Pu -> Is PSlibrary soso for alloys ?
 
 # Energy of an isolated atom (PBE or PBEsol) (v2)
 PSlibrary: total_psenergy
