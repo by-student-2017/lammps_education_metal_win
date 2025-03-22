@@ -53,6 +53,7 @@ STUDENT, B. (2025). SUGGESTED PSEUDOPOTENTIALS for PBE v.1.0.0 [Data set]. Zenod
 0.3.1: Ti, Mn
 1.0.0: K(US)
 1.0.0: La(US), Ce(US), Pr(US), Nd(US), Pm(US), Sm(US), Eu(US or PAW), Gd(PAW), Tb(PAW, US), Dy(PAW, US), Ho(US), Er(US), Tm(PAW), Yb(PAW), Lu(US)
+               Th(US), Pa(US),  U(US), Np(US), Pu(US)
 
 # PSlibrary_ONCV_GBRV_mix
 main PSlibrary
@@ -60,7 +61,7 @@ Ne, Kr, Xe: ONCV in SSSP efficiency (Not He and Ar)
 Ge, Li, Ni: GBRV in SSSP efficiency
 La: wentzcovitch in SSSP efficiency (failed Ni-La)
 Th, Pa, U, Np: marburg in SSSP efficiency (failed Cu-X, Ni-X, Al-Np))
-Note: -> PSlibrary: La(US), Ra, Rn, Th, U, Np(US), Pu(US)
+Note: -> PSlibrary: La(US), Ra, Rn(Us), Th(US), U(US), Np(US), Pu(US)
 
 # Energy of an isolated atom (PBE or PBEsol) (v2)
 PSlibrary: total_psenergy
