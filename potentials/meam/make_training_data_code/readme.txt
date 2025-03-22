@@ -62,7 +62,7 @@ Ge, Li, Ni: GBRV in SSSP efficiency
 La: wentzcovitch in SSSP efficiency (failed Ni-La)
 Th, Pa, U, Np: marburg in SSSP efficiency (failed Cu-X, Ni-X, Al-Np))
 Note: -> PSlibrary: La(US), Ra, Rn(Us), Th(US), U(US), Np(US), Pu(US)
-Note: With Ni-Ar, even if the potential, QE version, and ubuntu are the same, the results can be different depending on whether you are using Linux only or WSL2 on Windows.
+Note: With Ni-Ar, even if the potential, QE version, and ubuntu are the same, the results can be different depending on whether you are using Linux only or WSL2 on Windows. This may also be the case for systems where Ec <= 0.
 
 # Energy of an isolated atom (PBE or PBEsol) (v2)
 PSlibrary: total_psenergy
