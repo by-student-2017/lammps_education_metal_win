@@ -117,7 +117,7 @@ os.environ['OMP_NUM_THREADS'] = f'{omp_num_threads}'
 primitive_flag = 1 # 0:conventional cell, 1:primitive cell, (default = 1)
 #------------------------------------------------------------------
 # max number of cycles for search optimized structure
-max_retries = 100 # default = 100
+max_retries = 20 # default = 100
 #------------------------------------------------------------------
 #Acceptable_values = 0.05 # calculate r at -Ec*Acceptable_values
 #------------------------------------------------------------------
