@@ -446,7 +446,7 @@ def fit_rose_curve_erose_form_2(volumes_per_atom, cohesive_energies_per_atom, al
     rc = (astar+1.0)*nearest_neighbor_distance/alpha
     if repuls_fit < 0.0:
         plt.plot(volumes_per_atom, rose_curve(volumes_per_atom, alpha, V0, Ec, 0, 0), 
-             label=f'Fit (repuls=0, attrac=0), r={rc:.2f}', color='blue')
+             label=f'Fit (repuls=0, attrac=0), r={rc:.2f}@Ec{Acceptable_values*100.0:.1f}%', color='blue')
     else:
         plt.plot(volumes_per_atom, rose_curve(volumes_per_atom, alpha, V0, Ec, repuls_fit, 0), 
              label=f'Fit (repuls={repuls_fit:.4f}, attrac=0), r={rc:.2f}@Ec{Acceptable_values*100.0:.1f}%', color='blue')
