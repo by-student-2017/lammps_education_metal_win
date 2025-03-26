@@ -834,8 +834,9 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
             with open("error_log.txt", "a") as file:
                 file.write(f"The distance between the nearest neighboring atoms exceeds 6.0 A for {lattce}-{element1}-{element2}.\n")
                 file.write(f"set re = {re} A for {lattce}-{element1}-{element2}.\n")
-            print(f"set re = {re} A for {lattce}-{element1}-{element2}.")
+            print(f"set re = {re} A for {lattce}-{element1}-{element2} (This mean scaling_factor = 1.0).")
             #scaling_factor = 6.0*(1-0.06)/re
+            scaling_factor = 1.0
             break
 
     print("---------------------------------------")
