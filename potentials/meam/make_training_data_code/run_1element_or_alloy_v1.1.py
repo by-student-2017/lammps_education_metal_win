@@ -42,7 +42,7 @@ import time
 # b1: FCC_B1 (NaCl-type), b2:BCC_B2 (CsCl-type), dia:Diamond_B3 (Zinc Blende), l12: L12 (Cu3Au-type)
 # fcc: FCC (1 element), hcp: HCP (1 element), bcc: BCC (1 element), sc: SC (1 element), dia1: Daiamond
 # dim(dimer), ch4(binary system), dim1(1 element)
-lattce = 'bcc'
+lattce = 'ch4'
 #lattce = 'XXXXXXXXXX' # for run_seq.py
 #------------------------------------------------------------------
 # lattice structure of reference configuration [Angstrom] (https://en.wikipedia.org/wiki/Lattice_constant)
@@ -56,7 +56,7 @@ lat = ''     # In the case of '', the sum of covalent_radii (sum of concentratio
 npoints = 7 # >= 7 e.g., 7, 11, 17, 21, or 25, etc (Recommend >= 25), (default = 25) (SSSP: 7 points) (7 points:0.02 step, other:0.01 stepm)
 #------------------------------------------------------------------
 # Note: "fixed_element" becomes a dummy when a lattice of one element is selected (the atom in *.json is temporarily specified).
-fixed_element = 'XX'
+fixed_element = 'Cu'
 elements = [fixed_element,
              'H', 'He',
             'Li', 'Be',  'B',  'C',  'N',  'O',  'F', 'Ne', 
@@ -1138,6 +1138,13 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
             else:
                 good_flag = 0
                 continue
+        if re*scaling_factor > 6.0:
+            with open("error_log.txt", "a") as file:
+                file.write(f"The distance between the nearest neighboring atoms exceeds 6.0 A for {lattce}-{element1}-{element2}.\n")
+                file.write(f"set re = 6.0*(1-0.06) = 6.0*0.94 = 5.64 A for {lattce}-{element1}-{element2}.\n")
+            print(f"set re = {re} for {lattce}-{element1}-{element2}.")
+            #scaling_factor = 6.0*(1-0.06)/re
+            break
 
     print("---------------------------------------")
     optimized_scaling_factor = scaling_factor

@@ -40,8 +40,8 @@ import time
 # User input section
 #------------------------------------------------------------------
 # b1: FCC_B1 (NaCl-type), b2:BCC_B2 (CsCl-type), dia:Diamond_B3 (Zinc Blende), l12: L12 (Cu3Au-type)
-lattce = 'b1'
-#lattce = 'XXXXXXXXXX' # for run_seq.py
+#lattce = 'b1'
+lattce = 'XXXXXXXXXX' # for run_seq.py
 #------------------------------------------------------------------
 # lattice structure of reference configuration [Angstrom] (https://en.wikipedia.org/wiki/Lattice_constant)
 lat = ''     # In the case of '', the sum of covalent_radii (sum of concentration ratio in L12)
@@ -54,7 +54,8 @@ lat = ''     # In the case of '', the sum of covalent_radii (sum of concentratio
 npoints = 7 # >= 7 e.g., 7, 11, 17, 21, or 25, etc (Recommend >= 25), (default = 25) (SSSP: 7 points) (7 points:0.02 step, other:0.01 step)
 #------------------------------------------------------------------
 fixed_element = 'Cu'
-elements = [fixed_element,
+elements = [fixed_element, 'K', 'Y', 'U']
+'''
              'H', 'He',
             'Li', 'Be',  'B',  'C',  'N',  'O',  'F', 'Ne', 
             'Na', 'Mg', 'Al', 'Si',  'P',  'S', 'Cl', 'Ar',
@@ -63,6 +64,7 @@ elements = [fixed_element,
             'Cs', 'Ba', 'La', 'Ce', 'Pr', 'Nd', 'Pm', 'Sm', 'Eu', 'Gd', 'Tb', 'Dy', 'Ho', 'Er', 'Tm', 'Yb', 'Lu', 
             'Hf', 'Ta',  'W', 'Re', 'Os', 'Ir', 'Pt', 'Au', 'Hg', 'Tl', 'Pb', 'Bi', 'Po', 'At', 'Ra',
             'Rn', 'Fr', 'Ac', 'Th', 'Pa',  'U', 'Np', 'Pu'] # <- Enter the element you want to calculate (Note: Time Consumption: Approx. 4 elements/hour)
+'''
 #elements = [fixed_element, 'Ce', 'Pr', 'Nd', 'Pm', 'Sm', 'Eu', 'Gd', 'Tb', 'Dy', 'Ho', 'Er', 'Tm', 'Yb', 'Lu'] # Pairs with noble gases require careful calculations and must be calculated separately.
 #elements = [fixed_element, 'Po', 'At', 'Ra', 'Rn', 'Fr', 'Ac', 'Th', 'Pa',  'U', 'Np', 'Pu'] # Pairs with noble gases require careful calculations and must be calculated separately.
 #elements = [fixed_element, 'He', 'Ne', 'Ar', 'Kr', 'Xe', 'Ra'] # Pairs with noble gases require careful calculations and must be calculated separately.
@@ -873,6 +875,13 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
             else:
                 good_flag = 0
                 continue
+        if re*scaling_factor > 6.0:
+            with open("error_log.txt", "a") as file:
+                file.write(f"The distance between the nearest neighboring atoms exceeds 6.0 A for {lattce}-{element1}-{element2}.\n")
+                file.write(f"set re = 6.0*(1-0.06) = 6.0*0.94 = 5.64 A for {lattce}-{element1}-{element2}.\n")
+            print(f"set re = {re} for {lattce}-{element1}-{element2}.")
+            #scaling_factor = 6.0*(1-0.06)/re
+            break
 
     print("---------------------------------------")
     optimized_scaling_factor = scaling_factor

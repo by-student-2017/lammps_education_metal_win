@@ -830,6 +830,13 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
             else:
                 good_flag = 0
                 continue
+        if re*scaling_factor > 6.0:
+            with open("error_log.txt", "a") as file:
+                file.write(f"The distance between the nearest neighboring atoms exceeds 6.0 A for {lattce}-{element1}-{element2}.\n")
+                file.write(f"set re = 6.0*(1-0.06) = 6.0*0.94 = 5.64 A for {lattce}-{element1}-{element2}.\n")
+            print(f"set re = {re} for {lattce}-{element1}-{element2}.")
+            #scaling_factor = 6.0*(1-0.06)/re
+            break
 
     print("---------------------------------------")
     optimized_scaling_factor = scaling_factor
