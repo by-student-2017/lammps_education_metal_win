@@ -3,7 +3,7 @@
 
 # Installation of qe-7.3
 1. sudo apt update
-2. sudo apt -y install gfortran gcc build-essential libopenmpi-dev 
+2. sudo apt -y install gfortran gcc build-essential libopenmpi-dev fftw3-dev
 3. sudo apt -y install gnuplot 
 4. wget https://github.com/QEF/q-e/archive/refs/tags/qe-7.3.tar.gz
 5. tar zxvf qe-7.3
