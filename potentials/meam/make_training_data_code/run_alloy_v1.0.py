@@ -720,7 +720,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
             'conv_thr': 1.0e-6*len(atoms),
             'electron_maxstep': 100, # default = 100
             'mixing_beta': 0.7,
-            'diagonalization': 'rmm-davidson', # 'david' or 'rmm-davidson'
+            'diagonalization': 'rmm-davidson', # 'cg', 'david' (<= qe-6.8) or 'rmm-davidson' (>= qe-7.0)
         },
         'ions': {
             'ion_dynamics': 'bfgs',

@@ -69,6 +69,7 @@ elements = [fixed_element,
 #elements = [fixed_element, 'Ce', 'Pr', 'Nd', 'Pm', 'Sm', 'Eu', 'Gd', 'Tb', 'Dy', 'Ho', 'Er', 'Tm', 'Yb', 'Lu'] # Pairs with noble gases require careful calculations and must be calculated separately.
 #elements = [fixed_element, 'Po', 'At', 'Ra', 'Rn', 'Fr', 'Ac', 'Th', 'Pa',  'U', 'Np', 'Pu'] # Pairs with noble gases require careful calculations and must be calculated separately.
 #elements = [fixed_element, 'He', 'Ne', 'Ar', 'Kr', 'Xe', 'Ra'] # Pairs with noble gases require careful calculations and must be calculated separately.
+# Note: ch4: elements = [fixed_element, 'H', 'He', 'Li', 'Be', 'B', 'F', 'Ne']
 '''
 elements = [fixed_element,
              'H', 'He',
@@ -964,7 +965,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
             'conv_thr': 1.0e-6*len(atoms),
             'electron_maxstep': 100, # default = 100
             'mixing_beta': 0.7,
-            'diagonalization': 'rmm-davidson', # 'david' or 'rmm-davidson'
+            'diagonalization': 'rmm-davidson', # 'cg', 'david' (<= qe-6.8) or 'rmm-davidson' (>= qe-7.0)
         },
         'ions': {
             'ion_dynamics': 'bfgs',
