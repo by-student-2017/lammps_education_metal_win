@@ -79,6 +79,17 @@ elements = [fixed_element,
                               'Hf', 'Ta',  'W', 'Re', 'Os', 'Ir', 'Pt', 'Au', 'Hg', 'Tl', 'Pb', 'Bi', 'Po', 'At', 'Ra',
             'Rn', 'Fr', 'Ac', 'Th', 'Pa',  'U', 'Np', 'Pu'] # <- Enter the element you want to calculate (Note: Time Consumption: Approx. 4 elements/hour)
 '''
+'''
+# ch4: Si-X4
+elements = [fixed_element,
+             'H',                                                                                                 'He',
+            'Li', 'Be',                                                              'B',                         'Ne',
+                  'Mg',                                                             'Al',        'P',       'Cl', 'Ar',
+                                                                              'Zn', 'Ga', 'Ge', 'As', 'Se',       'Kr',
+                                                                        'Ag', 'Cd', 'In', 'Sn',              'I', 'Xe',
+                              'Hf',                                     'Au', 'Hg', 'Tl', 'Pb', 'Bi', 'Po', 'At',
+            'Rn'] # <- Enter the element you want to calculate (Note: Time Consumption: Approx. 4 elements/hour)
+'''
 element_combinations = [(fixed_element, element) for element in elements if element != fixed_element]
 #----------------------------
 # Get all combinations of elements
