@@ -51,26 +51,28 @@ npoints = 7 # >= 7 e.g., 7, 11, 17, 21, or 25, etc (Recommend >= 25), (default =
 #------------------------------------------------------------------
 fixed_element = 'Fe'
 elements = [fixed_element,
-             'H', 'He',
-            'Li', 'Be',  'B',  'C',  'N',  'O',  'F', 'Ne', 
-            'Na', 'Mg', 'Al', 'Si',  'P',  'S', 'Cl', 'Ar',
+             'H',                                                                                                 'He',
+            'Li', 'Be',                                                              'B',  'C',  'N',  'O',  'F', 'Ne',
+            'Na', 'Mg',                                                             'Al', 'Si',  'P',  'S', 'Cl', 'Ar',
              'K', 'Ca', 'Sc', 'Ti',  'V', 'Cr', 'Mn', 'Fe', 'Co', 'Ni', 'Cu', 'Zn', 'Ga', 'Ge', 'As', 'Se', 'Br', 'Kr',
             'Rb', 'Sr',  'Y', 'Zr', 'Nb', 'Mo', 'Tc', 'Ru', 'Rh', 'Pd', 'Ag', 'Cd', 'In', 'Sn', 'Sb', 'Te',  'I', 'Xe',
-            'Cs', 'Ba', 'La', 'Ce', 'Pr', 'Nd', 'Pm', 'Sm', 'Eu', 'Gd', 'Tb', 'Dy', 'Ho', 'Er', 'Tm', 'Yb', 'Lu', 
-            'Hf', 'Ta',  'W', 'Re', 'Os', 'Ir', 'Pt', 'Au', 'Hg', 'Tl', 'Pb', 'Bi', 'Po', 'At', 'Ra',
+            'Cs', 'Ba', 'La', 
+                        'Ce', 'Pr', 'Nd', 'Pm', 'Sm', 'Eu', 'Gd', 'Tb', 'Dy', 'Ho', 'Er', 'Tm', 'Yb', 'Lu', 
+                              'Hf', 'Ta',  'W', 'Re', 'Os', 'Ir', 'Pt', 'Au', 'Hg', 'Tl', 'Pb', 'Bi', 'Po', 'At', 'Ra',
             'Rn', 'Fr', 'Ac', 'Th', 'Pa',  'U', 'Np', 'Pu'] # <- Enter the element you want to calculate (Note: Time Consumption: Approx. 4 elements/hour)
 #elements = [fixed_element, 'Ce', 'Pr', 'Nd', 'Pm', 'Sm', 'Eu', 'Gd', 'Tb', 'Dy', 'Ho', 'Er', 'Tm', 'Yb', 'Lu'] # Pairs with noble gases require careful calculations and must be calculated separately.
 #elements = [fixed_element, 'Po', 'At', 'Ra', 'Rn', 'Fr', 'Ac', 'Th', 'Pa',  'U', 'Np', 'Pu'] # Pairs with noble gases require careful calculations and must be calculated separately.
 #elements = [fixed_element, 'He', 'Ne', 'Ar', 'Kr', 'Xe', 'Ra'] # Pairs with noble gases require careful calculations and must be calculated separately.
 '''
 elements = [fixed_element,
-             'H', 'He',
-            'Li', 'Be',  'B',  'C',  'N',  'O',  'F', 'Ne', 
-            'Na', 'Mg', 'Al', 'Si',  'P',  'S', 'Cl', 'Ar',
+             'H',                                                                                                 'He',
+            'Li', 'Be',                                                              'B',  'C',  'N',  'O',  'F', 'Ne',
+            'Na', 'Mg',                                                             'Al', 'Si',  'P',  'S', 'Cl', 'Ar',
              'K', 'Ca', 'Sc', 'Ti',  'V', 'Cr', 'Mn', 'Fe', 'Co', 'Ni', 'Cu', 'Zn', 'Ga', 'Ge', 'As', 'Se', 'Br', 'Kr',
             'Rb', 'Sr',  'Y', 'Zr', 'Nb', 'Mo', 'Tc', 'Ru', 'Rh', 'Pd', 'Ag', 'Cd', 'In', 'Sn', 'Sb', 'Te',  'I', 'Xe',
-            'Cs', 'Ba', 'La', 'Ce', 'Pr', 'Nd', 'Pm', 'Sm', 'Eu', 'Gd', 'Tb', 'Dy', 'Ho', 'Er', 'Tm', 'Yb', 'Lu', 
-            'Hf', 'Ta',  'W', 'Re', 'Os', 'Ir', 'Pt', 'Au', 'Hg', 'Tl', 'Pb', 'Bi', 'Po', 'At', 'Ra',
+            'Cs', 'Ba', 'La', 
+                        'Ce', 'Pr', 'Nd', 'Pm', 'Sm', 'Eu', 'Gd', 'Tb', 'Dy', 'Ho', 'Er', 'Tm', 'Yb', 'Lu', 
+                              'Hf', 'Ta',  'W', 'Re', 'Os', 'Ir', 'Pt', 'Au', 'Hg', 'Tl', 'Pb', 'Bi', 'Po', 'At', 'Ra',
             'Rn', 'Fr', 'Ac', 'Th', 'Pa',  'U', 'Np', 'Pu'] # <- Enter the element you want to calculate (Note: Time Consumption: Approx. 4 elements/hour)
 '''
 element_combinations = [(fixed_element, element) for element in elements if element != fixed_element]
@@ -695,7 +697,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
             'nstep': 50,   # for MD or structure optimization (default = 50)
             'etot_conv_thr': 1.0e-4*len(atoms), # 1.36 meV/atom <= about 1 meV/atom
             #'forc_conv_thr': 1.0e-3 # dafault value
-            'disk_io': 'none',
+            'disk_io': 'low', # qe-6.8:'low', qe-7.2:'minimal', qe-7.3:'nowf'
         },
         'system': {
             'ecutwfc': max(pseudopotentials[element1]['cutoff_wfc'], pseudopotentials[element2]['cutoff_wfc']),
@@ -720,7 +722,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
             'conv_thr': 1.0e-6*len(atoms),
             'electron_maxstep': 100, # default = 100
             'mixing_beta': 0.7,
-            'diagonalization': 'rmm-davidson', # 'cg', 'david' (<= qe-6.8) or 'rmm-davidson' (>= qe-7.0)
+            'diagonalization': 'david', # 'cg', 'david' (<= qe-6.8) or 'rmm-davidson' (>= qe-7.0)
         },
         'ions': {
             'ion_dynamics': 'bfgs',
