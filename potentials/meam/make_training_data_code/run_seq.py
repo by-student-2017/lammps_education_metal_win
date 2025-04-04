@@ -50,14 +50,14 @@ for element in elements:
         os.remove(temp_file_path)
         
         # Move results to the element directory
-        lattice = lattice.upper()
+        # lattice = lattice.upper()
         for method in ['PBE', 'PBEsol']:
-            results_dir = f"results_{method}_spin_{lattice}"
+            results_dir = f"results_{method}_spin_{lattice.upper()}"
             if os.path.exists(results_dir):
                 shutil.move(results_dir, element_dir)
                 print(f"{results_dir} has been moved to {element_dir}.")
             
-            results_csv = f"results_{method}_spin_{lattice}.csv"
+            results_csv = f"results_{method}_spin_{lattice.upper()}.csv"
             if os.path.exists(results_csv):
                 shutil.move(results_csv, os.path.join(element_dir, results_dir))
                 print(f"{results_csv} has been moved to {element_dir}/{results_dir} .")
