@@ -17,7 +17,7 @@ file_path = 'run_alloy_v1.1.py'
 
 calc_dir = 'out'
 
-elements = ['H','He'] # <- Enter the element you want to calculate (Note: Time Consumption: Approx. 4 elements/hour)
+elements = ['H','Al'] # <- Enter the element you want to calculate (Note: Time Consumption: Approx. 4 elements/hour)
 
 for element in elements:
     # Create the element directory (if it doesn't exist)
@@ -50,6 +50,7 @@ for element in elements:
         os.remove(temp_file_path)
         
         # Move results to the element directory
+        lattice = lattice.upper()
         for method in ['PBE', 'PBEsol']:
             results_dir = f"results_{method}_spin_{lattice}"
             if os.path.exists(results_dir):
