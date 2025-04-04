@@ -9,6 +9,7 @@ from ase.units import Bohr, Rydberg, kJ, kB, fs, Hartree, mol, kcal
 from ase.dft.kpoints import monkhorst_pack
 import numpy as np
 import os
+import glob
 
 # For Rose universal function
 from scipy.optimize import curve_fit
@@ -57,7 +58,9 @@ npoints = 7 # >= 7 e.g., 7, 11, 17, 21, or 25, etc (Recommend >= 25), (default =
 #------------------------------------------------------------------
 # Note: "fixed_element" becomes a dummy when a lattice of one element is selected (the atom in *.json is temporarily specified).
 fixed_element = 'Cu'
-elements = [fixed_element,
+#fixed_element = 'YYYYYYYYYY'
+elements = [fixed_element, 'H', 'He']
+'''
              'H',                                                                                                 'He',
             'Li', 'Be',                                                              'B',  'C',  'N',  'O',  'F', 'Ne',
             'Na', 'Mg',                                                             'Al', 'Si',  'P',  'S', 'Cl', 'Ar',
@@ -67,6 +70,7 @@ elements = [fixed_element,
                         'Ce', 'Pr', 'Nd', 'Pm', 'Sm', 'Eu', 'Gd', 'Tb', 'Dy', 'Ho', 'Er', 'Tm', 'Yb', 'Lu', 
                               'Hf', 'Ta',  'W', 'Re', 'Os', 'Ir', 'Pt', 'Au', 'Hg', 'Tl', 'Pb', 'Bi', 'Po', 'At', 'Ra',
             'Rn', 'Fr', 'Ac', 'Th', 'Pa',  'U', 'Np', 'Pu'] # <- Enter the element you want to calculate (Note: Time Consumption: Approx. 4 elements/hour)
+'''
 #elements = [fixed_element, 'Ce', 'Pr', 'Nd', 'Pm', 'Sm', 'Eu', 'Gd', 'Tb', 'Dy', 'Ho', 'Er', 'Tm', 'Yb', 'Lu'] # Pairs with noble gases require careful calculations and must be calculated separately.
 #elements = [fixed_element, 'Po', 'At', 'Ra', 'Rn', 'Fr', 'Ac', 'Th', 'Pa',  'U', 'Np', 'Pu'] # Pairs with noble gases require careful calculations and must be calculated separately.
 #elements = [fixed_element, 'He', 'Ne', 'Ar', 'Kr', 'Xe', 'Ra'] # Pairs with noble gases require careful calculations and must be calculated separately.
@@ -1026,6 +1030,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
 
     #-----------------------------------------------------------------------------
     # search optimized structure with vc-relax
+    gc.collect()
     if lattce in ['hcp', 'dim', 'ch4', 'dim1']:
         print("search optimized structure with vc-relax")
         input_data['control']['calculation'] = 'vc-relax'
@@ -1342,6 +1347,17 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
             print(warning_message)
             with open('error_log.txt', 'a') as file:
                 file.write(warning_message + '\n')
+        # delete file list
+        files_to_remove = ['ACF.dat', 'all.pp.out', 'all_electron_density', 'all_electron_density.cube',
+                           'AVF.dat', 'BCF.dat', 'val.pp.out', 'valence_density', 'valence_density.cube']
+        # delete files
+        for file_pattern in files_to_remove:
+            for file_path in glob.glob(file_pattern):
+                try:
+                    os.remove(file_path)
+                    print(f"delete {file_path}")
+                except OSError as e:
+                    print(f"Error: Do not delete {file_path}, {e.strerror}")
         ndata += 1
         print("-------------------------------------------------------------------------------------")
 

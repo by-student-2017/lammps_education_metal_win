@@ -50,6 +50,7 @@ lat = ''     # In the case of '', the sum of covalent_radii (sum of concentratio
 npoints = 7 # >= 7 e.g., 7, 11, 17, 21, or 25, etc (Recommend >= 25), (default = 25) (SSSP: 7 points) (7 points:0.02 step, other:0.01 step)
 #------------------------------------------------------------------
 fixed_element = 'Fe'
+#fixed_element = 'YYYYYYYYYY'
 elements = [fixed_element,
              'H',                                                                                                 'He',
             'Li', 'Be',                                                              'B',  'C',  'N',  'O',  'F', 'Ne',

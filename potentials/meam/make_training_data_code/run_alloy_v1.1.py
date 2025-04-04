@@ -9,6 +9,7 @@ from ase.units import Bohr, Rydberg, kJ, kB, fs, Hartree, mol, kcal
 from ase.dft.kpoints import monkhorst_pack
 import numpy as np
 import os
+import glob
 
 # For Rose universal function
 from scipy.optimize import curve_fit
@@ -53,20 +54,10 @@ lat = ''     # In the case of '', the sum of covalent_radii (sum of concentratio
 # making number of data (If the bulk modulus is approximately +/- 0.5 GPa or less, 11 points will suffice. However, for a3, 25 points or more is recommended to keep the accuracy at around +/- 0.005 or less.)
 npoints = 7 # >= 7 e.g., 7, 11, 17, 21, or 25, etc (Recommend >= 25), (default = 25) (SSSP: 7 points) (7 points:0.02 step, other:0.01 step)
 #------------------------------------------------------------------
-fixed_element = 'Cu'
-elements = [fixed_element, 'K', 'Y', 'U']
-'''
+#fixed_element = 'Cu'
+fixed_element = 'YYYYYYYYYY'
 elements = [fixed_element,
-             'H',                                                                                                 'He',
-            'Li', 'Be',                                                              'B',  'C',  'N',  'O',  'F', 'Ne',
-            'Na', 'Mg',                                                             'Al', 'Si',  'P',  'S', 'Cl', 'Ar',
-             'K', 'Ca', 'Sc', 'Ti',  'V', 'Cr', 'Mn', 'Fe', 'Co', 'Ni', 'Cu', 'Zn', 'Ga', 'Ge', 'As', 'Se', 'Br', 'Kr',
-            'Rb', 'Sr',  'Y', 'Zr', 'Nb', 'Mo', 'Tc', 'Ru', 'Rh', 'Pd', 'Ag', 'Cd', 'In', 'Sn', 'Sb', 'Te',  'I', 'Xe',
-            'Cs', 'Ba', 'La', 
-                        'Ce', 'Pr', 'Nd', 'Pm', 'Sm', 'Eu', 'Gd', 'Tb', 'Dy', 'Ho', 'Er', 'Tm', 'Yb', 'Lu', 
-                              'Hf', 'Ta',  'W', 'Re', 'Os', 'Ir', 'Pt', 'Au', 'Hg', 'Tl', 'Pb', 'Bi', 'Po', 'At', 'Ra',
-            'Rn', 'Fr', 'Ac', 'Th', 'Pa',  'U', 'Np', 'Pu'] # <- Enter the element you want to calculate (Note: Time Consumption: Approx. 4 elements/hour)
-'''
+             'H',                                                                                                 'He'] # <- Enter the element you want to calculate (Note: Time Consumption: Approx. 4 elements/hour)
 #elements = [fixed_element, 'Ce', 'Pr', 'Nd', 'Pm', 'Sm', 'Eu', 'Gd', 'Tb', 'Dy', 'Ho', 'Er', 'Tm', 'Yb', 'Lu'] # Pairs with noble gases require careful calculations and must be calculated separately.
 #elements = [fixed_element, 'Po', 'At', 'Ra', 'Rn', 'Fr', 'Ac', 'Th', 'Pa',  'U', 'Np', 'Pu'] # Pairs with noble gases require careful calculations and must be calculated separately.
 #elements = [fixed_element, 'He', 'Ne', 'Ar', 'Kr', 'Xe', 'Ra'] # Pairs with noble gases require careful calculations and must be calculated separately.
@@ -1083,6 +1074,17 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
             print(warning_message)
             with open('error_log.txt', 'a') as file:
                 file.write(warning_message + '\n')
+        # delete file list
+        files_to_remove = ['ACF.dat', 'all.pp.out', 'all_electron_density', 'all_electron_density.cube',
+                           'AVF.dat', 'BCF.dat', 'val.pp.out', 'valence_density', 'valence_density.cube']
+        # delete files
+        for file_pattern in files_to_remove:
+            for file_path in glob.glob(file_pattern):
+                try:
+                    os.remove(file_path)
+                    print(f"delete {file_path}")
+                except OSError as e:
+                    print(f"Error: Do not delete {file_path}, {e.strerror}")
         ndata += 1
         print("-------------------------------------------------------------------------------------")
 

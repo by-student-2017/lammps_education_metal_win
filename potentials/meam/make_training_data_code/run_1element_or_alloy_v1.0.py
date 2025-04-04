@@ -54,6 +54,7 @@ npoints = 7 # >= 7 e.g., 7, 11, 17, 21, or 25, etc (Recommend >= 25), (default =
 #------------------------------------------------------------------
 # Note: "fixed_element" becomes a dummy when a lattice of one element is selected (the atom in *.json is temporarily specified).
 fixed_element = 'XX'
+#fixed_element = 'YYYYYYYYYY'
 elements = [fixed_element,
              'H',                                                                                                 'He',
             'Li', 'Be',                                                              'B',  'C',  'N',  'O',  'F', 'Ne',
@@ -980,6 +981,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
     
     #-----------------------------------------------------------------------------
     # search optimized structure with vc-relax
+    gc.collect()
     if lattce in ['hcp', 'dim', 'ch4', 'dim1']:
         print("search optimized structure with vc-relax")
         input_data['control']['calculation'] = 'vc-relax'
