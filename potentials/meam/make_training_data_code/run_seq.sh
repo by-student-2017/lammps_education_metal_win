@@ -32,13 +32,13 @@ do
         # Move results to the element directory
         for method in "PBE" "PBEsol"
         do
-            results_dir="results_${method}_spin_${lattice}"
+            results_dir="results_${method}_spin_${lattice^^}"
             if [ -d "$results_dir" ]; then
                 mv "$results_dir" "$element_dir"
                 echo "$results_dir has been moved to $element_dir."
             fi
             
-            results_csv="results_${method}_spin_${lattice}.csv"
+            results_csv="results_${method}_spin_${lattice^^}.csv"
             if [ -f "$results_csv" ]; then
                 mv "$results_csv" "$element_dir/$results_dir"
                 echo "$results_csv has been moved to $element_dir/$results_dir."
