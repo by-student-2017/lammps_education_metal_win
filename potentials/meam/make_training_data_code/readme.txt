@@ -164,6 +164,11 @@ STUDENT, B. (2025). SUGGESTED PSEUDOPOTENTIALS for PBE v.1.0.0 [Data set]. Zenod
 #---------------------------------------------------------------------
 
 #---------------------------------------------------------------------
+## Results
+1 element data: https://doi.org/10.5281/zenodo.15171902
+#---------------------------------------------------------------------
+
+#---------------------------------------------------------------------
 v.1.1 (bader charge) [BC]
 1. wget http://theory.cm.utexas.edu/henkelman/code/bader/download/bader_lnx_64.tar.gz
 2. tar xzvf bader_lnx_64.tar.gz
