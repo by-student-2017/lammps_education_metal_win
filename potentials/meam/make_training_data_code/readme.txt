@@ -53,6 +53,8 @@ STUDENT, B. (2025). SUGGESTED PSEUDOPOTENTIALS for PBE v.1.0.0 [Data set]. Zenod
 0.3.1: Ti, Mn
 1.0.0: La(US), Ce(US), Pr(US), Nd(US), Pm(US), Sm(US), Eu(US or PAW), Gd(PAW), Tb(PAW, US), Dy(PAW, US), Ho(US), Er(US), Tm(PAW), Yb(PAW), Lu(US)
                Th(US), Pa(US),  U(US), Np(US), Pu(US)
+Ga: dn -> dnl
+S: n - > nl
 
 # PSlibrary_ONCV_GBRV_mix
 main PSlibrary
