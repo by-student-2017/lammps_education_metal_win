@@ -1647,7 +1647,7 @@ for i, combination in enumerate(element_combinations):
     results = []
     result = calculate_properties(combination, omp_num_threads, mpi_num_procs, max_retries, lattce, lat, npoints, primitive_flag, PBEsol_flag, spin_flag, D_flag, cutoff)
     element1, element2 = combination
-    if lattce in ['fcc', 'bcc', 'hcp', 'sc', 'dia1', 'dim1']:
+    if lattce in ['fcc', 'bcc', 'hcp', 'sc', 'dia1', 'dim1', 'v1fcc', 'v1bcc', 'v1hcp', 'v1sc', 'v1dia1']:
         element1 = '1element'
     if result == "Error-1":
         with open("error_log.txt", "a") as file:
@@ -1673,7 +1673,7 @@ for i, combination in enumerate(element_combinations):
 
     with open(f'{directory}.csv', 'a', newline='') as csvfile:
         fieldnames = ['Element1', 'Element2']
-        if lattce in ['fcc', 'bcc', 'hcp', 'sc', 'dia1', 'dim1']:
+        if lattce in ['fcc', 'bcc', 'hcp', 'sc', 'dia1', 'dim1', 'v1fcc', 'v1bcc', 'v1hcp', 'v1sc', 'v1dia1']:
             # library.meam file
             fieldnames.extend([
                       'elt',
@@ -1745,7 +1745,7 @@ for i, combination in enumerate(element_combinations):
             'Element1': result['Element1'],
             'Element2': result['Element2']
             }
-        if lattce in ['fcc', 'bcc', 'hcp', 'sc', 'dia1', 'dim1']:
+        if lattce in ['fcc', 'bcc', 'hcp', 'sc', 'dia1', 'dim1', 'v1fcc', 'v1bcc', 'v1hcp', 'v1sc', 'v1dia1']:
             # library.meam file
             row_data.update({
                 'elt': result['Element2'],
@@ -1985,27 +1985,28 @@ for i, combination in enumerate(element_combinations):
         
         #print(f"## check {natoms} vs. {len(types)}")
         
-        with open(f'{directory}/potfit_{lattce}_{element1}-{element2}_{spin_char}.config', 'a') as txtfile:
-            txtfile.write(f"#N {natoms} 1\n")
-            if lattce in ['fcc', 'bcc', 'hcp', 'sc', 'dia1', 'dim1']:
-                txtfile.write(f"#C {element2}\n")
-            else:
-                txtfile.write(f"#C {element1} {element2}\n")
-            txtfile.write(f"## force file generated from file espresso.pwo\n")
-            txtfile.write(f"#X {X[0]}  {X[1]}  {X[2]}\n")
-            txtfile.write(f"#Y {Y[0]}  {Y[1]}  {Y[2]}\n")
-            txtfile.write(f"#Z {Z[0]}  {Z[1]}  {Z[2]}\n")
-            txtfile.write(f"#W 1.000000\n")
-            txtfile.write(f"#E {cohesive_energy*-1.0}\n")
-            # https://databases.fysik.dtu.dk/ase/_modules/ase/io/espresso.html
-            # stress = np.array([sxx, syy, szz, syz, sxz, sxy], dtype=float)
-            txtfile.write(f"## stress_xx stress_yy stress_zz stress_xy stress_yz stress_xz\n")
-            txtfile.write(f"#S {stress[0]}  {stress[1]}  {stress[2]}  {stress[5]}  {stress[3]}  {stress[4]}\n")
-            txtfile.write(f"## type x y z f_x f_y f_z\n")
-            txtfile.write(f"#F\n")
-            for atom_index in range(natoms):
-                #txtfile.write(f"{types[atom_index]}  {xyz_array[atom_index][0]}  {xyz_array[atom_index][1]}  {xyz_array[atom_index][2]}  {force[atom_index][0]}  {force[atom_index][1]}  {force[atom_index][2]}\n")
-                txtfile.write(f"{types[atom_index]}  {x_coords[atom_index]}  {y_coords[atom_index]}  {z_coords[atom_index]}  {force[atom_index][0]}  {force[atom_index][1]}  {force[atom_index][2]}\n")
+        if not lattce in ['v1fcc', 'v1bcc', 'v1hcp', 'v1sc', 'v1dia1']:
+            with open(f'{directory}/potfit_{lattce}_{element1}-{element2}_{spin_char}.config', 'a') as txtfile:
+                txtfile.write(f"#N {natoms} 1\n")
+                if lattce in ['fcc', 'bcc', 'hcp', 'sc', 'dia1', 'dim1']:
+                    txtfile.write(f"#C {element2}\n")
+                else:
+                    txtfile.write(f"#C {element1} {element2}\n")
+                txtfile.write(f"## force file generated from file espresso.pwo\n")
+                txtfile.write(f"#X {X[0]}  {X[1]}  {X[2]}\n")
+                txtfile.write(f"#Y {Y[0]}  {Y[1]}  {Y[2]}\n")
+                txtfile.write(f"#Z {Z[0]}  {Z[1]}  {Z[2]}\n")
+                txtfile.write(f"#W 1.000000\n")
+                txtfile.write(f"#E {cohesive_energy*-1.0}\n")
+                # https://databases.fysik.dtu.dk/ase/_modules/ase/io/espresso.html
+                # stress = np.array([sxx, syy, szz, syz, sxz, sxy], dtype=float)
+                txtfile.write(f"## stress_xx stress_yy stress_zz stress_xy stress_yz stress_xz\n")
+                txtfile.write(f"#S {stress[0]}  {stress[1]}  {stress[2]}  {stress[5]}  {stress[3]}  {stress[4]}\n")
+                txtfile.write(f"## type x y z f_x f_y f_z\n")
+                txtfile.write(f"#F\n")
+                for atom_index in range(natoms):
+                    #txtfile.write(f"{types[atom_index]}  {xyz_array[atom_index][0]}  {xyz_array[atom_index][1]}  {xyz_array[atom_index][2]}  {force[atom_index][0]}  {force[atom_index][1]}  {force[atom_index][2]}\n")
+                    txtfile.write(f"{types[atom_index]}  {x_coords[atom_index]}  {y_coords[atom_index]}  {z_coords[atom_index]}  {force[atom_index][0]}  {force[atom_index][1]}  {force[atom_index][2]}\n")
 
     print(f"----------------------------------------------------------------------")
     print(f"Processed combination {i+1}/{len(element_combinations)}: {combination}")
