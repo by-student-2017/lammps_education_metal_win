@@ -31,6 +31,13 @@ import gc
 import signal
 import time
 
+# supercell
+from ase.build import bulk, make_supercell
+
+# read or write json file settings
+from ase.io import write, read
+import json
+
 #from mpi4py import MPI
 #comm = MPI.COMM_WORLD
 #rank = comm.Get_rank()
@@ -43,7 +50,8 @@ import time
 # b1: FCC_B1 (NaCl-type), b2:BCC_B2 (CsCl-type), dia:Diamond_B3 (Zinc Blende), l12: L12 (Cu3Au-type)
 # fcc: FCC (1 element), hcp: HCP (1 element), bcc: BCC (1 element), sc: SC (1 element), dia1: Daiamond
 # dim(dimer), ch4(binary system), dim1(1 element)
-lattce = 'ch4'
+# v1fcc: FCC (1 vacancy), v1bcc: BCC (1 vacancy), v1hcp: HCP (1 vacancy), v1hcp: SC (1 vacancy), v1dia1: HCP (1 vacancy)
+lattce = 'v1bcc'
 #lattce = 'XXXXXXXXXX' # for run_seq.py
 #------------------------------------------------------------------
 # lattice structure of reference configuration [Angstrom] (https://en.wikipedia.org/wiki/Lattice_constant)
@@ -57,9 +65,9 @@ lat = ''     # In the case of '', the sum of covalent_radii (sum of concentratio
 npoints = 7 # >= 7 e.g., 7, 11, 17, 21, or 25, etc (Recommend >= 25), (default = 25) (SSSP: 7 points) (7 points:0.02 step, other:0.01 stepm)
 #------------------------------------------------------------------
 # Note: "fixed_element" becomes a dummy when a lattice of one element is selected (the atom in *.json is temporarily specified).
-fixed_element = 'Cu'
+fixed_element = 'XX'
 #fixed_element = 'YYYYYYYYYY'
-elements = [fixed_element, 'H', 'He']
+elements = [fixed_element, 'Fe']
 '''
              'H',                                                                                                 'He',
             'Li', 'Be',                                                              'B',  'C',  'N',  'O',  'F', 'Ne',
@@ -646,7 +654,7 @@ def calculate_elastic_constants(atoms, calc, shear_strains, normal_strains):
 def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, max_retries=100, lattce='', lat='', npoints=25, primitive_flag=1, PBEsol_flag=0, spin_flag=1, D_flag=1, cutoff=520):
     element1, element2 = elements_combination
     
-    if lattce in ['fcc', 'bcc', 'hcp', 'sc', 'dia1', 'dim1']:
+    if lattce in ['fcc', 'bcc', 'hcp', 'sc', 'dia1', 'dim1', 'v1fcc', 'v1bcc', 'v1hcp', 'v1sc', 'v1dia1']:
         print(f"{element2}, lattce = {lattce}")
     else:
         print(f"{element1}-{element2} pair, lattce = {lattce}")
@@ -654,6 +662,22 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
     if lattce in ['dim', 'ch4', 'dim1']:
         radius1 = covalent_radii[element1]
         radius2 = covalent_radii[element2]
+    elif lattce in ['v1fcc', 'v1bcc', 'v1hcp', 'v1sc', 'v1dia1']:
+        if spin_flag == 0:
+            spin_char = 'non-spin'
+        else:
+            spin_char = 'spin'
+        if PBEsol_flag == 0:
+            DFT = 'PBE'
+        else:
+            DFT = 'PBEsol'
+        with open(f'./1element_data_{DFT}/results_{DFT}_{spin_char}_{lattce[2:].upper()}/{lattce[2:]}_1element-{element2}_{spin_char}.json', 'r') as f:
+            data = json.load(f)
+        a = data["Lattice Constant a (A)"]
+        c = data.get("Lattice Constant c (A)", None)  # c is optional
+        cohesive_energy_unitcell = data["Cohesive Energy (eV/atom)"]
+        re = data["Nearest Neighbor Distance (A)"]
+        lat = None
     else:
         radius1 = atomic_radii[element1]
         radius2 = atomic_radii[element2]
@@ -923,6 +947,58 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
                 pbc=True)
         Nelem1 = 0
         Nelem2 = 2
+    #------------------------------------------------------------------------------
+    elif lattce == 'v1fcc':
+        print("Create the fcc 3x3x3 supercell structure (1 vacancy)")
+        atoms = bulk(element2, lattce[2:], a, orthorhombic=True)
+        P = [[3, 0, 0],[0, 3, 0],[0, 0, 3]]
+        atoms = make_supercell(atoms, P)
+        del atoms[0]
+        kpt = 2 # = 6/3
+        kptc = kpt
+        Nelem1 = 0
+        Nelem2 = 0
+    elif lattce == 'v1bcc':
+        print("Create the bcc 3x3x3 supercell structure (1 vacancy)")
+        atoms = bulk(element2, lattce[2:], a, orthorhombic=True)
+        P = [[3, 0, 0],[0, 3, 0],[0, 0, 3]]
+        atoms = make_supercell(atoms, P)
+        del atoms[0]
+        kpt = 3 # = 9/3
+        kptc = kpt
+        Nelem1 = 0
+        Nelem2 = 0
+    elif lattce == 'v1hcp':
+        print("Create the hcp 3x3x3 supercell structure (1 vacancy)")
+        atoms = bulk(element2, lattce[2:], a, c, orthorhombic=True)
+        P = [[3, 0, 0],[0, 3, 0],[0, 0, 3]]
+        atoms = make_supercell(atoms, P)
+        del atoms[0]
+        kpt = 3 # = 9/3
+        kptc = 2 # = 6/3
+        Nelem1 = 0
+        Nelem2 = 0
+    elif lattce == 'v1sc':
+        print("Create the sc 3x3x3 supercell structure (1 vacancy)")
+        atoms = bulk(element2, lattce[2:], a, orthorhombic=True)
+        P = [[3, 0, 0],[0, 3, 0],[0, 0, 3]]
+        atoms = make_supercell(atoms, P)
+        del atoms[0]
+        kpt = 3 # = 9/3
+        kptc = kpt
+        Nelem1 = 0
+        Nelem2 = 0
+    elif lattce == 'v1dia1':
+        print("Create the diamond 3x3x3 supercell structure (1 vacancy)")
+        atoms = bulk(element2, lattce[2:], a, orthorhombic=True)
+        P = [[3, 0, 0],[0, 3, 0],[0, 0, 3]]
+        atoms = make_supercell(atoms, P)
+        del atoms[0]
+        kpt = 2 # = 6/3
+        kptc = kpt
+        Nelem1 = 0
+        Nelem2 = 0
+    #------------------------------------------------------------------------------
     else:
         print("This code does not provide other structures. (Possible structures: b1, b2, dia, l12, or fcc, bcc, hcp, dia1, dim, ch4, dim1)")
     
@@ -957,7 +1033,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
             'nstep': 50,   # for MD or structure optimization (default = 50)
             'etot_conv_thr': 1.0e-4*len(atoms), # 1.36 meV/atom <= about 1 meV/atom
             #'forc_conv_thr': 1.0e-3 # dafault value
-            'disk_io': 'none',
+            'disk_io': 'low',
         },
         'system': {
             'ecutwfc': max(pseudopotentials[element1]['cutoff_wfc'], pseudopotentials[element2]['cutoff_wfc']),
@@ -1085,7 +1161,12 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
     # search optimized structure with scf
     input_data['control']['calculation'] = 'scf'
     best_energy = float('inf')
-    retries = 0
+    if lattce in ['v1fcc', 'v1bcc', 'v1hcp', 'v1sc', 'v1dia1']:
+        scaling_factor = 1.0
+        dsfactor = 0.0
+        retries = 1000
+    else:
+        retries = 0
     flag = 0
     energy = 0.0
     scaling_factor -= dsfactor
@@ -1260,7 +1341,12 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
             continue
         energies.append(energy)
 
-        cohesive_energy = -(atoms.get_total_energy() - isolated_atom_energy1*Nelem1 - isolated_atom_energy2*Nelem2)
+        
+        if lattce in ['v1fcc', 'v1bcc', 'v1hcp', 'v1sc', 'v1dia1']:
+            cohesive_energy = -(atoms.get_total_energy() - isolated_atom_energy1*Nelem1 - isolated_atom_energy2*len(atoms))
+            vacancy_energy = cohesive_energy - cohesive_energy_unitcell*len(atoms)
+        else:
+            cohesive_energy = -(atoms.get_total_energy() - isolated_atom_energy1*Nelem1 - isolated_atom_energy2*Nelem2)
         cohesive_energies.append(cohesive_energy)
         
         volume = atoms.get_volume()
@@ -1337,6 +1423,8 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
             print(f'Error for element 2 at position No.3: {(valence_electrons2-charge[1])/mean_elem1_charge*100-100} [%]')
             print(f'Error for element 2 at position No.4: {(valence_electrons2-charge[2])/mean_elem1_charge*100-100} [%]')
             print(f'Error for element 2 at position No.5: {(valence_electrons2-charge[3])/mean_elem1_charge*100-100} [%]')
+        elif lattce in ['v1fcc', 'v1bcc', 'v1hcp', 'v1sc', 'v1dia1']:
+            charges.append(charge)
         
         #print(f'Charges [e]: {charge}')
         print(f'Charges [e]: {charges[ndata-1][:]}')
@@ -1524,6 +1612,8 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
     else:
         return_data['Magnetic Moments (Bohr)'] = magnetic_moments
     return_data['Charges (e)'] = charges
+    if lattce in ['v1fcc', 'v1bcc', 'v1hcp', 'v1sc', 'v1dia1']:
+        return_data['Vacancy energy (eV)'] = vacancy_energy
     return return_data
 
 
@@ -1643,6 +1733,8 @@ for i, combination in enumerate(element_combinations):
         else:
             fieldnames.append('Magnetic Moments (Bohr)')
         fieldnames.append('Charges (e)')
+        if lattce in ['v1fcc', 'v1bcc', 'v1hcp', 'v1sc', 'v1dia1']:
+            fieldnames.append('Vacancy energy (eV)')
 
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
 
@@ -1720,6 +1812,8 @@ for i, combination in enumerate(element_combinations):
         else:
             row_data['Magnetic Moments (Bohr)'] = result['Magnetic Moments (Bohr)']
         row_data['Charges (e)'] = result['Charges (e)']
+        if lattce in ['v1fcc', 'v1bcc', 'v1hcp', 'v1sc', 'v1dia1']:
+            row_data['Vacancy energy (eV)'] = result['Vacancy energy (eV)']
         writer.writerow(row_data)
     
     # Generate the potfit text file output for each volume and cohesive energy
