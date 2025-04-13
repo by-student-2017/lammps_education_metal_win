@@ -39,7 +39,7 @@ import time
 # b1: FCC_B1 (NaCl-type), b2:BCC_B2 (CsCl-type), dia:Diamond_B3 (Zinc Blende), l12: L12 (Cu3Au-type)
 # fcc: FCC (1 element), hcp: HCP (1 element), bcc: BCC (1 element), sc: SC (1 element), dia1: Daiamond
 # dim(dimer), ch4(binary system), dim1(1 element)
-lattce = 'fcc'
+lattce = 'dim1'
 #lattce = 'XXXXXXXXXX' # for run_seq.py
 #------------------------------------------------------------------
 # lattice structure of reference configuration [Angstrom] (https://en.wikipedia.org/wiki/Lattice_constant)
@@ -55,7 +55,8 @@ npoints = 7 # >= 7 e.g., 7, 11, 17, 21, or 25, etc (Recommend >= 25), (default =
 # Note: "fixed_element" becomes a dummy when a lattice of one element is selected (the atom in *.json is temporarily specified).
 fixed_element = 'XX'
 #fixed_element = 'YYYYYYYYYY'
-elements = [fixed_element,
+elements = [fixed_element, 'As']
+'''
              'H',                                                                                                 'He',
             'Li', 'Be',                                                              'B',  'C',  'N',  'O',  'F', 'Ne',
             'Na', 'Mg',                                                             'Al', 'Si',  'P',  'S', 'Cl', 'Ar',
@@ -65,6 +66,7 @@ elements = [fixed_element,
                         'Ce', 'Pr', 'Nd', 'Pm', 'Sm', 'Eu', 'Gd', 'Tb', 'Dy', 'Ho', 'Er', 'Tm', 'Yb', 'Lu', 
                               'Hf', 'Ta',  'W', 'Re', 'Os', 'Ir', 'Pt', 'Au', 'Hg', 'Tl', 'Pb', 'Bi', 'Po', 'At', 'Ra',
             'Rn', 'Fr', 'Ac', 'Th', 'Pa',  'U', 'Np', 'Pu'] # <- Enter the element you want to calculate (Note: Time Consumption: Approx. 4 elements/hour)
+'''
 #elements = [fixed_element, 'Ce', 'Pr', 'Nd', 'Pm', 'Sm', 'Eu', 'Gd', 'Tb', 'Dy', 'Ho', 'Er', 'Tm', 'Yb', 'Lu'] # Pairs with noble gases require careful calculations and must be calculated separately.
 #elements = [fixed_element, 'Po', 'At', 'Ra', 'Rn', 'Fr', 'Ac', 'Th', 'Pa',  'U', 'Np', 'Pu'] # Pairs with noble gases require careful calculations and must be calculated separately.
 #elements = [fixed_element, 'He', 'Ne', 'Ar', 'Kr', 'Xe', 'Ra'] # Pairs with noble gases require careful calculations and must be calculated separately.
@@ -102,7 +104,7 @@ cutoff = 0 # [eV], 0:read PP file, (520 eV is the main in the Materials Project,
 #------------------------------------------------------------------
 # Note: In the field of phonons, the accuracy of lattice constant prediction is important, so PBEsol is generally used. 
 # However, since there are elements for which calculations do not go well, we recommend using PBE, which has been extensively verified as a database.
-PBEsol_flag = 1 # 0:PBE, 1:PBEsol, (default = 0)
+PBEsol_flag = 0 # 0:PBE, 1:PBEsol, (default = 0)
 # Load the pseudopotential data from the JSON file
 if PBEsol_flag == 0:
     #with open('PBE/PSlibrary_PBE.json', 'r') as f:
@@ -810,7 +812,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
         Nelem2 = 1
     elif lattce == 'dia1':
         print("Create the Diamond structure (1 element)")
-        lattice_type = 'dia'
+        lattice_type = 'DIA'
         re2a = 2.0/2.0**0.5
         if not lat == '':
             re = lat / re2a
@@ -840,7 +842,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
     #------------------------------------------------------------------------------
     elif lattce == 'dim':
         print("Create the dimer structure")
-        lattice_type = 'dim'
+        lattice_type = 'DIM'
         a = 12.0
         re2a = a/re
         atoms = Atoms(f'{element1}{element2}', 
@@ -852,7 +854,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
         Nelem2 = 1
     elif lattce == 'ch4':
         print("Create the CH4 structure")
-        lattice_type = 'ch4'
+        lattice_type = 'CH4'
         a = 12.0
         re2a = a/re
         atoms = Atoms(f'{element1}{element2}4', 
@@ -868,7 +870,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
     #------------------------------------------------------------------------------
     elif lattce == 'dim1':
         print("Create the dimer structure (1 element)")
-        lattice_type = 'dim (1 element)'
+        lattice_type = 'DIM (1 element)'
         a = 12.0
         re2a = a/re
         #atoms = bulk('{element2}', 'sc', a)

@@ -679,7 +679,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
         re = data["Nearest Neighbor Distance (A)"]
         re2a = a/re
         lat = None
-        nsc = 3 # nsc x nsc x nsc supercell
+        nsc = 1 # nsc x nsc x nsc supercell
     else:
         radius1 = atomic_radii[element1]
         radius2 = atomic_radii[element2]
@@ -880,7 +880,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
         Nelem2 = 1
     elif lattce == 'dia1':
         print("Create the Diamond structure (1 element)")
-        lattice_type = 'dia'
+        lattice_type = 'DIA'
         re2a = 2.0/2.0**0.5
         if not lat == '':
             re = lat / re2a
@@ -910,7 +910,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
     #------------------------------------------------------------------------------
     elif lattce == 'dim':
         print("Create the dimer structure")
-        lattice_type = 'dim'
+        lattice_type = 'DIM'
         a = 12.0
         re2a = a/re
         atoms = Atoms(f'{element1}{element2}', 
@@ -922,7 +922,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
         Nelem2 = 1
     elif lattce == 'ch4':
         print("Create the CH4 structure")
-        lattice_type = 'ch4'
+        lattice_type = 'CH4'
         a = 12.0
         re2a = a/re
         atoms = Atoms(f'{element1}{element2}4', 
@@ -938,7 +938,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
     #------------------------------------------------------------------------------
     elif lattce == 'dim1':
         print("Create the dimer structure (1 element)")
-        lattice_type = 'dim (1 element)'
+        lattice_type = 'DIM (1 element)'
         a = 12.0
         re2a = a/re
         #atoms = bulk('{element2}', 'sc', a)
@@ -952,51 +952,56 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
     #------------------------------------------------------------------------------
     elif lattce == 'v1fcc':
         print("Create the fcc 3x3x3 supercell structure (1 vacancy)")
+        lattice_type = 'FCC_B1_V1 (1 vacancy)'
         atoms = bulk(element2, lattce[2:], a, orthorhombic=True)
         P = [[nsc, 0, 0],[0, nsc, 0],[0, 0, nsc]]
         atoms = make_supercell(atoms, P)
         del atoms[0]
-        kpt = 2 # = 6/3
+        kpt = int(6/nsc+0.5) # = 6/3
         kptc = kpt
         Nelem1 = 0
         Nelem2 = 0
     elif lattce == 'v1bcc':
         print("Create the bcc 3x3x3 supercell structure (1 vacancy)")
+        lattice_type = 'BCC_B2_V1 (1 vacancy)'
         atoms = bulk(element2, lattce[2:], a, orthorhombic=True)
         P = [[nsc, 0, 0],[0, nsc, 0],[0, 0, nsc]]
         atoms = make_supercell(atoms, P)
         del atoms[0]
-        kpt = 3 # = 9/3
+        kpt = int(9/nsc+0.5) # = 9/3
         kptc = kpt
         Nelem1 = 0
         Nelem2 = 0
     elif lattce == 'v1hcp':
         print("Create the hcp 3x3x3 supercell structure (1 vacancy)")
+        lattice_type = 'HCP_V1 (1 vacancy)'
         atoms = bulk(element2, lattce[2:], a, c, orthorhombic=True)
         P = [[nsc, 0, 0],[0, nsc, 0],[0, 0, nsc]]
         atoms = make_supercell(atoms, P)
         del atoms[0]
-        kpt = 3 # = 9/3
-        kptc = 2 # = 6/3
+        kpt = int(9/nsc+0.5) # = 9/3
+        kptc = int(6/nsc+0.5) # = 6/3
         Nelem1 = 0
         Nelem2 = 0
     elif lattce == 'v1sc':
         print("Create the sc 3x3x3 supercell structure (1 vacancy)")
+        lattice_type = 'SC_V1 (1 vacancy)'
         atoms = bulk(element2, lattce[2:], a, orthorhombic=True)
         P = [[nsc, 0, 0],[0, nsc, 0],[0, 0, nsc]]
         atoms = make_supercell(atoms, P)
         del atoms[0]
-        kpt = 3 # = 9/3
+        kpt = int(9/nsc+0.5) # = 9/3
         kptc = kpt
         Nelem1 = 0
         Nelem2 = 0
     elif lattce == 'v1dia1':
         print("Create the diamond 3x3x3 supercell structure (1 vacancy)")
+        lattice_type = 'DIA_V1 (1 vacancy)'
         atoms = bulk(element2, lattce[2:], a, orthorhombic=True)
         P = [[nsc, 0, 0],[0, nsc, 0],[0, 0, nsc]]
         atoms = make_supercell(atoms, P)
         del atoms[0]
-        kpt = 2 # = 6/3
+        kpt = int(6/nsc+0.5) # = 6/3
         kptc = kpt
         Nelem1 = 0
         Nelem2 = 0
