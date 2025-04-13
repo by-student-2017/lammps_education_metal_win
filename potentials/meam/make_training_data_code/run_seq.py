@@ -8,16 +8,19 @@ import os
 #file_path = 'run_1element_or_alloy_v1.0.py'
 
 # 2 pair
-lattices = ['b1', 'b2', 'l12', 'dia']
-file_path = 'run_alloy_v1.1.py'
+#lattices = ['b1', 'b2', 'l12', 'dia']
+#lattices = ['b2', 'dia']
+#file_path = 'run_alloy_v1.1.py'
 
 # 2 pair
 #lattices = ['b1', 'b2', 'l12', 'dia', 'ch4']
-#file_path = 'run_1element_or_alloy_v1.1.py'
+#lattices = ['v1fcc', 'v1bcc', 'v1hcp', 'v1sc', 'v1dia1']
+lattices = ['v1fcc']
+file_path = 'run_1element_or_alloy_v1.1.py'
 
 calc_dir = 'out'
 
-elements = ['H','Al'] # <- Enter the element you want to calculate (Note: Time Consumption: Approx. 4 elements/hour)
+elements = ['XX'] # <- Enter the element you want to calculate (Note: Time Consumption: Approx. 4 elements/hour)
 
 for element in elements:
     # Create the element directory (if it doesn't exist)

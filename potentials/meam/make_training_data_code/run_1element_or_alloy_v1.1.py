@@ -227,7 +227,8 @@ CN = {
       "b1":  6,  "b2": 8, "l12": 12,
      "fcc": 12, "bcc": 8, "hcp": 12, "sc": 6, "dia": 4,
      "dim":  1, "ch4": 4,
-     "dim1": 1, "dia1": 4
+     "dim1": 1, "dia1": 4,
+     "v1fcc": 'nan', "v1bcc": 'nan', "v1hcp": 'nan', "v1sc": 'nan', "v1dia": 'nan',
 }
 
 
@@ -679,7 +680,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
         re = data["Nearest Neighbor Distance (A)"]
         re2a = a/re
         lat = None
-        nsc = 1 # nsc x nsc x nsc supercell
+        nsc = 2 # nsc x nsc x nsc supercell
     else:
         radius1 = atomic_radii[element1]
         radius2 = atomic_radii[element2]
@@ -1315,6 +1316,8 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
     volumes_per_atom = []
     energies_per_atom = []
     cohesive_energies_per_atom = []
+    
+    atomic_positions = [] # for vacancy energy calculation
 
     skip_indices = []
     tries = 0
@@ -1431,7 +1434,10 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
             print(f'Error for element 2 at position No.4: {(valence_electrons2-charge[2])/mean_elem1_charge*100-100} [%]')
             print(f'Error for element 2 at position No.5: {(valence_electrons2-charge[3])/mean_elem1_charge*100-100} [%]')
         elif lattce in ['v1fcc', 'v1bcc', 'v1hcp', 'v1sc', 'v1dia1']:
-            charges.append(charge)
+            dcharge = []
+            for charge_1atom in charge:
+                dcharge.append(valence_electrons2-charge_1atom)
+            charges.append(dcharge)
         
         #print(f'Charges [e]: {charge}')
         print(f'Charges [e]: {charges[ndata-1][:]}')
@@ -1454,6 +1460,8 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
                 except OSError as e:
                     print(f"Error: Do not delete {file_path}, {e.strerror}")
         ndata += 1
+        # get atomic position
+        atomic_positions.append(atoms.get_positions().tolist())
         print("-------------------------------------------------------------------------------------")
 
     if D_flag == 0:
@@ -1621,6 +1629,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
     return_data['Charges (e)'] = charges
     if lattce in ['v1fcc', 'v1bcc', 'v1hcp', 'v1sc', 'v1dia1']:
         return_data['Vacancy energy (eV)'] = vacancy_energy
+        return_data['Atomic Positions'] = atomic_positions
     return return_data
 
 
@@ -1742,6 +1751,7 @@ for i, combination in enumerate(element_combinations):
         fieldnames.append('Charges (e)')
         if lattce in ['v1fcc', 'v1bcc', 'v1hcp', 'v1sc', 'v1dia1']:
             fieldnames.append('Vacancy energy (eV)')
+            fieldnames.append('Atomic Positions')
 
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
 
@@ -1821,6 +1831,7 @@ for i, combination in enumerate(element_combinations):
         row_data['Charges (e)'] = result['Charges (e)']
         if lattce in ['v1fcc', 'v1bcc', 'v1hcp', 'v1sc', 'v1dia1']:
             row_data['Vacancy energy (eV)'] = result['Vacancy energy (eV)']
+            row_data['Atomic Positions'] = result['Atomic Positions']
         writer.writerow(row_data)
     
     # Generate the potfit text file output for each volume and cohesive energy
@@ -1985,14 +1996,14 @@ for i, combination in enumerate(element_combinations):
         else:
            print("This code does not provide other structures. (Possible structures: b1, b2, dia, l12, or fcc, bcc, hcp, dia1, dim, ch4, dim1)")
         
-        # xyz_array = [[pos[0], pos[1], pos[2]] for pos in positions]
-        x_coords = [pos[0] for pos in positions]
-        y_coords = [pos[1] for pos in positions]
-        z_coords = [pos[2] for pos in positions]
-        
-        #print(f"## check {natoms} vs. {len(types)}")
-        
         if not lattce in ['v1fcc', 'v1bcc', 'v1hcp', 'v1sc', 'v1dia1']:
+            # xyz_array = [[pos[0], pos[1], pos[2]] for pos in positions]
+            x_coords = [pos[0] for pos in positions]
+            y_coords = [pos[1] for pos in positions]
+            z_coords = [pos[2] for pos in positions]
+            
+            #print(f"## check {natoms} vs. {len(types)}")
+
             with open(f'{directory}/potfit_{lattce}_{element1}-{element2}_{spin_char}.config', 'a') as txtfile:
                 txtfile.write(f"#N {natoms} 1\n")
                 if lattce in ['fcc', 'bcc', 'hcp', 'sc', 'dia1', 'dim1']:
