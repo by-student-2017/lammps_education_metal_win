@@ -677,7 +677,9 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
         c = data.get("Lattice Constant c (A)", None)  # c is optional
         cohesive_energy_unitcell = data["Cohesive Energy (eV/atom)"]
         re = data["Nearest Neighbor Distance (A)"]
+        re2a = a/re
         lat = None
+        nsc = 3 # nsc x nsc x nsc supercell
     else:
         radius1 = atomic_radii[element1]
         radius2 = atomic_radii[element2]
@@ -951,7 +953,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
     elif lattce == 'v1fcc':
         print("Create the fcc 3x3x3 supercell structure (1 vacancy)")
         atoms = bulk(element2, lattce[2:], a, orthorhombic=True)
-        P = [[3, 0, 0],[0, 3, 0],[0, 0, 3]]
+        P = [[nsc, 0, 0],[0, nsc, 0],[0, 0, nsc]]
         atoms = make_supercell(atoms, P)
         del atoms[0]
         kpt = 2 # = 6/3
@@ -961,7 +963,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
     elif lattce == 'v1bcc':
         print("Create the bcc 3x3x3 supercell structure (1 vacancy)")
         atoms = bulk(element2, lattce[2:], a, orthorhombic=True)
-        P = [[3, 0, 0],[0, 3, 0],[0, 0, 3]]
+        P = [[nsc, 0, 0],[0, nsc, 0],[0, 0, nsc]]
         atoms = make_supercell(atoms, P)
         del atoms[0]
         kpt = 3 # = 9/3
@@ -971,7 +973,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
     elif lattce == 'v1hcp':
         print("Create the hcp 3x3x3 supercell structure (1 vacancy)")
         atoms = bulk(element2, lattce[2:], a, c, orthorhombic=True)
-        P = [[3, 0, 0],[0, 3, 0],[0, 0, 3]]
+        P = [[nsc, 0, 0],[0, nsc, 0],[0, 0, nsc]]
         atoms = make_supercell(atoms, P)
         del atoms[0]
         kpt = 3 # = 9/3
@@ -981,7 +983,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
     elif lattce == 'v1sc':
         print("Create the sc 3x3x3 supercell structure (1 vacancy)")
         atoms = bulk(element2, lattce[2:], a, orthorhombic=True)
-        P = [[3, 0, 0],[0, 3, 0],[0, 0, 3]]
+        P = [[nsc, 0, 0],[0, nsc, 0],[0, 0, nsc]]
         atoms = make_supercell(atoms, P)
         del atoms[0]
         kpt = 3 # = 9/3
@@ -991,7 +993,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
     elif lattce == 'v1dia1':
         print("Create the diamond 3x3x3 supercell structure (1 vacancy)")
         atoms = bulk(element2, lattce[2:], a, orthorhombic=True)
-        P = [[3, 0, 0],[0, 3, 0],[0, 0, 3]]
+        P = [[nsc, 0, 0],[0, nsc, 0],[0, 0, nsc]]
         atoms = make_supercell(atoms, P)
         del atoms[0]
         kpt = 2 # = 6/3
