@@ -261,6 +261,24 @@ The NaCl-type FeH, for which first-principles calculation of lattice parameter a
 #-------------------------------------------------------------
 
 #-------------------------------------------------------------
+# 1NN-MEAM
+## FCC, BCC, Diamond, Dimer
+- beta0: gamma'=(C11-C12)/2
+- beta1, beta2, beta3
+- t1: vacancy energy
+- t2: gamma = C44 or gamma' = (C11-C12)/2
+- t3: FCC-HCP different energy (or stacking fault energy)
+## HCP
+- beta0: Ca = gamma = (C11-C12)/2
+- beta1: 0.0
+- beta2: B, Cb, Cc
+- beta3: 
+- t1: vacancy energy
+- t2: Cb, Cc
+- t3 HCP-FCC different energy (or stacking fault energy)
+#-------------------------------------------------------------
+
+#-------------------------------------------------------------
 # Relationship between EAM and MEAM when "b1=b2=b3=t1=t2=t3=O" (e.g., He of FeHe, or Zn of CuZn and AA7075)
 - If all the b parameters (b1, b2, b3) other than b0 and all the t parameters (t1, t2, t3) other than t0 are 0, then the MEAM is equivalent to the EAM. This is because the MEAM is an extension of the EAM, with the additional parameters b and t being used to introduce angular dependence.
 - Specifically, b0 represents the fundamental term of the angular dependence, and t0 is the parameter for scaling it. If all other parameters are 0, then the angular dependence disappears, resulting in the same form as the EAM.
