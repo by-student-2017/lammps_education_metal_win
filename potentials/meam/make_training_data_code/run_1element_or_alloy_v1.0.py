@@ -1873,3 +1873,5 @@ for i, combination in enumerate(element_combinations):
 print(f"Calculations are complete and results are saved to json MPCv4 and csv file.")
 '''
 print(f"Calculations are complete and results are saved to json file.")
+print(f"----------------------------------------------------------------------")
+print(f"----------------------------------------------------------------------")
