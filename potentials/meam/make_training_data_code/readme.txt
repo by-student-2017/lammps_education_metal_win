@@ -146,6 +146,7 @@ In the case of erose_form=1, this has been improved in later data to show rc = r
 # PBEsol-D2, L12: Fr, Ac, etc -> PBEsol-D3(non threebody)
      Error in routine  init_london (2):
      atom Fr     not found
+# qe-6.7: Ni DIA, In B2, Sb
 #---------------------------------------------------------------------
 # Cutoff: Materials Project
 # 520 eV (= 38.22 Ry): All elements except "Boron"
