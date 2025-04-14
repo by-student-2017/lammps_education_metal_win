@@ -73,6 +73,13 @@ Cs: BCC (re = 6 A), Gauss 0.02 Ry
 Rn: FCC (re = 6 A), Gauss 0.02 Ry
 Note: Ga and Ge calculation stops for unknown reasons.
 
+# Mag
+- Ferro: Cr, Fe-Ni, Fe-Co, Ni-Co
+- Ferri: Mn
+- Fe-Pt, Co-Pt
+- Fe-Rh
+- Mn-O, Ni-O
+
 # Usage
 1. gedit run_alloy_v1.0.py
    (elements = ['Fe', 'Cr', 'Al'] # <- Enter the element you want to calculate)
