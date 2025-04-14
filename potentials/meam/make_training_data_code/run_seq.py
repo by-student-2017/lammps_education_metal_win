@@ -3,24 +3,24 @@ import shutil
 import os
 
 # 1 elements
-#lattices = ['fcc', 'bcc', 'sc', 'dia1', 'hcp']
-#lattices = ['dim1']
+#lattices = ['fcc', 'bcc', 'sc', 'dia1', 'hcp', 'dim1']
+#lattices = ['bcc','fcc']
 #file_path = 'run_1element_or_alloy_v1.0.py'
 
 # 2 pair
 #lattices = ['b1', 'b2', 'l12', 'dia']
-#lattices = ['b2', 'dia']
-#file_path = 'run_alloy_v1.1.py'
+lattices = ['b1', 'b2', 'dia']
+file_path = 'run_alloy_v1.1.py'
 
 # 2 pair
 #lattices = ['b1', 'b2', 'l12', 'dia', 'ch4']
 #lattices = ['v1fcc', 'v1bcc', 'v1hcp', 'v1sc', 'v1dia1']
-lattices = ['v1fcc']
-file_path = 'run_1element_or_alloy_v1.1.py'
+#lattices = ['v1fcc']
+#file_path = 'run_1element_or_alloy_v1.1.py'
 
 calc_dir = 'out'
 
-elements = ['XX'] # <- Enter the element you want to calculate (Note: Time Consumption: Approx. 4 elements/hour)
+elements = ['Cr'] # <- Enter the element you want to calculate (Note: Time Consumption: Approx. 4 elements/hour)
 
 for element in elements:
     # Create the element directory (if it doesn't exist)

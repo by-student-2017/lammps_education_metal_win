@@ -134,6 +134,10 @@ else:
 D_flag = 0 # 0:non-dispersion (non-vdW), 1:DFT-D2, 2: DFT-D3 (no three-body), 3: DFT-D3, (default: 1) (Fr-Pu: 0, 2, or 3)
 #------------------------------------------------------------------
 spin_flag = 1 # 0:non-spin, 1:spin, (default = 1)
+magnetic_type_flag = 2 # 1:Ferro magnetic, 0:set starting_magnetization = 0.0, -1: Anti-ferro magnetic, -2: Anti-ferri magnetic, (default = 2)
+# magnetic_type_flag = 2: Cr: 0.5 -0.5, Mn 0.6 -0.5, Fe 0.7, Co 0.6, Ni
+# Mn (antiferrimagnetic), O and Cr (antiferromagnetic), Fe, Co, and Ni (ferromagnetic).
+# antiferrimagnetic or antiferromagnetic -> automatically set primitive_flag = 0
 #------------------------------------------------------------------
 # Set the number of OpenMP/MPI settings (This is not working.)
 mpi_num_procs = 8 # Test CPU: 12th Gen Intel(R) Core(TM) i7-12700
@@ -151,6 +155,7 @@ max_retries = 20 # default = 100
 #----------------------------------------------------------------------------------------------------------------------------------------------------------
 #----------------------------------------------------------------------------------------------------------------------------------------------------------
 
+# Dummy: Am = CrAF, Cm=MnAF
 # Define covalent radii for elements (in angstroms)
 covalent_radii = {
      "H": 0.31, "He": 0.28, "Li": 1.28, "Be": 0.96,  "B": 0.84,  "C": 0.76,  "N": 0.71,  "O": 0.66,  "F": 0.57, "Ne": 0.58,
@@ -162,7 +167,7 @@ covalent_radii = {
     "Pm": 1.99, "Sm": 1.98, "Eu": 1.98, "Gd": 1.96, "Tb": 1.94, "Dy": 1.92, "Ho": 1.92, "Er": 1.89, "Tm": 1.90, "Yb": 1.87,
     "Lu": 1.87, "Hf": 1.75, "Ta": 1.70,  "W": 1.62, "Re": 1.51, "Os": 1.44, "Ir": 1.41, "Pt": 1.36, "Au": 1.36, "Hg": 1.32,
     "Tl": 1.45, "Pb": 1.46, "Bi": 1.48, "Po": 1.40, "At": 1.50, "Rn": 1.50, "Fr": 2.60, "Ra": 2.21, "Ac": 2.15, "Th": 2.06,
-    "Pa": 2.00,  "U": 1.96, "Np": 1.90, "Pu": 1.87, "XX": 2.00
+    "Pa": 2.00,  "U": 1.96, "Np": 1.90, "Pu": 1.87, "XX": 2.00, "Am": 1.39, "Cm": 1.39
 }
 
 # Define atomic radii for elements (in angstroms)
@@ -176,7 +181,7 @@ atomic_radii = {
     "Pm": 2.00, "Sm": 1.98, "Eu": 1.98, "Gd": 1.96, "Tb": 1.94, "Dy": 1.92, "Ho": 1.92, "Er": 1.89, "Tm": 1.90, "Yb": 1.87,
     "Lu": 1.87, "Hf": 1.75, "Ta": 1.70,  "W": 1.62, "Re": 1.51, "Os": 1.44, "Ir": 1.41, "Pt": 1.36, "Au": 1.36, "Hg": 1.32,
     "Tl": 1.70, "Pb": 2.02, "Bi": 2.07, "Po": 1.40, "At": 1.50, "Rn": 1.50, "Fr": 2.60, "Ra": 2.21, "Ac": 2.15, "Th": 2.06,
-    "Pa": 2.00,  "U": 1.96, "Np": 1.90, "Pu": 1.87, "XX": 2.00
+    "Pa": 2.00,  "U": 1.96, "Np": 1.90, "Pu": 1.87, "XX": 2.00, "Am": 1.66, "Cm": 1.61
 }
 
 # Define van der Waals radii for elements (in angstroms)
@@ -190,7 +195,7 @@ vdw_radii = {
     "Pm": 2.00, "Sm": 2.00, "Eu": 2.00, "Gd": 2.00, "Tb": 2.00, "Dy": 2.00, "Ho": 2.00, "Er": 2.00, "Tm": 2.00, "Yb": 2.00,
     "Lu": 2.00, "Hf": 2.00, "Ta": 2.00,  "W": 2.00, "Re": 2.00, "Os": 2.00, "Ir": 2.00, "Pt": 1.75, "Au": 1.66, "Hg": 1.55,
     "Tl": 1.96, "Pb": 2.02, "Bi": 2.07, "Po": 2.00, "At": 2.00, "Rn": 2.20, "Fr": 2.00, "Ra": 2.00, "Ac": 2.00, "Th": 2.00,
-    "Pa": 2.00,  "U": 1.96, "Np": 1.90, "Pu": 1.87, "XX": 2.00
+    "Pa": 2.00,  "U": 1.96, "Np": 1.90, "Pu": 1.87, "XX": 2.00, "Am": 2.00, "Cm": 2.00
 }
 
 atomic_numbers = {
@@ -203,7 +208,7 @@ atomic_numbers = {
     "Pm": 61, "Sm": 62, "Eu": 63, "Gd": 64, "Tb": 65, "Dy": 66, "Ho": 67, "Er": 68, "Tm": 69, "Yb": 70,
     "Lu": 71, "Hf": 72, "Ta": 73,  "W": 74, "Re": 75, "Os": 76, "Ir": 77, "Pt": 78, "Au": 79, "Hg": 80,
     "Tl": 81, "Pb": 82, "Bi": 83, "Po": 84, "At": 85, "Rn": 86, "Fr": 87, "Ra": 88, "Ac": 89, "Th": 90,
-    "Pa": 91,  "U": 92, "Np": 93, "Pu": 94, "XX": 95
+    "Pa": 91,  "U": 92, "Np": 93, "Pu": 94, "XX": 95, "Am": 24, "Cm": 25
 }
 
 atomic_masses = {
@@ -216,7 +221,7 @@ atomic_masses = {
     "Pm": 145,    "Sm": 150.36, "Eu": 151.96, "Gd": 157.25, "Tb": 158.93, "Dy": 162.50, "Ho": 164.93, "Er": 167.26, "Tm": 168.93, "Yb": 173.05,
     "Lu": 174.97, "Hf": 178.49, "Ta": 180.95,  "W": 183.84, "Re": 186.21, "Os": 190.23, "Ir": 192.22, "Pt": 195.08, "Au": 196.97, "Hg": 200.59,
     "Tl": 204.38, "Pb": 207.2,  "Bi": 208.98, "Po": 209,    "At": 210,    "Rn": 222,    "Fr": 223,    "Ra": 226,    "Ac": 227,    "Th": 232.04,
-    "Pa": 231.04,  "U": 238.03, "Np": 237,    "Pu": 244,    "XX": 999
+    "Pa": 231.04,  "U": 238.03, "Np": 237,    "Pu": 244,    "XX": 999,    "Am": 51.996, "Cm": 54.938
 }
 
 # CN = coordination number, z = CN
@@ -649,7 +654,7 @@ def calculate_elastic_constants(atoms, calc, shear_strains, normal_strains):
 
 
 
-def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, max_retries=100, lattce='', lat='', npoints=25, primitive_flag=1, PBEsol_flag=0, spin_flag=1, D_flag=1, cutoff=520):
+def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, max_retries=100, lattce='', lat='', npoints=25, primitive_flag=1, PBEsol_flag=0, spin_flag=1, D_flag=1, cutoff=520, magnetic_type_flag=2):
     element1, element2 = elements_combination
     
     if lattce in ['fcc', 'bcc', 'hcp', 'sc', 'dia1', 'dim1', 'v1fcc', 'v1bcc', 'v1hcp', 'v1sc', 'v1dia1']:
@@ -664,7 +669,14 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
         if spin_flag == 0:
             spin_char = 'non-spin'
         else:
-            spin_char = 'spin'
+            if magnetic_type_flag == -1:
+                spin_char = 'spin_ferro'
+            if magnetic_type_flag == -1: # Cr
+                spin_char = 'spin_anti-ferro'
+            elif magnetic_type_flag == -2: # Mn
+                spin_char = 'spin_anti-ferri'
+            else:
+                spin_char = 'spin'
         if PBEsol_flag == 0:
             DFT = 'PBE'
         else:
@@ -693,6 +705,12 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
         else:
             re = (radius1 + radius2)
             print(f'Start Nearest Neighbor Distance, re = (radius1 + radius2) = {re} [A]')
+    
+    if magnetic_type_flag in [2]:
+        if element2 in ['Cr', 'Mn']:
+            primitive_flag = 0
+    elif magnetic_type_flag in [-1, -2]:
+        primitive_flag = 0
     
     #primitive_flag == 1 # 0:conventional cell, 1:primitive cell
     if lattce == 'b1':
@@ -842,6 +860,15 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
             re = lat / re2a
         a = re * re2a
         if primitive_flag == 0:
+            atoms = Atoms(f'{element2}', 
+                    positions=[(0, 0, 0)], 
+                    cell=[(-0.5*a, 0.5*a, 0.5*a), (0.5*a, -0.5*a, 0.5*a), (0.5*a, 0.5*a, -0.5*a)],
+                    pbc=True)
+            kpt = 9 # 6 or 8
+            kptc = kpt
+            Nelem1 = 0
+            Nelem2 = 1
+        else:
             #atoms = bulk('{element2}', 'bcc', a)
             atoms = Atoms(f'{element2}2', 
                     positions=[(0, 0, 0),(0.5*a, 0.5*a, 0.5*a)], 
@@ -851,15 +878,6 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
             kptc = kpt
             Nelem1 = 0
             Nelem2 = 2
-        else:
-            atoms = Atoms(f'{element2}', 
-                    positions=[(0, 0, 0)], 
-                    cell=[(-0.5*a, 0.5*a, 0.5*a), (0.5*a, -0.5*a, 0.5*a), (0.5*a, 0.5*a, -0.5*a)],
-                    pbc=True)
-            kpt = 9 # 6 or 8
-            kptc = kpt
-            Nelem1 = 0
-            Nelem2 = 1
     elif lattce == 'sc':
         print("Create the SC structure (1 element)")
         lattice_type = 'SC (1 element)'
@@ -1104,10 +1122,82 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
         #calc = Espresso(pseudopotentials=pseudopotentials_dict, input_data=input_data, kpts=(kpt, kpt, kptc), nspin=nspin, command=f'mpirun -np {mpi_num_procs} pw.x < espresso.pwi > espresso.pwo')
     atoms.set_calculator(calc)
     
-    # BCC: P
-    #     Error in routine electrons (1):
-    # charge is wrong
-    #input_data['system']['starting_magnetization(1)'] = 1.0
+    if magnetic_type_flag == 2:
+        if element1 == 'Cr':
+            smag1 =  0.5
+        elif element1 == 'Mn':
+            smag1 =  0.6
+        elif element1 == 'Fe':
+            smag1 =  0.7
+        elif element1 == 'Co':
+            smag1 =  0.6
+        elif element1 == 'Ni':
+            smag1 =  0.5
+        else:
+            smag1 =  0.2
+        #---------------------
+        if element1 in ['Cr', 'Mn']:
+            if element2 == 'Cr':
+                smag2 = -0.5
+            elif element2 == 'Am':
+                smag2 = -0.5
+            elif element2 == 'Mn':
+                smag2 = -0.5
+            elif element2 == 'Cm':
+                smag2 = -0.5
+            elif element2 == 'Fe':
+                smag2 = -0.7
+            elif element2 == 'Co':
+                smag2 = -0.6
+            elif element2 == 'Rh':
+                smag2 = -0.55
+            elif element2 == 'Ni':
+                smag2 = -0.5
+            elif element2 == 'Pt':
+                smag2 = -0.45
+            else:
+                smag2 = -0.2
+        else:
+            if element2 == 'Fe':
+                smag2 =  0.7
+            elif element2 == 'Co':
+                smag2 =  0.6
+            elif element2 == 'Ni':
+                smag2 =  0.5
+            else:
+                smag2 =  0.2
+        if lattce in ['fcc', 'hcp', 'bcc', 'sc', 'dia1', 'dim1']:
+            if primitive_flag == 1:
+                atoms.set_initial_magnetic_moments([smag2/0.0625])
+            else:
+                atoms.set_initial_magnetic_moments([smag1/0.0625, smag2/0.0625]) # range -1/0.0625 to 1/0.0625
+        elif lattce in ['b1', 'b2', 'dia']:
+            atoms.set_initial_magnetic_moments([smag1/0.0625, smag2/0.0625])
+        elif lattce in ['l12']:
+            atoms.set_initial_magnetic_moments([smag1/0.0625, smag2/4/0.0625, smag2/4/0.0625, smag2/4/0.0625, smag2/4/0.0625])
+    elif magnetic_type_flag == 1:
+        # ferro magnetic (e.g., Fe, Co, Ni)
+        if lattce in ['fcc', 'hcp', 'bcc', 'sc', 'dia1', 'dim1']:
+            atoms.set_initial_magnetic_moments([0.5/0.0625])
+        elif lattce in ['b1', 'b2', 'dia']:
+            atoms.set_initial_magnetic_moments([0.5/0.0625, 0.5/0.0625]) # range -1/0.0625 to 1/0.0625
+        elif lattce in ['l12']:
+            atoms.set_initial_magnetic_moments([0.5/0.0625, 0.125/0.0625, 0.125/0.0625, 0.125/0.0625])
+    elif magnetic_type_flag == -1:
+        # anti-ferro magnetic (e.g., Cr)
+        if lattce in ['b1', 'b2', 'dia']:
+            atoms.set_initial_magnetic_moments([0.5/0.0625, -0.5/0.0625])
+        elif lattce ['l12']:
+            atoms.set_initial_magnetic_moments([0.5/0.0625, -0.125/0.0625, -0.125/0.0625, -0.125/0.0625, -0.125/0.0625])
+    elif magnetic_type_flag == -2:
+        # anti-ferro magnetic (e.g., Mn)
+        if lattce in ['b1', 'b2', 'dia']:
+            atoms.set_initial_magnetic_moments([0.6/0.0625, -0.5/0.0625])
+        elif lattce ['l12']:
+            atoms.set_initial_magnetic_moments([0.6/0.0625, -0.125/0.0625, -0.125/0.0625, -0.125/0.0625, -0.125/0.0625])
+    else:
+        # default = 0.0
+        pass
 
     #-----------------------------------------------------------------------------
     # search optimized structure with vc-relax
@@ -1314,7 +1404,9 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
     energies_per_atom = []
     cohesive_energies_per_atom = []
     
-    atomic_positions = [] # for vacancy energy calculation
+    cells = []
+    atomic_symbols = []
+    atomic_positions = []
 
     skip_indices = []
     tries = 0
@@ -1456,9 +1548,12 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
                     print(f"delete {file_path}")
                 except OSError as e:
                     print(f"Error: Do not delete {file_path}, {e.strerror}")
-        ndata += 1
-        # get atomic position
+        # for lammps input data or potfit
+        cells.append(atoms.get_cell().tolist())
+        atomic_symbols.append(atoms.get_chemical_symbols())
         atomic_positions.append(atoms.get_positions().tolist())
+        #
+        ndata += 1
         print("-------------------------------------------------------------------------------------")
 
     if D_flag == 0:
@@ -1473,7 +1568,14 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
     if spin_flag == 0:
         spin_char = 'non-spin'
     else:
-        spin_char = 'spin'
+        if magnetic_type_flag == -1:
+            spin_char = 'spin_ferro'
+        if magnetic_type_flag == -1: # Cr
+            spin_char = 'spin_anti-ferro'
+        elif magnetic_type_flag == -2: # Mn
+            spin_char = 'spin_anti-ferri'
+        else:
+            spin_char = 'spin'
 
     if PBEsol_flag == 0:
         DFT = 'PBE'
@@ -1617,7 +1719,12 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
         #'Elastic Constants (GPa)': elastic_constants_final,
         #----------------------------------------------------------
         'Stress Tensor per Volume (GPa)': stress_tensor,
-        'Forces (eV/A)': forces
+        'Forces (eV/A)': forces,
+        #----------------------------------------------------------
+        # For lammps input data
+        'Lattice Vector': cells,
+        'Atomic Positions': atomic_positions,
+        'Atomic Symbols': atomic_symbols
         }
     if spin_flag == 0:
         pass
@@ -1626,7 +1733,6 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
     return_data['Charges (e)'] = charges
     if lattce in ['v1fcc', 'v1bcc', 'v1hcp', 'v1sc', 'v1dia1']:
         return_data['Vacancy Energy (eV)'] = vacancy_energy
-        return_data['Atomic Positions'] = atomic_positions
     return return_data
 
 
@@ -1646,7 +1752,14 @@ for i, combination in enumerate(element_combinations):
     if spin_flag == 0:
         spin_char = 'non-spin'
     else:
-        spin_char = 'spin'
+        if magnetic_type_flag == -1:
+            spin_char = 'spin_ferro'
+        if magnetic_type_flag == -1: # Cr
+            spin_char = 'spin_anti-ferro'
+        elif magnetic_type_flag == -2: # Mn
+            spin_char = 'spin_anti-ferri'
+        else:
+            spin_char = 'spin'
 
     if PBEsol_flag == 0:
         DFT = 'PBE'
@@ -1658,7 +1771,7 @@ for i, combination in enumerate(element_combinations):
         os.makedirs(directory)
 
     results = []
-    result = calculate_properties(combination, omp_num_threads, mpi_num_procs, max_retries, lattce, lat, npoints, primitive_flag, PBEsol_flag, spin_flag, D_flag, cutoff)
+    result = calculate_properties(combination, omp_num_threads, mpi_num_procs, max_retries, lattce, lat, npoints, primitive_flag, PBEsol_flag, spin_flag, D_flag, cutoff, magnetic_type_flag)
     element1, element2 = combination
     if lattce in ['fcc', 'bcc', 'hcp', 'sc', 'dia1', 'dim1', 'v1fcc', 'v1bcc', 'v1hcp', 'v1sc', 'v1dia1']:
         element1 = '1element'
@@ -1683,7 +1796,7 @@ for i, combination in enumerate(element_combinations):
     with open(f'{directory}/{lattce}_{element1}-{element2}_{spin_char}.json', 'a') as jsonfile:
         json.dump(result, jsonfile, indent=4)
         jsonfile.write('\n')
-
+'''
     with open(f'{directory}.csv', 'a', newline='') as csvfile:
         fieldnames = ['Element1', 'Element2']
         if lattce in ['fcc', 'bcc', 'hcp', 'sc', 'dia1', 'dim1', 'v1fcc', 'v1bcc', 'v1hcp', 'v1sc', 'v1dia1']:
@@ -1738,8 +1851,12 @@ for i, combination in enumerate(element_combinations):
                       'Energies (eV)', 
                       'Cohesive Energies (eV)', 
                       'Stress Tensor per Volume (GPa)',
-                      'Forces (eV/A)'
+                      'Forces (eV/A)',
                       #-----------------------------------------------
+                      # For lammps input data
+                      'Lattice Vector',
+                      'Atomic Positions',
+                      'Atomic Symbols'
                       ])
         if spin_flag == 0:
             pass
@@ -1748,7 +1865,6 @@ for i, combination in enumerate(element_combinations):
         fieldnames.append('Charges (e)')
         if lattce in ['v1fcc', 'v1bcc', 'v1hcp', 'v1sc', 'v1dia1']:
             fieldnames.append('Vacancy Energy (eV)')
-            fieldnames.append('Atomic Positions')
 
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
 
@@ -1819,7 +1935,12 @@ for i, combination in enumerate(element_combinations):
             #'C66': result['Elastic Constants (GPa)']['C66'],
             #-----------------------------------------------
             'Stress Tensor per Volume (GPa)': result['Stress Tensor per Volume (GPa)'],
-            'Forces (eV/A)': result['Forces (eV/A)']
+            'Forces (eV/A)': result['Forces (eV/A)'],
+            #-----------------------------------------------
+            #For lammps input file
+            'Lattice Vector': result['Lattice Vector'],
+            'Atomic Positions': result['Atomic Positions'],
+            'Atomic Symbols': result['Atomic Symbols']
             })
         if spin_flag == 0:
             pass
@@ -1828,7 +1949,6 @@ for i, combination in enumerate(element_combinations):
         row_data['Charges (e)'] = result['Charges (e)']
         if lattce in ['v1fcc', 'v1bcc', 'v1hcp', 'v1sc', 'v1dia1']:
             row_data['Vacancy Energy (eV)'] = result['Vacancy Energy (eV)']
-            row_data['Atomic Positions'] = result['Atomic Positions']
         writer.writerow(row_data)
     
     # Generate the potfit text file output for each volume and cohesive energy
@@ -1856,6 +1976,12 @@ for i, combination in enumerate(element_combinations):
         
         with open(f'{directory}/MPCv4_{element1}-{element2}-DFT_{lattce}_{spin_char}', 'a') as mpcfile:
            mpcfile.write(f"{volume}  {cohesive_energy*-1.0}\n")
+        
+        if magnetic_type_flag in [2]:
+            if element2 in ['Cr', 'Mn']:
+                primitive_flag = 0
+        elif magnetic_type_flag in [-1, -2]:
+            primitive_flag = 0
         
         if lattce == 'b1':
            #print(f"{idx}: Create the FCC B1 (NaCl-type) structure")
@@ -1933,17 +2059,17 @@ for i, combination in enumerate(element_combinations):
            Z = [0,  0,  lc]
         elif lattce == 'bcc':
            if primitive_flag == 0:
-               types=[0,0]
-               positions=[(0, 0, 0),(0.5*ac, 0.5*ac, 0.5*ac)]
-               X = [ac, 0,  0 ]
-               Y = [0,  ac, 0 ]
-               Z = [0,  0,  ac]
-           else:
                types=[0]
                positions=[(0, 0, 0)]
                X = [-0.5*ap,  0.5*ap,  0.5*ap]
                Y = [ 0.5*ap, -0.5*ap,  0.5*ap]
                Z = [ 0.5*ap,  0.5*ap, -0.5*ap]
+           else:
+               types=[0,0]
+               positions=[(0, 0, 0),(0.5*ac, 0.5*ac, 0.5*ac)]
+               X = [ac, 0,  0 ]
+               Y = [0,  ac, 0 ]
+               Z = [0,  0,  ac]
         elif lattce == 'sc':
            types=[0]
            positions=[(0, 0, 0)]
@@ -2025,5 +2151,6 @@ for i, combination in enumerate(element_combinations):
 
     print(f"----------------------------------------------------------------------")
     print(f"Processed combination {i+1}/{len(element_combinations)}: {combination}")
-
 print(f"Calculations are complete and results are saved to json MPCv4 and csv file.")
+'''
+print(f"Calculations are complete and results are saved to json file.")
