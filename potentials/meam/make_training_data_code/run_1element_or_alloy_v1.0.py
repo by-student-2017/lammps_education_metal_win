@@ -998,6 +998,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
         #calc = Espresso(pseudopotentials=pseudopotentials_dict, input_data=input_data, kpts=(kpt, kpt, kptc), nspin=nspin, command=f'mpirun -np {mpi_num_procs} pw.x < espresso.pwi > espresso.pwo')
     atoms.set_calculator(calc)
     
+    # Negative candidate: Cr, Mn, Co, Ni
     print(f'{element1} mag:',start_mag[element1])
     print(f'{element2} mag:',start_mag[element2])
     smag1 = start_mag[element1]/0.0625
@@ -1015,17 +1016,17 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
         if lattce ['l12']:
             atoms.set_initial_magnetic_moments([smag1/4, smag1/4, smag1/4, smag1/4, -smag2])
         elif len(atoms) == 1:
-            atoms.set_initial_magnetic_moments(smag1)
+            atoms.set_initial_magnetic_moments([smag1])
         elif len(atoms) == 2:
-            atoms.set_initial_magnetic_moments(smag1, -smag2)
+            atoms.set_initial_magnetic_moments([smag1, -smag2])
     elif magnetic_type_flag == -2:
         print('anti-ferro magnetic calculation (e.g., Mn)')
         if lattce ['l12']:
             atoms.set_initial_magnetic_moments([smag1/4, smag1/4, smag1/4, smag1/4, -smag2])
         elif len(atoms) == 1:
-            atoms.set_initial_magnetic_moments(smag1)
+            atoms.set_initial_magnetic_moments([smag1])
         elif len(atoms) == 2:
-            atoms.set_initial_magnetic_moments(smag1, -smag2*0.9)
+            atoms.set_initial_magnetic_moments([smag1, -smag2*0.9])
     else:
         # default = 0.0 in ASE
         pass
