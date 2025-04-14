@@ -67,18 +67,15 @@ npoints = 7 # >= 7 e.g., 7, 11, 17, 21, or 25, etc (Recommend >= 25), (default =
 # Note: "fixed_element" becomes a dummy when a lattice of one element is selected (the atom in *.json is temporarily specified).
 fixed_element = 'XX'
 #fixed_element = 'YYYYYYYYYY'
-elements = [fixed_element, 'Fe']
-'''
-             'H',                                                                                                 'He',
-            'Li', 'Be',                                                              'B',  'C',  'N',  'O',  'F', 'Ne',
-            'Na', 'Mg',                                                             'Al', 'Si',  'P',  'S', 'Cl', 'Ar',
-             'K', 'Ca', 'Sc', 'Ti',  'V', 'Cr', 'Mn', 'Fe', 'Co', 'Ni', 'Cu', 'Zn', 'Ga', 'Ge', 'As', 'Se', 'Br', 'Kr',
-            'Rb', 'Sr',  'Y', 'Zr', 'Nb', 'Mo', 'Tc', 'Ru', 'Rh', 'Pd', 'Ag', 'Cd', 'In', 'Sn', 'Sb', 'Te',  'I', 'Xe',
+elements = [fixed_element,
+            'Li', 'Be',
+            'Na', 'Mg',                                                             'Al', 'Si',  'P',  'S',
+             'K', 'Ca', 'Sc', 'Ti',  'V', 'Cr', 'Mn', 'Fe', 'Co', 'Ni', 'Cu', 'Zn', 'Ga', 'Ge', 'As', 'Se', 'Br',
+            'Rb', 'Sr',  'Y', 'Zr', 'Nb', 'Mo', 'Tc', 'Ru', 'Rh', 'Pd', 'Ag', 'Cd', 'In', 'Sn', 'Sb', 'Te',  'I',
             'Cs', 'Ba', 'La', 
                         'Ce', 'Pr', 'Nd', 'Pm', 'Sm', 'Eu', 'Gd', 'Tb', 'Dy', 'Ho', 'Er', 'Tm', 'Yb', 'Lu', 
                               'Hf', 'Ta',  'W', 'Re', 'Os', 'Ir', 'Pt', 'Au', 'Hg', 'Tl', 'Pb', 'Bi', 'Po', 'At', 'Ra',
             'Rn', 'Fr', 'Ac', 'Th', 'Pa',  'U', 'Np', 'Pu'] # <- Enter the element you want to calculate (Note: Time Consumption: Approx. 4 elements/hour)
-'''
 #elements = [fixed_element, 'Ce', 'Pr', 'Nd', 'Pm', 'Sm', 'Eu', 'Gd', 'Tb', 'Dy', 'Ho', 'Er', 'Tm', 'Yb', 'Lu'] # Pairs with noble gases require careful calculations and must be calculated separately.
 #elements = [fixed_element, 'Po', 'At', 'Ra', 'Rn', 'Fr', 'Ac', 'Th', 'Pa',  'U', 'Np', 'Pu'] # Pairs with noble gases require careful calculations and must be calculated separately.
 #elements = [fixed_element, 'He', 'Ne', 'Ar', 'Kr', 'Xe', 'Ra'] # Pairs with noble gases require careful calculations and must be calculated separately.
@@ -680,7 +677,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
         re = data["Nearest Neighbor Distance (A)"]
         re2a = a/re
         lat = None
-        nsc = 2 # nsc x nsc x nsc supercell
+        nsc = 3 # nsc x nsc x nsc supercell
     else:
         radius1 = atomic_radii[element1]
         radius2 = atomic_radii[element2]
@@ -1628,7 +1625,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
         return_data['Magnetic Moments (Bohr)'] = magnetic_moments
     return_data['Charges (e)'] = charges
     if lattce in ['v1fcc', 'v1bcc', 'v1hcp', 'v1sc', 'v1dia1']:
-        return_data['Vacancy energy (eV)'] = vacancy_energy
+        return_data['Vacancy Energy (eV)'] = vacancy_energy
         return_data['Atomic Positions'] = atomic_positions
     return return_data
 
@@ -1750,7 +1747,7 @@ for i, combination in enumerate(element_combinations):
             fieldnames.append('Magnetic Moments (Bohr)')
         fieldnames.append('Charges (e)')
         if lattce in ['v1fcc', 'v1bcc', 'v1hcp', 'v1sc', 'v1dia1']:
-            fieldnames.append('Vacancy energy (eV)')
+            fieldnames.append('Vacancy Energy (eV)')
             fieldnames.append('Atomic Positions')
 
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
@@ -1830,7 +1827,7 @@ for i, combination in enumerate(element_combinations):
             row_data['Magnetic Moments (Bohr)'] = result['Magnetic Moments (Bohr)']
         row_data['Charges (e)'] = result['Charges (e)']
         if lattce in ['v1fcc', 'v1bcc', 'v1hcp', 'v1sc', 'v1dia1']:
-            row_data['Vacancy energy (eV)'] = result['Vacancy energy (eV)']
+            row_data['Vacancy Energy (eV)'] = result['Vacancy Energy (eV)']
             row_data['Atomic Positions'] = result['Atomic Positions']
         writer.writerow(row_data)
     
