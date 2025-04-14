@@ -23,7 +23,7 @@ calc_dir = 'out'
 elements = ['XX'] # <- Enter the element you want to calculate (Note: Time Consumption: Approx. 4 elements/hour)
 
 spin_flag = 1
-magnetic_type_flag = 2
+magnetic_type_flag = 1
 
 if spin_flag == 0:
     spin_char = 'non-spin'

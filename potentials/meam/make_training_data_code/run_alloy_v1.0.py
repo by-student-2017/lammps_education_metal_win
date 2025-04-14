@@ -772,16 +772,20 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
     #calc = Espresso(pseudopotentials=pseudopotentials_dict, input_data=input_data, kpts=(kpt, kpt, kpt), nspin=nspin, command=f'mpirun -np {mpi_num_procs} pw.x < espresso.pwi > espresso.pwo')
     atoms.set_calculator(calc)
 
+    print(f'{element1} mag:',start_mag[element1])
+    print(f'{element2} mag:',start_mag[element2])
     smag1 = start_mag[element1]/0.0625
     smag2 = start_mag[element2]/0.0625
+    if lattce in ['fcc', 'hcp', 'bcc', 'sc', 'dia1', 'dim1', 'v1fcc', 'v1bcc', 'v1hcp', 'v1sc', 'v1dia1']:
+        smag1 = smag2
     if magnetic_type_flag == 1:
-        # ferro magnetic (e.g., Fe, Co, Ni)
+        print('ferro magnetic calculation (e.g., Fe, Co, Ni)')
         if lattce in ['l12']:
             atoms.set_initial_magnetic_moments([smag1/4, smag1/4, smag1/4, smag1/4, smag2])
         else:
             atoms.set_initial_magnetic_moments([smag1] * len(atoms))
     elif magnetic_type_flag == -1:
-        # anti-ferro magnetic (e.g., Cr)
+        print('anti-ferro magnetic calculation (e.g., Cr)')
         if lattce ['l12']:
             atoms.set_initial_magnetic_moments([smag1/4, smag1/4, smag1/4, smag1/4, -smag2])
         elif len(atoms) == 1:
@@ -789,7 +793,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
         elif len(atoms) == 2:
             atoms.set_initial_magnetic_moments(smag1, -smag2)
     elif magnetic_type_flag == -2:
-        # anti-ferro magnetic (e.g., Mn)
+        print('anti-ferro magnetic calculation (e.g., Mn)')
         if lattce ['l12']:
             atoms.set_initial_magnetic_moments([smag1/4, smag1/4, smag1/4, smag1/4, -smag2])
         elif len(atoms) == 1:
