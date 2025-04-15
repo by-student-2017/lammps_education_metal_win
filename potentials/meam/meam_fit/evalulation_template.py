@@ -104,6 +104,7 @@ for cif_file in os.listdir(cif_directory):
                 else:
                     difference_elastic_value += ((float(value) - 0.0))**2
             difference_elastic_value / (bulk_modulus**2)
+            print(f'elastic diff. value: {difference_elastic_value}')
             evalulate_value += difference_elastic_value
             nfiles += 1
             os.chdir('./../')
