@@ -95,12 +95,12 @@ for cif_file in os.listdir(cif_directory):
             for constant, value in elastic_constants.items():
                 #print(f'{constant} = {value} GPa')
                 key = constant[:3]
-                refarence_elastic_value = 0.0
+                reference_elastic_value = 0.0
                 if key in fit_data[cif_file]:
-                    refarence_elastic_value = fit_data[cif_file][key]
+                    reference_elastic_value = fit_data[cif_file][key]
                     #print(f'{constant[:3]} = {refarence_elastic_value} GPa')
-                    difference_elastic_value += ((float(value) - refarence_elastic_value))**2
-                    bulk_modulus += refarence_elastic_value/9
+                    difference_elastic_value += ((float(value) - reference_elastic_value))**2
+                    bulk_modulus += reference_elastic_value/9
                 else:
                     difference_elastic_value += ((float(value) - 0.0))**2
             difference_elastic_value / (bulk_modulus**2)
