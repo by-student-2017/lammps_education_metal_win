@@ -26,6 +26,7 @@ for element in elements:
             cohesive_energy[i] = data.get("Cohesive Energy (eV/atom)", None)  # Corrected the key format
         except FileNotFoundError:
             print(f"File not found: {element}-{lattice}")
+            i += 1
             continue
         i += 1
     cohesive_energy_sorted_indices = np.argsort(cohesive_energy)[::-1]
