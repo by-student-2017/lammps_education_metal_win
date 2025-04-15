@@ -141,13 +141,13 @@ if os.path.exists("./logs.json"):
   load_logs(new_optimizer, logs=["./logs.json"]);
   logger = JSONLogger(path="./logs", reset=False) # Results will be saved in ./logs.json
   new_optimizer.subscribe(Events.OPTIMIZATION_STEP, logger)
-  new_optimizer.maximize(init_points=11, n_iter=(300*1)) # 300 cycle / 6 h
+  new_optimizer.maximize(init_points=21, n_iter=(300*4)) # 300 cycle / 6 h
   new_optimizer.set_gp_params(alpha=1e-3) # The greater the whitenoise, the greater alpha value.
 else:
   optimizer = BayesianOptimization(f=descripter, pbounds=pbounds, verbose=2, random_state=1, bounds_transformer=bounds_transformer, allow_duplicate_points=True)
   logger = JSONLogger(path="./logs") # Results will be saved in ./logs.json
   optimizer.subscribe(Events.OPTIMIZATION_STEP, logger)
-  optimizer.maximize(init_points=(n_gene*11), n_iter=(400*1)) # 600 cycles / 12 h (Note: It depends on the number of parameters and search range, but usually around 150 times is a good value (in n_gene*5 case). I set it to 600 just in case (from after I got home until the next morning).)
+  optimizer.maximize(init_points=(n_gene*21), n_iter=(400*4)) # 600 cycles / 12 h (Note: It depends on the number of parameters and search range, but usually around 150 times is a good value (in n_gene*5 case). I set it to 600 just in case (from after I got home until the next morning).)
   optimizer.set_gp_params(alpha=1e-3) # The greater the whitenoise, the greater alpha value.
   # Note: Since "bounds_transformer" is used to narrow the search area, 
   #  in order to initially search as wide a range as possible, 
