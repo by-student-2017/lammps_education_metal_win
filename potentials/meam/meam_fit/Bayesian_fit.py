@@ -31,29 +31,33 @@ with open('evalulation.py', 'w') as file:
 # Note: It is assumed that Ec, re (or alat), and alpha, t2 for the stable structure are calculated from data from the Materials Project.
 # Note: FCC: b1=b3, BCC, Diamond, dimer: b1=b2=b3
 #-----
-n_gene = 8 # number of parameters
+n_gene = 10 # number of parameters
            # BCC, FCC, Diamond, dimer
 x0 =  0.40 # Asub
-x1 =  4.00 # b0 > 0
+x1 =  4.00 # b0 > 0.5
 x2 =  2.20 # b1
-x3 =  2.00 # b2
+x3 =  2.00 # b2: 1(BCC), 2 or 4 (FCC)
 x4 =  2.00 # b3
 x5 =  1.70 # t1
 x6 = -7.70 # t2
 x7 =  6.00 # t3: < 0 (BCC), > 0 (FCC, Diamond)
+x8 =  2.00 # 0 < Cmin < Cmax
+x9 =  2.80 # Cmin < Cmax < 2.8
 pbounds = {
    'x0': (0.1, 1.5), # Asub, Gas: (1.0, 2.5)
-   'x1': (0, 10), # b0 > 0
+   'x1': (0.5, 10), # b0 > 0.5
    'x2': (0, 10), # b1 > 0
    'x3': (0, 10), # b2 > 0
    'x4': (0, 10), # b3 > 0
-   'x5': (-15,20), # t1
-   'x6': (-15,20), # t2
-   'x7': (-15,20) # t3
+   'x5': (-10,10), # t1
+   'x6': (-15,22), # t2
+   'x7': (-10,10), # t3: < 0 (BCC), > 0 (FCC, Diamond)
+   'x8': (0.1,2.4), # 0 < Cmin < Cmax
+   'x9': (1.4,2.8) # Cmin < Cmax < 2.8
 }
 #-----
 #----------------------------------------------------------------------
-def descripter(x0,x1,x2,x3,x4,x5,x6,x7):
+def descripter(x0,x1,x2,x3,x4,x5,x6,x7,x8,x9):
     #
     '''
     # parameters
@@ -94,6 +98,10 @@ def descripter(x0,x1,x2,x3,x4,x5,x6,x7):
     sx5  = str("{:.2f}".format(x5+R2))
     sx6  = str("{:.2f}".format(x6+R2))
     sx7  = str("{:.2f}".format(x7+R2))
+    sx8  = str("{:.2f}".format(x8+R2))
+    sx9  = str("{:.2f}".format(x9+R2))
+    if sx9 < sx8:
+      sx9 = 2.8
     #
     '''
     sb0  = str("{:.2f}".format(b0+R2))
@@ -116,6 +124,16 @@ def descripter(x0,x1,x2,x3,x4,x5,x6,x7):
     #content = content.replace('Xt2', st2) # analytical
     # Write the modified content to library.meam
     with open('library.meam', 'w') as file:
+        file.write(content)
+    #
+    # Read the content of XX_temp.meam, replace the values, and save it as XX.meam
+    with open('XX_template.meam', 'r') as file:
+        content = file.read()
+    # Replace the values
+    content = content.replace('XCmin', sx8)
+    content = content.replace('XCmax', sx9)
+    # Write the modified content to XX.meam
+    with open('XX.meam', 'w') as file:
         file.write(content)
     #
     #os.system(f"python3 evalulation.py")
@@ -141,13 +159,13 @@ if os.path.exists("./logs.json"):
   load_logs(new_optimizer, logs=["./logs.json"]);
   logger = JSONLogger(path="./logs", reset=False) # Results will be saved in ./logs.json
   new_optimizer.subscribe(Events.OPTIMIZATION_STEP, logger)
-  new_optimizer.maximize(init_points=21, n_iter=(300*4)) # 300 cycle / 6 h
+  new_optimizer.maximize(init_points=5, n_iter=(300*4)) # 300 cycle / 6 h
   new_optimizer.set_gp_params(alpha=1e-3) # The greater the whitenoise, the greater alpha value.
 else:
   optimizer = BayesianOptimization(f=descripter, pbounds=pbounds, verbose=2, random_state=1, bounds_transformer=bounds_transformer, allow_duplicate_points=True)
   logger = JSONLogger(path="./logs") # Results will be saved in ./logs.json
   optimizer.subscribe(Events.OPTIMIZATION_STEP, logger)
-  optimizer.maximize(init_points=(n_gene*21), n_iter=(400*4)) # 600 cycles / 12 h (Note: It depends on the number of parameters and search range, but usually around 150 times is a good value (in n_gene*5 case). I set it to 600 just in case (from after I got home until the next morning).)
+  optimizer.maximize(init_points=(n_gene*5), n_iter=(400*4)) # 600 cycles / 12 h (Note: It depends on the number of parameters and search range, but usually around 150 times is a good value (in n_gene*5 case). I set it to 600 just in case (from after I got home until the next morning).)
   optimizer.set_gp_params(alpha=1e-3) # The greater the whitenoise, the greater alpha value.
   # Note: Since "bounds_transformer" is used to narrow the search area, 
   #  in order to initially search as wide a range as possible, 

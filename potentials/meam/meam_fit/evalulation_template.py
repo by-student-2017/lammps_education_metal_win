@@ -38,7 +38,7 @@ def extract_elastic_constants(log_file_path):
         with open(log_file_path, 'r') as log_file:
             for line in log_file:
                 if 'print "' not in line: # Exclude lines containing 'print "'
-                    match = re.search(r'Elastic Constant (C\d+all) = ([\d.]+) GPa', line)
+                    match = re.search(r'Elastic Constant (C\d+all) = ([\d.eE+-]+) GPa', line)
                     if match:
                         constant_name = match.group(1)
                         constant_value = float(match.group(2))
@@ -98,10 +98,11 @@ for cif_file in os.listdir(cif_directory):
                 reference_elastic_value = 0.0
                 if key in fit_data[cif_file]:
                     reference_elastic_value = fit_data[cif_file][key]
-                    #print(f'{constant[:3]} = {refarence_elastic_value} GPa')
+                    print(f'{key}: {value}(this meam), {reference_elastic_value}(data.json) ([GPa] unit)')
                     difference_elastic_value += ((float(value) - reference_elastic_value))**2
                     bulk_modulus += reference_elastic_value/9
                 else:
+                    print(f'{key}: {value}(this meam), 0.0 (data.json) ([GPa] unit)')
                     difference_elastic_value += ((float(value) - 0.0))**2
             difference_elastic_value / (bulk_modulus**2)
             print(f'elastic diff. value: {difference_elastic_value}')
@@ -132,6 +133,7 @@ for cif_file in os.listdir(cif_directory):
         print(f'The difference energy (eV/atom) is {difference_energy}')
         nfiles += 1
         
+        os.remove(log_file_path)
         os.remove(temp_file_path)
         gc.collect()
         
