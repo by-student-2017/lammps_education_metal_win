@@ -113,7 +113,7 @@ Conclusion
 #-------------------------------------------------------------
 # For new Materials Project data
 - The Equation of states (EOS) is in Mechanical.
-- I can not find charge, force, or defect formation energy.
+- I can not find atomic charge, force, or defect formation energy.
 - This should be considered when building a new database.
 #-------------------------------------------------------------
 
