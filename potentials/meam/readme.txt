@@ -112,7 +112,9 @@ Conclusion
 
 #-------------------------------------------------------------
 # For new Materials Project data
-- The new version of the Materials Project no longer contains the limited data on EOS. The existence of EOS is important in the development of potentials. There is no charge, force, or defect formation energy. This should be considered when building a new database.
+- The new version of the Materials Project no longer contains the limited data on EOS. 
+- The existence of EOS is important in the development of potentials (And, I can not find charge, force, or defect formation energy, also.)
+- This should be considered when building a new database.
 #-------------------------------------------------------------
 
 #-------------------------------------------------------------
