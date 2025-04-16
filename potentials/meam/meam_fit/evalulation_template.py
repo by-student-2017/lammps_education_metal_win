@@ -95,15 +95,19 @@ for cif_file in os.listdir(cif_directory):
             for constant, value in elastic_constants.items():
                 #print(f'{constant} = {value} GPa')
                 key = constant[:3]
+                symmetric_key = key[0] + key[2] + key[1]
                 reference_elastic_value = 0.0
-                if key in fit_data[cif_file]:
+                if key in fit_data[cif_file]: # e.g., C12, C13, or C23
                     reference_elastic_value = fit_data[cif_file][key]
-                    print(f'{key}: {value}(this meam), {reference_elastic_value}(data.json) ([GPa] unit)')
-                    difference_elastic_value += ((float(value) - reference_elastic_value))**2
-                    bulk_modulus += reference_elastic_value/9
-                else:
-                    print(f'{key}: {value}(this meam), 0.0 (data.json) ([GPa] unit)')
-                    difference_elastic_value += ((float(value) - 0.0))**2
+                elif symmetric_key in fit_data[cif_file]: # e.g., C21, C31, or C32
+                    reference_elastic_value = fit_data[cif_file][symmetric_key]
+                elif key in ['C22', 'C33'] and 'C11' in fit_data[cif_file]:
+                    reference_elastic_value = fit_data[cif_file]['C11']
+                elif key in ['C55', 'C66'] and 'C11' in fit_data[cif_file]:
+                    reference_elastic_value = fit_data[cif_file]['C44']
+                print(f'{key}: {value}(this meam), {reference_elastic_value}(data.json) ([GPa] unit)')
+                difference_elastic_value += ((float(value) - reference_elastic_value))**2
+                bulk_modulus += reference_elastic_value/9
             difference_elastic_value / (bulk_modulus**2)
             print(f'elastic diff. value: {difference_elastic_value}')
             evalulate_value += difference_elastic_value
