@@ -111,6 +111,11 @@ Conclusion
 #-------------------------------------------------------------
 
 #-------------------------------------------------------------
+# For new Materials Project data
+- The new version of the Materials Project no longer contains the limited data on EOS. The existence of EOS is important in the development of potentials. There is no charge, force, or defect formation energy. This should be considered when building a new database.
+#-------------------------------------------------------------
+
+#-------------------------------------------------------------
 # The electron density function (with orientation dependence) rho(h) is related with b(h). h=0,1,2,3. i.e., b(0) = b0, etc.
 #   rho(h) is related with "Direction vector using rij" * exp{-b(h)*(r/re-1)}
 #   The number of direction vectors to be multiplied increases as h increases. (Spherical symmetry at h=0.)
