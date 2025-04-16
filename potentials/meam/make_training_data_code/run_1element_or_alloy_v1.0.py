@@ -55,7 +55,7 @@ npoints = 7 # >= 7 e.g., 7, 11, 17, 21, or 25, etc (Recommend >= 25), (default =
 # Note: "fixed_element" becomes a dummy when a lattice of one element is selected (the atom in *.json is temporarily specified).
 fixed_element = 'XX'
 #fixed_element = 'YYYYYYYYYY'
-elements = [fixed_element, 'Fe']
+elements = [fixed_element, 'V', 'Cr', 'Mn', 'Fe', 'Co', 'Ni', 'Mo', 'Tc', 'Ru', 'Rh']
 '''
              'H',                                                                                                 'He',
             'Li', 'Be',                                                              'B',  'C',  'N',  'O',  'F', 'Ne',
@@ -500,124 +500,6 @@ def fit_rose_curve_erose_form_2(volumes_per_atom, cohesive_energies_per_atom, al
     return repuls_fit, attrac_fit
 
 
-
-def calculate_elastic_constants(atoms, calc, shear_strains, normal_strains):
-    initial_stress_tensor = calc.get_stress()
-    
-    # Normal strains for C11, C12, etc.
-    normal_stresses = {'C11': [], 'C12': [], 'C22': [], 'C33': [], 'C23': [], 'C13': []}
-    for strain in normal_strains:
-        print("# Apply strain in x direction for C11")
-        normal_atoms = atoms.copy()
-        normal_atoms.set_cell(normal_atoms.get_cell() * [[1 + strain, 0, 0], [0, 1, 0], [0, 0, 1]], scale_atoms=True)
-        normal_atoms.set_calculator(calc)
-        opt = BFGS(normal_atoms)
-        opt.run(fmax=0.02)
-        normal_stress = normal_atoms.get_stress()
-        normal_stresses['C11'].append((normal_stress[0] - initial_stress_tensor[0]) / strain)
-
-        print("# Apply strain in y direction for C22")
-        normal_atoms = atoms.copy()
-        normal_atoms.set_cell(normal_atoms.get_cell() * [[1, 0, 0], [0, 1 + strain, 0], [0, 0, 1]], scale_atoms=True)
-        normal_atoms.set_calculator(calc)
-        opt = BFGS(normal_atoms)
-        opt.run(fmax=0.02)
-        normal_stress = normal_atoms.get_stress()
-        normal_stresses['C22'].append((normal_stress[1] - initial_stress_tensor[1]) / strain)
-
-        print("# Apply strain in z direction for C33")
-        normal_atoms = atoms.copy()
-        normal_atoms.set_cell(normal_atoms.get_cell() * [[1, 0, 0], [0, 1, 0], [0, 0, 1 + strain]], scale_atoms=True)
-        normal_atoms.set_calculator(calc)
-        opt = BFGS(normal_atoms)
-        opt.run(fmax=0.02)
-        normal_stress = normal_atoms.get_stress()
-        normal_stresses['C33'].append((normal_stress[2] - initial_stress_tensor[2]) / strain)
-
-        print("# Apply strain in xy direction for C12")
-        normal_atoms = atoms.copy()
-        normal_atoms.set_cell(normal_atoms.get_cell() * [[1 + strain, 0, 0], [0, 1 + strain, 0], [0, 0, 1]], scale_atoms=True)
-        normal_atoms.set_calculator(calc)
-        opt = BFGS(normal_atoms)
-        opt.run(fmax=0.02)
-        normal_stress = normal_atoms.get_stress()
-        normal_stresses['C12'].append((normal_stress[0] - initial_stress_tensor[0]) / strain)
-
-        print("# Apply strain in yz direction for C23")
-        normal_atoms = atoms.copy()
-        normal_atoms.set_cell(normal_atoms.get_cell() * [[1, 0, 0], [0, 1 + strain, 0], [0, 0, 1 + strain]], scale_atoms=True)
-        normal_atoms.set_calculator(calc)
-        opt = BFGS(normal_atoms)
-        opt.run(fmax=0.02)
-        normal_stress = normal_atoms.get_stress()
-        normal_stresses['C23'].append((normal_stress[1] - initial_stress_tensor[1]) / strain)
-
-        print("# Apply strain in xz direction for C13")
-        normal_atoms = atoms.copy()
-        normal_atoms.set_cell(normal_atoms.get_cell() * [[1 + strain, 0, 0], [0, 1, 0], [0, 0, 1 + strain]], scale_atoms=True)
-        normal_atoms.set_calculator(calc)
-        opt = BFGS(normal_atoms)
-        opt.run(fmax=0.02)
-        normal_stress = normal_atoms.get_stress()
-        normal_stresses['C13'].append((normal_stress[0] - initial_stress_tensor[0]) / strain)
-
-    C11 = np.mean(normal_stresses['C11']) * 160.21766208
-    C12 = np.mean(normal_stresses['C12']) * 160.21766208
-    C22 = np.mean(normal_stresses['C22']) * 160.21766208
-    C33 = np.mean(normal_stresses['C33']) * 160.21766208
-    C23 = np.mean(normal_stresses['C23']) * 160.21766208
-    C13 = np.mean(normal_stresses['C13']) * 160.21766208
-
-    shear_stresses = {'C44': [], 'C55': [], 'C66': []}
-    for strain in shear_strains:
-        print("# Apply shear strain in xy direction for C44")
-        shear_atoms = atoms.copy()
-        shear_atoms.set_cell(shear_atoms.get_cell() * [[1, 0, 0], [0, 1, strain], [0, 0, 1]], scale_atoms=True)
-        shear_atoms.set_calculator(calc)
-        opt = BFGS(shear_atoms)
-        opt.run(fmax=0.02)
-        shear_stress = shear_atoms.get_stress()
-        shear_stresses['C44'].append((shear_stress[3] - initial_stress_tensor[3]) / strain)
-
-        print("# Apply shear strain in xz direction for C55")
-        shear_atoms = atoms.copy()
-        shear_atoms.set_cell(shear_atoms.get_cell() * [[1, 0, strain], [0, 1, 0], [0, 0, 1]], scale_atoms=True)
-        shear_atoms.set_calculator(calc)
-        opt = BFGS(shear_atoms)
-        opt.run(fmax=0.02)
-        shear_stress = shear_atoms.get_stress()
-        shear_stresses['C55'].append((shear_stress[4] - initial_stress_tensor[4]) / strain)
-
-        print("# Apply shear strain in yz direction for C66")
-        shear_atoms = atoms.copy()
-        shear_atoms.set_cell(shear_atoms.get_cell() * [[1, strain, 0], [0, 1, 0], [0, 0, 1]], scale_atoms=True)
-        shear_atoms.set_calculator(calc)
-        opt = BFGS(shear_atoms)
-        opt.run(fmax=0.02)
-        shear_stress = shear_atoms.get_stress()
-        shear_stresses['C66'].append((shear_stress[5] - initial_stress_tensor[5]) / strain)
-
-    C44 = np.mean(shear_stresses['C44']) * 160.21766208
-    C55 = np.mean(shear_stresses['C55']) * 160.21766208
-    C66 = np.mean(shear_stresses['C66']) * 160.21766208
-    
-    #Bv = ((C11 + C22 + C33) + 2 * (C12 + C13 + C23)) / 9
-
-    return {
-        'C11': C11,
-        'C12': C12,
-        'C22': C22,
-        'C33': C33,
-        'C23': C23,
-        'C13': C13,
-        'C44': C44,
-        'C55': C55,
-        'C66': C66,
-        #'Bv': Bv
-    }
-
-
-
 def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, max_retries=100, lattce='', lat='', npoints=25, primitive_flag=1, PBEsol_flag=0, spin_flag=1, D_flag=1, cutoff=520, magnetic_type_flag=1):
     element1, element2 = elements_combination
     
@@ -998,7 +880,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
         #calc = Espresso(pseudopotentials=pseudopotentials_dict, input_data=input_data, kpts=(kpt, kpt, kptc), nspin=nspin, command=f'mpirun -np {mpi_num_procs} pw.x < espresso.pwi > espresso.pwo')
     atoms.set_calculator(calc)
     
-    # Negative candidate: Cr, Mn, Co, Ni
+    # Negative candidate: Cr, Mn, Co, Ni, O
     print(f'{element1} mag:',start_mag[element1])
     print(f'{element2} mag:',start_mag[element2])
     smag1 = start_mag[element1]/0.0625
@@ -1400,16 +1282,6 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
         repuls_fit_erose_form_0 = attrac_fit_erose_form_0 = None
         repuls_fit_erose_form_1 = attrac_fit_erose_form_1 = None
         repuls_fit_erose_form_2 = attrac_fit_erose_form_2 = None
-    
-    #print("---------------------------------")
-    #print("initial stress tensor calculation")
-    #input_data['control']['calculation'] = 'scf'
-    #a = optimized_a
-    #atoms.set_cell([a, a, a], scale_atoms=True)
-    #atoms.set_calculator(calc)
-    #input_data['control']['calculation'] = 'relax'
-    #elastic_constants_final = calculate_elastic_constants(atoms, calc, [-0.01, 0.01], [-0.01, 0.01])
-    ##elastic_constants_final = calculate_elastic_constants(atoms, calc, [-0.005, 0.005], [-0.005, 0.005])
     
     print("Note: [Lattice Constant (A)] is the [lattice constant, a (A)] of a conventional cell.")
     
