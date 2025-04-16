@@ -1,5 +1,5 @@
 Note: In "Cmax < Cmin" case, Atutomatically set Cmax = 2.8
-Note: For a new run, remove logs.json
+Note: For a new run, you must to remove logs.json
 
 Environment construction
 1. sudo apt update
