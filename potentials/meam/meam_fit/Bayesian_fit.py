@@ -89,7 +89,7 @@ def descripter(x0,x1,x2,x3,x4,x5,x6,x7,x8,x9):
     b0 = b02**(1/2)
     '''
     #
-    sx9 = 2.8 if sx9 < sx8 else sx9
+    x9 = 2.8 if x9 < x8 else x9
     R2 = 0.005
     sx0  = str("{:.2f}".format(x0+R2))
     sx1  = str("{:.2f}".format(x1+R2))
