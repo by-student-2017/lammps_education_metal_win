@@ -18,9 +18,23 @@ import os
 import datetime # for results folder
 #----------------------------------------------------------------------
 # pip3 install bayesian-optimization==1.4.3
-dE = 0.0 # -Ec(library.meam) - reference_DFT(Final Energy/Atom of Materials Project)
-Brate = 1.0 # B(Bulk modulus of library.meam [GPa])/reference_DFT([GPa])
-ncpu = 4
+#-----
+# User setting area -1/3-
+ncpu = 8 # Number of parallel processes (calculated using lammps)
+#-----
+# User setting area -2/3-
+Ec = 6.740 # esub in library.meam
+Edft = -9.2744 # [eV/atom], Reference DFT data ("Final Energy/Atom" of Materials Project) (Edft = 0 case -> dE = 0)
+Bexp = 220 # B [GPa] (Bulk modulus of library.meam) (Eexp = 0 case -> use assumption)
+Bdft = 308 # Bv or Bvrh [GPa], Reference DFT data
+#-----
+dE = -Ec - Edft # -esub(library.meam) - reference_DFT("Final Energy/Atom" of Materials Project)
+if dE == -Ec:
+  dE = 0.0
+if Bexp == 0.0:
+    Bexp = Bdft*(1-np.sign(dE)*(dE/Edft)**2)
+Brate = Bexp/Bdft
+#-----
 element = 'XX' # dummy
 #-----
 with open('evalulation_template.py', 'r') as file:
@@ -35,6 +49,7 @@ with open('evalulation.py', 'w') as file:
 # Note: It is assumed that Ec, re (or alat), and alpha, t2 for the stable structure are calculated from data from the Materials Project.
 # Note: FCC: b1=b3, BCC, Diamond, dimer: b1=b2=b3
 #-----
+# User setting area -3/3-
 n_gene = 10 # number of parameters
            # BCC, FCC, Diamond, dimer
 x0 =  1.11 # Asub
