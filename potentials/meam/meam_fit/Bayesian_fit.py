@@ -86,9 +86,14 @@ pbounds = {
    'x9': (1.0,2.8) # Cmin < Cmax < 2.8
 }
 #-----
+count = 0
 #----------------------------------------------------------------------
 def descripter(x0,x1,x2,x3,x4,x5,x6,x7,x8,x9):
     #
+    print("------------------------")
+    global count
+    count += 1
+    print(f'Step: {count}')
     '''
     # parameters
     b2 = 1.0   # FCC: 6.0 or 2.0, BCC: 1.0
@@ -169,6 +174,15 @@ def descripter(x0,x1,x2,x3,x4,x5,x6,x7,x8,x9):
     subprocess.run(['python3', 'evalulation.py'])
     with open('evalulate_value.txt', 'r') as file:
         evalulate_value = float(file.read().strip())
+    #
+    subprocess.run("echo No."+str(count)
+        +": "+sx0+", " # Asub
+        +", "+sx1+", "+sx2+", "+sx3+", "+sx4 # b0, b1, b2, b3
+        +", "+sx5+", "+sx6+", "+sx7 # t1, t2, t3
+        +", "+sx8+", "+sx9 # Cmin, Cmax
+        +", "+str(evalulate_value) # Evaluate values
+        +" >> results.txt", shell=True)
+    #
     y = 1.0/evalulate_value
     return y
 #----------------------------------------------------------------------
@@ -202,3 +216,5 @@ else:
   #  It will take more time, but if you want to be more elaborate, increase the value from 5 to a higher value such as 7 or 9.
   #  Of course, it is also a good idea to expand the initial search range.
 #--------------------------------------------------------
+#----------------------------------------------------------------------
+subprocess.run("sort -k 2 results.txt > results_sort.txt", shell=True)

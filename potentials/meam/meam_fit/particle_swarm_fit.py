@@ -159,6 +159,15 @@ def descripter(x0,x1,x2,x3,x4,x5,x6,x7,x8,x9):
         subprocess.run(['python3', 'evalulation.py'])
         with open('evalulate_value.txt', 'r') as file:
             evalulate_value = float(file.read().strip())
+        #
+        subprocess.run("echo No."+str(count)+"-"+str(i)
+          +": "+sx0+", " # Asub
+          +", "+sx1+", "+sx2+", "+sx3+", "+sx4 # b0, b1, b2, b3
+          +", "+sx5+", "+sx6+", "+sx7 # t1, t2, t3
+          +", "+sx8+", "+sx9 # Cmin, Cmax
+          +", "+str(evalulate_value) # Evaluate values
+          +" >> results.txt", shell=True)
+        #
         y[i] = evalulate_value
     return y
 #----------------------------------------------------------------------
@@ -269,3 +278,4 @@ else:
   #best_score, best_options = g_search.search()
   #----------------------------------------------------------------------
 #----------------------------------------------------------------------
+subprocess.run("sort -k 2 results.txt > results_sort.txt", shell=True)

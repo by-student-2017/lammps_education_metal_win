@@ -118,6 +118,15 @@ def f(x):
     subprocess.run(['python3', 'evalulation.py'])
     with open('evalulate_value.txt', 'r') as file:
         evalulate_value = float(file.read().strip())
+    #
+    subprocess.run("echo No."+str(count)
+        +": "+sx0+", " # Asub
+        +", "+sx1+", "+sx2+", "+sx3+", "+sx4 # b0, b1, b2, b3
+        +", "+sx5+", "+sx6+", "+sx7 # t1, t2, t3
+        +", "+sx8+", "+sx9 # Cmin, Cmax
+        +", "+str(evalulate_value) # Evaluate values
+        +" >> results.txt", shell=True)
+    #
     y = evalulate_value
     return y
 #----------------------------------------------------------------------
@@ -126,3 +135,5 @@ res = optimize.minimize(f,x,method='Nelder-Mead',options={'adaptive':True})
 #res = optimize.minimize(f,x0,method='TNC')
 #res = optimize.minimize(f,x0,method='Powell')
 #res = optimize.minimize(f,x0,method='BFGS')
+#----------------------------------------------------------------------
+subprocess.run("sort -k 2 results.txt > results_sort.txt", shell=True)
