@@ -17,10 +17,10 @@ import os
 ncpu = 8 # Number of parallel processes (calculated using lammps)
 #-----
 # User setting area -2/3-
-Ec = 6.740 # esub in library.meam
-Edft = -9.2744 # [eV/atom], Reference DFT data ("Final Energy/Atom" of Materials Project) (Edft = 0 case -> dE = 0)
-Bexp = 308 # B [GPa] (Bulk modulus of library.meam) (Eexp = 0 case -> use assumption)
-Bdft = 308 # Bv or Bvrh [GPa], Reference DFT data
+Ec = 3.40 # esub in library.meam
+Edft = -4.7681 # [eV/atom], Reference DFT data ("Final Energy/Atom" of Materials Project) (Edft = 0 case -> dE = 0)
+Bexp = 34 # B [GPa] (Bulk modulus of library.meam) (Eexp = 0 case -> use assumption)
+Bdft = 34 # Bv or Bvrh [GPa], Reference DFT data
 #-----
 dE = -Ec - Edft # -esub(library.meam) - reference_DFT("Final Energy/Atom" of Materials Project)
 if dE == -Ec:
@@ -55,15 +55,15 @@ with open('evalulation.py', 'w') as file:
 # User setting area -3/3-
 # Note: First step: Bayesian_fit.py, then next step Nelder-Mead_fit.py
            # BCC, FCC, Diamond, dimer
-x0 =  0.92 # Asub
-x1 =  3.34 # b0 > 0.5
-x2 =  0.20 # b1
-x3 =  3.81 # b2: 1(BCC), 2 or 4 (FCC)
-x4 =  3.19 # b3
-x5 =  9.92 # t1
-x6 =  2.48 # t2
-x7 =-10.66 # t3: < 0 (BCC), > 0 (FCC, Diamond)
-x8 =  1.06 # 0 < Cmin < Cmax
+x0 =  1.00 # Asub
+x1 =  0.80 # b0 > 0.5
+x2 =  0.00 # b1
+x3 =  0.00 # b2: 1(BCC), 2 or 4 (FCC)
+x4 =  3.00 # b3
+x5 =  8.60 # t1
+x6 =  0.60 # t2
+x7 = -3.00 # t3: < 0 (BCC), > 0 (FCC, Diamond)
+x8 =  2.00 # 0 < Cmin < Cmax
 x9 =  2.80 # Cmin < Cmax < 2.8
 #-----
 x = [x0,x1,x2,x3,x4,x5,x6,x7,x8,x9]
@@ -83,6 +83,7 @@ def f(x):
     #
     x[9] = 2.8 if x[9] < x[8] else x[9]
     x[9] = 2.8 if x[9] > 2.80 else x[9]
+    x[8] = 2.8 if x[8] > 2.00 else x[8]
     R2 = 0.005
     sx0  = str("{:.2f}".format(x[0]+R2))
     sx1  = str("{:.2f}".format(x[1]+R2))
