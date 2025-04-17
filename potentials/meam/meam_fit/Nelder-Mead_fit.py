@@ -63,6 +63,11 @@ x8 =  1.06 # 0 < Cmin < Cmax
 x9 =  2.80 # Cmin < Cmax < 2.8
 #-----
 x = [x0,x1,x2,x3,x4,x5,x6,x7,x8,x9]
+#-----
+if not os.path.exists("results.txt"):
+    subprocess.run("echo \"#| No.|Asub | b0  | b1  | b2  | b3  | t1  | t2  | t3  |Cmin |Cmax | Score |\" >  results.txt", shell=True)
+    subprocess.run("echo \"#|iter| x0  | x1  | x2  | x3  | x4  | x5  | x6  | x7  | x8  | x9  | Score |\" >> results.txt", shell=True)
+#-----
 count = 0
 #----------------------------------------------------------------------
 def f(x):
@@ -120,7 +125,7 @@ def f(x):
         evalulate_value = float(file.read().strip())
     #
     subprocess.run("echo No."+str(count)
-        +": "+sx0+", " # Asub
+        +": "+sx0 # Asub
         +", "+sx1+", "+sx2+", "+sx3+", "+sx4 # b0, b1, b2, b3
         +", "+sx5+", "+sx6+", "+sx7 # t1, t2, t3
         +", "+sx8+", "+sx9 # Cmin, Cmax
@@ -136,4 +141,4 @@ res = optimize.minimize(f,x,method='Nelder-Mead',options={'adaptive':True})
 #res = optimize.minimize(f,x0,method='Powell')
 #res = optimize.minimize(f,x0,method='BFGS')
 #----------------------------------------------------------------------
-subprocess.run("sort -k 2 results.txt > results_sort.txt", shell=True)
+subprocess.run("sort -k 12 results.txt > results_sort.txt", shell=True)
