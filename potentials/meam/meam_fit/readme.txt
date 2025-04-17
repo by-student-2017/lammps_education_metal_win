@@ -39,6 +39,6 @@ From the Ec, alat, and re of library.meam for Ru in 1NN-MEAM, it can be estimate
 For Ec, see element_data.xlsx
 For alpha, see meam_converter.xlsx (need data: lattice (type), Ec, La (lattice constant, a) = alat, B (Bulk modulus, e.g., Bv, Bvrh, etc) [GPa]) 
 
-The fitting results will vary depending on the evaluation function and weighting, so it is only possible to show the closest to the optimal value.
+The results of the fit can only show the closest to the optimal value because they change depending on the data and number of data, the evaluation function, and the weighting method. It can be said that there are as many results of the fit as there are people.
 
 Nd: I tried to fit the data from the Materials Project by changing Ec, re, and alpha. I tried searching with the Nelder-Mead method, but b0 to b3 and t1 to t3 showed optimal fit results even with 2NN-MEAM. However, the elastic constants of BCC (C11 to C66) did not fit well, so they were excluded from the fit.
