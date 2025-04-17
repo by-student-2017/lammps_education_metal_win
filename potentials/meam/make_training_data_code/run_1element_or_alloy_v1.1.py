@@ -50,7 +50,7 @@ import json
 # b1: FCC_B1 (NaCl-type), b2:BCC_B2 (CsCl-type), dia:Diamond_B3 (Zinc Blende), l12: L12 (Cu3Au-type)
 # fcc: FCC (1 element), hcp: HCP (1 element), bcc: BCC (1 element), sc: SC (1 element), dia1: Daiamond
 # dim(dimer), ch4(binary system), dim1(1 element)
-# v1fcc: FCC (1 vacancy), v1bcc: BCC (1 vacancy), v1hcp: HCP (1 vacancy), v1hcp: SC (1 vacancy), v1dia1: HCP (1 vacancy)
+# v1fcc: FCC (1 vacancy), v1bcc: BCC (1 vacancy), v1hcp: HCP (1 vacancy), v1sc: SC (1 vacancy), v1dia1: Diamond (1 vacancy)
 lattce = 'v1bcc'
 #lattce = 'XXXXXXXXXX' # for run_seq.py
 #------------------------------------------------------------------
@@ -144,6 +144,7 @@ omp_num_threads = 1
 os.environ['OMP_NUM_THREADS'] = f'{omp_num_threads}'
 #------------------------------------------------------------------
 primitive_flag = 1 # 0:conventional cell, 1:primitive cell, (default = 1)
+# Note: hcp, dim, ch4, dim1, sc, v1fcc, v1bcc, v1hcp, v1sc, v1dia are forced to primitive_flag = 0.
 #------------------------------------------------------------------
 # max number of cycles for search optimized structure
 max_retries = 20 # default = 100
@@ -769,6 +770,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
             Nelem1 = 0
             Nelem2 = 2
     elif lattce == 'sc':
+        primitive_flag == 0
         print("Create the SC structure (1 element)")
         lattice_type = 'SC (1 element)'
         re2a = 1.0
@@ -815,6 +817,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
             Nelem2 = 2
     #------------------------------------------------------------------------------
     elif lattce == 'dim':
+        primitive_flag == 0
         print("Create the dimer structure")
         lattice_type = 'DIM'
         a = 12.0
@@ -827,6 +830,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
         Nelem1 = 1
         Nelem2 = 1
     elif lattce == 'ch4':
+        primitive_flag == 0
         print("Create the CH4 structure")
         lattice_type = 'CH4'
         a = 12.0
@@ -843,6 +847,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
         Nelem2 = 4
     #------------------------------------------------------------------------------
     elif lattce == 'dim1':
+        primitive_flag == 0
         print("Create the dimer structure (1 element)")
         lattice_type = 'DIM (1 element)'
         a = 12.0
@@ -857,6 +862,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
         Nelem2 = 2
     #------------------------------------------------------------------------------
     elif lattce == 'v1fcc':
+        primitive_flag == 0
         print("Create the fcc 3x3x3 supercell structure (1 vacancy)")
         lattice_type = 'FCC_B1_V1 (1 vacancy)'
         atoms = bulk(element2, lattce[2:], a, orthorhombic=True)
@@ -868,6 +874,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
         Nelem1 = 0
         Nelem2 = 0
     elif lattce == 'v1bcc':
+        primitive_flag == 0
         print("Create the bcc 3x3x3 supercell structure (1 vacancy)")
         lattice_type = 'BCC_B2_V1 (1 vacancy)'
         atoms = bulk(element2, lattce[2:], a, orthorhombic=True)
@@ -879,6 +886,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
         Nelem1 = 0
         Nelem2 = 0
     elif lattce == 'v1hcp':
+        primitive_flag == 0
         print("Create the hcp 3x3x3 supercell structure (1 vacancy)")
         lattice_type = 'HCP_V1 (1 vacancy)'
         atoms = bulk(element2, lattce[2:], a, c, orthorhombic=True)
@@ -890,6 +898,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
         Nelem1 = 0
         Nelem2 = 0
     elif lattce == 'v1sc':
+        primitive_flag == 0
         print("Create the sc 3x3x3 supercell structure (1 vacancy)")
         lattice_type = 'SC_V1 (1 vacancy)'
         atoms = bulk(element2, lattce[2:], a, orthorhombic=True)
@@ -901,6 +910,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
         Nelem1 = 0
         Nelem2 = 0
     elif lattce == 'v1dia1':
+        primitive_flag == 0
         print("Create the diamond 3x3x3 supercell structure (1 vacancy)")
         lattice_type = 'DIA_V1 (1 vacancy)'
         atoms = bulk(element2, lattce[2:], a, orthorhombic=True)
