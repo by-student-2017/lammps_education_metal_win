@@ -29,7 +29,7 @@ if Bexp == 0.0:
     Bexp = Bdft*(1-np.sign(dE)*(dE/Edft)**2)
 Brate = Bexp/Bdft
 #-----
-weight_flag = 1 # 1:On, 0:Off
+weight_flag = 0 # 1:On, 0:Off
 T = 300.0 # Temperature [K]
 element = 'XX' # dummy
 #-----
