@@ -1,4 +1,7 @@
 #----------------------------------------------------------------------
+# Installation
+# pip3 install bayesian-optimization==1.4.3
+#----------------------------------------------------------------------
 from bayes_opt import BayesianOptimization
 #from bayes_opt import UtilityFunction # for ucb
 #-----------------------------------------------
@@ -17,7 +20,9 @@ import sys
 import os
 import datetime # for results folder
 #----------------------------------------------------------------------
-# pip3 install bayesian-optimization==1.4.3
+# Usage
+# python3 Bayesian_fit.py
+#----------------------------------------------------------------------
 #-----
 # User setting area -1/3-
 ncpu = 8 # Number of parallel processes (calculated using lammps)
@@ -50,6 +55,7 @@ with open('evalulation.py', 'w') as file:
 # Note: FCC: b1=b3, BCC, Diamond, dimer: b1=b2=b3
 #-----
 # User setting area -3/3-
+# Note: First step: Bayesian_fit.py, then next step Nelder-Mead_fit.py
 n_gene = 10 # number of parameters
            # BCC, FCC, Diamond, dimer
 x0 =  1.11 # Asub
