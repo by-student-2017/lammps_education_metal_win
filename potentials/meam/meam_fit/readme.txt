@@ -3,6 +3,7 @@ Environment construction
 2. sudo apt -y install lammps
 3. pip3 install bayesian-optimization==1.4.3
 4. pip3 install pyswarms==1.3.0
+(5. sudo apt install -y python-scipy)
 
 
 Preparation of calculation conditions
