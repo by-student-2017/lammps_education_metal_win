@@ -1,6 +1,3 @@
-Note: In "Cmax < Cmin" case, Atutomatically set Cmax = 2.8
-Note: For a new run, you must to remove logs.json
-
 Environment construction
 1. sudo apt update
 2. sudo apt -y install lammps
@@ -23,3 +20,8 @@ If you are happy with the final result, just change XX in library.meam to the na
 
 It may be difficult if you are new to coding, but if you rewrite this, it is possible to fit binary systems, etc. 
 If you target XX.meam instead of library.meam, you can also fit Cmin, etc. 
+
+data.json
+Surface Energy (J/m2)
+Energy, gGB (J/m2)
+In "evalulation_template.py", J/m^2 is converted to eV/A^2 because the Materials Project does not fully describe eV/A^2.
