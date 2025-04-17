@@ -1,3 +1,7 @@
+## VEeeeeeeeery Important !!!!!
+The legacy version of the Materials Project, which was useful, will be closed in September 2025. 
+Important information such as formation energy and CIF data is missing from the new version.
+
 Environment construction
 1. sudo apt update
 2. sudo apt -y install lammps
