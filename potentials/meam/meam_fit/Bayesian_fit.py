@@ -40,8 +40,11 @@ if Bexp == 0.0:
     Bexp = Bdft*(1-np.sign(dE)*(dE/Edft)**2)
 Brate = Bexp/Bdft
 #-----
+wspe = 0.1 # weight for stress vs. energy ("weight stress / weight energy" ratio)
+#-----
 weight_flag = 0 # 1:On, 0:Off
 T = 300.0 # Temperature [K]
+#-----
 element = 'XX' # dummy
 #-----
 with open('evalulation_template.py', 'r') as file:
@@ -50,6 +53,7 @@ with open('evalulation_template.py', 'r') as file:
     modified_code = modified_code.replace('Xncpu', str(ncpu))
     modified_code = modified_code.replace('XdE', str(dE))
     modified_code = modified_code.replace('XBrate', str(Brate))
+    modified_code = modified_code.replace('Xwspe', str(wspe))
     modified_code = modified_code.replace('Xwflag', str(weight_flag))
     modified_code = modified_code.replace('XT', str(T))
     modified_code = modified_code.replace('XEc', str(Ec))

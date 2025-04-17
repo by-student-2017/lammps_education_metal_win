@@ -12,6 +12,8 @@ ncpu = Xncpu   # the number of cpus
 dE = XdE       # -esub(library.meam) - reference_DFT("Final Energy/Atom" of Materials Project)
 Brate = XBrate # ratio for Bulk modulus (Bexp/Bdft)
 
+wspe = Xwspe   # weight for stress vs. energy
+
 weight_flag = Xwflag # use weight flag
 Ec = XEc       # cohesive energy (2NN-MEAM) or sublimation energy (1NN-MEAM)
 
@@ -153,7 +155,7 @@ for cif_file in os.listdir(cif_directory):
                 nparameters += 1
             #difference_elastic_value / (bulk_modulus**2)
             print(f'elastic diff. value: {difference_elastic_value}')
-            evalulate_value += difference_elastic_value * weight
+            evalulate_value += difference_elastic_value * weight * wspe
             os.chdir('./../')
         
         #energy_data = fit_data[cif_file]['Final Energy/Atom'] + dE # dE = -Ec -Edft -> -Ec = Edft + dE
