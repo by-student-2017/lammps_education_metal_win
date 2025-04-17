@@ -136,7 +136,7 @@ for cif_file in os.listdir(cif_directory):
             nfiles += 1
             os.chdir('./../')
         
-        energy_data = fit_data[cif_file]['Final Energy/Atom'] + dE # Reference structure: Ec = DFT - dE
+        energy_data = fit_data[cif_file]['Final Energy/Atom'] + dE # dE = -Ec -Edft -> -Ec = Edft + dE
         # 1 J/m^2 = 0.06242 eV/A^2
         if 'Surface Energy' in fit_data[cif_file]:
             print('Surface Energy Calculation')
@@ -145,7 +145,7 @@ for cif_file in os.listdir(cif_directory):
             Aslab = float(extract_area(log_file_path))
             energy_data += 2*Aslab*surface_energy/natoms
             print(f'Ref: natoms:{natoms}, Aslab [A^2]:{Aslab}, surf. energy [eV/A^2]: {surface_energy}')
-            print(f'Ref: The cohesive energy (eV/atom) is {energy_data}')
+            print(f'Ref: The energy (eV/atom) is {energy_data}')
         elif 'Grain Boundaries Energy' in fit_data[cif_file]:
             print('Grain Boundaries Energy Calculation')
             grain_boundary_energy = fit_data[cif_file]['Grain Boundaries Energy']*0.06242
@@ -153,7 +153,7 @@ for cif_file in os.listdir(cif_directory):
             Agrain = float(extract_area(log_file_path))
             energy_data += Agrain*grain_boundary_energy/natoms
             print(f'Ref: natoms:{natoms}, Aslab [A^2]:{Agrain}, grain. energy [eV/A^2]: {grain_boundary_energy}')
-            print(f'Ref: The cohesive energy (eV/atom) is {energy_data}')
+            print(f'Ref: The energy (eV/atom) is {energy_data}')
         
         # Extract and print the cohesive energy
         cohesive_energy = float(extract_cohesive_energy(log_file_path))
