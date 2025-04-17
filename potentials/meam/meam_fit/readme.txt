@@ -37,4 +37,4 @@ In "evalulation_template.py", J/m^2 is converted to eV/A^2 because the Materials
 From the Ec, alat, and re of library.meam for Ru in 1NN-MEAM, it can be estimated that the experimental cohesive energy and the DFT bulk modulus (B) are used. As an aside, the sublimation energy is 6.299 and the experimental B is 220 [GPa].
 
 For Ec, see element_data.xlsx
-For alpha, see meam_converter.xlsx (need data: lattice (type), Ec, La (lattice constant, a) = alat, Bulk modulus, B [GPa]) 
+For alpha, see meam_converter.xlsx (need data: lattice (type), Ec, La (lattice constant, a) = alat, B (Bulk modulus, e.g., Bv, Bvrh, etc) [GPa]) 
