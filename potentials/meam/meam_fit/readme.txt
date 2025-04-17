@@ -31,3 +31,5 @@ Energy, gGB (J/m2)
 In "evalulation_template.py", J/m^2 is converted to eV/A^2 because the Materials Project does not fully describe eV/A^2.
 
 From the Ec, alat, and re of library.meam for Ru in 1NN-MEAM, it can be estimated that the experimental cohesive energy and the DFT bulk modulus (B) are used. As an aside, the sublimation energy is 6.299 and the experimental B is 220 [GPa].
+
+For Ec, see element_data.xlsx
