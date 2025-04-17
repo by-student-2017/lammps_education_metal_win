@@ -7,6 +7,8 @@ import re
 
 element = 'Xelement'
 ncpu = Xncpu
+dE = XdE
+Brate = XBrate
 
 file_path = 'in.lmp'
 
@@ -23,6 +25,22 @@ def extract_cohesive_energy(log_file_path):
     with open(log_file_path, 'r') as log_file:
         for line in log_file:
             if 'print "' not in line and 'The cohesive energy (eV/atom) =' in line:
+                cohesive_energy = line.split('=')[-1].strip()
+                return cohesive_energy
+    return None
+# Function to extract the number of atoms from log.lammps file
+def extract_natoms(log_file_path):
+    with open(log_file_path, 'r') as log_file:
+        for line in log_file:
+            if 'print "' not in line and 'The number of atoms =' in line:
+                cohesive_energy = line.split('=')[-1].strip()
+                return cohesive_energy
+    return None
+# Function to extract the area from log.lammps file
+def extract_area(log_file_path):
+    with open(log_file_path, 'r') as log_file:
+        for line in log_file:
+            if 'print "' not in line and 'The area (Angstoms^2) =' in line:
                 cohesive_energy = line.split('=')[-1].strip()
                 return cohesive_energy
     return None
@@ -98,13 +116,17 @@ for cif_file in os.listdir(cif_directory):
                 symmetric_key = key[0] + key[2] + key[1]
                 reference_elastic_value = 0.0
                 if key in fit_data[cif_file]: # e.g., C12, C13, or C23
-                    reference_elastic_value = fit_data[cif_file][key]
+                    reference_elastic_value = fit_data[cif_file][key]*Brate
                 elif symmetric_key in fit_data[cif_file]: # e.g., C21, C31, or C32
-                    reference_elastic_value = fit_data[cif_file][symmetric_key]
+                    reference_elastic_value = fit_data[cif_file][symmetric_key]*Brate
                 elif key in ['C22', 'C33'] and 'C11' in fit_data[cif_file]:
-                    reference_elastic_value = fit_data[cif_file]['C11']
+                    reference_elastic_value = fit_data[cif_file]['C11']*Brate
+                elif key in ['C13'] and 'C12' in fit_data[cif_file]:
+                    reference_elastic_value = fit_data[cif_file]['C13']*Brate
+                elif key in ['C23'] and 'C13' in fit_data[cif_file]:
+                    reference_elastic_value = fit_data[cif_file]['C23']*Brate
                 elif key in ['C55', 'C66'] and 'C11' in fit_data[cif_file]:
-                    reference_elastic_value = fit_data[cif_file]['C44']
+                    reference_elastic_value = fit_data[cif_file]['C44']*Brate
                 print(f'{key}: {value}(this meam), {reference_elastic_value}(data.json) ([GPa] unit)')
                 difference_elastic_value += ((float(value) - reference_elastic_value))**2
                 bulk_modulus += reference_elastic_value/9
@@ -114,20 +136,24 @@ for cif_file in os.listdir(cif_directory):
             nfiles += 1
             os.chdir('./../')
         
-        energy_data = fit_data[cif_file]['Final Energy/Atom']
+        energy_data = fit_data[cif_file]['Final Energy/Atom'] + dE # Reference structure: Ec = DFT - dE
         # 1 J/m^2 = 0.06242 eV/A^2
         if 'Surface Energy' in fit_data[cif_file]:
             print('Surface Energy Calculation')
-            surface_energy = fit_data[cif_file]['Surface Energy']
-            natoms = fit_data[cif_file]['Natoms']
-            Aslab = fit_data[cif_file]['Aslab']
+            surface_energy = fit_data[cif_file]['Surface Energy']*0.06242
+            natoms = int(extract_natoms(log_file_path))
+            Aslab = float(extract_area(log_file_path))
             energy_data += 2*Aslab*surface_energy/natoms
+            print(f'Ref: natoms:{natoms}, Aslab [A^2]:{Aslab}, surf. energy [eV/A^2]: {surface_energy}')
+            print(f'Ref: The cohesive energy (eV/atom) is {energy_data}')
         elif 'Grain Boundaries Energy' in fit_data[cif_file]:
             print('Grain Boundaries Energy Calculation')
-            grain_boundary_energy = fit_data[cif_file]['Grain Boundaries Energy']
-            natoms = fit_data[cif_file]['Natoms']
-            Agrain = fit_data[cif_file]['Agrain']
+            grain_boundary_energy = fit_data[cif_file]['Grain Boundaries Energy']*0.06242
+            natoms = int(extract_natoms(log_file_path))
+            Agrain = float(extract_area(log_file_path))
             energy_data += Agrain*grain_boundary_energy/natoms
+            print(f'Ref: natoms:{natoms}, Aslab [A^2]:{Agrain}, grain. energy [eV/A^2]: {grain_boundary_energy}')
+            print(f'Ref: The cohesive energy (eV/atom) is {energy_data}')
         
         # Extract and print the cohesive energy
         cohesive_energy = float(extract_cohesive_energy(log_file_path))

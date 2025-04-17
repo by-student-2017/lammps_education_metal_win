@@ -18,13 +18,17 @@ import os
 import datetime # for results folder
 #----------------------------------------------------------------------
 # pip3 install bayesian-optimization==1.4.3
+dE = 0.0 # -Ec(library.meam) - reference_DFT(Final Energy/Atom of Materials Project)
+Brate = 1.0 # B(Bulk modulus of library.meam [GPa])/reference_DFT([GPa])
+ncpu = 4
 element = 'XX' # dummy
-ncpu = 8
 #-----
 with open('evalulation_template.py', 'r') as file:
     code = file.read()
     modified_code = code.replace('Xelement', element)
     modified_code = modified_code.replace('Xncpu', str(ncpu))
+    modified_code = modified_code.replace('XdE', str(dE))
+    modified_code = modified_code.replace('XBrate', str(Brate))
 with open('evalulation.py', 'w') as file:
     file.write(modified_code)
 #-----
@@ -33,27 +37,27 @@ with open('evalulation.py', 'w') as file:
 #-----
 n_gene = 10 # number of parameters
            # BCC, FCC, Diamond, dimer
-x0 =  0.40 # Asub
-x1 =  4.00 # b0 > 0.5
-x2 =  2.20 # b1
-x3 =  2.00 # b2: 1(BCC), 2 or 4 (FCC)
-x4 =  2.00 # b3
-x5 =  1.70 # t1
-x6 = -7.70 # t2
-x7 =  6.00 # t3: < 0 (BCC), > 0 (FCC, Diamond)
+x0 =  1.11 # Asub
+x1 =  1.00 # b0 > 0.5
+x2 =  0.00 # b1
+x3 =  0.60 # b2: 1(BCC), 2 or 4 (FCC)
+x4 =  5.00 # b3
+x5 =  8.00 # t1
+x6 = 19.30 # t2
+x7 =-13.00 # t3: < 0 (BCC), > 0 (FCC, Diamond)
 x8 =  2.00 # 0 < Cmin < Cmax
 x9 =  2.80 # Cmin < Cmax < 2.8
 pbounds = {
-   'x0': (0.1, 1.5), # Asub, Gas: (1.0, 2.5)
-   'x1': (0.5, 10), # b0 > 0.5
-   'x2': (0, 10), # b1 > 0
-   'x3': (0, 10), # b2 > 0
-   'x4': (0, 10), # b3 > 0
-   'x5': (-10,10), # t1
-   'x6': (-15,22), # t2
-   'x7': (-10,10), # t3: < 0 (BCC), > 0 (FCC, Diamond)
+   'x0': (0.8, 1.3), # Asub, Gas: (1.0, 2.5)
+   'x1': (1.0,8), # b0 > 0.5
+   'x2': (0.0,8), # b1 > 0
+   'x3': (0.0,8), # b2 > 0
+   'x4': (0.0,8), # b3 > 0
+   'x5': (0.0,10), # t1
+   'x6': (0.0,20), # t2
+   'x7': (-15,0), # t3: < 0 (BCC), > 0 (FCC, Diamond)
    'x8': (0.1,2.4), # 0 < Cmin < Cmax
-   'x9': (1.4,2.8) # Cmin < Cmax < 2.8
+   'x9': (1.0,2.8) # Cmin < Cmax < 2.8
 }
 #-----
 #----------------------------------------------------------------------
@@ -158,13 +162,13 @@ if os.path.exists("./logs.json"):
   load_logs(new_optimizer, logs=["./logs.json"]);
   logger = JSONLogger(path="./logs", reset=False) # Results will be saved in ./logs.json
   new_optimizer.subscribe(Events.OPTIMIZATION_STEP, logger)
-  new_optimizer.maximize(init_points=5, n_iter=(300*4)) # 300 cycle / 6 h
+  new_optimizer.maximize(init_points=21, n_iter=(300*5)) # 300 cycle / 6 h
   new_optimizer.set_gp_params(alpha=1e-3) # The greater the whitenoise, the greater alpha value.
 else:
   optimizer = BayesianOptimization(f=descripter, pbounds=pbounds, verbose=2, random_state=1, bounds_transformer=bounds_transformer, allow_duplicate_points=True)
   logger = JSONLogger(path="./logs") # Results will be saved in ./logs.json
   optimizer.subscribe(Events.OPTIMIZATION_STEP, logger)
-  optimizer.maximize(init_points=(n_gene*5), n_iter=(400*4)) # 600 cycles / 12 h (Note: It depends on the number of parameters and search range, but usually around 150 times is a good value (in n_gene*5 case). I set it to 600 just in case (from after I got home until the next morning).)
+  optimizer.maximize(init_points=(n_gene*21), n_iter=(400*5)) # 600 cycles / 12 h (Note: It depends on the number of parameters and search range, but usually around 150 times is a good value (in n_gene*5 case). I set it to 600 just in case (from after I got home until the next morning).)
   optimizer.set_gp_params(alpha=1e-3) # The greater the whitenoise, the greater alpha value.
   # Note: Since "bounds_transformer" is used to narrow the search area, 
   #  in order to initially search as wide a range as possible, 
