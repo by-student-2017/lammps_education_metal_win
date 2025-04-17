@@ -87,8 +87,8 @@ pbounds = {
 }
 #-----
 if not os.path.exists("results.txt"):
-    subprocess.run("echo \"#| No.|Asub | b0  | b1  | b2  | b3  | t1  | t2  | t3  |Cmin |Cmax | Score (min value is recommendation) |\" >  results.txt", shell=True)
-    subprocess.run("echo \"#|iter| x0  | x1  | x2  | x3  | x4  | x5  | x6  | x7  | x8  | x9  | Score (min value is reccomendation) |\" >> results.txt", shell=True)
+    subprocess.run("echo \"#| No.|Asub | b0  | b1  | b2  | b3  | t1  | t2  | t3  |Cmin |Cmax | evalulate_value (min value is recommendation) |\" >  results.txt", shell=True)
+    subprocess.run("echo \"#|iter| x0  | x1  | x2  | x3  | x4  | x5  | x6  | x7  | x8  | x9  | evalulate_value (min value is reccomendation) |\" >> results.txt", shell=True)
 #-----
 count = 0
 #----------------------------------------------------------------------
