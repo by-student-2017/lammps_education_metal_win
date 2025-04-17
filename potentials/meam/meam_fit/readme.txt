@@ -6,7 +6,7 @@ Environment construction
 
 Preparation of calculation conditions
 1. Put the cif file of the structure you want to fit into "cif_data".
-2. Enter the cif name and information in data.json. Add it as in the example for Ca. 
+2. Enter the cif name and information in data.json. Add it as in the example for Ru. 
   (Only structures in cif_data will be subject to fitting calculations, so you don't need to worry about it.)
 3. Use Bayesian_fit.py to set the number of ncpus for parallelization and the initial value (x0 to x7).
 4. Enter the values ​​of alpha, alat, and Ec in library_template.meam 
