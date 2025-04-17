@@ -4,11 +4,21 @@ import subprocess
 import gc
 import json
 import re
+import numpy as np
 
+#-----
 element = 'Xelement'
-ncpu = Xncpu
-dE = XdE
-Brate = XBrate
+ncpu = Xncpu   # the number of cpus
+dE = XdE       # -esub(library.meam) - reference_DFT("Final Energy/Atom" of Materials Project)
+Brate = XBrate # ratio for Bulk modulus (Bexp/Bdft)
+
+weight_flag = Xwflag # use weight flag
+Ec = XEc       # cohesive energy (2NN-MEAM) or sublimation energy (1NN-MEAM)
+
+T = XT         # Temperature [K]
+kb = 8.617333262e-5 # [eV/K]
+kbT = kb*T     # [eV]
+#-----
 
 file_path = 'in.lmp'
 
@@ -95,6 +105,13 @@ for cif_file in os.listdir(cif_directory):
         #print(f'LAMMPS data file generated: {lammps_data_file}')
         #print(f'LAMMPS input file generated: {temp_file_path}')
         
+        energy_data = fit_data[cif_file]['Final Energy/Atom'] + dE # dE = -Ec -Edft -> -Ec = Edft + dE
+        if weight_flag == 1:
+            weight = np.exp(-(energy_data+Ec)/kbT)
+        else:
+            weight = 1.0
+        print(f'weight: {weight}')
+        
         # Run LAMMPS calculation
         #os.system(f'mpirun -np {ncpu} lmp -in in.lmp')
         subprocess.run(['mpirun', '-np', str(ncpu), 'lmp', '-in', temp_file_path], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -133,10 +150,10 @@ for cif_file in os.listdir(cif_directory):
                 nparameters += 1
             difference_elastic_value / (bulk_modulus**2)
             print(f'elastic diff. value: {difference_elastic_value}')
-            evalulate_value += difference_elastic_value
+            evalulate_value += difference_elastic_value * weight
             os.chdir('./../')
         
-        energy_data = fit_data[cif_file]['Final Energy/Atom'] + dE # dE = -Ec -Edft -> -Ec = Edft + dE
+        #energy_data = fit_data[cif_file]['Final Energy/Atom'] + dE # dE = -Ec -Edft -> -Ec = Edft + dE
         # 1 J/m^2 = 0.06242 eV/A^2
         if 'Surface Energy' in fit_data[cif_file]:
             print('Surface Energy Calculation')
@@ -158,7 +175,7 @@ for cif_file in os.listdir(cif_directory):
         # Extract and print the cohesive energy
         cohesive_energy = float(extract_cohesive_energy(log_file_path))
         difference_energy = cohesive_energy - (-energy_data)
-        evalulate_value += ((cohesive_energy - (-energy_data))/energy_data)**2
+        evalulate_value += ((cohesive_energy - (-energy_data))/energy_data)**2 * weight
         print(f'The cohesive energy (eV/atom) is {cohesive_energy}')
         print(f'The difference energy (eV/atom) is {difference_energy}')
         nparameters += 1
