@@ -93,6 +93,7 @@ def f(x):
     '''
     #
     x[9] = 2.8 if x[9] < x[8] else x[9]
+    x[9] = 2.8 if x[9] > 2.80 else x[9]
     R2 = 0.005
     sx0  = str("{:.2f}".format(x[0]+R2))
     sx1  = str("{:.2f}".format(x[1]+R2))
