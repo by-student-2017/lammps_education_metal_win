@@ -8,7 +8,7 @@ d is fitted to a modified Rose universal curve (erose_form = 2) at 7 points at E
 
 Baskes (1994) recommends refitting b1 using first-principles calculations, etc. The MEAM file in 2NN-MEAM was fitted to the Materials Project data using the Nelder-Mead method, but the result for the lanthanide series was b1 = 0.00.
 
-Nd: HCP (Ec) -> FCC (+0.009) -> HCP: (+0.013) (total + 0.022)
+Nd: P63/mmc (Ec) -> FCC (+0.009) -> HCP: (+0.013) (total + 0.022)
 
 #----------------------------------------------------------------------------------------------------------------------------
 When 1NN-MEAM is reported, b0 to b3 and t1 to t3 are used as is. No anomalous values ​​such as 1000 GPa are found.
