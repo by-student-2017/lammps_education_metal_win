@@ -87,8 +87,8 @@ pbounds = {
 }
 #-----
 if not os.path.exists("results.txt"):
-    subprocess.run("echo \"#| No.|Asub | b0  | b1  | b2  | b3  | t1  | t2  | t3  |Cmin |Cmax | Score (max value is recommendation) |\" >  results.txt", shell=True)
-    subprocess.run("echo \"#|iter| x0  | x1  | x2  | x3  | x4  | x5  | x6  | x7  | x8  | x9  | Score (max value is reccomendation) |\" >> results.txt", shell=True)
+    subprocess.run("echo \"#| No.|Asub | b0  | b1  | b2  | b3  | t1  | t2  | t3  |Cmin |Cmax | Score (min value is recommendation) |\" >  results.txt", shell=True)
+    subprocess.run("echo \"#|iter| x0  | x1  | x2  | x3  | x4  | x5  | x6  | x7  | x8  | x9  | Score (min value is reccomendation) |\" >> results.txt", shell=True)
 #-----
 count = 0
 #----------------------------------------------------------------------
@@ -221,4 +221,5 @@ else:
   #  Of course, it is also a good idea to expand the initial search range.
 #--------------------------------------------------------
 #----------------------------------------------------------------------
-subprocess.run("sort -k 12 -r results.txt > results_sort.txt", shell=True)
+#subprocess.run("sort -k 12 -r results.txt > results_sort.txt", shell=True)
+subprocess.run("sort -k 12 results.txt > results_sort.txt", shell=True)
