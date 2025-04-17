@@ -6,6 +6,8 @@ B and C11-C66: Materials Project
 structure (cif file) and energy (surface and grain), etc: Materials Project
 d is fitted to a modified Rose universal curve (erose_form = 2) at 7 points at EOS and set to 0 or 0.05, whichever is closer.
 
+Baskes (1994) recommends refitting b1 using first-principles calculations, etc. The MEAM file in 2NN-MEAM was fitted to the Materials Project data using the Nelder-Mead method, but the result for the lanthanide series was b1 = 0.00.
+
 #----------------------------------------------------------------------------------------------------------------------------
 When 1NN-MEAM is reported, b0 to b3 and t1 to t3 are used as is. No anomalous values ​​such as 1000 GPa are found.
 Strictly speaking, it would be necessary to refit, but for now we only did a quick check. This is because it is more important to prepare elements that have not been reported. Even with this rough setting, when the difference between the DFT and experimental values ​​is used as a correction value for the reference structure, the absolute difference between the DFT and MEAM values ​​is often within 0.02 to 0.06 [eV/atom] (in some cases it is around 0.1 to 0.2). The difference is generally of the same sign (i.e., the values ​​can be compared relatively).
