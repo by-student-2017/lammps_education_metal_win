@@ -25,7 +25,7 @@ ncpu = 8 # Number of parallel processes (calculated using lammps)
 # User setting area -2/3-
 Ec = 6.740 # esub in library.meam
 Edft = -9.2744 # [eV/atom], Reference DFT data ("Final Energy/Atom" of Materials Project) (Edft = 0 case -> dE = 0)
-Bexp = 220 # B [GPa] (Bulk modulus of library.meam) (Eexp = 0 case -> use assumption)
+Bexp = 308 # B [GPa] (Bulk modulus of library.meam) (Eexp = 0 case -> use assumption)
 Bdft = 308 # Bv or Bvrh [GPa], Reference DFT data
 #-----
 dE = -Ec - Edft # -esub(library.meam) - reference_DFT("Final Energy/Atom" of Materials Project)
