@@ -68,7 +68,7 @@ def extract_elastic_constants(log_file_path):
 
 os.system(f'export OMP_NUM_THREADS=1')
 # Loop through each CIF file in the directory
-nfiles = 0
+nparameters = 0
 evalulate_value = 0.0
 for cif_file in os.listdir(cif_directory):
     if cif_file.endswith('.cif'):
@@ -130,10 +130,10 @@ for cif_file in os.listdir(cif_directory):
                 print(f'{key}: {value}(this meam), {reference_elastic_value}(data.json) ([GPa] unit)')
                 difference_elastic_value += ((float(value) - reference_elastic_value))**2
                 bulk_modulus += reference_elastic_value/9
+                nparameters += 1
             difference_elastic_value / (bulk_modulus**2)
             print(f'elastic diff. value: {difference_elastic_value}')
             evalulate_value += difference_elastic_value
-            nfiles += 1
             os.chdir('./../')
         
         energy_data = fit_data[cif_file]['Final Energy/Atom'] + dE # dE = -Ec -Edft -> -Ec = Edft + dE
@@ -161,14 +161,14 @@ for cif_file in os.listdir(cif_directory):
         evalulate_value += ((cohesive_energy - (-energy_data))/energy_data)**2
         print(f'The cohesive energy (eV/atom) is {cohesive_energy}')
         print(f'The difference energy (eV/atom) is {difference_energy}')
-        nfiles += 1
+        nparameters += 1
         
         os.remove(log_file_path)
         os.remove(temp_file_path)
         gc.collect()
         
 print(f'------------------------------')
-evalulate_value = (evalulate_value/nfiles) * 100
+evalulate_value = (evalulate_value/nparameters) * 100
 print(f'The evalulate_vale (%) is {evalulate_value}')
 with open('evalulate_value.txt', 'w') as file:
     file.write(str(evalulate_value))
