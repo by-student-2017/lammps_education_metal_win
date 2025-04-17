@@ -146,7 +146,7 @@ for cif_file in os.listdir(cif_directory):
                 elif key in ['C55', 'C66'] and 'C11' in fit_data[cif_file]:
                     reference_elastic_value = fit_data[cif_file]['C44']*Brate
                 else:
-                    dummy_value = 0.1
+                    dummy_value = 5.0
                 print(f'{key}: {value}(this meam), {reference_elastic_value}(data.json) ([GPa] unit)')
                 difference_elastic_value += ((float(value) - reference_elastic_value)/(reference_elastic_value+dummy_value))**2
                 #bulk_modulus += reference_elastic_value/9
