@@ -988,8 +988,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
             atoms.set_cell(last_cell_params, scale_atoms=True)
             atoms.set_positions(last_atomic_positions)
             opt_cell = atoms.get_cell()
-            print(f'\noptimized cell = {opt_cell}')
-            positions = atoms.get_positions()
+            positions = atoms.get_positions(wrap=True)
             re = np.linalg.norm(positions[0] - positions[1])
             re2a = opt_cell[0][0]/re
             print(f'Distance, re [A] = {re}')
