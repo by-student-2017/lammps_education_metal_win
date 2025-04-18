@@ -501,6 +501,39 @@ def fit_rose_curve_erose_form_2(volumes_per_atom, cohesive_energies_per_atom, al
     return repuls_fit, attrac_fit
 
 
+def get_last_cell_and_positions(file_path):
+    atomic_elements = []
+    cell_parameters = []
+    atomic_positions = []
+    with open(file_path, 'r') as f:
+        lines = f.readlines()
+        # Find last CELL_PARAMETERS block
+        for i in range(len(lines) - 1, -1, -1):  # Reverse search
+            if "CELL_PARAMETERS (angstrom)" in lines[i]:
+                cell_parameters = [
+                    list(map(float, lines[i+1].strip().split())),
+                    list(map(float, lines[i+2].strip().split())),
+                    list(map(float, lines[i+3].strip().split()))
+                ]
+                break
+        # Find last ATOMIC_POSITIONS block
+        for i in range(len(lines) - 1, -1, -1):  # Reverse search
+            if "ATOMIC_POSITIONS (angstrom)" in lines[i]:
+                j = i + 1
+                while j < len(lines) and lines[j].strip():  # Read until an empty line
+                    parts = lines[j].strip().split()
+                    # Skip if non-numeric data exists
+                    if not all(p.replace('.', '', 1).replace('-', '', 1).isdigit() for p in parts[1:]):
+                        j += 1
+                        continue
+                    atomic_elements.append(parts[0])  # Add atomic element
+                    atomic_positions.append(list(map(float, parts[1:])))  # Correctly format positions
+                    j += 1
+                break
+    # Return extracted parameters and positions
+    return cell_parameters, atomic_elements, atomic_positions
+
+
 def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, max_retries=100, lattce='', lat='', npoints=25, primitive_flag=1, PBEsol_flag=0, spin_flag=1, D_flag=1, cutoff=520, magnetic_type_flag=1):
     element1, element2 = elements_combination
     
@@ -921,10 +954,11 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
     
     #-----------------------------------------------------------------------------
     # search optimized structure with vc-relax
-    gc.collect()
     if lattce in ['hcp', 'dim', 'ch4', 'dim1']:
         print("search optimized structure with vc-relax")
         input_data['control']['calculation'] = 'vc-relax'
+        input_data['control']['forc_conv_thr'] = 1.0e-3 # dafault value
+        input_data['control']['nstep'] = 1000
         scaled_cell = original_cell * scaling_factor
         atoms.set_cell(scaled_cell, scale_atoms=True)
         try:
@@ -941,10 +975,30 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
             re2a = opt_cell[0][0]/re
             print(f'Distance, re [A] = {re}')
         except Exception as e:
-            print(f"Optimization failed: {e}")
-            with open("error_log.txt", "a") as file:
-                file.write(f"Optimization failed: {e}: {lattce}-{element1}-{element2}\n")
-                file.write(f"  -> use c = sqrt(8/3) * a = 1.633 * a \n")
+            # Path to your espresso.pwo file
+            file_path = 'espresso.pwo'
+            # Get the last cell parameters and atomic positions
+            last_cell_params, last_atomic_elements, last_atomic_positions = get_last_cell_and_positions(file_path)
+            print("Last CELL_PARAMETERS (angstrom):")
+            for param in last_cell_params:
+                print(param)
+            print("\nLast ATOMIC_POSITIONS (angstrom):")
+            for position in last_atomic_positions:
+                print(position)
+            atoms.set_cell(last_cell_params, scale_atoms=True)
+            atoms.set_positions(last_atomic_positions)
+            opt_cell = atoms.get_cell()
+            print(f'\noptimized cell = {opt_cell}')
+            positions = atoms.get_positions()
+            re = np.linalg.norm(positions[0] - positions[1])
+            re2a = opt_cell[0][0]/re
+            print(f'Distance, re [A] = {re}')
+            print(f're/a = {re2a}')
+            print(f'c/a = {opt_cell[2][2]/opt_cell[0][0]}')
+            #print(f"Optimization failed: {e}")
+            #with open("error_log.txt", "a") as file:
+            #    file.write(f"Optimization failed: {e}: {lattce}-{element1}-{element2}\n")
+            #    file.write(f"  -> use c = sqrt(8/3) * a = 1.633 * a \n")
     #-----------------------------------------------------------------------------
     
     dsfactor = 0.15
