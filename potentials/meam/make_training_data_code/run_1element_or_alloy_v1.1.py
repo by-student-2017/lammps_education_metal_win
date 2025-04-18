@@ -1101,39 +1101,47 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
             opt = BFGS(atoms)
             opt.run(fmax=0.0514) # 1e-3*51.422 [eV/A]
             #opt.run(fmax=0.02) # max force <= 0.02 [eV/A]
-            energy = atoms.get_total_energy()
-            print(f'E = {energy} [eV]')
-            opt_cell = atoms.get_cell()
-            print(f'optimized cell = {opt_cell}')
+            #energy = atoms.get_total_energy()
+            #print(f'E = {energy} [eV]')
+            #opt_cell = atoms.get_cell()
+            #print(f'optimized cell = {opt_cell}')
             #-------------------------------------
-            positions = atoms.get_positions()
-            re = np.linalg.norm(positions[0] - positions[1])
-            re2a = opt_cell[0][0]/re
-            print(f'Distance, re [A] = {re}')
+            #positions = atoms.get_positions(wrap=True)
+            #re = np.linalg.norm(positions[0] - positions[1])
+            #re2a = opt_cell[0][0]/re
+            #print(f'Distance, re [A] = {re}')
+            #print(f're/a = {re2a}')
+            #print(f'c/a = {opt_cell[2][2]/opt_cell[0][0]}')
         except Exception as e:
-            # Path to your espresso.pwo file
-            file_path = 'espresso.pwo'
-            # Get the last cell parameters and atomic positions
-            last_cell_params, last_atomic_elements, last_atomic_positions = get_last_cell_and_positions(file_path)
-            print("Last CELL_PARAMETERS (angstrom):")
-            for param in last_cell_params:
-                print(param)
-            print("\nLast ATOMIC_POSITIONS (angstrom):")
-            for position in last_atomic_positions:
-                print(position)
-            atoms.set_cell(last_cell_params, scale_atoms=True)
-            atoms.set_positions(last_atomic_positions)
-            opt_cell = atoms.get_cell()
-            positions = atoms.get_positions(wrap=True)
-            re = np.linalg.norm(positions[0] - positions[1])
-            re2a = opt_cell[0][0]/re
-            print(f'Distance, re [A] = {re}')
-            print(f're/a = {re2a}')
-            print(f'c/a = {opt_cell[2][2]/opt_cell[0][0]}')
+            pass
             #print(f"Optimization failed: {e}")
             #with open("error_log.txt", "a") as file:
             #    file.write(f"Optimization failed: {e}: {lattce}-{element1}-{element2}\n")
             #    file.write(f"  -> use c = sqrt(8/3) * a = 1.633 * a \n")
+        # Path to your espresso.pwo file
+        file_path = 'espresso.pwo'
+        # Get the last cell parameters and atomic positions
+        last_cell_params, last_atomic_elements, last_atomic_positions = get_last_cell_and_positions(file_path)
+        print("Last CELL_PARAMETERS (angstrom):")
+        for param in last_cell_params:
+            print(param)
+        print("\nLast ATOMIC_POSITIONS (angstrom):")
+        for position in last_atomic_positions:
+            print(position)
+        atoms.set_cell(last_cell_params, scale_atoms=True)
+        atoms.set_positions(last_atomic_positions)
+        opt_cell = atoms.get_cell()
+        positions = atoms.get_positions(wrap=True)
+        ad = np.linalg.norm(positions[0] - positions[1])
+        print(f'Atomic distance, re [A] = {re}')
+        if ad >= a and lattce == 'hcp':
+            re = a
+        elif ad < a and lattce == 'hcp':
+            re = ad
+        print(f'Nearest neighbor Distance, re [A] = {re}')
+        re2a = opt_cell[0][0]/re
+        print(f're/a = {re2a}')
+        print(f'c/a = {opt_cell[2][2]/opt_cell[0][0]}')
     #-----------------------------------------------------------------------------
     
     dsfactor = 0.15
