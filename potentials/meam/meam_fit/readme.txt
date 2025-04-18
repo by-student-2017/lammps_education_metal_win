@@ -21,6 +21,7 @@ Preparation of calculation conditions
 Run
 1. python3 Bayesian_fit.py
    (Or python3 particle_swarm_fit.py)
+Note: With the Nelder-Mead method, even if good values ​​are obtained by fitting, the results will be unacceptable, such as b0 becoming 0.0.
 
 Look at the log json file and select the one with the highest fit value.
 If you are happy with the final result, just change XX in library.meam to the name of the element that was the subject of the cif fit.
