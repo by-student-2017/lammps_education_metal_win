@@ -4,10 +4,12 @@ Important information such as formation energy and CIF data is missing from the 
 
 Environment construction
 1. sudo apt update
-2. sudo apt -y install lammps
+2. sudo apt -y install lammps ase
 3. pip3 install bayesian-optimization==1.4.3
 4. pip3 install pyswarms==1.3.0
-(5. sudo apt install -y python-scipy)
+5. sudo apt install -y python3-scipy
+6. pip3 install numpy=1.20
+  (5.5 pip3 uninstall numpy)
 
 
 Preparation of calculation conditions
