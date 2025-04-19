@@ -19,6 +19,8 @@ Preparation of calculation conditions
 3. Use Bayesian_fit.py to set the number of ncpus for parallelization and the initial value (x0 to x9).
 4. Enter the values ​​of alpha, alat, and Ec in library_template.meam 
   (this is not subject to fitting).
+1 element: Ec (exp), alat (DFT), B (DFT)
+Alloy: assume Ec by using of delta(I,J) (DFT) , re (DFT), B (DFT)
 
 Run
 1. python3 Bayesian_fit.py
