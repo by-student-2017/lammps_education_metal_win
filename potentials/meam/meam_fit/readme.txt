@@ -21,6 +21,7 @@ Preparation of calculation conditions
   (this is not subject to fitting).
 1 element: Ec (exp), alat (DFT), B (DFT)
 Alloy: assume Ec by using of delta(I,J) (DFT) , re (DFT), B (DFT)
+Note: It would have been nice if all the data were experimental values, but since there are none, DFT is used. Since the Ec of DFT differs greatly from the experimental value for Fe, etc., Ec is calculated using the experimental value, and in the case of alloys, the difference between the experimental value and DFT is used to calculate it.
 
 Run
 1. python3 Bayesian_fit.py
