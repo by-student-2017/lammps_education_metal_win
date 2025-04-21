@@ -17,10 +17,10 @@ import os
 ncpu = 8 # Number of parallel processes (calculated using lammps)
 #-----
 # User setting area -2/3-
-Ec = 3.04 # esub in library.meam
-Edft = -4.5873 # [eV/atom], Reference DFT data ("Final Energy/Atom" of Materials Project) (Edft = 0 case -> dE = 0)
-Bexp = 39 # B [GPa] (Bulk modulus of library.meam) (Eexp = 0 case -> use assumption)
-Bdft = 39 # Bv or Bvrh [GPa], Reference DFT data
+Ec = 3.28 # esub in library.meam
+Edft = -4.5574 # [eV/atom], Reference DFT data ("Final Energy/Atom" of Materials Project) (Edft = 0 case -> dE = 0)
+Bexp = 44 # B [GPa] (Bulk modulus of library.meam) (Eexp = 0 case -> use assumption)
+Bdft = 44 # Bv or Bvrh [GPa], Reference DFT data
 #-----
 dE = -Ec - Edft # -esub(library.meam) - reference_DFT("Final Energy/Atom" of Materials Project)
 if dE == -Ec:
@@ -29,7 +29,7 @@ if Bexp == 0.0:
     Bexp = Bdft*(1-np.sign(dE)*(dE/Edft)**2)
 Brate = Bexp/Bdft
 #-----
-wspe = 0.1 # weight for stress vs. energy ("weight stress / weight energy" ratio)
+wspe = 0.75 # weight for stress vs. energy ("weight stress / weight energy" ratio)
 #-----
 weight_flag = 0 # 1:On, 0:Off
 T = 300.0 # Temperature [K]
@@ -56,30 +56,32 @@ with open('evalulation.py', 'w') as file:
 # Note: First step: Bayesian_fit.py, then next step Nelder-Mead_fit.py
            # BCC, FCC, Diamond, dimer
 x0 =  1.00 # Asub
-x1 =  1.00 # b0 > 0.5
+x1 =  1.30 # b0 > 0.5
 x2 =  0.00 # b1
-x3 =  0.13 # b2: 1(BCC), 2 or 4 (FCC)
+x3 =  0.00 # b2: 1(BCC), 2 or 4 (FCC)
 x4 =  3.00 # b3
-x5 = 21.70 # t1
-x6 = 10.30 # t2
-x7 =-18.00 # t3: < 0 (BCC), > 0 (FCC, Diamond)
+x5 = 19.00 # t1
+x6 =  9.00 # t2
+x7 =-15.00 # t3: < 0 (BCC), > 0 (FCC, Diamond)
 x8 =  2.00 # 0 < Cmin < Cmax
 x9 =  2.80 # Cmin < Cmax < 2.8
 #-----
 x = [x0,x1,x2,x3,x4,x5,x6,x7,x8,x9]
 #-----
 if not os.path.exists("results.txt"):
-    subprocess.run("echo \"#| No.|Asub | b0  | b1  | b2  | b3  | t1  | t2  | t3  |Cmin |Cmax | evalulate_value (min value is recommendation) |\" >  results.txt", shell=True)
-    subprocess.run("echo \"#|iter| x0  | x1  | x2  | x3  | x4  | x5  | x6  | x7  | x8  | x9  | evalulate_value (min value is reccomendation) |\" >> results.txt", shell=True)
+    os.system("echo \"#| No.|Asub | b0  | b1  | b2  | b3  | t1  | t2  | t3  |Cmin |Cmax | evalulate_value (min value is recommendation) |\" >  results.txt")
+    os.system("echo \"#|iter| x0  | x1  | x2  | x3  | x4  | x5  | x6  | x7  | x8  | x9  | evalulate_value (min value is reccomendation) |\" >> results.txt")
 #-----
 count = 0
 #----------------------------------------------------------------------
 def f(x):
 
-    print("------------------------")
+    #print("------------------------")
+    os.system("echo ------------------------")
     global count
     count += 1
-    print(f'Step: {count}')
+    #print(f'Step: {count}')
+    os.system("echo Step:"+str(count))
     #
     x[9] = 2.8 if x[9] < x[8] else x[9]
     x[9] = 2.8 if x[9] > 2.80 else x[9]
@@ -124,8 +126,8 @@ def f(x):
     with open('XX.meam', 'w') as file:
         file.write(content)
     #
-    #os.system(f"python3 evalulation.py")
-    subprocess.run(['python3', 'evalulation.py'])
+    os.system(f"python3 evalulation.py")
+    #subprocess.run(['python3', 'evalulation.py'])
     with open('evalulate_value.txt', 'r') as file:
         evalulate_value = float(file.read().strip())
     #
@@ -135,7 +137,7 @@ def f(x):
         +", "+sx5+", "+sx6+", "+sx7 # t1, t2, t3
         +", "+sx8+", "+sx9 # Cmin, Cmax
         +", "+str(evalulate_value) # Evaluate values
-        +" >> results.txt", shell=True)
+        +" >> results.txt")
     #
     y = evalulate_value
     return y
@@ -146,4 +148,4 @@ res = optimize.minimize(f,x,method='Nelder-Mead',options={'adaptive':True})
 #res = optimize.minimize(f,x0,method='Powell')
 #res = optimize.minimize(f,x0,method='BFGS')
 #----------------------------------------------------------------------
-subprocess.run("sort -k 12 results.txt > results_sort.txt", shell=True)
+os.system("sort -k 12 results.txt > results_sort.txt")

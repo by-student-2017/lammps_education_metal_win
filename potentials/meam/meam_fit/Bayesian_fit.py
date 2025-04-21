@@ -28,10 +28,10 @@ import datetime # for results folder
 ncpu = 8 # Number of parallel processes (calculated using lammps)
 #-----
 # User setting area -2/3-
-Ec = 3.40 # esub in library.meam
-Edft = -4.7681 # [eV/atom], Reference DFT data ("Final Energy/Atom" of Materials Project) (Edft = 0 case -> dE = 0)
-Bexp = 34 # B [GPa] (Bulk modulus of library.meam) (Eexp = 0 case -> use assumption)
-Bdft = 34 # Bv or Bvrh [GPa], Reference DFT data
+Ec = 3.28 # esub in library.meam
+Edft = -4.5574 # [eV/atom], Reference DFT data ("Final Energy/Atom" of Materials Project) (Edft = 0 case -> dE = 0)
+Bexp = 44 # B [GPa] (Bulk modulus of library.meam) (Eexp = 0 case -> use assumption)
+Bdft = 44 # Bv or Bvrh [GPa], Reference DFT data
 #-----
 dE = -Ec - Edft # -esub(library.meam) - reference_DFT("Final Energy/Atom" of Materials Project)
 if dE == -Ec:
@@ -40,7 +40,7 @@ if Bexp == 0.0:
     Bexp = Bdft*(1-np.sign(dE)*(dE/Edft)**2)
 Brate = Bexp/Bdft
 #-----
-wspe = 0.1 # weight for stress vs. energy ("weight stress / weight energy" ratio)
+wspe = 0.075 # weight for stress vs. energy ("weight stress / weight energy" ratio)
 #-----
 weight_flag = 0 # 1:On, 0:Off
 T = 300.0 # Temperature [K]
@@ -68,40 +68,42 @@ with open('evalulation.py', 'w') as file:
 n_gene = 10 # number of parameters
            # BCC, FCC, Diamond, dimer
 x0 =  1.00 # Asub
-x1 =  0.80 # b0 > 0.5
+x1 =  1.30 # b0 > 0.5
 x2 =  0.00 # b1
 x3 =  0.00 # b2: 1(BCC), 2 or 4 (FCC)
 x4 =  3.00 # b3
-x5 =  8.60 # t1
-x6 =  0.60 # t2
-x7 = -3.00 # t3: < 0 (BCC), > 0 (FCC, Diamond)
+x5 = 19.00 # t1
+x6 =  9.00 # t2
+x7 =-15.00 # t3: < 0 (BCC), > 0 (FCC, Diamond)
 x8 =  2.00 # 0 < Cmin < Cmax
 x9 =  2.80 # Cmin < Cmax < 2.8
 pbounds = {
-   'x0': (0.8, 1.3), # Asub, Gas: (1.0, 2.5)
-   'x1': (0.5,8), # b0 > 0.5
-   'x2': (0.0,8), # b1 > 0
-   'x3': (0.0,8), # b2 > 0
-   'x4': (0.0,8), # b3 > 0
-   'x5': (0.0,15), # t1
-   'x6': (0.0,20), # t2
-   'x7': (-12,0), # t3: < 0 (BCC), > 0 (FCC, Diamond)
+   'x0': (0.9, 1.2), # Asub, Gas: (1.0, 2.5)
+   'x1': (0.9, 6), # b0 > 0.5
+   'x2': (0, 6), # b1 > 0
+   'x3': (0, 6), # b2 > 0
+   'x4': (0, 20), # b3 > 0
+   'x5': (0, 15), # t1
+   'x6': (0, 15), # t2
+   'x7': (-18, 0), # t3: < 0 (BCC), > 0 (FCC, Diamond)
    'x8': (0.1,2.0), # 0 < Cmin < Cmax
    'x9': (1.0,2.8) # Cmin < Cmax < 2.8
 }
 #-----
 if not os.path.exists("results.txt"):
-    subprocess.run("echo \"#| No.|Asub | b0  | b1  | b2  | b3  | t1  | t2  | t3  |Cmin |Cmax | evalulate_value (min value is recommendation) |\" >  results.txt", shell=True)
-    subprocess.run("echo \"#|iter| x0  | x1  | x2  | x3  | x4  | x5  | x6  | x7  | x8  | x9  | evalulate_value (min value is reccomendation) |\" >> results.txt", shell=True)
+    os.system("echo \"#| No.|Asub | b0  | b1  | b2  | b3  | t1  | t2  | t3  |Cmin |Cmax | evalulate_value (min value is recommendation) |\" >  results.txt")
+    os.system("echo \"#|iter| x0  | x1  | x2  | x3  | x4  | x5  | x6  | x7  | x8  | x9  | evalulate_value (min value is reccomendation) |\" >> results.txt")
 #-----
 count = 0
 #----------------------------------------------------------------------
 def descripter(x0,x1,x2,x3,x4,x5,x6,x7,x8,x9):
     #
-    print("------------------------")
+    #print("------------------------")
+    os.system("echo ------------------------")
     global count
     count += 1
-    print(f'Step: {count}')
+    #print(f'Step: {count}')
+    os.system("echo Step:"+str(count))
     '''
     # parameters
     b2 = 1.0   # FCC: 6.0 or 2.0, BCC: 1.0
@@ -178,18 +180,18 @@ def descripter(x0,x1,x2,x3,x4,x5,x6,x7,x8,x9):
     with open('XX.meam', 'w') as file:
         file.write(content)
     #
-    #os.system(f"python3 evalulation.py")
-    subprocess.run(['python3', 'evalulation.py'])
+    os.system(f"python3 evalulation.py")
+    #subprocess.run(['python3', 'evalulation.py'])
     with open('evalulate_value.txt', 'r') as file:
         evalulate_value = float(file.read().strip())
     #
-    subprocess.run("echo No."+str(count)
+    os.system("echo No."+str(count)
         +": "+sx0 # Asub
         +", "+sx1+", "+sx2+", "+sx3+", "+sx4 # b0, b1, b2, b3
         +", "+sx5+", "+sx6+", "+sx7 # t1, t2, t3
         +", "+sx8+", "+sx9 # Cmin, Cmax
         +", "+str(evalulate_value) # Evaluate values
-        +" >> results.txt", shell=True)
+        +" >> results.txt")
     #
     y = 1.0/evalulate_value
     return y
@@ -210,13 +212,13 @@ if os.path.exists("./logs.json"):
   load_logs(new_optimizer, logs=["./logs.json"]);
   logger = JSONLogger(path="./logs", reset=False) # Results will be saved in ./logs.json
   new_optimizer.subscribe(Events.OPTIMIZATION_STEP, logger)
-  new_optimizer.maximize(init_points=21, n_iter=(300*5)) # 300 cycle / 6 h
+  new_optimizer.maximize(init_points=5, n_iter=(300*5)) # 300 cycle / 6 h
   new_optimizer.set_gp_params(alpha=1e-3) # The greater the whitenoise, the greater alpha value.
 else:
   optimizer = BayesianOptimization(f=descripter, pbounds=pbounds, verbose=2, random_state=1, bounds_transformer=bounds_transformer, allow_duplicate_points=True)
   logger = JSONLogger(path="./logs") # Results will be saved in ./logs.json
   optimizer.subscribe(Events.OPTIMIZATION_STEP, logger)
-  optimizer.maximize(init_points=(n_gene*21), n_iter=(400*5)) # 600 cycles / 12 h (Note: It depends on the number of parameters and search range, but usually around 150 times is a good value (in n_gene*5 case). I set it to 600 just in case (from after I got home until the next morning).)
+  optimizer.maximize(init_points=(n_gene*5), n_iter=(400*5)) # 600 cycles / 12 h (Note: It depends on the number of parameters and search range, but usually around 150 times is a good value (in n_gene*5 case). I set it to 600 just in case (from after I got home until the next morning).)
   optimizer.set_gp_params(alpha=1e-3) # The greater the whitenoise, the greater alpha value.
   # Note: Since "bounds_transformer" is used to narrow the search area, 
   #  in order to initially search as wide a range as possible, 
@@ -226,4 +228,4 @@ else:
 #--------------------------------------------------------
 #----------------------------------------------------------------------
 #subprocess.run("sort -k 12 -r results.txt > results_sort.txt", shell=True)
-subprocess.run("sort -k 12 results.txt > results_sort.txt", shell=True)
+os.system("sort -k 12 results.txt > results_sort.txt")

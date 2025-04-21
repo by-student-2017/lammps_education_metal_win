@@ -36,7 +36,7 @@ if Bexp == 0.0:
     Bexp = Bdft*(1-np.sign(dE)*(dE/Edft)**2)
 Brate = Bexp/Bdft
 #-----
-wspe = 0.1 # weight for stress vs. energy ("weight stress / weight energy" ratio)
+wspe = 0.075 # weight for stress vs. energy ("weight stress / weight energy" ratio)
 #-----
 weight_flag = 0 # 1:On, 0:Off
 T = 300.0 # Temperature [K]
@@ -75,46 +75,49 @@ x8 =  1.06 # 0 < Cmin < Cmax
 x9 =  2.80 # Cmin < Cmax < 2.8
 pbounds = {
   # min
-  ( 0.8, # x0, Asub
-    1.0, # x1, b0
-    0.0, # x2, b1
-    0.0, # x3, b2
-    0.0, # x4, b3
-    0.0, # x5, t1
-    0.0, # x6, t2
-  -15.0, # x7, t3
+  ( 0.85, # x0, Asub
+    0.9, # x1, b0
+    0, # x2, b1
+    0, # x3, b2
+    0, # x4, b3
+    0, # x5, t1
+    0, # x6, t2
+  -20, # x7, t3
     0.1, # x8, Cmin
     1.0, # x9, Cmax
   ),
   # max
-  ( 1.3, # x0, Asub
-    8.0, # x1, b0
-    8.0, # x2, b1
-    8.0, # x3, b2
-    8.0, # x4, b3
-   10.0, # x5, t1
-   20.0, # x6, t2
-    0.0, # x7, t3
+  ( 1.2,   # x0, Asub
+   10,   # x1, b0
+   10, # x2, b1
+   10, # x3, b2
+   10, # x4, b3
+   20,   # x5, t1
+   20,   # x6, t2
+    0,   # x7, t3
     2.0, # x8, Cmin
     2.8, # x9, Cmax
   )
   }# boundary
 #-----
 if not os.path.exists("results.txt"):
-    subprocess.run("echo \"#| No.|Asub | b0  | b1  | b2  | b3  | t1  | t2  | t3  |Cmin |Cmax | evalulate_value (min value is recommendation) |\" >  results.txt", shell=True)
-    subprocess.run("echo \"#|iter| x0  | x1  | x2  | x3  | x4  | x5  | x6  | x7  | x8  | x9  | evalulate_value (min value is reccomendation) |\" >> results.txt", shell=True)
+    os.system("echo \"#| No.|Asub | b0  | b1  | b2  | b3  | t1  | t2  | t3  |Cmin |Cmax | evalulate_value (min value is recommendation) |\" >  results.txt")
+    os.system("echo \"#|iter| x0  | x1  | x2  | x3  | x4  | x5  | x6  | x7  | x8  | x9  | evalulate_value (min value is reccomendation) |\" >> results.txt")
 #-----
 count = 0
 #----------------------------------------------------------------------
 def descripter(x0,x1,x2,x3,x4,x5,x6,x7,x8,x9):
 
-    print("------------------------")
+    #print("------------------------")
+    os.system("echo ------------------------")
     global count
     count += 1
-    print(f'Step: {count}')
+    #print(f'Step: {count}')
+    os.system("echo Step:"+str(count))
     #
     nop = len(x0)
-    print("n_particles =",nop)
+    #print("n_particles =",nop)
+    os.system("echo n_particles ="+str(nop))
     y = np.zeros(nop)
     #
     for i in range(nop):
@@ -163,18 +166,18 @@ def descripter(x0,x1,x2,x3,x4,x5,x6,x7,x8,x9):
         with open('XX.meam', 'w') as file:
             file.write(content)
         #
-        #os.system(f"python3 evalulation.py")
-        subprocess.run(['python3', 'evalulation.py'])
+        os.system(f"python3 evalulation.py")
+        #subprocess.run(['python3', 'evalulation.py'])
         with open('evalulate_value.txt', 'r') as file:
             evalulate_value = float(file.read().strip())
         #
-        subprocess.run("echo No."+str(count)+"-"+str(i)
+        os.system("echo No."+str(count)+"-"+str(i)
           +": "+sx0 # Asub
           +", "+sx1+", "+sx2+", "+sx3+", "+sx4 # b0, b1, b2, b3
           +", "+sx5+", "+sx6+", "+sx7 # t1, t2, t3
           +", "+sx8+", "+sx9 # Cmin, Cmax
           +", "+str(evalulate_value) # Evaluate values
-          +" >> results.txt", shell=True)
+          +" >> results.txt")
         #
         y[i] = evalulate_value
     return y
@@ -286,4 +289,4 @@ else:
   #best_score, best_options = g_search.search()
   #----------------------------------------------------------------------
 #----------------------------------------------------------------------
-subprocess.run("sort -k 12 results.txt > results_sort.txt", shell=True)
+os.system("sort -k 12 results.txt > results_sort.txt")
