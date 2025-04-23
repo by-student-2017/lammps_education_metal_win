@@ -28,7 +28,7 @@ Ec is calculated using the experimental value, and in the case of alloys,
 the difference between the experimental value and DFT is used to calculate it.
 
 Run
-1. python3 run_seq.py
+1. bash run_seq.sh
 Note: With the Nelder-Mead method, even if good values ​​are obtained by fitting, the results will be unacceptable, such as b0 becoming 0.0.
 
 Look at the log json file and select the one with the highest fit value.
