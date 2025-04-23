@@ -191,10 +191,7 @@ for cif_file in os.listdir(cif_directory):
         # Extract and print the cohesive energy
         cohesive_energy = float(extract_cohesive_energy(log_file_path))
         difference_energy = cohesive_energy - (-energy_data)
-        if abs(difference_energy - 0.0215) <= 0.0: # 10 kcal/mol = 0.043 eV
-            add_weight = 1.0
-        else:
-            add_weight = 1.0 + 100.0*(1.0 - np.exp(-((abs(difference_energy - 0.0215) - 0.0)**2) / (2 * 100.0**2)))
+        add_weight = 1.0 + 100.0*(1.0 - np.exp(-((abs(difference_energy - 0.00) - 0.0)**2) / (2 * 100.0**2)))
         evalulate_value += ((cohesive_energy - (-energy_data))/energy_data)**2 * weight * add_weight
         print(f'The cohesive energy (eV/atom) is {cohesive_energy}')
         print(f'The difference energy (eV/atom) is {difference_energy}')
