@@ -7,7 +7,7 @@ file_path_Par="particle_swarm_fit.py"
 
 calc_dir="out"
 
-elements=("Er") # <- Enter the element you want to calculate (Note: Time Consumption: Approx. 4 elements/hour)
+elements=("Os") # <- Enter the element you want to calculate (Note: Time Consumption: Approx. 4 elements/hour)
 
 for element in "${elements[@]}"; do
     
@@ -22,7 +22,7 @@ for element in "${elements[@]}"; do
     echo "$modified_code" > "$temp_file_path"
     
     # Create the element directory (if it doesn't exist)
-    element_dir="${element}-Bayesian/${element}"
+    element_dir="Bayesian/${element}"
     mkdir -p "$element_dir"
     python3 "$file_path_Bay" | tee log.txt
     mv XX.meam "$element_dir"
@@ -35,7 +35,7 @@ for element in "${elements[@]}"; do
     # Collect garbage
     sync; echo 3 > /proc/sys/vm/drop_caches
     
-    element_dir="${element}-Nelder-Mead/${element}"
+    element_dir="Nelder-Mead/${element}"
     mkdir -p "$element_dir"
     python3 "$file_path_Nel" | tee log.txt
     mv XX.meam "$element_dir"
@@ -47,7 +47,7 @@ for element in "${elements[@]}"; do
     # Collect garbage
     sync; echo 3 > /proc/sys/vm/drop_caches
     
-    element_dir="${element}-particle_swarm/${element}"
+    element_dir="particle_swarm/${element}"
     mkdir -p "$element_dir"
     python3 "$file_path_Par" | tee log.txt
     mv XX.meam "$element_dir"
