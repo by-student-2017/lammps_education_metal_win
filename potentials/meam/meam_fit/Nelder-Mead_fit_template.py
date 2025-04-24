@@ -135,7 +135,7 @@ def f(x):
     with open('evalulate_value.txt', 'r') as file:
         evalulate_value = float(file.read().strip())
     #
-    subprocess.run("echo No."+str(count)
+    os.system("echo No."+str(count)
         +": "+sx0 # Asub
         +", "+sx1+", "+sx2+", "+sx3+", "+sx4 # b0, b1, b2, b3
         +", "+sx5+", "+sx6+", "+sx7 # t1, t2, t3
