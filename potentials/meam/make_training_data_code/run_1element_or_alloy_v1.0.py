@@ -55,8 +55,7 @@ npoints = 7 # >= 7 e.g., 7, 11, 17, 21, or 25, etc (Recommend >= 25), (default =
 # Note: "fixed_element" becomes a dummy when a lattice of one element is selected (the atom in *.json is temporarily specified).
 fixed_element = 'XX'
 #fixed_element = 'YYYYYYYYYY'
-elements = [fixed_element, 'V', 'Cr', 'Mn', 'Fe', 'Co', 'Ni', 'Mo', 'Tc', 'Ru', 'Rh']
-'''
+elements = [fixed_element,
              'H',                                                                                                 'He',
             'Li', 'Be',                                                              'B',  'C',  'N',  'O',  'F', 'Ne',
             'Na', 'Mg',                                                             'Al', 'Si',  'P',  'S', 'Cl', 'Ar',
@@ -66,7 +65,6 @@ elements = [fixed_element, 'V', 'Cr', 'Mn', 'Fe', 'Co', 'Ni', 'Mo', 'Tc', 'Ru', 
                         'Ce', 'Pr', 'Nd', 'Pm', 'Sm', 'Eu', 'Gd', 'Tb', 'Dy', 'Ho', 'Er', 'Tm', 'Yb', 'Lu', 
                               'Hf', 'Ta',  'W', 'Re', 'Os', 'Ir', 'Pt', 'Au', 'Hg', 'Tl', 'Pb', 'Bi', 'Po', 'At', 'Ra',
             'Rn', 'Fr', 'Ac', 'Th', 'Pa',  'U', 'Np', 'Pu'] # <- Enter the element you want to calculate (Note: Time Consumption: Approx. 4 elements/hour)
-'''
 #elements = [fixed_element, 'Ce', 'Pr', 'Nd', 'Pm', 'Sm', 'Eu', 'Gd', 'Tb', 'Dy', 'Ho', 'Er', 'Tm', 'Yb', 'Lu'] # Pairs with noble gases require careful calculations and must be calculated separately.
 #elements = [fixed_element, 'Po', 'At', 'Ra', 'Rn', 'Fr', 'Ac', 'Th', 'Pa',  'U', 'Np', 'Pu'] # Pairs with noble gases require careful calculations and must be calculated separately.
 #elements = [fixed_element, 'He', 'Ne', 'Ar', 'Kr', 'Xe', 'Ra'] # Pairs with noble gases require careful calculations and must be calculated separately.
@@ -934,15 +932,15 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
             atoms.set_initial_magnetic_moments([smag1] * len(atoms))
     elif magnetic_type_flag == -1:
         print('anti-ferro magnetic calculation (e.g., Cr)')
-        if lattce ['l12']:
+        if lattce in ['l12']:
             atoms.set_initial_magnetic_moments([smag1/4, smag1/4, smag1/4, smag1/4, -smag2])
         elif len(atoms) == 1:
             atoms.set_initial_magnetic_moments([smag1])
         elif len(atoms) == 2:
             atoms.set_initial_magnetic_moments([smag1, -smag2])
     elif magnetic_type_flag == -2:
-        print('anti-ferro magnetic calculation (e.g., Mn)')
-        if lattce ['l12']:
+        print('anti-ferri magnetic calculation (e.g., Mn)')
+        if lattce in ['l12']:
             atoms.set_initial_magnetic_moments([smag1/4, smag1/4, smag1/4, smag1/4, -smag2])
         elif len(atoms) == 1:
             atoms.set_initial_magnetic_moments([smag1])

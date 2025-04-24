@@ -669,15 +669,15 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
             atoms.set_initial_magnetic_moments([smag1] * len(atoms))
     elif magnetic_type_flag == -1:
         print('anti-ferro magnetic calculation (e.g., Cr)')
-        if lattce ['l12']:
+        if lattce in ['l12']:
             atoms.set_initial_magnetic_moments([smag1/4, smag1/4, smag1/4, smag1/4, -smag2])
         elif len(atoms) == 1:
             atoms.set_initial_magnetic_moments([smag1])
         elif len(atoms) == 2:
             atoms.set_initial_magnetic_moments([smag1, -smag2])
     elif magnetic_type_flag == -2:
-        print('anti-ferro magnetic calculation (e.g., Mn)')
-        if lattce ['l12']:
+        print('anti-ferri magnetic calculation (e.g., Mn)')
+        if lattce in ['l12']:
             atoms.set_initial_magnetic_moments([smag1/4, smag1/4, smag1/4, smag1/4, -smag2])
         elif len(atoms) == 1:
             atoms.set_initial_magnetic_moments([smag1])
