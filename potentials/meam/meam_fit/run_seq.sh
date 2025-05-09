@@ -108,19 +108,20 @@ for element in "${elements[@]}"; do
     mv results_sort.txt "$element_dir"
     mv log.txt "$element_dir"
     #-----
-    
-    # Collect garbage
-    sync; echo 3 > /proc/sys/vm/drop_caches
-    
-    #-----
-    element_dir="particle_swarm/${element}"
-    mkdir -p "$element_dir"
-    python3 "$file_path_Par" | tee log.txt
-    mv XX.meam "$element_dir"
-    mv library.meam "$element_dir"
-    mv results.txt "$element_dir"
-    mv results_sort.txt "$element_dir"
-    mv report.log "$element_dir"
-    mv log.txt "$element_dir"
-    #-----
 done
+
+    # Collect garbage
+#    sync; echo 3 > /proc/sys/vm/drop_caches
+    
+    #-----
+#    element_dir="particle_swarm/${element}"
+#    mkdir -p "$element_dir"
+#    python3 "$file_path_Par" | tee log.txt
+#    mv XX.meam "$element_dir"
+#    mv library.meam "$element_dir"
+#    mv results.txt "$element_dir"
+#    mv results_sort.txt "$element_dir"
+#    mv report.log "$element_dir"
+#    mv log.txt "$element_dir"
+    #-----
+#done
