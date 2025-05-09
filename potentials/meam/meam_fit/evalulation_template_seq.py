@@ -89,7 +89,7 @@ os.system(f'export OMP_NUM_THREADS=1')
 os.system(f'rm -f evalulate_value.txt')
 # Loop through each CIF file in the directory
 nparameters = 0
-evalulate_value = 1.0e5
+evalulate_value = 0.0
 for cif_file in os.listdir(cif_directory):
     subprocess.run(['rm','-f','log.lammps'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     subprocess.run(['rm','-f','elastic_calculation/log.lammps'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
