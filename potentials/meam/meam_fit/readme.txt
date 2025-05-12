@@ -11,7 +11,7 @@ Environment construction
 6. pip3 install numpy==1.20
   (6. pip3 install unmpy==1.21)
   (5.5 pip3 uninstall numpy)
-
+Note: The Nelder-Mead version tends to fit energies rather than elastic constants (at the expense of elastic constants) more easily than Bayesian fits.
 
 Preparation of calculation conditions
 1. Put the cif file of the structure you want to fit into "cif_data".
