@@ -2,9 +2,9 @@
 The legacy version of the Materials Project, which was useful, will be closed in September 2025. 
 Important information such as formation energy and CIF data is missing from the new version.
 
-Environment construction (ubuntu 22.04 LTS)
+Environment construction (ubuntu 22.04 LTS, lammps 29Aug2024)
 1. sudo apt update
-2. sudo apt -y install lammps ase
+2. sudo apt -y install ase
 3. pip3 install bayesian-optimization==1.4.3
 4. pip3 install pyswarms==1.3.0
 5. sudo apt install -y python3-scipy
