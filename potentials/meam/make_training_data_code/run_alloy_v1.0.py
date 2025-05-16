@@ -664,30 +664,32 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
     if magnetic_type_flag == 1:
         print('ferro magnetic calculation (e.g., Fe, Co, Ni)')
         if lattce in ['l12']:
-            atoms.set_initial_magnetic_moments([smag1/4, smag1/4, smag1/4, smag2])
+            atoms.set_initial_magnetic_moments([smag1/3, smag1/3, smag1/3, smag2])
         else:
             atoms.set_initial_magnetic_moments([smag1] * len(atoms))
     elif magnetic_type_flag == -1:
         print('anti-ferro magnetic calculation (e.g., Cr)')
         if lattce in ['l12']:
-            #atoms.set_initial_magnetic_moments([smag1/4, smag1/4, smag1/4, -smag2])
-            atoms.set_initial_magnetic_moments([smag1/4, smag1/4, smag1/4, -smag1])
+            #atoms.set_initial_magnetic_moments([smag1/3, smag1/3, smag1/3, -smag2])
+            smag1 = (smag1*3+smag2)/4
+            atoms.set_initial_magnetic_moments([smag1/3, smag1/3, smag1/3, -smag1])
         elif len(atoms) == 1:
             atoms.set_initial_magnetic_moments([smag1])
         elif len(atoms) == 2:
             #atoms.set_initial_magnetic_moments([smag1, -smag2])
-            #smag1 = (smag1+smag2)/2
+            smag1 = (smag1+smag2)/2
             atoms.set_initial_magnetic_moments([smag1, -smag1])
     elif magnetic_type_flag == -2:
         print('anti-ferri magnetic calculation (e.g., Mn)')
         if lattce in ['l12']:
-            atoms.set_initial_magnetic_moments([smag1/4, smag1/4, smag1/4, -smag2])
+            smag1 = (smag1*3+smag2)/4
+            atoms.set_initial_magnetic_moments([smag1/3*1.03, smag1/3*1.03, smag1/3*1.03, -smag1*0.91])
         elif len(atoms) == 1:
             atoms.set_initial_magnetic_moments([smag1])
         elif len(atoms) == 2:
-            #smag1 = (smag1+smag2)/2
-            #atoms.set_initial_magnetic_moments([smag1*1.1, -smag1*0.9])
-            atoms.set_initial_magnetic_moments([smag1, -smag2*0.9])
+            smag1 = (smag1+smag2)/2
+            atoms.set_initial_magnetic_moments([smag1*1.1, -smag1*0.9])
+            #atoms.set_initial_magnetic_moments([smag1, -smag2*0.9])
     else:
         # default = 0.0 in ASE
         pass
