@@ -125,15 +125,15 @@ for cif_file in os.listdir(cif_directory):
         print(f'weight: {weight}')
         
         # Run LAMMPS calculation
-        os.system(f'mpirun -np {ncpu} lmp -in {temp_file_path} > /dev/null 2>&1')
-        #subprocess.run(['mpirun', '-np', str(ncpu), 'lmp', '-in', temp_file_path], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        os.system(f'mpirun -np {ncpu} lmp_mpi -in {temp_file_path} > /dev/null 2>&1')
+        #subprocess.run(['mpirun', '-np', str(ncpu), 'lmp_mpi', '-in', temp_file_path], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         
         # Run LAMMPS calculation
         if 'C11' in fit_data[cif_file]:
             print('Elastic Constants Calculation')
             os.chdir('./elastic_calculation')
-            os.system(f'mpirun -np {ncpu} lmp -in in.elastic > /dev/null 2>&1')
-            #subprocess.run(['mpirun', '-np', str(ncpu), 'lmp', '-in', 'in.elastic'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            os.system(f'mpirun -np {ncpu} lmp_mpi -in in.elastic > /dev/null 2>&1')
+            #subprocess.run(['mpirun', '-np', str(ncpu), 'lmp_mpi', '-in', 'in.elastic'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             
             # Extract elastic constants and print them
             elastic_constants = extract_elastic_constants(log_file_path)
