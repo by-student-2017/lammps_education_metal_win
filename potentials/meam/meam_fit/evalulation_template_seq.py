@@ -164,7 +164,7 @@ for cif_file in os.listdir(cif_directory):
                 print(f'{key}: {value}(this meam), {reference_elastic_value}(data.json) ([GPa] unit)')
                 difference_elastic_value += ((float(value) - reference_elastic_value)/(reference_elastic_value+dummy_value))**2
                 #bulk_modulus += reference_elastic_value/9
-                nparameters += 1
+                nparameters += weight * wspe
             #difference_elastic_value / (bulk_modulus**2)
             print(f'elastic diff. value: {difference_elastic_value}')
             evalulate_value += difference_elastic_value * weight * wspe
@@ -196,7 +196,7 @@ for cif_file in os.listdir(cif_directory):
         evalulate_value += ((cohesive_energy - (-energy_data))/energy_data)**2 * weight * add_weight
         print(f'The cohesive energy (eV/atom) is {cohesive_energy}')
         print(f'The difference energy (eV/atom) is {difference_energy}')
-        nparameters += 1
+        nparameters += weight
         
         os.remove(log_file_path)
         os.remove(temp_file_path)
