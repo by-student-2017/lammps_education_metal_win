@@ -18,7 +18,7 @@ if element in data:
 'XX'     '{lat}'  {z}     {ielement} {atwt}
 {alpha}     Xb0      Xb1     Xb2        Xb3     {alat}  {esub}  Xasub
 1.0         Xt1      Xt2     Xt3        {rozero} {ibar}
-    """
+"""
 
     # Format the text with the extracted values
     formatted_text = template.format(
@@ -83,7 +83,7 @@ repuls(1,1) = {repuls11}
 attrac(1,1) = {attrac11}
 Cmin(1,1,1) = XCmin
 Cmax(1,1,1) = XCmax
-    """
+"""
 
     # Format the text with the extracted values
     formatted_text = template.format(
