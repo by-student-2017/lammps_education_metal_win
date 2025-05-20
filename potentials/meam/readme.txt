@@ -185,6 +185,9 @@ see https://github.com/by-student-2017/lammps_education_metal_win/blob/master/po
 #-------------------------------------------------------------
 
 #-------------------------------------------------------------
+If the reference structure is bulk, set rho0=1. If the reference structure is not bulk, adjust rho0. For example, change the value of rho0 to a positive value using dim.
+
+#-------------------------------------------------------------
 # M I Baskes and R A Johnson 1994 Modelling Simul. Mater. Sci. Eng. 2 147.: 10.1088/0965-0393/2/1/011
 E(r) = -Ec*[1+alpha(r/re-1)]*exp[-alpha(r/re-1)]
 alpha^2 = 9*Omega*B/Ec
