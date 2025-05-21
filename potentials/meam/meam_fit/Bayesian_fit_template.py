@@ -48,7 +48,7 @@ Brate = Bexp/Bdft
 #-----
 wspe = 0.075 # weight for stress vs. energy ("weight stress / weight energy" ratio)
 #-----
-weight_flag = 0 # 1:On, 0:Off
+weight_flag = 1 # 1:On, 0:Off
 T = 300.0 # Temperature [K]
 #-----
 with open('evalulation_template.py', 'r') as file:
