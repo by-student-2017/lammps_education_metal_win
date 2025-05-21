@@ -48,7 +48,7 @@ Brate = Bexp/Bdft
 #-----
 wspe = 0.075 # weight for stress vs. energy ("weight stress / weight energy" ratio)
 #-----
-weight_flag = 1 # 1:On, 0:Off
+weight_flag = 0 # 1:On, 0:Off
 T = 300.0 # Temperature [K]
 #-----
 with open('evalulation_template.py', 'r') as file:
@@ -99,6 +99,7 @@ if not os.path.exists("results.txt"):
     os.system("echo \"#|iter| x0  | x1  | x2  | x3  | x4  | x5  | x6  | x7  | x8  | x9  | evalulate_value (min value is reccomendation) |\" >> results.txt")
 #-----
 count = 0
+recent_y_values = []
 #----------------------------------------------------------------------
 def descripter(x0,x1,x2,x3,x4,x5,x6,x7,x8,x9):
     #
@@ -198,6 +199,15 @@ def descripter(x0,x1,x2,x3,x4,x5,x6,x7,x8,x9):
         +" >> results.txt")
     #
     y = 1.0/evalulate_value
+    #
+    # Check for convergence: 10 consecutive same y values
+    recent_y_values.append(y)
+    if len(recent_y_values) > 10:
+        recent_y_values.pop(0)
+    if len(recent_y_values) == 10 and all(val == recent_y_values[0] for val in recent_y_values):
+        print("Convergence detected: 10 identical y values.")
+        raise StopIteration
+    #
     return y
 #----------------------------------------------------------------------
 # fitting parameters
@@ -216,13 +226,20 @@ if os.path.exists("./logs.json"):
   load_logs(new_optimizer, logs=["./logs.json"]);
   logger = JSONLogger(path="./logs", reset=False) # Results will be saved in ./logs.json
   new_optimizer.subscribe(Events.OPTIMIZATION_STEP, logger)
-  new_optimizer.maximize(init_points=5, n_iter=(300*5)) # 300 cycle / 6 h
+  try:
+     new_optimizer.maximize(init_points=5, n_iter=(300*5)) # 300 cycle / 6 h
+  except StopIteration:
+     print("Optimization stopped due to convergence.")
   new_optimizer.set_gp_params(alpha=1e-3) # The greater the whitenoise, the greater alpha value.
 else:
   optimizer = BayesianOptimization(f=descripter, pbounds=pbounds, verbose=2, random_state=1, bounds_transformer=bounds_transformer, allow_duplicate_points=True)
   logger = JSONLogger(path="./logs") # Results will be saved in ./logs.json
   optimizer.subscribe(Events.OPTIMIZATION_STEP, logger)
-  optimizer.maximize(init_points=(n_gene*5), n_iter=(400*5)) # 600 cycles / 12 h (Note: It depends on the number of parameters and search range, but usually around 150 times is a good value (in n_gene*5 case). I set it to 600 just in case (from after I got home until the next morning).)
+  #optimizer.maximize(init_points=(n_gene*5), n_iter=(400*5)) # 600 cycles / 12 h (Note: It depends on the number of parameters and search range, but usually around 150 times is a good value (in n_gene*5 case). I set it to 600 just in case (from after I got home until the next morning).)
+  try:
+     optimizer.maximize(init_points=(n_gene*5), n_iter=(400*5))
+  except StopIteration:
+     print("Optimization stopped due to convergence.")
   optimizer.set_gp_params(alpha=1e-3) # The greater the whitenoise, the greater alpha value.
   # Note: Since "bounds_transformer" is used to narrow the search area, 
   #  in order to initially search as wide a range as possible, 

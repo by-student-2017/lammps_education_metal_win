@@ -37,7 +37,7 @@ Brate = Bexp/Bdft
 #-----
 wspe = 0.075 # weight for stress vs. energy ("weight stress / weight energy" ratio)
 #-----
-weight_flag = 1 # 1:On, 0:Off
+weight_flag = 0 # 1:On, 0:Off
 T = 300.0 # Temperature [K]
 #-----
 with open('evalulation_template.py', 'r') as file:
@@ -75,6 +75,18 @@ x = [x0,x1,x2,x3,x4,x5,x6,x7,x8,x9]
 if not os.path.exists("results.txt"):
     os.system("echo \"#| No.|Asub | b0  | b1  | b2  | b3  | t1  | t2  | t3  |Cmin |Cmax | evalulate_value (min value is recommendation) |\" >  results.txt")
     os.system("echo \"#|iter| x0  | x1  | x2  | x3  | x4  | x5  | x6  | x7  | x8  | x9  | evalulate_value (min value is reccomendation) |\" >> results.txt")
+#-----
+recent_y_values = []
+
+def callback(xk):
+    global recent_y_values
+    y = f(xk)
+    recent_y_values.append(y)
+    if len(recent_y_values) > 10:
+        recent_y_values.pop(0)
+    if len(recent_y_values) == 10 and all(val == recent_y_values[0] for val in recent_y_values):
+        print("Convergence detected: 10 identical y values.")
+        raise StopIteration
 #-----
 count = 0
 #----------------------------------------------------------------------
@@ -146,7 +158,11 @@ def f(x):
     y = evalulate_value
     return y
 #----------------------------------------------------------------------
-res = optimize.minimize(f,x,method='Nelder-Mead',options={'adaptive':True})
+#res = optimize.minimize(f,x,method='Nelder-Mead',options={'adaptive':True})
+try:
+    res = optimize.minimize(f, x, method='Nelder-Mead', options={'adaptive': True}, callback=callback)
+except StopIteration:
+    print("Optimization stopped due to convergence.")
 #res = optimize.minimize(f,x0,method='Nelder-Mead')
 #res = optimize.minimize(f,x0,method='TNC')
 #res = optimize.minimize(f,x0,method='Powell')
