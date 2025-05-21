@@ -78,8 +78,8 @@ x8 =  meam_para[element]['Cmin(1,1,1)'] # 0 < Cmin < Cmax
 x9 =  meam_para[element]['Cmax(1,1,1)'] # Cmin < Cmax < 2.8
 pbounds = {
   # min
-  ( 0.85, # x0, Asub
-    0.9, # x1, b0
+  ( 0.8, # x0, Asub
+    0.8, # x1, b0
     0, # x2, b1
     0, # x3, b2
     0, # x4, b3
@@ -90,7 +90,7 @@ pbounds = {
     1.0, # x9, Cmax
   ),
   # max
-  ( 1.2,   # x0, Asub
+  ( 1.3,   # x0, Asub
    10,   # x1, b0
    10, # x2, b1
    10, # x3, b2
