@@ -82,14 +82,14 @@ x7 =  meam_para[element]['t3'] # t3: < 0 (BCC), > 0 (FCC, Diamond)
 x8 =  meam_para[element]['Cmin(1,1,1)'] # 0 < Cmin < Cmax
 x9 =  meam_para[element]['Cmax(1,1,1)'] # Cmin < Cmax < 2.8
 pbounds = {
-   'x0': (0.9, 1.2), # Asub, Gas: (1.0, 2.5)
-   'x1': (0.9, 6), # b0 > 0.5
-   'x2': (0, 6), # b1 > 0
-   'x3': (0, 6), # b2 > 0
-   'x4': (0, 20), # b3 > 0
-   'x5': (0, 15), # t1
-   'x6': (0, 15), # t2
-   'x7': (-18, 0), # t3: < 0 (BCC), > 0 (FCC, Diamond)
+   'x0': (0.8, 1.3), # Asub, Gas: (1.0, 2.5)
+   'x1': (0.8, 10), # b0 > 0.5
+   'x2': (0, 10), # b1 > 0
+   'x3': (0, 10), # b2 > 0
+   'x4': (0, 10), # b3 > 0
+   'x5': (0, 20), # t1
+   'x6': (0, 20), # t2
+   'x7': (-20, 0), # t3: < 0 (BCC), > 0 (FCC, Diamond)
    'x8': (0.1,2.0), # 0 < Cmin < Cmax
    'x9': (1.0,2.8) # Cmin < Cmax < 2.8
 }
