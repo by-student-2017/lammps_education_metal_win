@@ -24,6 +24,7 @@ with open("library.json", "r") as file:
 # Usage
 # python3 particle swarm_fit.py
 #----------------------------------------------------------------------
+element = 'Xelement'
 #-----
 # User setting area -1/3-
 ncpu = XXncpu # Number of parallel processes (calculated using lammps)
