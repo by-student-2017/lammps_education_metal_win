@@ -40,30 +40,30 @@ for element in "${elements[@]}"; do
     
     
     #-----
-    file_path="Bayesian_fit_template.py"
-    code=$(<"$file_path")
+#    file_path="Bayesian_fit_template.py"
+#    code=$(<"$file_path")
     
     # Replace 'Xelement' with the element value
-    modified_code="${code//Xelement/$element}"
-    modified_code="${modified_code//XXncpu/$ncpu}"
+#    modified_code="${code//Xelement/$element}"
+#    modified_code="${modified_code//XXncpu/$ncpu}"
     
     # Write the modified code to a temporary file
-    temp_file_path="Bayesian_fit.py"
-    echo "$modified_code" > "$temp_file_path"
+#    temp_file_path="Bayesian_fit.py"
+#    echo "$modified_code" > "$temp_file_path"
     #-----
     
     
     #-----
-    file_path="Nelder-Mead_fit_template.py"
-    code=$(<"$file_path")
+#    file_path="Nelder-Mead_fit_template.py"
+#    code=$(<"$file_path")
     
     # Replace 'Xelement' with the element value
-    modified_code="${code//Xelement/$element}"
-    modified_code="${modified_code//XXncpu/$ncpu}"
+#    modified_code="${code//Xelement/$element}"
+#    modified_code="${modified_code//XXncpu/$ncpu}"
     
     # Write the modified code to a temporary file
-    temp_file_path="Nelder-Mead_fit.py"
-    echo "$modified_code" > "$temp_file_path"
+#    temp_file_path="Nelder-Mead_fit.py"
+#    echo "$modified_code" > "$temp_file_path"
     #-----
     
     
@@ -84,29 +84,31 @@ for element in "${elements[@]}"; do
     
     #-----
     # Create the element directory (if it doesn't exist)
-    element_dir="Bayesian/${element}"
-    mkdir -p "$element_dir"
-    python3 "$file_path_Bay" | tee log.txt
-    mv XX.meam "$element_dir"
-    mv library.meam "$element_dir"
-    mv results.txt "$element_dir"
-    mv results_sort.txt "$element_dir"
-    mv logs.json "$element_dir"
-    mv log.txt "$element_dir"
+#    element_dir="Bayesian/${element}"
+#    mkdir -p "$element_dir"
+#    python3 "$file_path_Bay" | tee log.txt
+#    mv XX.meam "$element_dir"
+#    mv library.meam "$element_dir"
+#    mv results.txt "$element_dir"
+#    mv results_sort.txt "$element_dir"
+#    mv logs.json "$element_dir"
+#    mv log.txt "$element_dir"
     #-----
+    
     # Collect garbage
-    sync; echo 3 > /proc/sys/vm/drop_caches
+#    sync; echo 3 > /proc/sys/vm/drop_caches
     
     #-----
-    element_dir="Nelder-Mead/${element}"
-    mkdir -p "$element_dir"
-    python3 "$file_path_Nel" | tee log.txt
-    mv XX.meam "$element_dir"
-    mv library.meam "$element_dir"
-    mv results.txt "$element_dir"
-    mv results_sort.txt "$element_dir"
-    mv log.txt "$element_dir"
+#    element_dir="Nelder-Mead/${element}"
+#    mkdir -p "$element_dir"
+#    python3 "$file_path_Nel" | tee log.txt
+#    mv XX.meam "$element_dir"
+#    mv library.meam "$element_dir"
+#    mv results.txt "$element_dir"
+#    mv results_sort.txt "$element_dir"
+#    mv log.txt "$element_dir"
     #-----
+    
     # Collect garbage
     sync; echo 3 > /proc/sys/vm/drop_caches
     

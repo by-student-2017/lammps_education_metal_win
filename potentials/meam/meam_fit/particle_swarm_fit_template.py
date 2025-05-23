@@ -86,18 +86,18 @@ pbounds = {
     0, # x4, b3
     0, # x5, t1
     0, # x6, t2
-  -20, # x7, t3
+  -25, # x7, t3
     0.1, # x8, Cmin
     1.0, # x9, Cmax
   ),
   # max
-  ( 1.3,   # x0, Asub
-   10,   # x1, b0
-   10, # x2, b1
-   10, # x3, b2
-   10, # x4, b3
-   20,   # x5, t1
-   20,   # x6, t2
+  ( 1.2,   # x0, Asub
+   15,   # x1, b0
+   15, # x2, b1
+   15, # x3, b2
+   15, # x4, b3
+   25,   # x5, t1
+   25,   # x6, t2
     0,   # x7, t3
     2.0, # x8, Cmin
     2.8, # x9, Cmax
@@ -268,7 +268,7 @@ else:
     dimensions=(n_gene),options=options,bounds=pbounds)
   
   # Perform optimization
-  cost, pos = optimizer.optimize(objective_func=descripter_pso, iters=600)
+  cost, pos = optimizer.optimize(objective_func=descripter_pso, iters=300)
   #-------------------------------
   # Obtain the cost history
   optimizer.cost_history
