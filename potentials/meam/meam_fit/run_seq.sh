@@ -7,7 +7,11 @@ file_path_Par="particle_swarm_fit.py"
 
 calc_dir="out"
 
-elements=("Gd") # <- Enter the element you want to calculate (Note: Time Consumption: Approx. 4 elements/hour)
+# bcc: Cu U Np Br I Rb K
+# sc: As Sb Bi S Se Te
+# fcc: In La Pm Ir Ac Th Pa Pu
+# hcp: Sc Ru Pr Sm Eu Gd Tb Dy Ho Er Tm Yb Lu Re Os Hg
+elements=(Sc Ru Pr Sm Eu Gd Tb Dy Ho Er Tm Yb Lu Re Os Hg) # <- Enter the element you want to calculate (Note: Time Consumption: Approx. 4 elements/hour)
 
 ncpu=1
 
