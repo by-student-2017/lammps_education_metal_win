@@ -98,14 +98,14 @@ pbounds = {
    # Stronger angular dependence for BCC, moderate for FCC/HCP, weaker for SC
    'x5': (5, 20) if lattice == 'bcc' else
          (2, 15) if lattice in ['hcp', 'fcc', 'dia', 'dim', 'zig'] else
-         (0, 10),  # sc, etc
+         (0, 10), # sc, etc
    'x6': (5, 20) if lattice == 'bcc' else
          (2, 15) if lattice in ['hcp', 'fcc', 'dia', 'dim', 'zig'] else
-         (0, 10),  # sc, etc
+         (0, 10), # sc, etc
    # t3: sign determines crystal structure preference
    # Negative for BCC/HCP, positive for FCC/Diamond
-   'x7': (-20, 0)  if lattice in ['hcp','bcc']  else 
-         (0, 20), # t3: < 0 (BCC, HCP), > 0 (FCC, dia, SC)
+   'x7': (-20, 0) if lattice in ['hcp','bcc']  else 
+         (0, 20), # t3: < 0 (BCC, HCP), > 0 (FCC, dia, SC)
    # Cmin: lower bound for angular screening cutoff
    # BCC requires higher Cmin, FCC/HCP lower, SC intermediate
    'x8': (1.35, 1.45) if lattice == 'bcc' else
