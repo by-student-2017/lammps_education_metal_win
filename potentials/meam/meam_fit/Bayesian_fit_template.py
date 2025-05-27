@@ -81,6 +81,43 @@ x6 =  meam_para[element]['t2'] # t2
 x7 =  meam_para[element]['t3'] # t3: < 0 (BCC), > 0 (FCC, Diamond)
 x8 =  meam_para[element]['Cmin(1,1,1)'] # 0 < Cmin < Cmax
 x9 =  meam_para[element]['Cmax(1,1,1)'] # Cmin < Cmax < 2.8
+lattice = meam_para[element]['lat']
+pbounds = {
+   # Asub: amplitude of embedding function (typical range: 1.0–2.5 for gases)
+   'x0': (1.0, 2.5) if lattice in ['dim','zig'] else (0.8, 1.2),
+   # b0: exponential decay factor for electron density
+   # Higher for BCC, moderate for FCC/HCP, lower for SC
+   'x1': (1.5, 4.0) if lattice == 'bcc' else
+         (1.0, 3.5) if lattice in ['hcp', 'fcc', 'dia', 'dim'] else
+         (0.8, 2.5),  # SC zig, etc
+   'x2': (0.1, 2.0), # b1: > 0, modifies pair potential
+   'x3': (0.1, 2.0), # b2: > 0, modifies angular contribution
+   'x4': (0.1, 2.0), # b3: > 0, modifies higher-order terms
+   # t1 and t2: angular screening parameters
+   # Stronger angular dependence for BCC, moderate for FCC/HCP, weaker for SC
+   'x5': (5, 20) if lattice == 'bcc' else
+         (2, 15) if lattice in ['hcp', 'fcc', 'dia', 'dim', 'zig'] else
+         (0, 10),  # SC, etc
+   'x6': (5, 20) if lattice == 'bcc' else
+         (2, 15) if lattice in ['hcp', 'fcc', 'dia', 'dim', 'zig'] else
+         (0, 10),  # SC, etc
+   # t3: sign determines crystal structure preference
+   # Negative for BCC/HCP, positive for FCC/Diamond
+   'x7': (-20, 0)  if lattice in ['hcp','bcc']  else 
+         (0, 20), # t3: < 0 (BCC, HCP), > 0 (FCC, dia, SC)
+   # Cmin: lower bound for angular screening cutoff
+   # BCC requires higher Cmin, FCC/HCP lower, SC intermediate
+   'x8': (1.35, 1.45) if lattice == 'bcc' else
+         (0.95, 1.05) if lattice == 'sc' else
+         (0.75, 0.85), # for fcc, hcp, dim, zig
+   # Cmax: upper bound for angular screening cutoff
+   # Must be greater than Cmin
+   'x9': (1.45, 2.8) if lattice == 'bcc' else # High angular range needed; 2.8 is common and safe
+         (1.05, 2.0) if lattice in ['sc', 'zig'] else # Intermediate; depends on coordination
+         (1.2, 1.8) if lattice in ['dia', 'dim'] else # Covalent, directional bonding
+         (1.0, 2.0) # for fcc, hcp, others # Moderate angular range
+}
+'''
 pbounds = {
    'x0': (0.8, 1.2), # Asub, Gas: (1.0, 2.5)
    'x1': (0.8, 10), # b0 > 0.5
@@ -93,6 +130,7 @@ pbounds = {
    'x8': (0.1,2.0), # 0 < Cmin < Cmax
    'x9': (1.0,2.8) # Cmin < Cmax < 2.8
 }
+'''
 #-----
 if not os.path.exists("results.txt"):
     os.system("echo \"#| No.|Asub | b0  | b1  | b2  | b3  | t1  | t2  | t3  |Cmin |Cmax | evalulate_value (min value is recommendation) |\" >  results.txt")
