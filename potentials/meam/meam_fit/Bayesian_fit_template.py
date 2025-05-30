@@ -85,10 +85,10 @@ lattice = meam_para[element]['lat']
 '''
 pbounds = {
    # Asub: amplitude of embedding function (typical range: 1.0–2.5 for gases)
-   'x0': (1.0, 2.5) if lattice in ['dim','zig'] else (0.8, 1.2),
+   'x0': (1.0, 2.5) if lattice in ['dim','zig'] else (0.9, 1.2),
    # b0: exponential decay factor for electron density
    # Higher for BCC, moderate for FCC/HCP, lower for SC
-   'x1': (0.8, 6.0), # Be,Y:0.5, Nd:0.8
+   'x1': (0.5, 6.0), # Be,Y:0.5, Nd:0.8
    #'x1': (1.5, 4.0) if lattice == 'bcc' else
    #      (1.0, 3.5) if lattice in ['hcp', 'fcc', 'dia', 'dim'] else
    #      (0.8, 2.5),  # sc, zig, etc
