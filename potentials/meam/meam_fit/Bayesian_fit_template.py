@@ -82,6 +82,7 @@ x7 =  meam_para[element]['t3'] # t3: < 0 (BCC), > 0 (FCC, Diamond)
 x8 =  meam_para[element]['Cmin(1,1,1)'] # 0 < Cmin < Cmax
 x9 =  meam_para[element]['Cmax(1,1,1)'] # Cmin < Cmax < 2.8
 lattice = meam_para[element]['lat']
+'''
 pbounds = {
    # Asub: amplitude of embedding function (typical range: 1.0–2.5 for gases)
    'x0': (1.0, 2.5) if lattice in ['dim','zig'] else (0.8, 1.2),
@@ -104,7 +105,7 @@ pbounds = {
          (0, 10), # sc, etc
    # t3: sign determines crystal structure preference
    # Negative for BCC/HCP, positive for FCC/Diamond
-   'x7': (-20, 0) if lattice in ['hcp','bcc']  else 
+   'x7': (-20, -0.01) if lattice in ['hcp','bcc']  else 
          (0, 20), # t3: < 0 (BCC, HCP), > 0 (FCC, dia, SC)
    # Cmin: lower bound for angular screening cutoff
    # BCC requires higher Cmin, FCC/HCP lower, SC intermediate
@@ -128,11 +129,10 @@ pbounds = {
    'x4': (0, 10), # b3 > 0
    'x5': (0, 20), # t1
    'x6': (0, 20), # t2
-   'x7': (-20, 0), # t3: < 0 (BCC), > 0 (FCC, Diamond)
+   'x7': (-20, -0.01), # t3: < 0 (BCC), > 0 (FCC, Diamond)
    'x8': (0.1,2.0), # 0 < Cmin < Cmax
    'x9': (1.0,2.8) # Cmin < Cmax < 2.8
 }
-'''
 #-----
 if not os.path.exists("results.txt"):
     os.system("echo \"#| No.|Asub | b0  | b1  | b2  | b3  | t1  | t2  | t3  |Cmin |Cmax | evalulate_value (min value is recommendation) |\" >  results.txt")
