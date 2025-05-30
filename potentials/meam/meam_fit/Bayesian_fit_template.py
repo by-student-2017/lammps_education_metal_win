@@ -131,7 +131,7 @@ pbounds = {
    'x6': (0, 20), # t2
    'x7': (-20, -0.01), # t3: < 0 (BCC), > 0 (FCC, Diamond)
    'x8': (0.5,2.0), # 0 < Cmin < Cmax
-   'x9': (1.0,2.8) # Cmin < Cmax < 2.8
+   'x9': (0.8,2.8) # Cmin < Cmax < 2.8
 }
 #-----
 if not os.path.exists("results.txt"):
