@@ -62,7 +62,7 @@ if element in data:
 
     # Define the MEAM file format
     template = """# 2NN-MEAM
-rc = 5.8          # default = 4.0 (4.7 <= K >= 5.9, Rb >= 5.1, CHGNET:6.0)
+rc = 5.8          # default = 4.0 (4.7 <= K >= 5.9, Rb >= 5.1, Cs > 5.3, CHGNET:6.0)
 delr = 0.1        # default = 0.1
 augt1 = 1         # default = 1 (1NN-MEAM:0, 1NN->2NN:0, 2NN-MEAM:1) (1NN: 0 or 1 gives the same result)
 ialloy = 0        # default = 0 (1NN-MEAM:0, 2NN-MEAM:2)
