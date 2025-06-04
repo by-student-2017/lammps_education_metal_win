@@ -64,8 +64,8 @@ if element in data:
     template = """# 2NN-MEAM
 rc = 5.5          # default = 4.0 (4.7 <= K >= 5.9, Rb >= 5.1, CHGNET:6.0)
 delr = 0.1        # default = 0.1
-augt1 = 1         # default = 1
-ialloy = 0        # default = 0
+augt1 = 1         # default = 1 (1NN-MEAM:0, 1NN->2NN:0, 2NN-MEAM:1)
+ialloy = 0        # default = 0 (1NN-MEAM:0, 2NN-MEAM:2)
 emb_lin_neg = 0   # default = 0
 bkgd_dyn = 0      # default = 0
 erose_form = 2    # default = 0, In 1NN-MEAM, d=a3=0, so erose_form will give the same result for 0-2.
@@ -78,9 +78,9 @@ mixture_ref_t = 0 # default = 0
 
 # XX
 zbl(1,1) = 0
-nn2(1,1) = 1
-repuls(1,1) = {repuls11}
-attrac(1,1) = {attrac11}
+nn2(1,1) = 1 # 2NN-MEAM
+repuls(1,1) = {repuls11} # 2NN-MEAM
+attrac(1,1) = {attrac11} # 2NN-MEAM
 Cmin(1,1,1) = XCmin
 Cmax(1,1,1) = XCmax
 """
