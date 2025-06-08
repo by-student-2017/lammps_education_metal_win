@@ -68,7 +68,7 @@ augt1 = 1         # default = 1 (1NN-MEAM:0, 1NN->2NN:0, 2NN-MEAM:1) (1NN: 0 or 
 ialloy = 0        # default = 0 (1NN-MEAM:0, 2NN-MEAM:2)
 emb_lin_neg = 0   # default = 0
 bkgd_dyn = 0      # default = 0
-erose_form = 2    # default = 0, In 1NN-MEAM, d=a3=0, so erose_form will give the same result for 0-2.
+erose_form = 2    # default = 0, d=a3=0 for MEAM paper. stable:2, fit DFT:1
 mixture_ref_t = 0 # default = 0
 
 ### When parameters are fitted using DYNAMO code.
