@@ -79,10 +79,13 @@ mixture_ref_t = 0 # default = 0
 # XX
 zbl(1,1) = 0
 nn2(1,1) = 1 # 2NN-MEAM
-repuls(1,1) = {repuls11} # 2NN-MEAM
-attrac(1,1) = {attrac11} # 2NN-MEAM
-Cmin(1,1,1) = XCmin
-Cmax(1,1,1) = XCmax
+repuls(1,1) = {repuls11}
+attrac(1,1) = {attrac11}
+Cmin(1,1,1) = XCmin # 2NN-MEAM
+Cmax(1,1,1) = XCmax # 2NN-MEAM
+# nn2(1,1) = 0 # 1NN-MEAM
+# Cmin(1,1,1) = 2.00 # 1NN-MEAM
+# Cmax(1,1,1) = 2.80 # 1NN-MEAM
 """
 
     # Format the text with the extracted values
