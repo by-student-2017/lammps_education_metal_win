@@ -64,8 +64,8 @@ if element in data:
     template = """# 2NN-MEAM
 rc = 5.8          # default = 4.0 (4.7 <= K >= 5.9, Rb >= 5.1, Cs > 5.3, CHGNET:6.0)
 delr = 0.1        # default = 0.1
-augt1 = 1         # default = 1 (1NN-MEAM:0, 1NN->2NN:0, 2NN-MEAM:1) (1NN-MEAM: 0 or 1 gives the same result)
-ialloy = 0        # default = 0 (same reference structure:0, 2NN-MEAM:2)
+augt1 = 0         # default = 1 (1NN-MEAM:0, 1NN->2NN:0, 2NN-MEAM:1) (1NN-MEAM: 0 or 1 gives the same result)
+ialloy = 2        # default = 0 (same reference structure:0, 2NN-MEAM:2)
 emb_lin_neg = 0   # default = 0
 bkgd_dyn = 0      # default = 0
 erose_form = 2    # default = 0, d=a3=0 for 1NN-MEAM paper. stable:2, fit DFT:1
