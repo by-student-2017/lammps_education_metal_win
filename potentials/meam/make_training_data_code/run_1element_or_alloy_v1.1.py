@@ -784,15 +784,6 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
             re = lat / re2a
         a = re * re2a
         if primitive_flag == 0:
-            atoms = Atoms(f'{element2}', 
-                    positions=[(0, 0, 0)], 
-                    cell=[(-0.5*a, 0.5*a, 0.5*a), (0.5*a, -0.5*a, 0.5*a), (0.5*a, 0.5*a, -0.5*a)],
-                    pbc=True)
-            kpt = 9 # 6 or 8
-            kptc = kpt
-            Nelem1 = 0
-            Nelem2 = 1
-        else:
             #atoms = bulk('{element2}', 'bcc', a)
             atoms = Atoms(f'{element2}2', 
                     positions=[(0, 0, 0),(0.5*a, 0.5*a, 0.5*a)], 
@@ -802,6 +793,15 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
             kptc = kpt
             Nelem1 = 0
             Nelem2 = 2
+        else:
+            atoms = Atoms(f'{element2}', 
+                    positions=[(0, 0, 0)], 
+                    cell=[(-0.5*a, 0.5*a, 0.5*a), (0.5*a, -0.5*a, 0.5*a), (0.5*a, 0.5*a, -0.5*a)],
+                    pbc=True)
+            kpt = 9 # 6 or 8 (Note: For K, kpt=9 and 20 gave the same results.)
+            kptc = kpt
+            Nelem1 = 0
+            Nelem2 = 1
     elif lattce == 'sc':
         primitive_flag == 0
         print("Create the SC structure (1 element)")
@@ -1159,7 +1159,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
     scaled_cell = original_cell * scaling_factor
     atoms.set_cell(scaled_cell, scale_atoms=True)
     
-    if primitive_flag == 0:
+    if lattce in ['hcp', 'dim', 'ch4', 'dim1', 'v1hcp']:
         print(f'Calculation: Conventional Cell')
         print(f'start Cell([{original_cell[0,0]},{original_cell[1,1]},{original_cell[2,2]}])')
         bovera = original_cell[1][1]/original_cell[0][0]
@@ -1621,6 +1621,10 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
         'Lattice Constant a (A)': optimized_a, # Values ​​in conventional cells.
         'Lattice Constant b (A)': optimized_b, # Values ​​in conventional cells.
         'Lattice Constant c (A)': optimized_c, # Values ​​in conventional cells.
+        'b/a ratio': bovera, # b over a
+        'c/a ratio': covera, # c over a
+        'a/re ratio': re2a, # re to a
+        'primitive cell': primitive_flag,
         #----------------------------------------------------------
         # eos
         'Optimized Energy (eV/atom)': e0,

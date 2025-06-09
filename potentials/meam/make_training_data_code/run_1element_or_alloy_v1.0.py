@@ -55,9 +55,10 @@ npoints = 7 # >= 7 e.g., 7, 11, 17, 21, or 25, etc (Recommend >= 25), (default =
 # Note: "fixed_element" becomes a dummy when a lattice of one element is selected (the atom in *.json is temporarily specified).
 fixed_element = 'XX'
 #fixed_element = 'YYYYYYYYYY'
-elements = [fixed_element,
-             'H',                                                                                                 'He',
-            'Li', 'Be',                                                              'B',  'C',  'N',  'O',  'F', 'Ne',
+elements = [fixed_element, 'Co']
+'''
+             'H',                                                                                                'He',
+            'Li', 'Be',                                                              'B',  'C',  'N',  'O', 'F', 'Ne',
             'Na', 'Mg',                                                             'Al', 'Si',  'P',  'S', 'Cl', 'Ar',
              'K', 'Ca', 'Sc', 'Ti',  'V', 'Cr', 'Mn', 'Fe', 'Co', 'Ni', 'Cu', 'Zn', 'Ga', 'Ge', 'As', 'Se', 'Br', 'Kr',
             'Rb', 'Sr',  'Y', 'Zr', 'Nb', 'Mo', 'Tc', 'Ru', 'Rh', 'Pd', 'Ag', 'Cd', 'In', 'Sn', 'Sb', 'Te',  'I', 'Xe',
@@ -65,6 +66,9 @@ elements = [fixed_element,
                         'Ce', 'Pr', 'Nd', 'Pm', 'Sm', 'Eu', 'Gd', 'Tb', 'Dy', 'Ho', 'Er', 'Tm', 'Yb', 'Lu', 
                               'Hf', 'Ta',  'W', 'Re', 'Os', 'Ir', 'Pt', 'Au', 'Hg', 'Tl', 'Pb', 'Bi', 'Po', 'At', 'Ra',
             'Rn', 'Fr', 'Ac', 'Th', 'Pa',  'U', 'Np', 'Pu'] # <- Enter the element you want to calculate (Note: Time Consumption: Approx. 4 elements/hour)
+'''
+#Note: hcp: He, O, F, Ne, S
+#Note: dim: remain U', 'Np', 'Pu'
 #elements = [fixed_element, 'Ce', 'Pr', 'Nd', 'Pm', 'Sm', 'Eu', 'Gd', 'Tb', 'Dy', 'Ho', 'Er', 'Tm', 'Yb', 'Lu'] # Pairs with noble gases require careful calculations and must be calculated separately.
 #elements = [fixed_element, 'Po', 'At', 'Ra', 'Rn', 'Fr', 'Ac', 'Th', 'Pa',  'U', 'Np', 'Pu'] # Pairs with noble gases require careful calculations and must be calculated separately.
 #elements = [fixed_element, 'He', 'Ne', 'Ar', 'Kr', 'Xe', 'Ra'] # Pairs with noble gases require careful calculations and must be calculated separately.
@@ -127,7 +131,7 @@ magnetic_type_flag = int('ZZZZZZZZZZ')
 # Mn (antiferrimagnetic), O and Cr (antiferromagnetic), Fe, Co, and Ni (ferromagnetic).
 #------------------------------------------------------------------
 # Set the number of OpenMP/MPI settings (This is not working.)
-mpi_num_procs = 8 # Test CPU: 12th Gen Intel(R) Core(TM) i7-12700
+mpi_num_procs = 14 # Test CPU: 12th Gen Intel(R) Core(TM) i7-12700
 omp_num_threads = 1
 os.environ['OMP_NUM_THREADS'] = f'{omp_num_threads}'
 #------------------------------------------------------------------
@@ -143,7 +147,7 @@ max_retries = 20 # default = 100 (Note: set 100 for He and Ne)
 #----------------------------------------------------------------------------------------------------------------------------------------------------------
 #----------------------------------------------------------------------------------------------------------------------------------------------------------
 
-# Dummy: Am = Cr-antiferromagnetic, Cm=Mn-antiferrimagnetic
+# Dummy: Am = Cr-antiferromagnetic, Bm = O-antiferromagnetic, Cm=Mn-antiferrimagnetic: Am-Cm, Bm-Cm
 # Define covalent radii for elements (in angstroms)
 covalent_radii = {
      "H": 0.31, "He": 0.28, "Li": 1.28, "Be": 0.96,  "B": 0.84,  "C": 0.76,  "N": 0.71,  "O": 0.66,  "F": 0.57, "Ne": 0.58,
@@ -155,7 +159,7 @@ covalent_radii = {
     "Pm": 1.99, "Sm": 1.98, "Eu": 1.98, "Gd": 1.96, "Tb": 1.94, "Dy": 1.92, "Ho": 1.92, "Er": 1.89, "Tm": 1.90, "Yb": 1.87,
     "Lu": 1.87, "Hf": 1.75, "Ta": 1.70,  "W": 1.62, "Re": 1.51, "Os": 1.44, "Ir": 1.41, "Pt": 1.36, "Au": 1.36, "Hg": 1.32,
     "Tl": 1.45, "Pb": 1.46, "Bi": 1.48, "Po": 1.40, "At": 1.50, "Rn": 1.50, "Fr": 2.60, "Ra": 2.21, "Ac": 2.15, "Th": 2.06,
-    "Pa": 2.00,  "U": 1.96, "Np": 1.90, "Pu": 1.87, "XX": 2.00, "Am": 1.39, "Cm": 1.39
+    "Pa": 2.00,  "U": 1.96, "Np": 1.90, "Pu": 1.87, "XX": 2.00, "Am": 1.39, "Cm": 0.66, "Bm": 1.39
 }
 
 # Define atomic radii for elements (in angstroms)
@@ -169,7 +173,7 @@ atomic_radii = {
     "Pm": 2.00, "Sm": 1.98, "Eu": 1.98, "Gd": 1.96, "Tb": 1.94, "Dy": 1.92, "Ho": 1.92, "Er": 1.89, "Tm": 1.90, "Yb": 1.87,
     "Lu": 1.87, "Hf": 1.75, "Ta": 1.70,  "W": 1.62, "Re": 1.51, "Os": 1.44, "Ir": 1.41, "Pt": 1.36, "Au": 1.36, "Hg": 1.32,
     "Tl": 1.70, "Pb": 2.02, "Bi": 2.07, "Po": 1.40, "At": 1.50, "Rn": 1.50, "Fr": 2.60, "Ra": 2.21, "Ac": 2.15, "Th": 2.06,
-    "Pa": 2.00,  "U": 1.96, "Np": 1.90, "Pu": 1.87, "XX": 2.00, "Am": 1.66, "Cm": 1.61
+    "Pa": 2.00,  "U": 1.96, "Np": 1.90, "Pu": 1.87, "XX": 2.00, "Am": 1.66, "Cm": 0.48, "Bm": 1.61
 }
 
 # Define van der Waals radii for elements (in angstroms)
@@ -183,7 +187,7 @@ vdw_radii = {
     "Pm": 2.00, "Sm": 2.00, "Eu": 2.00, "Gd": 2.00, "Tb": 2.00, "Dy": 2.00, "Ho": 2.00, "Er": 2.00, "Tm": 2.00, "Yb": 2.00,
     "Lu": 2.00, "Hf": 2.00, "Ta": 2.00,  "W": 2.00, "Re": 2.00, "Os": 2.00, "Ir": 2.00, "Pt": 1.75, "Au": 1.66, "Hg": 1.55,
     "Tl": 1.96, "Pb": 2.02, "Bi": 2.07, "Po": 2.00, "At": 2.00, "Rn": 2.20, "Fr": 2.00, "Ra": 2.00, "Ac": 2.00, "Th": 2.00,
-    "Pa": 2.00,  "U": 1.96, "Np": 1.90, "Pu": 1.87, "XX": 2.00, "Am": 2.00, "Cm": 2.00
+    "Pa": 2.00,  "U": 1.96, "Np": 1.90, "Pu": 1.87, "XX": 2.00, "Am": 2.00, "Cm": 1.52, "Bm": 2.00
 }
 
 atomic_numbers = {
@@ -196,7 +200,7 @@ atomic_numbers = {
     "Pm": 61, "Sm": 62, "Eu": 63, "Gd": 64, "Tb": 65, "Dy": 66, "Ho": 67, "Er": 68, "Tm": 69, "Yb": 70,
     "Lu": 71, "Hf": 72, "Ta": 73,  "W": 74, "Re": 75, "Os": 76, "Ir": 77, "Pt": 78, "Au": 79, "Hg": 80,
     "Tl": 81, "Pb": 82, "Bi": 83, "Po": 84, "At": 85, "Rn": 86, "Fr": 87, "Ra": 88, "Ac": 89, "Th": 90,
-    "Pa": 91,  "U": 92, "Np": 93, "Pu": 94, "XX": 95, "Am": 24, "Cm": 25
+    "Pa": 91,  "U": 92, "Np": 93, "Pu": 94, "XX": 95, "Am": 24, "Cm":  8, "Bm": 25
 }
 
 atomic_masses = {
@@ -209,7 +213,7 @@ atomic_masses = {
     "Pm": 145,    "Sm": 150.36, "Eu": 151.96, "Gd": 157.25, "Tb": 158.93, "Dy": 162.50, "Ho": 164.93, "Er": 167.26, "Tm": 168.93, "Yb": 173.05,
     "Lu": 174.97, "Hf": 178.49, "Ta": 180.95,  "W": 183.84, "Re": 186.21, "Os": 190.23, "Ir": 192.22, "Pt": 195.08, "Au": 196.97, "Hg": 200.59,
     "Tl": 204.38, "Pb": 207.2,  "Bi": 208.98, "Po": 209,    "At": 210,    "Rn": 222,    "Fr": 223,    "Ra": 226,    "Ac": 227,    "Th": 232.04,
-    "Pa": 231.04,  "U": 238.03, "Np": 237,    "Pu": 244,    "XX": 999,    "Am": 51.996, "Cm": 54.938
+    "Pa": 231.04,  "U": 238.03, "Np": 237,    "Pu": 244,    "XX": 999,    "Am": 51.996, "Cm": 15.999, "Bm": 54.938
 }
 
 start_mag = {
@@ -222,7 +226,7 @@ start_mag = {
     "Pm": 0.05, "Sm": 0.05, "Eu": 0.05, "Gd": 0.05, "Tb": 0.05, "Dy": 0.05, "Ho": 0.05, "Er": 0.05, "Tm": 0.05, "Yb": 0.05,
     "Lu": 0.05, "Hf": 0.05, "Ta": 0.05,  "W": 0.05, "Re": 0.05, "Os": 0.05, "Ir": 0.05, "Pt": 0.01, "Au": 0.01, "Hg": 0.01,
     "Tl": 0.03, "Pb": 0.02, "Bi": 0.01, "Po": 0.01, "At": 0.01, "Rn": 0.01, "Fr": 0.03, "Ra": 0.02, "Ac": 0.05, "Th": 0.05,
-    "Pa": 0.05,  "U": 0.05, "Np": 0.05, "Pu": 0.05, "XX": 0.01, "Am": 0.05, "Cm": 0.05
+    "Pa": 0.05,  "U": 0.05, "Np": 0.05, "Pu": 0.05, "XX": 0.01, "Am": 0.05, "Cm": 0.01, "Bm": 0.05
 }
 
 # CN = coordination number, z = CN
@@ -544,8 +548,8 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
         radius1 = covalent_radii[element1]
         radius2 = covalent_radii[element2]
     else:
-        radius1 = atomic_radii[element1]
-        radius2 = atomic_radii[element2]
+        radius1 = atomic_radii[element1] # hcp: He,etc *2.0
+        radius2 = atomic_radii[element2] # hcp: He,etc *2.0
         #radius1 = vdw_radii[element1]
         #radius2 = vdw_radii[element2]
     
@@ -708,15 +712,6 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
             re = lat / re2a
         a = re * re2a
         if primitive_flag == 0:
-            atoms = Atoms(f'{element2}', 
-                    positions=[(0, 0, 0)], 
-                    cell=[(-0.5*a, 0.5*a, 0.5*a), (0.5*a, -0.5*a, 0.5*a), (0.5*a, 0.5*a, -0.5*a)],
-                    pbc=True)
-            kpt = 9 # 6 or 8 (Note: For K, kpt=9 and 20 gave the same results.)
-            kptc = kpt
-            Nelem1 = 0
-            Nelem2 = 1
-        else:
             #atoms = bulk('{element2}', 'bcc', a)
             atoms = Atoms(f'{element2}2', 
                     positions=[(0, 0, 0),(0.5*a, 0.5*a, 0.5*a)], 
@@ -726,6 +721,15 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
             kptc = kpt
             Nelem1 = 0
             Nelem2 = 2
+        else:
+            atoms = Atoms(f'{element2}', 
+                    positions=[(0, 0, 0)], 
+                    cell=[(-0.5*a, 0.5*a, 0.5*a), (0.5*a, -0.5*a, 0.5*a), (0.5*a, 0.5*a, -0.5*a)],
+                    pbc=True)
+            kpt = 9 # 6 or 8 (Note: For K, kpt=9 and 20 gave the same results.)
+            kptc = kpt
+            Nelem1 = 0
+            Nelem2 = 1
     elif lattce == 'sc':
         primitive_flag == 0
         print("Create the SC structure (1 element)")
@@ -1021,7 +1025,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
     scaled_cell = original_cell * scaling_factor
     atoms.set_cell(scaled_cell, scale_atoms=True)
     
-    if primitive_flag == 0:
+    if lattce in ['hcp', 'dim', 'ch4', 'dim1', 'v1hcp']:
         print(f'Calculation: Conventional Cell')
         print(f'start Cell([{original_cell[0,0]},{original_cell[1,1]},{original_cell[2,2]}])')
         bovera = original_cell[1][1]/original_cell[0][0]
@@ -1383,6 +1387,10 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
         'Lattice Constant a (A)': optimized_a, # Values ​​in conventional cells.
         'Lattice Constant b (A)': optimized_b, # Values ​​in conventional cells.
         'Lattice Constant c (A)': optimized_c, # Values ​​in conventional cells.
+        'b/a ratio': bovera, # b over a
+        'c/a ratio': covera, # c over a
+        'a/re ratio': re2a, # re to a
+        'primitive cell': primitive_flag,
         #----------------------------------------------------------
         # eos
         'Optimized Energy (eV/atom)': e0,
