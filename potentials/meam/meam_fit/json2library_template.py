@@ -15,7 +15,7 @@ if element in data:
 # alpha      b0      b1      b2        b3      alat    esub    asub
 # t0         t1      t2      t3        rozero  ibar
 
-'XX'         '{lat}'   {z}       {ielement}        {atwt}
+'XX'         '{lat}'   {z}      {ielement}        {atwt}
 {alpha}     Xb0    Xb1    Xb2      Xb3    {alat}  {esub}  Xasub
 1.0          Xt1    Xt2    Xt3      {rozero}     {ibar}
 """
