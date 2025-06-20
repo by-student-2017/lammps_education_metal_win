@@ -51,8 +51,8 @@ import json
 # fcc: FCC (1 element), hcp: HCP (1 element), bcc: BCC (1 element), sc: SC (1 element), dia1: Daiamond
 # dim(dimer), ch4(binary system), dim1(1 element)
 # v1fcc: FCC (1 vacancy), v1bcc: BCC (1 vacancy), v1hcp: HCP (1 vacancy), v1sc: SC (1 vacancy), v1dia1: Diamond (1 vacancy)
-lattce = 'v1bcc'
-#lattce = 'XXXXXXXXXX' # for run_seq.py
+#lattce = 'v1bcc'
+lattce = 'XXXXXXXXXX' # for run_seq.py
 #------------------------------------------------------------------
 # lattice structure of reference configuration [Angstrom] (https://en.wikipedia.org/wiki/Lattice_constant)
 lat = ''     # In the case of '', the sum of covalent_radii (sum of concentration ratio in L12)
@@ -68,10 +68,11 @@ npoints = 7 # >= 7 e.g., 7, 11, 17, 21, or 25, etc (Recommend >= 25), (default =
 fixed_element = 'XX'
 #fixed_element = 'YYYYYYYYYY'
 elements = [fixed_element,
-            'Li', 'Be',
-            'Na', 'Mg',                                                             'Al', 'Si',  'P',  'S',
-             'K', 'Ca', 'Sc', 'Ti',  'V', 'Cr', 'Mn', 'Fe', 'Co', 'Ni', 'Cu', 'Zn', 'Ga', 'Ge', 'As', 'Se', 'Br',
-            'Rb', 'Sr',  'Y', 'Zr', 'Nb', 'Mo', 'Tc', 'Ru', 'Rh', 'Pd', 'Ag', 'Cd', 'In', 'Sn', 'Sb', 'Te',  'I',
+             'H',                                                                                                 'He',
+            'Li', 'Be',                                                              'B',  'C',  'N',  'O',  'F', 'Ne',
+            'Na', 'Mg',                                                             'Al', 'Si',  'P',  'S', 'Cl', 'Ar',
+             'K', 'Ca', 'Sc', 'Ti',  'V', 'Cr', 'Mn', 'Fe', 'Co', 'Ni', 'Cu', 'Zn', 'Ga', 'Ge', 'As', 'Se', 'Br', 'Kr',
+            'Rb', 'Sr',  'Y', 'Zr', 'Nb', 'Mo', 'Tc', 'Ru', 'Rh', 'Pd', 'Ag', 'Cd', 'In', 'Sn', 'Sb', 'Te',  'I', 'Xe',
             'Cs', 'Ba', 'La', 
                         'Ce', 'Pr', 'Nd', 'Pm', 'Sm', 'Eu', 'Gd', 'Tb', 'Dy', 'Ho', 'Er', 'Tm', 'Yb', 'Lu', 
                               'Hf', 'Ta',  'W', 'Re', 'Os', 'Ir', 'Pt', 'Au', 'Hg', 'Tl', 'Pb', 'Bi', 'Po', 'At', 'Ra',
@@ -139,7 +140,7 @@ magnetic_type_flag = int('ZZZZZZZZZZ')
 # Mn (antiferrimagnetic), O and Cr (antiferromagnetic), Fe, Co, and Ni (ferromagnetic).
 #------------------------------------------------------------------
 # Set the number of OpenMP/MPI settings (This is not working.)
-mpi_num_procs = 8 # Test CPU: 12th Gen Intel(R) Core(TM) i7-12700
+mpi_num_procs = 12 # Test CPU: 12th Gen Intel(R) Core(TM) i7-12700
 omp_num_threads = 1
 os.environ['OMP_NUM_THREADS'] = f'{omp_num_threads}'
 #------------------------------------------------------------------
@@ -611,15 +612,42 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
             DFT = 'PBE'
         else:
             DFT = 'PBEsol'
-        with open(f'./1element_data_{DFT}/results_{DFT}_{spin_char}_{lattce[2:].upper()}/{lattce[2:]}_1element-{element2}_{spin_char}.json', 'r') as f:
-            data = json.load(f)
-        a = data["Lattice Constant a (A)"]
-        c = data.get("Lattice Constant c (A)", None)  # c is optional
-        cohesive_energy_unitcell = data["Cohesive Energy (eV/atom)"]
-        re = data["Nearest Neighbor Distance (A)"]
-        re2a = a/re
-        lat = None
-        nsc = 3 # nsc x nsc x nsc supercell
+        #
+        file_path = f'./1elements_data_{DFT}_{spin_char}_v1/results_{DFT}_{spin_char}_{lattce[2:].upper()}/{lattce[2:]}_1element-{element2}_{spin_char}.json'
+        try:
+            with open(file_path, 'r') as f:
+                data = json.load(f)
+            a = data["Lattice Constant a (A)"]
+            c = data.get("Lattice Constant c (A)", None)  # c is optional
+            cohesive_energy_unitcell = data["Cohesive Energy (eV/atom)"]
+            re = data["Nearest Neighbor Distance (A)"]
+            re2a = a/re
+            lat = None
+            nsc = 3 # nsc x nsc x nsc supercell
+        except FileNotFoundError:
+            print(f"not found file: {file_path}")
+            with open("error_log.txt", "a") as file:
+                file.write(f"No DATA: {lattce}-{element1}-{element2}: use atomic radii and ideal structure.\n")
+            #
+            radius2 = atomic_radii[element2]
+            a = radius2
+            if lattce in ['v1hcp']:
+                c = a*(8/3)**0.5
+            else:
+                c = a
+            if lattce == 'v1fcc':
+                re =  a/2**0.5
+            elif lattce == 'v1dia1':
+                re = a/2**0.5
+            elif lattce == 'v1bcc':
+                re = a*3**0.5/2
+            elif lattce == 'v1hcp':
+                re = a
+            elif lattce == 'v1sc':
+                re = a
+            re2a = a/re
+            lat = None
+            nsc = 3
     else:
         radius1 = atomic_radii[element1]
         radius2 = atomic_radii[element2]
@@ -1396,7 +1424,10 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
             print(f"Skipped bader analysis")
             charges.append([0.0])
         else:
-            new_prefix = f'{lattce}_{element1}_{element2}'
+            if lattce in ['v1fcc', 'v1bcc', 'v1hcp', 'v1sc', 'v1dia1']:
+                new_prefix = f'{lattce}_{element2}'
+            else:
+                new_prefix = f'{lattce}_{element1}_{element2}'
             #
             update_prefix_in_file('val.pp.in', new_prefix)
             update_prefix_in_file('all.pp.in', new_prefix)
