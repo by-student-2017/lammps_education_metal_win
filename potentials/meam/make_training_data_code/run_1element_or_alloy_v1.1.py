@@ -245,6 +245,7 @@ CN = {
      "dim":  1, "ch4": 4,
      "dim1": 1, "dia1": 4,
      "v1fcc": 'nan', "v1bcc": 'nan', "v1hcp": 'nan', "v1sc": 'nan', "v1dia": 'nan',
+     "v2fcc": 'nan', "v2bcc": 'nan', "v2hcp": 'nan', "v2sc": 'nan', "v2dia": 'nan',
 }
 
 
@@ -586,7 +587,7 @@ def get_last_cell_and_positions(file_path):
 def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, max_retries=100, lattce='', lat='', npoints=25, primitive_flag=1, PBEsol_flag=0, spin_flag=1, D_flag=1, cutoff=520, magnetic_type_flag=1):
     element1, element2 = elements_combination
     
-    if lattce in ['fcc', 'bcc', 'hcp', 'sc', 'dia1', 'dim1', 'v1fcc', 'v1bcc', 'v1hcp', 'v1sc', 'v1dia1']:
+    if lattce in ['fcc', 'bcc', 'hcp', 'sc', 'dia1', 'dim1', 'v1fcc', 'v1bcc', 'v1hcp', 'v1sc', 'v1dia1', 'v2fcc', 'v2bcc', 'v2hcp', 'v2sc', 'v2dia1']:
         print(f"{element2}, lattce = {lattce}")
     else:
         print(f"{element1}-{element2} pair, lattce = {lattce}")
@@ -594,7 +595,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
     if lattce in ['dim', 'ch4', 'dim1']:
         radius1 = covalent_radii[element1]
         radius2 = covalent_radii[element2]
-    elif lattce in ['v1fcc', 'v1bcc', 'v1hcp', 'v1sc', 'v1dia1']:
+    elif lattce in ['v1fcc', 'v1bcc', 'v1hcp', 'v1sc', 'v1dia1', 'v2fcc', 'v2bcc', 'v2hcp', 'v2sc', 'v2dia1']:
         if spin_flag == 0:
             spin_char = 'non-spin'
         else:
@@ -613,7 +614,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
         else:
             DFT = 'PBEsol'
         #
-        file_path = f'./1elements_data_{DFT}_{spin_char}_v1/results_{DFT}_{spin_char}_{lattce[2:].upper()}/{lattce[2:]}_1element-{element2}_{spin_char}.json'
+        file_path = f'./1elements_data_{DFT}_{spin_char}/results_{DFT}_{spin_char}_{lattce[2:].upper()}/{lattce[2:]}_1element-{element2}_{spin_char}.json'
         try:
             with open(file_path, 'r') as f:
                 data = json.load(f)
@@ -628,7 +629,9 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
             print(f"not found file: {file_path}")
             with open("error_log.txt", "a") as file:
                 file.write(f"No DATA: {lattce}-{element1}-{element2}: use atomic radii and ideal structure.\n")
-            #
+            return "Error-4"
+            '''
+            cohesive_energy_unitcell = -0.0
             radius2 = atomic_radii[element2]
             a = radius2
             if lattce in ['v1hcp']:
@@ -648,6 +651,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
             re2a = a/re
             lat = None
             nsc = 3
+            '''
     else:
         radius1 = atomic_radii[element1]
         radius2 = atomic_radii[element2]
@@ -926,10 +930,24 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
         primitive_flag == 0
         print("Create the fcc 3x3x3 supercell structure (1 vacancy)")
         lattice_type = 'FCC_B1_V1 (1 vacancy)'
-        atoms = bulk(element2, lattce[2:], a, orthorhombic=True)
+        atoms = bulk(element2, lattce[2:], a, cubic=True) #, orthorhombic=True)
         P = [[nsc, 0, 0],[0, nsc, 0],[0, 0, nsc]]
         atoms = make_supercell(atoms, P)
         del atoms[0]
+        #del atoms[1]
+        kpt = int(6/nsc+0.5) # = 6/3
+        kptc = kpt
+        Nelem1 = 0
+        Nelem2 = 0
+    elif lattce == 'v2fcc':
+        primitive_flag == 0
+        print("Create the fcc 3x3x3 supercell structure (1 vacancy)")
+        lattice_type = 'FCC_B1_V1 (1 vacancy)'
+        atoms = bulk(element2, lattce[2:], a, cubic=True) #, orthorhombic=True)
+        P = [[nsc, 0, 0],[0, nsc, 0],[0, 0, nsc]]
+        atoms = make_supercell(atoms, P)
+        del atoms[0]
+        #del atoms[1]
         kpt = int(6/nsc+0.5) # = 6/3
         kptc = kpt
         Nelem1 = 0
@@ -938,9 +956,25 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
         primitive_flag == 0
         print("Create the bcc 3x3x3 supercell structure (1 vacancy)")
         lattice_type = 'BCC_B2_V1 (1 vacancy)'
-        atoms = bulk(element2, lattce[2:], a, orthorhombic=True)
+        atoms = bulk(element2, lattce[2:], a, cubic=True) #, orthorhombic=True)
+        nsc = nsc+1
         P = [[nsc, 0, 0],[0, nsc, 0],[0, 0, nsc]]
         atoms = make_supercell(atoms, P)
+        del atoms[0]
+        #del atoms[0]
+        kpt = int(9/nsc+0.5) # = 9/3
+        kptc = kpt
+        Nelem1 = 0
+        Nelem2 = 0
+    elif lattce == 'v2bcc':
+        primitive_flag == 0
+        print("Create the bcc 3x3x3 supercell structure (1 vacancy)")
+        lattice_type = 'BCC_B2_V1 (1 vacancy)'
+        atoms = bulk(element2, lattce[2:], a, cubic=True) #, orthorhombic=True)
+        nsc = nsc+1
+        P = [[nsc, 0, 0],[0, nsc, 0],[0, 0, nsc]]
+        atoms = make_supercell(atoms, P)
+        del atoms[0]
         del atoms[0]
         kpt = int(9/nsc+0.5) # = 9/3
         kptc = kpt
@@ -950,9 +984,25 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
         primitive_flag == 0
         print("Create the hcp 3x3x3 supercell structure (1 vacancy)")
         lattice_type = 'HCP_V1 (1 vacancy)'
-        atoms = bulk(element2, lattce[2:], a, c, orthorhombic=True)
+        atoms = bulk(element2, lattce[2:], a, c) #, orthorhombic=True)
+        nsc = nsc+1
         P = [[nsc, 0, 0],[0, nsc, 0],[0, 0, nsc]]
         atoms = make_supercell(atoms, P)
+        del atoms[0]
+        del atoms[0]
+        kpt = int(9/nsc+0.5) # = 9/3
+        kptc = int(6/nsc+0.5) # = 6/3
+        Nelem1 = 0
+        #Nelem2 = 0
+    elif lattce == 'v2hcp':
+        primitive_flag == 0
+        print("Create the hcp 3x3x3 supercell structure (1 vacancy)")
+        lattice_type = 'HCP_V1 (1 vacancy)'
+        atoms = bulk(element2, lattce[2:], a, c) #, orthorhombic=True)
+        nsc = nsc+1
+        P = [[nsc, 0, 0],[0, nsc, 0],[0, 0, nsc]]
+        atoms = make_supercell(atoms, P)
+        del atoms[0]
         del atoms[0]
         kpt = int(9/nsc+0.5) # = 9/3
         kptc = int(6/nsc+0.5) # = 6/3
@@ -962,9 +1012,25 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
         primitive_flag == 0
         print("Create the sc 3x3x3 supercell structure (1 vacancy)")
         lattice_type = 'SC_V1 (1 vacancy)'
-        atoms = bulk(element2, lattce[2:], a, orthorhombic=True)
+        atoms = bulk(element2, lattce[2:], a, cubic=True) #, orthorhombic=True)
+        nsc = nsc+2
         P = [[nsc, 0, 0],[0, nsc, 0],[0, 0, nsc]]
         atoms = make_supercell(atoms, P)
+        del atoms[0]
+        #del atoms[0]
+        kpt = int(9/nsc+0.5) # = 9/3
+        kptc = kpt
+        Nelem1 = 0
+        Nelem2 = 0
+    elif lattce == 'v2sc':
+        primitive_flag == 0
+        print("Create the sc 3x3x3 supercell structure (1 vacancy)")
+        lattice_type = 'SC_V1 (1 vacancy)'
+        atoms = bulk(element2, lattce[2:], a, cubic=True) #, orthorhombic=True)
+        nsc = nsc+2
+        P = [[nsc, 0, 0],[0, nsc, 0],[0, 0, nsc]]
+        atoms = make_supercell(atoms, P)
+        del atoms[0]
         del atoms[0]
         kpt = int(9/nsc+0.5) # = 9/3
         kptc = kpt
@@ -974,9 +1040,25 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
         primitive_flag == 0
         print("Create the diamond 3x3x3 supercell structure (1 vacancy)")
         lattice_type = 'DIA_V1 (1 vacancy)'
-        atoms = bulk(element2, lattce[2:], a, orthorhombic=True)
+        atoms = bulk(element2, 'diamond', a, cubic=True) #, orthorhombic=True)
+        #nsc = 3
         P = [[nsc, 0, 0],[0, nsc, 0],[0, 0, nsc]]
         atoms = make_supercell(atoms, P)
+        del atoms[0]
+        #del atoms[0]
+        kpt = int(6/nsc+0.5) # = 6/3
+        kptc = kpt
+        Nelem1 = 0
+        Nelem2 = 0
+    elif lattce == 'v2dia1':
+        primitive_flag == 0
+        print("Create the diamond 3x3x3 supercell structure (1 vacancy)")
+        lattice_type = 'DIA_V1 (1 vacancy)'
+        atoms = bulk(element2, 'diamond', a, cubic=True) #, orthorhombic=True)
+        #nsc = 3
+        P = [[nsc, 0, 0],[0, nsc, 0],[0, 0, nsc]]
+        atoms = make_supercell(atoms, P)
+        del atoms[0]
         del atoms[0]
         kpt = int(6/nsc+0.5) # = 6/3
         kptc = kpt
@@ -1062,7 +1144,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
     elif D_flag == 3:
         input_data['system']['vdw_corr'] = 'dft-d3'
     
-    if lattce in ['fcc', 'hcp', 'bcc', 'sc', 'dia1', 'dim1', 'v1fcc', 'v1bcc', 'v1hcp', 'v1sc', 'v1dia1']:
+    if lattce in ['fcc', 'hcp', 'bcc', 'sc', 'dia1', 'dim1', 'v1fcc', 'v1bcc', 'v1hcp', 'v1sc', 'v1dia1', 'v2fcc', 'v2bcc', 'v2hcp', 'v2sc', 'v2dia1']:
         input_data['control']['prefix'] = f'{lattce}_{element2}'
         input_data['system']['ecutwfc'] = pseudopotentials[element2]['cutoff_wfc']
         input_data['system']['ecutrho'] = pseudopotentials[element2]['cutoff_rho']
@@ -1088,7 +1170,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
     print(f'{element2} mag:',start_mag[element2])
     smag1 = start_mag[element1]/0.0625
     smag2 = start_mag[element2]/0.0625
-    if lattce in ['fcc', 'hcp', 'bcc', 'sc', 'dia1', 'dim1', 'v1fcc', 'v1bcc', 'v1hcp', 'v1sc', 'v1dia1']:
+    if lattce in ['fcc', 'hcp', 'bcc', 'sc', 'dia1', 'dim1', 'v1fcc', 'v1bcc', 'v1hcp', 'v1sc', 'v1dia1', 'v2fcc', 'v2bcc', 'v2hcp', 'v2sc', 'v2dia1']:
         smag1 = smag2
     if magnetic_type_flag == 1:
         print('ferro magnetic calculation (e.g., Fe, Co, Ni)')
@@ -1208,7 +1290,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
     # search optimized structure with scf
     input_data['control']['calculation'] = 'scf'
     best_energy = float('inf')
-    if lattce in ['v1fcc', 'v1bcc', 'v1hcp', 'v1sc', 'v1dia1']:
+    if lattce in ['v1fcc', 'v1bcc', 'v1hcp', 'v1sc', 'v1dia1', 'v2fcc', 'v2bcc', 'v2hcp', 'v2sc', 'v2dia1']:
         scaling_factor = 1.0
         dsfactor = 0.0
         retries = 1000
@@ -1393,7 +1475,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
         energies.append(energy)
 
         
-        if lattce in ['v1fcc', 'v1bcc', 'v1hcp', 'v1sc', 'v1dia1']:
+        if lattce in ['v1fcc', 'v1bcc', 'v1hcp', 'v1sc', 'v1dia1', 'v2fcc', 'v2bcc', 'v2hcp', 'v2sc', 'v2dia1']:
             cohesive_energy = -(atoms.get_total_energy() - isolated_atom_energy1*Nelem1 - isolated_atom_energy2*len(atoms))
             vacancy_energy = cohesive_energy - cohesive_energy_unitcell*len(atoms)
         else:
@@ -1424,7 +1506,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
             print(f"Skipped bader analysis")
             charges.append([0.0])
         else:
-            if lattce in ['v1fcc', 'v1bcc', 'v1hcp', 'v1sc', 'v1dia1']:
+            if lattce in ['v1fcc', 'v1bcc', 'v1hcp', 'v1sc', 'v1dia1', 'v2fcc', 'v2bcc', 'v2hcp', 'v2sc', 'v2dia1']:
                 new_prefix = f'{lattce}_{element2}'
             else:
                 new_prefix = f'{lattce}_{element1}_{element2}'
@@ -1477,7 +1559,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
             print(f'Error for element 2 at position No.3: {(valence_electrons2-charge[1])/mean_elem1_charge*100-100} [%]')
             print(f'Error for element 2 at position No.4: {(valence_electrons2-charge[2])/mean_elem1_charge*100-100} [%]')
             print(f'Error for element 2 at position No.5: {(valence_electrons2-charge[3])/mean_elem1_charge*100-100} [%]')
-        elif lattce in ['v1fcc', 'v1bcc', 'v1hcp', 'v1sc', 'v1dia1']:
+        elif lattce in ['v1fcc', 'v1bcc', 'v1hcp', 'v1sc', 'v1dia1', 'v2fcc', 'v2bcc', 'v2hcp', 'v2sc', 'v2dia1']:
             dcharge = []
             for charge_1atom in charge:
                 dcharge.append(valence_electrons2-charge_1atom)
@@ -1682,7 +1764,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
     else:
         return_data['Magnetic Moments (Bohr)'] = magnetic_moments
     return_data['Charges (e)'] = charges
-    if lattce in ['v1fcc', 'v1bcc', 'v1hcp', 'v1sc', 'v1dia1']:
+    if lattce in ['v1fcc', 'v1bcc', 'v1hcp', 'v1sc', 'v1dia1', 'v2fcc', 'v2bcc', 'v2hcp', 'v2sc', 'v2dia1']:
         return_data['Vacancy Energy (eV)'] = vacancy_energy
     return return_data
 
@@ -1726,7 +1808,7 @@ for i, combination in enumerate(element_combinations):
     results = []
     result = calculate_properties(combination, omp_num_threads, mpi_num_procs, max_retries, lattce, lat, npoints, primitive_flag, PBEsol_flag, spin_flag, D_flag, cutoff, magnetic_type_flag)
     element1, element2 = combination
-    if lattce in ['fcc', 'bcc', 'hcp', 'sc', 'dia1', 'dim1', 'v1fcc', 'v1bcc', 'v1hcp', 'v1sc', 'v1dia1']:
+    if lattce in ['fcc', 'bcc', 'hcp', 'sc', 'dia1', 'dim1', 'v1fcc', 'v1bcc', 'v1hcp', 'v1sc', 'v1dia1', 'v2fcc', 'v2bcc', 'v2hcp', 'v2sc', 'v2dia1']:
         element1 = '1element'
     if result == "Error-1":
         with open("error_log.txt", "a") as file:
@@ -1744,6 +1826,10 @@ for i, combination in enumerate(element_combinations):
         with open("error_log.txt", "a") as file:
             file.write(f"Error-eos-1, RuntimeError: Optimal parameters not found: Number of calls to function has reached maxfev = 1000.: {element1}-{element2} in {DFT}{D_char}_{spin_char}_{lattce.upper()}\n")
         continue
+    elif result == "Error-4":
+        with open("error_log.txt", "a") as file:
+            file.write(f"Error-4, No Data: {element1}-{element2} in {DFT}{D_char}_{spin_char}_{lattce.upper()}\n")
+        continue
     results.append(result)
 
     with open(f'{directory}/{lattce}_{element1}-{element2}_{spin_char}.json', 'a') as jsonfile:
@@ -1752,7 +1838,7 @@ for i, combination in enumerate(element_combinations):
 '''
     with open(f'{directory}.csv', 'a', newline='') as csvfile:
         fieldnames = ['Element1', 'Element2']
-        if lattce in ['fcc', 'bcc', 'hcp', 'sc', 'dia1', 'dim1', 'v1fcc', 'v1bcc', 'v1hcp', 'v1sc', 'v1dia1']:
+        if lattce in ['fcc', 'bcc', 'hcp', 'sc', 'dia1', 'dim1', 'v1fcc', 'v1bcc', 'v1hcp', 'v1sc', 'v1dia1', 'v2fcc', 'v2bcc', 'v2hcp', 'v2sc', 'v2dia1']:
             # library.meam file
             fieldnames.extend([
                       'elt',
@@ -1816,7 +1902,7 @@ for i, combination in enumerate(element_combinations):
         else:
             fieldnames.append('Magnetic Moments (Bohr)')
         fieldnames.append('Charges (e)')
-        if lattce in ['v1fcc', 'v1bcc', 'v1hcp', 'v1sc', 'v1dia1']:
+        if lattce in ['v1fcc', 'v1bcc', 'v1hcp', 'v1sc', 'v1dia1', 'v2fcc', 'v2bcc', 'v2hcp', 'v2sc', 'v2dia1']:
             fieldnames.append('Vacancy Energy (eV)')
 
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
@@ -1828,7 +1914,7 @@ for i, combination in enumerate(element_combinations):
             'Element1': result['Element1'],
             'Element2': result['Element2']
             }
-        if lattce in ['fcc', 'bcc', 'hcp', 'sc', 'dia1', 'dim1', 'v1fcc', 'v1bcc', 'v1hcp', 'v1sc', 'v1dia1']:
+        if lattce in ['fcc', 'bcc', 'hcp', 'sc', 'dia1', 'dim1', 'v1fcc', 'v1bcc', 'v1hcp', 'v1sc', 'v1dia1', 'v2fcc', 'v2bcc', 'v2hcp', 'v2sc', 'v2dia1']:
             # library.meam file
             row_data.update({
                 'elt': result['Element2'],
@@ -1900,7 +1986,7 @@ for i, combination in enumerate(element_combinations):
         else:
             row_data['Magnetic Moments (Bohr)'] = result['Magnetic Moments (Bohr)']
         row_data['Charges (e)'] = result['Charges (e)']
-        if lattce in ['v1fcc', 'v1bcc', 'v1hcp', 'v1sc', 'v1dia1']:
+        if lattce in ['v1fcc', 'v1bcc', 'v1hcp', 'v1sc', 'v1dia1', 'v2fcc', 'v2bcc', 'v2hcp', 'v2sc', 'v2dia1']:
             row_data['Vacancy Energy (eV)'] = result['Vacancy Energy (eV)']
         writer.writerow(row_data)
     
@@ -2066,7 +2152,7 @@ for i, combination in enumerate(element_combinations):
         else:
            print("This code does not provide other structures. (Possible structures: b1, b2, dia, l12, or fcc, bcc, hcp, dia1, dim, ch4, dim1)")
         
-        if not lattce in ['v1fcc', 'v1bcc', 'v1hcp', 'v1sc', 'v1dia1']:
+        if not lattce in ['v1fcc', 'v1bcc', 'v1hcp', 'v1sc', 'v1dia1', 'v2fcc', 'v2bcc', 'v2hcp', 'v2sc', 'v2dia1']:
             # xyz_array = [[pos[0], pos[1], pos[2]] for pos in positions]
             x_coords = [pos[0] for pos in positions]
             y_coords = [pos[1] for pos in positions]
