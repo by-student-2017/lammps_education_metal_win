@@ -627,8 +627,8 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
             nsc = 3 # nsc x nsc x nsc supercell
         except FileNotFoundError:
             print(f"not found file: {file_path}")
-            with open("error_log.txt", "a") as file:
-                file.write(f"No DATA: {lattce}-{element1}-{element2}: use atomic radii and ideal structure.\n")
+            #with open("error_log.txt", "a") as file:
+            #    file.write(f"No DATA: {lattce}-{element1}-{element2}: use atomic radii and ideal structure.\n")
             return "Error-4"
             '''
             cohesive_energy_unitcell = -0.0
