@@ -1028,7 +1028,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
     if lattce in ['hcp', 'dim', 'ch4', 'dim1', 'v1hcp']:
         print(f'Calculation: Conventional Cell')
         print(f'start Cell([{original_cell[0,0]},{original_cell[1,1]},{original_cell[2,2]}])')
-        bovera = original_cell[1][1]/original_cell[0][0]
+        bovera = (original_cell[1][0]**2+original_cell[1][1]**2)**0.5/original_cell[0][0]
         covera = original_cell[2][2]/original_cell[0][0]
     else:
         print(f'Calculation: Primitive Cells')
