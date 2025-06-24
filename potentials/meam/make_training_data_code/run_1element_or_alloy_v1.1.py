@@ -1199,7 +1199,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
             atoms.set_initial_magnetic_moments([smag1])
         elif len(atoms) == 2:
             smag1 = (smag1+smag2)/2
-            atoms.set_initial_magnetic_moments([smag1*1.1, -smag1*0.9])
+            atoms.set_initial_magnetic_moments([smag1*1.05, -smag1*0.95])
             #atoms.set_initial_magnetic_moments([smag1, -smag2*0.9])
     else:
         # default = 0.0 in ASE
