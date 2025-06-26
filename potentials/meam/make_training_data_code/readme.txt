@@ -162,7 +162,10 @@ In the case of erose_form=1, this has been improved in later data to show rc = r
 
 #---------------------------------------------------------------------
 # Single element data by DFT
-STUDENT, B. (2025). Single element data by DFT [Data set]. Zenodo. https://zenodo.org/records/15743193
+STUDENT, B. (2026). Single element data by DFT [Data set]. Zenodo. https://zenodo.org/records/15743193
+#---------------------------------------------------------------------
+# binary data by DFT
+STUDENT, B. (2026). two elements (binary) data by DFT [Data set]. Zenodo. https://zenodo.org/records/15743605
 #---------------------------------------------------------------------
 
 #---------------------------------------------------------------------
