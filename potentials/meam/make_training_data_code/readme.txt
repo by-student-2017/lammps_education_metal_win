@@ -162,10 +162,10 @@ In the case of erose_form=1, this has been improved in later data to show rc = r
 
 #---------------------------------------------------------------------
 # Single element data by DFT
-STUDENT, B. (2026). EOS Data for Single Element Structures with Spin-Polarized Calculations Using Quantum ESPRESSO [Data set]. Zenodo. https://zenodo.org/records/15743193
+STUDENT, B. (2026). EOS Data for Single Element Structures (Spin-Polarized) Using Quantum ESPRESSO [Data set]. Zenodo. https://zenodo.org/records/15743193
 #---------------------------------------------------------------------
 # binary data by DFT
-STUDENT, B. (2026). EOS Data for Binary Element Structures with Ferromagnetic Initialization Using Quantum ESPRESS [Data set]. Zenodo. https://zenodo.org/records/15743605
+STUDENT, B. (2026). EOS Data for Binary Element Structures (FM Initialization) Using Quantum ESPRESSO [Data set]. Zenodo. https://zenodo.org/records/15743605
 #---------------------------------------------------------------------
 
 #---------------------------------------------------------------------
