@@ -161,6 +161,11 @@ In the case of erose_form=1, this has been improved in later data to show rc = r
 #---------------------------------------------------------------------
 
 #---------------------------------------------------------------------
+# Single element data by DFT
+STUDENT, B. (2025). Single element data by DFT [Data set]. Zenodo. https://zenodo.org/records/15743193
+#---------------------------------------------------------------------
+
+#---------------------------------------------------------------------
 ## pseudopotentials
 Enter the pseudopotentials of the "pslibrary" to PBE or PBEsol directory. The list is in PSlibrary_PBE.json or PSlibrary_PBEsol.json .
 PBE: https://pseudopotentials.quantum-espresso.org/legacy_tables/ps-library
