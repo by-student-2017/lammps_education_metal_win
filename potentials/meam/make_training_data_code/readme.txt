@@ -176,6 +176,7 @@ I tried to add pseudopotentials, but github said it was full and wouldn't let me
 So I uploaded it on "Zenodo".
 STUDENT, B. (2025). SUGGESTED PSEUDOPOTENTIALS for PBEsol v.1.0.0 [Data set]. Zenodo. https://doi.org/10.5281/zenodo.14912399
 STUDENT, B. (2025). SUGGESTED PSEUDOPOTENTIALS for PBE v.1.0.0 [Data set]. Zenodo. https://doi.org/10.5281/zenodo.14912402
+STUDENT, B. (2026). Pseudopotentials for Quantum ESPRESSO-Based Database Construction (SSSP/Theos-Informed Selection) [Data set]. Zenodo. https://zenodo.org/records/15743264
 #---------------------------------------------------------------------
 
 #---------------------------------------------------------------------
