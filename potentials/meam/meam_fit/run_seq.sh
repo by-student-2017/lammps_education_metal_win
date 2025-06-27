@@ -7,6 +7,16 @@ file_path_Par="particle_swarm_fit.py"
 
 calc_dir="out"
 
+# H                                                                   He
+# Li  Be                                           B   C   N   O   F  Ne
+# Na  Mg                                          Al  Si   P   S  Cl  Ar
+#  K  Ca  Sc  Ti   V  Cr  Mn  Fe  Co  Ni  Cu  Zn  Ga  Ge  As  Se  Br  Kr
+# Rb  Sr   Y  Zr  Nb  Mo  Tc  Ru  Rh  Pd  Ag  Cd  In  Sn  Sb  Te   I  Xe
+# Cs  Ba  La 
+#         Ce  Pr  Nd  Pm  Sm  Eu  Gd  Tb  Dy  Ho  Er  Tm  Yb  Lu 
+#             Hf  Ta   W  Re  Os  Ir  Pt  Au  Hg  Tl  Pb  Bi  Po  At  Ra
+#         Rn  Fr  Ac  Th  Pa   U  Np  Pu
+
 # sc: As Sb Bi S Se Te
 # fcc: In La Pm Ir Ac Th Pa Pu
 # bcc: Cu U Np Br I Rb K
