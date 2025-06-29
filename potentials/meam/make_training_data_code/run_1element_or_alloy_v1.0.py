@@ -688,7 +688,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
             Nelem2 = 1
     elif lattce == 'hcp':
         print("Create the HCP structure (1 element)")
-        primitive_flag == 0
+        primitive_flag = 0
         lattice_type = 'HCP (1 element)'
         re2a = 1.0 # = a/(np.sqrt(a**2 + (3/4)*c**2)/np.sqrt(3))
         if not lat == '':
@@ -731,7 +731,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
             Nelem1 = 0
             Nelem2 = 1
     elif lattce == 'sc':
-        primitive_flag == 0
+        primitive_flag = 0
         print("Create the SC structure (1 element)")
         lattice_type = 'SC (1 element)'
         re2a = 1.0
@@ -778,7 +778,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
             Nelem2 = 2
     #------------------------------------------------------------------------------
     elif lattce == 'dim':
-        primitive_flag == 0
+        primitive_flag = 0
         print("Create the dimer structure")
         lattice_type = 'DIM'
         a = 12.0
@@ -791,7 +791,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
         Nelem1 = 1
         Nelem2 = 1
     elif lattce == 'ch4':
-        primitive_flag == 0
+        primitive_flag = 0
         print("Create the CH4 structure")
         lattice_type = 'CH4'
         a = 12.0
@@ -808,7 +808,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
         Nelem2 = 4
     #------------------------------------------------------------------------------
     elif lattce == 'dim1':
-        primitive_flag == 0
+        primitive_flag = 0
         print("Create the dimer structure (1 element)")
         lattice_type = 'DIM (1 element)'
         a = 12.0
