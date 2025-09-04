@@ -23,7 +23,7 @@ The following libraries have been found:
 1. sudo apt update
 2. sudo apt install dos2unix
 
-# Installation of ASE
+# Installation of ASE (ASE. ver.3.19.0)
 1. sudo apt update
 2. sudo apt -y install python3-ase
 3. find /usr/lib/python3/dist-packages/ase/io/ -name "espresso.py"
@@ -31,7 +31,8 @@ The following libraries have been found:
 5. /mag_line.split
 6. i
 7. Change "mag_line.split()[5]" to "mag_line.split()[-1]".
-8. ESC -> wq
+8. ESC
+9. wq
 
 # On the SSSP potential of Dy
 I asked the SSSP management, and they told me the following:
@@ -288,3 +289,4 @@ Zenodo
 Figshare
 OSF (Open Science Framework)
 #---------------------------------------------------------------------
+
