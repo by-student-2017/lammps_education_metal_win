@@ -1380,7 +1380,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
     print("Note: [Lattice Constant (A)] is the [lattice constant, a (A)] of a conventional cell.")
     
     e0 = cohesive_energy
-    v0 = volume
+    v0 = volume / len(atoms)
     
     if primitive_flag == 1 and (lattce == 'b1' or lattce == 'dia'):
         optimized_a = (v0 * len(atoms) * 4)**(1/3)
