@@ -661,6 +661,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
               Nelem1 = 1
               Nelem2 = 1
     elif lattce == 'b2':
+        ibrav = 1
         print("Create the BCC B2 (CsCl-type) structure")
         lattice_type = 'BCC_B2 (CsCl-type)'
         re2a = 2.0/3.0**0.5
@@ -706,6 +707,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
               Nelem1 = 1
               Nelem2 = 1
     elif lattce == 'l12':
+        ibrav = 1
         print("Create the L12 (Cu3Au-type) structure")
         lattice_type = 'L12 (Cu3Au-type)'
         re2a = 2.0/2.0**0.5
@@ -1070,7 +1072,13 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
         print("---------------------------------------")
         
         calc.write_input(atoms)
-        #subprocess.run("cat espresso.pwi", shell=True, check=True)
+        shutil.copy('espresso.pwi', 'thermo_pw.in')
+        a_bohr = a / Bohr
+        celldm_line = f"   celldm(1) = {a_bohr:.6f}"
+        subprocess.run(f"sed -i 's/ibrav *= *0/ibrav = {ibrav}/' thermo_pw.in", shell=True, check=True)
+        subprocess.run(f"sed -i '/ibrav = {ibrav}/a\\{celldm_line}' thermo_pw.in", shell=True, check=True)
+        subprocess.run(f"sed -i '/CELL_PARAMETERS angstrom/,+3d' thermo_pw.in", shell=True, check=True)
+        #subprocess.run("cat thermo_pw.in", shell=True, check=True)
         
         prefix = f'{lattce}_{element1}_{element2}'
         save_dir = os.path.join('./out', f'{prefix}.save')
@@ -1095,12 +1103,12 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
   what='scf_elastic_constants',
   frozen_ions=.FALSE.,
   lmurn=.FALSE.,
-  find_ibrav=.TRUE.,
+  find_ibrav=.FALSE.,
 /
 """)
 
         try:
-            subprocess.run(f"mpirun -np {mpi_num_procs} thermo_pw.x < espresso.pwi > thermo_pw.out", shell=True, check=True)
+            subprocess.run(f"mpirun -np {mpi_num_procs} thermo_pw.x < thermo_pw.in > thermo_pw.out", shell=True, check=True)
             print("thermo_pw.x executed successfully.")
         except subprocess.CalledProcessError as e:
             print(f"Error-el1 during thermo_pw.x execution.")
