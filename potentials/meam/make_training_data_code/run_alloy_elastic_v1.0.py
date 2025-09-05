@@ -1103,7 +1103,10 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
             subprocess.run(f"mpirun -np {mpi_num_procs} thermo_pw.x < espresso.pwi > thermo_pw.out", shell=True, check=True)
             print("thermo_pw.x executed successfully.")
         except subprocess.CalledProcessError as e:
-            print("Error during thermo_pw.x execution:", e)
+            print(f"Error-el1 during thermo_pw.x execution.")
+            with open("error_log.txt", "a") as file:
+                file.write(f"Error-el1: during thermo_pw.x execution.: {lattce}-{element1}-{element2}\n")
+            continue
         
         #energy_from_thermo = extract_energy_from_espresso_pwo() * Ry
         #energies.append(energy_from_thermo)
