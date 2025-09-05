@@ -1,24 +1,6 @@
 #---------------------------------------------------------------------
 ## Installations and Usages
 
-# Installation of qe-7.3
-1. sudo apt update
-2. sudo apt -y install gfortran gcc build-essential libopenmpi-dev fftw3-dev
-3. sudo apt -y install gnuplot 
-4. wget https://github.com/QEF/q-e/archive/refs/tags/qe-7.3.tar.gz
-5. tar zxvf qe-7.3
-6. cd q-e-qe-7.3
-7. ./configure LAPACK_LIBS="-L/usr/lib/x86_64-linux-gnu  -lopenblas"
-#--------------------------------------------------------
-The following libraries have been found:
-  BLAS_LIBS= -lopenblas
-  LAPACK_LIBS=-L/usr/lib/x86_64-linux-gnu  -lopenblas
-  FFT_LIBS= -lfftw3
-#--------------------------------------------------------
-8. make pwall
-9. sudo make install
-#Note: sudo apt install quantum-espresso # In my case, the calculation of pw.x failed in ubuntu 22.04 qe. I recommend using qe-7.2 or qe-7.3 (not qe-7.3.1 !!!). 
-
 # QE v6.8 Installation
 1. sudo apt update
 2. sudo apt -y install gfortran g++ build-essential make libopenblas-dev libopenmpi-dev libfftw3-dev
@@ -313,4 +295,21 @@ Figshare
 OSF (Open Science Framework)
 #---------------------------------------------------------------------
 
+# Installation of qe-7.3
+1. sudo apt update
+2. sudo apt -y install gfortran gcc build-essential libopenmpi-dev fftw3-dev
+3. sudo apt -y install gnuplot 
+4. wget https://github.com/QEF/q-e/archive/refs/tags/qe-7.3.tar.gz
+5. tar zxvf qe-7.3
+6. cd q-e-qe-7.3
+7. ./configure LAPACK_LIBS="-L/usr/lib/x86_64-linux-gnu  -lopenblas"
+#--------------------------------------------------------
+The following libraries have been found:
+  BLAS_LIBS= -lopenblas
+  LAPACK_LIBS=-L/usr/lib/x86_64-linux-gnu  -lopenblas
+  FFT_LIBS= -lfftw3
+#--------------------------------------------------------
+8. make pwall
+9. sudo make install
+#Note: sudo apt install quantum-espresso # In my case, the calculation of pw.x failed in ubuntu 22.04 qe. I recommend using qe-7.2 or qe-7.3 (not qe-7.3.1 !!!). 
 
