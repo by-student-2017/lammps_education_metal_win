@@ -19,6 +19,29 @@ The following libraries have been found:
 9. sudo make install
 #Note: sudo apt install quantum-espresso # In my case, the calculation of pw.x failed in ubuntu 22.04 qe. I recommend using qe-7.2 or qe-7.3 (not qe-7.3.1 !!!). 
 
+# QE v6.8 Installation
+1. sudo apt update
+2. sudo apt -y install gfortran g++ build-essential make libopenblas-dev libopenmpi-dev libfftw3-dev
+3. sudo apt -y install gnuplot ghostscript
+3. wget https://github.com/QEF/q-e/archive/refs/tags/qe-6.8.tar.gz
+4. tar xvf qe-6.8.tar.gz
+5. cd q-e-qe-6.8
+6. ./configure
+7. make pwall
+8. sudo make install
+
+# thermo_pw 1.6.0 Installation for QE 6.8 (for elastic version)
+1. cd q-e-qe-6.8
+2. wget https://github.com/dalcorso/thermo_pw/archive/refs/tags/1.6.0.tar.gz
+3. tar -xvzf 1.6.0.tar.gz
+4. mv thermo_pw-1.6.0 thermo_pw
+5. cd thermo_pw
+6. make join_qe
+7. cd ..
+8. ./configure
+9. make thermo_pw
+10. sudo make install
+
 # Installation dos2unix
 1. sudo apt update
 2. sudo apt install dos2unix
@@ -289,4 +312,5 @@ Zenodo
 Figshare
 OSF (Open Science Framework)
 #---------------------------------------------------------------------
+
 
