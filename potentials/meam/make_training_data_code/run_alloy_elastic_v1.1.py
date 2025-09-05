@@ -1390,15 +1390,21 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
     
     if json_data_flag == 1:
         alpha = optimized_structure_data["alpha"]
-        repuls_fit_erose_form_0 = optimized_structure_data["repuls_erose_form_0"]
-        attrac_fit_erose_form_0 = optimized_structure_data["attrac_erose_form_0"]
-        repuls_fit_erose_form_1 = optimized_structure_data["repuls_erose_form_1"]
-        attrac_fit_erose_form_1 = optimized_structure_data["attrac_erose_form_1"]
-        repuls_fit_erose_form_2 = optimized_structure_data["repuls_erose_form_2"]
-        attrac_fit_erose_form_2 = optimized_structure_data["attrac_erose_form_2"]
+        repuls_fit_erose_form_0  = optimized_structure_data["repuls_erose_form_0"]
+        attrac_fit_erose_form_0  = optimized_structure_data["attrac_erose_form_0"]
+        repuls_fit_erose_form_1  = optimized_structure_data["repuls_erose_form_1"]
+        attrac_fit_erose_form_1  = optimized_structure_data["attrac_erose_form_1"]
+        repuls_fit_erose_form_2  = optimized_structure_data["repuls_erose_form_2"]
+        attrac_fit_erose_form_2  = optimized_structure_data["attrac_erose_form_2"]
         optimized_scaling_factor = optimized_structure_data["optimized_scaling_factor"]
         B = optimized_structure_data["Bulk Modulus (GPa)"] * kJ / 1.0e24
-        #charges = optimized_structure_data["Charges (e)"]
+        volumes  = optimized_structure_data["Volumes (A^3)"]
+        energies = optimized_structure_data["Energies (eV)"]
+        cohesive_energies = optimized_structure_data["Cohesive Energies (eV)"]
+        stress_tensor     = optimized_structure_data["Stress Tensor per Volume (GPa)"]
+        forces =optimized_structure_data["Forces (eV/A)"]
+        magnetic_moments  = optimized_structure_data["Magnetic Moments (Bohr)"]
+        charges = optimized_structure_data["Charges (e)"]
     else:
         alpha = 4.0
         repuls_fit_erose_form_0 = 0.0
