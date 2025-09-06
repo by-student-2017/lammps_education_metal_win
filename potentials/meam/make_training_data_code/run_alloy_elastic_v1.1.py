@@ -1133,11 +1133,10 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
             if os.path.exists(out_root):
                 shutil.rmtree(out_root)
         finally:
-            try:
-                os.makedirs(out_root, exist_ok=True)
-                os.makedirs(out_sub, exist_ok=True)
-            except Exception as e:
-                int(f"Error creating directory: {e}")
+            pass
+        
+        os.makedirs(out_root, exist_ok=True)
+        os.makedirs(out_sub, exist_ok=True)
         
         with open('thermo_control', 'w') as f:
             f.write("""&INPUT_THERMO
