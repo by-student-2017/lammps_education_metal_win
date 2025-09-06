@@ -1133,12 +1133,6 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
         try:
             if os.path.exists(out_root):
                 shutil.rmtree(out_root)
-                for _ in range(10):
-                    if not os.path.exists(out_root):
-                        break
-                    time.sleep(0.5)
-                else:
-                    raise RuntimeError("The removal of out_root did not complete.")
         finally:
             try:
                 os.makedirs(out_root, exist_ok=True)
