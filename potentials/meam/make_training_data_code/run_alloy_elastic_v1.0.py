@@ -1093,12 +1093,21 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
         out_root = './out'
         out_sub = './out/g1'
         
-        if os.path.exists(out_root):
-            shutil.rmtree(out_root)
-            time.sleep(1)
-        
-        os.makedirs(out_root, exist_ok=True)
-        os.makedirs(out_sub, exist_ok=True)
+        try:
+            if os.path.exists(out_root):
+                shutil.rmtree(out_root)
+                for _ in range(10):
+                    if not os.path.exists(out_root):
+                        break
+                    time.sleep(0.5)
+                else:
+                    raise RuntimeError("The removal of out_root did not complete.")
+        finally:
+            try:
+                os.makedirs(out_root, exist_ok=True)
+                os.makedirs(out_sub, exist_ok=True)
+            except Exception as e:
+                int(f"Error creating directory: {e}")
         
         with open('thermo_control', 'w') as f:
             f.write("""&INPUT_THERMO
