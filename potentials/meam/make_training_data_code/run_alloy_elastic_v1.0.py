@@ -1079,28 +1079,9 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
         subprocess.run(f"sed -i '/CELL_PARAMETERS angstrom/,+3d' thermo_pw.in", shell=True, check=True)
         #subprocess.run("cat thermo_pw.in", shell=True, check=True)
         
-        prefix = f'{lattce}_{element1}_{element2}'
-        save_dir = os.path.join('./out', f'{prefix}.save')
-        if os.path.exists(save_dir):
-            shutil.rmtree(save_dir)
+        subprocess.run(f"rm -rf out work restart therm_files gnuplot_files elastic_constants *.ps", shell=True, check=True)
         
-        for d in ["work", "restart", "therm_files", "gnuplot_files", "elastic_constants"]:
-            shutil.rmtree(d, ignore_errors=True)
-        
-        for f in glob.glob("*.ps"):
-            os.remove(f)
-        
-        out_root = './out'
-        out_sub = './out/g1'
-        
-        try:
-            if os.path.exists(out_root):
-                shutil.rmtree(out_root)
-        finally:
-            pass
-        
-        os.makedirs(out_root, exist_ok=True)
-        os.makedirs(out_sub, exist_ok=True)
+        subprocess.run(f"mkdir -p ./out/g1", shell=True, check=True)
         
         with open('thermo_control', 'w') as f:
             f.write("""&INPUT_THERMO
