@@ -1090,12 +1090,15 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
         for f in glob.glob("*.ps"):
             os.remove(f)
         
-        out_dir = './out'
-        if os.path.exists(out_dir):
-            shutil.rmtree(out_dir)
+        out_root = './out'
+        out_sub = './out/g1'
         
-        out_dir = './out/g1'
-        os.makedirs(out_dir, exist_ok=True)
+        if os.path.exists(out_root):
+            shutil.rmtree(out_root)
+            time.sleep(1)
+        
+        os.makedirs(out_root, exist_ok=True)
+        os.makedirs(out_sub, exist_ok=True)
         
         with open('thermo_control', 'w') as f:
             f.write("""&INPUT_THERMO
