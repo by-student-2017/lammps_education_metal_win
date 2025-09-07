@@ -467,6 +467,7 @@ def extract_energy_from_espresso_pwo(file_path="espresso.pwo"):
                     if len(parts) > 1:
                         return float(parts[1].split()[0])
     except Exception as e:
+        gc.collect()
         print("Error reading espresso.pwo:", e)
 
 
@@ -480,6 +481,7 @@ def extract_elastic_matrix(block):
             try:
                 matrix.append([float(x) * 0.1 for x in parts[1:]]) # kbar -> GPa
             except ValueError:
+                gc.collect()
                 continue  # Skip lines that cannot be converted to numbers
     return matrix
 
@@ -497,6 +499,7 @@ def extract_compliances_matrix(block):
             try:
                 matrix.append([float(x) * 100 for x in parts[1:]]) # 1/Mbar -> 1/GPa
             except ValueError:
+                gc.collect()
                 continue  # Skip lines that cannot be converted to numbers
     return matrix
 
@@ -625,6 +628,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
         print(f"Lattice Constant a (A): {lat}")
         json_data_flag = 1
     except Exception as e:
+        gc.collect()
         print(f"[Note] Exception occurred while loading JSON: {e}")
     
     optimized_scaling_factor = 1
@@ -1096,6 +1100,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
             subprocess.run(f"mpirun -np {mpi_num_procs} thermo_pw.x < thermo_pw.in > thermo_pw.out", shell=True, check=True)
             print("thermo_pw.x executed successfully.")
         except subprocess.CalledProcessError as e:
+            gc.collect()
             print(f"Error-el1 during thermo_pw.x execution.")
             with open("error_log.txt", "a") as file:
                 file.write(f"Error-el1: during thermo_pw.x execution.: {lattce}-{element1}-{element2}\n")
@@ -1142,6 +1147,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
             energy = atoms.get_total_energy()
             energy_from_atoms = energy
         except Exception as e:
+            gc.collect()
             print(f"Error-l1: The calculation may have stopped with [Error in routine electrons: charge is wrong].")
             with open("error_log.txt", "a") as file:
                 file.write(f"Error-l1: The calculation may have stopped with [Error in routine electrons: charge is wrong].: {lattce}-{element1}-{element2}\n")
