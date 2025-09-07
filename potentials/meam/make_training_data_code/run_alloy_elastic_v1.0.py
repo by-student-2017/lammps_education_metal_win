@@ -1084,6 +1084,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
         #subprocess.run("cat thermo_pw.in", shell=True, check=True)
         
         subprocess.run(f"rm -rf out work restart therm_files gnuplot_files elastic_constants *.ps", shell=True, check=True)
+        gc.collect()
         
         subprocess.run(f"mkdir -p ./out/g1", shell=True, check=True)
         
@@ -1095,7 +1096,12 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
   find_ibrav=.FALSE.,
 /
 """)
-
+        
+        print("Check if out/g1 exists. If not, create it.")
+        if not os.path.exists("out/g1"):
+            os.makedirs("out/g1")
+            gc.collect()
+        
         try:
             subprocess.run(f"mpirun -np {mpi_num_procs} thermo_pw.x < thermo_pw.in > thermo_pw.out", shell=True, check=True)
             print("thermo_pw.x executed successfully.")
@@ -1104,6 +1110,9 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
             print(f"Error-el1 during thermo_pw.x execution.")
             with open("error_log.txt", "a") as file:
                 file.write(f"Error-el1: during thermo_pw.x execution.: {lattce}-{element1}-{element2}\n")
+            os.makedirs("out/g1")
+            subprocess.run(f"mpirun -np {mpi_num_procs} thermo_pw.x < thermo_pw.in > thermo_pw.out", shell=True, check=True)
+            print("thermo_pw.x executed successfully.")
             continue
         
         #energy_from_thermo = extract_energy_from_espresso_pwo() * Ry

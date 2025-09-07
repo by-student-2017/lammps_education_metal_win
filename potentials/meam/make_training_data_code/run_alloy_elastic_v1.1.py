@@ -1137,6 +1137,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
         print("Check if out/g1 exists. If not, create it.")
         if not os.path.exists("out/g1"):
             os.makedirs("out/g1")
+            gc.collect()
         
         try:
             subprocess.run(f"mpirun -np {mpi_num_procs} thermo_pw.x < thermo_pw.in > thermo_pw.out", shell=True, check=True)
