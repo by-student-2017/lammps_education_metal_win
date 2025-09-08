@@ -10,6 +10,7 @@ file_path = 'run_1element_or_alloy_v1.0.py'
 # 2 pair
 #lattices = ['b1', 'b2', 'l12', 'dia']
 #file_path = 'run_alloy_v1.1.py'
+#file_path = 'run_alloy_elastic_v1.1.py'
 
 # 2 pair
 #lattices = ['b1', 'b2', 'l12', 'dia', 'ch4']
