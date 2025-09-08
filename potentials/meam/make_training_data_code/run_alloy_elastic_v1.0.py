@@ -1357,9 +1357,16 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
         'OPT Magnetic Moments (Bohr)': optimized_structure_magnetic_moments,
         #'OPT Charges (e)': optimized_structure_charge,
         #----------------------------------------------------------
-        'OPT Cell': atoms.get_cell().tolist(),
-        'OPT Positions': atoms.get_positions().tolist(),
+        'OPT Chemical Formula': atoms.get_chemical_formula(),
+        'OPT Atomic Numbers': atoms.get_atomic_numbers(),
         'OPT Chemical Symbols': atoms.get_chemical_symbols(),
+        'OPT Positions': atoms.get_positions().tolist(),
+        'OPT Cell': atoms.get_cell().tolist(),
+        'OPT Volume': atoms.get_volume(),
+        'OPT Masses': atoms.get_masses().tolist(),
+        'OPT Total Mass': atoms.get_masses().sum(),
+        'OPT Center of Mass': atoms.get_center_of_mass().tolist(),
+        'OPT PBC': atoms.get_pbc().tolist(),
         #----------------------------------------------------------
         # fitting data
         'Volumes (A^3)': volumes,
