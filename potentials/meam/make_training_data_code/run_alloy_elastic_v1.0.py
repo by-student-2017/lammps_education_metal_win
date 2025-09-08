@@ -1288,6 +1288,11 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
         optimized_a = (v0 * len(atoms))**(1/3)
     nearest_neighbor_distance = optimized_a / re2a
     
+    optimized_structure_stress_tensor  = stress_tensor
+    optimized_structure_force  = forces
+    optimized_structure_magnetic_moments = magnetic_moments
+    optimized_structure_charge = charges
+    
     if json_data_flag == 1:
         alpha = optimized_structure_data["alpha"]
         repuls_fit_erose_form_0 = optimized_structure_data["repuls_erose_form_0"]
@@ -1352,6 +1357,15 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
         'Volumes (A^3)': volumes,
         'Energies (eV)': energies,
         'Cohesive Energies (eV)': cohesive_energies,
+        #----------------------------------------------------------
+        'OPT Stress Tensor per Volume (GPa)': optimized_structure_stress_tensor,
+        'OPT Forces (eV/A)': optimized_structure_force,
+        'OPT Magnetic Moments (Bohr)': optimized_structure_magnetic_moments,
+        #'OPT Charges (e)': optimized_structure_charge,
+        #----------------------------------------------------------
+        'OPT Cell': atoms.get_cell().tolist(),
+        'OPT Positions': atoms.get_positions().tolist(),
+        'OPT Chemical Symbols': atoms.get_chemical_symbols(),
         #----------------------------------------------------------
         #'Elastic Constants (GPa)': elastic_constants_final,
         #----------------------------------------------------------
