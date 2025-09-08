@@ -1348,15 +1348,9 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
         'Lattice Constant b (A)': optimized_a, # Values ​​in conventional cells.
         'Lattice Constant c (A)': optimized_a, # Values ​​in conventional cells.
         #----------------------------------------------------------
-        # eos
         'Optimized Energy (eV/atom)': e0,
         'Optimized Volume (A^3/atom)': v0,
         'Bulk Modulus (GPa)': B / kJ * 1.0e24,
-        #----------------------------------------------------------
-        # fitting data
-        'Volumes (A^3)': volumes,
-        'Energies (eV)': energies,
-        'Cohesive Energies (eV)': cohesive_energies,
         #----------------------------------------------------------
         'OPT Stress Tensor per Volume (GPa)': optimized_structure_stress_tensor,
         'OPT Forces (eV/A)': optimized_structure_force,
@@ -1367,7 +1361,10 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
         'OPT Positions': atoms.get_positions().tolist(),
         'OPT Chemical Symbols': atoms.get_chemical_symbols(),
         #----------------------------------------------------------
-        #'Elastic Constants (GPa)': elastic_constants_final,
+        # fitting data
+        'Volumes (A^3)': volumes,
+        'Energies (eV)': energies,
+        'Cohesive Energies (eV)': cohesive_energies,
         #----------------------------------------------------------
         'Stress Tensor per Volume (GPa)': stress_tensor,
         'Forces (eV/A)': forces,
