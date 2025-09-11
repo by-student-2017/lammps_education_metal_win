@@ -668,7 +668,7 @@ def calculate_properties(elements_combination, omp_num_threads, mpi_num_procs, m
         with open(f'2elements_data_{DFT}{D_char}_{spin_clean}/{element1}-X/{directory}/{lattce}_{element1}-{element2}_{spin_char}.json', 'r') as f:
            optimized_structure_data = json.load(f)
         lat = optimized_structure_data["Lattice Constant a (A)"]
-        print(f"Lattice Constant a (A): {lat}")
+        print(f"Read JSON data, Lattice Constant a (A): {lat}")
         json_data_flag = 1
     except Exception as e:
         gc.collect()
