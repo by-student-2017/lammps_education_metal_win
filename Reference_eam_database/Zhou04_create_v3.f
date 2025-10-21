@@ -85,8 +85,8 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 1210  write(6,*)'error: atom type ',atomtype,' not found'
       stop
 1200  continue
-      nr=2000
-      nrho=2000
+      nr=3000
+      nrho=3000
       alatmax=blat(1)
       rhoemax=rhoe(1)
       do 2 i=2,ntypes
@@ -244,10 +244,10 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
      *   'Lucas Hale lucas.hale@nist.gov ',
      *   'CITATION: X. W. Zhou, R. A. Johnson, ',
      *   'H. N. G. Wadley, Phys. Rev. B, 69, 144113(2004)'
-      write(1,*) ' Generated from Zhou04_create_v2.f'
+      write(1,*) ' Generated from Zhou04_create_v3.f'
       write(1,*) ' Fixes precision issues with older version'
       write(1,8)ntypes,outelem
-8     format(i5,' ',a24)
+8     format(i5,' ',a)
       write(1,9)nrho,drho,nr,dr,rc
 9     format(i5,e24.16,i5,2e24.16)
       do 10 i=1,ntypes
