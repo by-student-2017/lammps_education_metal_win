@@ -20,8 +20,8 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
      *   Fm0(90),Fm1(90),Fm2(90),Fm3(90),Fm4(90),
      *   fnn(90),Fn(90),rhoin(90),rhoout(90),rhol(90),
      *   rhoh(90),rhos(90)
-      common /pass2/ amass(90),Fr(5000,16),rhor(5000,16),
-     *   z2r(5000,16,16),blat(90),drho,dr,rc,outfile,outelem
+      common /pass2/ amass(90),Fr(5000,90),rhor(5000,90),
+     *   z2r(5000,90,90),blat(90),drho,dr,rc,outfile,outelem
       common /pass3/ ielement(90),ntypes,nrho,nr
       ntypes=0
 10    continue
@@ -232,8 +232,8 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
      *   Fm0(90),Fm1(90),Fm2(90),Fm3(90),Fm4(90),
      *   fnn(90),Fn(90),rhoin(90),rhoout(90),rhol(90),
      *   rhoh(90),rhos(90)
-      common /pass2/ amass(90),Fr(5000,16),rhor(5000,16),
-     *   z2r(5000,16,16),blat(90),drho,dr,rc,outfile,outelem
+      common /pass2/ amass(90),Fr(5000,90),rhor(5000,90),
+     *   z2r(5000,90,90),blat(90),drho,dr,rc,outfile,outelem
       common /pass3/ ielement(90),ntypes,nrho,nr
       character*80 struc
       struc='fcc'
