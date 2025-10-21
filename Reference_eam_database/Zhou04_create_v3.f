@@ -122,7 +122,7 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       rhom=fmax
       if (rhom .lt. 2.0d0*rhoemax) rhom=2.0d0*rhoemax
       if (rhom .lt. 100.0d0) rhom=100.0d0
-      if (rhom .gt. 169.0d0) rhom=169.0d0
+      if (rhom .gt. 170.0d0) rhom=170.0d0
       drho=rhom/(nrho-1.0d0)
       do 6 it=1,ntypes
       do 7 i=1,nrho
